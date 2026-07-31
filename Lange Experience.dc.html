@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#05070c;}
+a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
+::selection{background:#c98662;color:#07090f}
+@keyframes fadeOut{to{opacity:0;visibility:hidden}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes lineFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes partIn{from{opacity:0;transform:translate(var(--fx,0px),var(--fy,0px)) scale(var(--fs,1))}to{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes windUp{from{transform:rotate(-160deg)}to{transform:rotate(0deg)}}
+@keyframes cardUp{from{opacity:0;transform:translateY(28px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes balance{0%{transform:rotate(-26deg)}50%{transform:rotate(26deg)}100%{transform:rotate(-26deg)}}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(217,162,107,.4)}100%{box-shadow:0 0 0 12px rgba(217,162,107,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(110vmax 110vmax at 50% 34%,#111722 0%,#070a11 52%,#030509 100%);font-family:Archivo,sans-serif;color:#e6e9f0;">
+  <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(68vmin 68vmin at 50% 45%,rgba(217,162,107,.035),transparent 72%);"></div>
+
+  <!-- ===================== LOADING ===================== -->
+  <div style="position:fixed;inset:0;z-index:100;background:#05060b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vmin;pointer-events:none;animation:fadeOut .8s ease 1.25s forwards;">
+    <div style="font-family:Marcellus,serif;font-size:3.4vmin;letter-spacing:.55em;text-indent:.55em;color:#e8e2d6;">NIKHIL RAMLUKAN</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:1.25vmin;letter-spacing:.35em;color:#9a8367;">CALIBRE NR.1 — ASSEMBLING MOVEMENT</div>
+    <div style="width:26vmin;height:1px;background:rgba(217,162,107,.2);overflow:hidden;"><div style="width:100%;height:100%;background:#c98662;transform-origin:left;animation:lineFill 1.2s cubic-bezier(.4,0,.2,1) both;"></div></div>
+  </div>
+
+  <!-- ===================== WATCH ===================== -->
+  <div style="position:relative;width:86vmin;height:86vmin;perspective:2400px;" data-screen-label="Watch">
+    <div style="position:absolute;inset:0;transform:{{watchTransform}};transform-origin:{{watchOrigin}};filter:{{watchFilter}};transform-style:preserve-3d;transition:transform 1s cubic-bezier(.3,.8,.25,1),filter 1s ease;">
+      <div style="position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY({{flipDeg}}deg);transition:transform 1.15s cubic-bezier(.6,.05,.25,1);">
+
+        <!-- crown + pusher (visible both sides) -->
+        <div onClick="{{flip}}" onMouseEnter="{{hovCrown}}" onMouseLeave="{{hovOff}}" title="Contact — flip the watch" style="position:absolute;right:-2.6%;top:47.2%;width:4.4%;height:5.6%;cursor:pointer;border-radius:16% 40% 40% 16%;background:linear-gradient(180deg,#f0c49b,#9a4d2c 45%,#572412 70%,#d59871);box-shadow:0 .4vmin 1vmin rgba(0,0,0,.5);animation:fadeIn .6s ease 1.65s both;" style-hover="filter:brightness(1.2)"></div>
+        <div onClick="{{openReq}}" onMouseEnter="{{hovPusher}}" onMouseLeave="{{hovOff}}" title="Request a review" style="position:absolute;left:8.5%;top:16.5%;width:3.2%;height:3.2%;cursor:pointer;border-radius:50%;background:linear-gradient(135deg,#efba96,#71351f);box-shadow:0 .3vmin .8vmin rgba(0,0,0,.5);transform:rotate(-45deg);animation:fadeIn .6s ease 1.65s both;" style-hover="filter:brightness(1.25)"></div>
+
+        <!-- ============ FRONT FACE ============ -->
+        <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(1px);opacity:{{frontOpacity}};transition:opacity .3s linear .45s;" data-screen-label="Dial">
+          <!-- ============ CASE ============ -->
+          <div style="position:absolute;inset:-1.5%;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn 1s ease .2s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c160d 0deg,#7d4329 22deg,#fff1dd 44deg,#d9a77f 62deg,#a96945 88deg,#4a291b 108deg,#b97c55 130deg,#f2d1ad 156deg,#d5a077 178deg,#7d4c31 200deg,#2e190f 214deg,#8a5437 238deg,#e9c39f 262deg,#c58d67 284deg,#74442d 306deg,#3a2115 330deg,#a86646 348deg,#2c160d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:partIn .9s cubic-bezier(.22,1,.36,1) .2s both;--fs:1.28;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);"></div>
+          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);"></div>
+          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);"></div>
+          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff1dd 0%,#ddb18a 16%,#a96945 46%,#4a291b 70%,#b97c55 88%,#e9c39f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:partIn .9s cubic-bezier(.22,1,.36,1) .32s both;--fs:1.16;"></div>
+          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;"></div>
+          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a291b,#b97c55 40%,#f2d1ad 52%,#9b603f 76%,#2c160d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:partIn .9s cubic-bezier(.22,1,.36,1) .42s both;--fs:1.1;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);"></div>
+
+          <!-- ============ DIAL PLATE ============ -->
+          <div style="position:absolute;inset:5.15%;border-radius:50%;background:radial-gradient(circle at 30% 24%,#213a59 0%,#16324f 26%,#0d2742 54%,#091d34 80%,#061427 100%);box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:partIn .8s ease .55s both;--fs:1.06;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(205,228,255,.032) 0deg .1deg,rgba(0,10,30,.03) .1deg .26deg);animation:fadeIn 1s ease .7s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.11),rgba(255,255,255,.015) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.07) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.09) 93%,rgba(214,232,255,.11) 100%);animation:fadeIn 1s ease .75s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);"></div>
+
+
+          <!-- ============ HOURS & MINUTES DIAL ============ -->
+          <div style="position:absolute;inset:0;animation:partIn .8s cubic-bezier(.22,1,.36,1) .75s both;--fx:-42px;">
+            <div style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#213a59 0%,#16324f 30%,#0d2742 62%,#091e35 88%,#061427 100%);box-shadow:inset 0 .58vmin 1.75vmin rgba(0,0,0,.76),inset 0 -.26vmin .9vmin rgba(150,180,220,.1),inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .12vmin 0 rgba(255,240,215,.24),0 .38vmin 1.05vmin rgba(0,0,0,.68);"></div>
+            <svg viewBox="0 0 100 100" style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;pointer-events:none;">
+              <circle cx="50" cy="50" r="46.4" fill="none" stroke="#d9b386" stroke-width=".35" opacity=".58"></circle>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#f3eee6" stroke-width="2.2" stroke-dasharray=".48 4.18" opacity=".82"></circle>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#f7f2e9" stroke-width="2.75" stroke-dasharray=".9 22.4" opacity=".94"></circle>
+            </svg>
+              <div style="position:absolute;left:41.34%;top:28.18%;width:.85%;height:3.1%;transform:rotate(30deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:48.64%;top:35.48%;width:.85%;height:3.1%;transform:rotate(60deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:48.64%;top:55.42%;width:.85%;height:3.1%;transform:rotate(120deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:41.34%;top:62.72%;width:.85%;height:3.1%;transform:rotate(150deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:21.41%;top:62.72%;width:.85%;height:3.1%;transform:rotate(210deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:14.11%;top:55.42%;width:.85%;height:3.1%;transform:rotate(240deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:14.11%;top:35.48%;width:.85%;height:3.1%;transform:rotate(300deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:21.41%;top:28.18%;width:.85%;height:3.1%;transform:rotate(330deg);border-radius:.1vmin;background:linear-gradient(96deg,#5a321e,#c18b60 24%,#fff0db 46%,#e6bb91 58%,#a56d48 80%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+              <div style="position:absolute;left:27.7%;top:23.4%;width:8.2%;text-align:center;font-family:Marcellus,serif;font-size:3.15vmin;color:#e4b887;text-shadow:0 .12vmin .3vmin #24140c;">XII</div>
+              <div style="position:absolute;left:50.6%;top:44.65%;width:5%;text-align:center;font-family:Marcellus,serif;font-size:3.15vmin;color:#e4b887;text-shadow:0 .12vmin .3vmin #24140c;">III</div>
+              <div style="position:absolute;left:27.9%;top:65.1%;width:8.2%;text-align:center;font-family:Marcellus,serif;font-size:3.15vmin;color:#e4b887;text-shadow:0 .12vmin .3vmin #24140c;">VI</div>
+              <div style="position:absolute;left:6.8%;top:44.65%;width:6%;text-align:center;font-family:Marcellus,serif;font-size:3.15vmin;color:#e4b887;text-shadow:0 .12vmin .3vmin #24140c;">IX</div>
+          </div>
+
+          <!-- name (where the maker's mark would sit) -->
+          <div style="position:absolute;left:21.5%;top:10.7%;width:57%;text-align:center;font-family:Marcellus,serif;font-size:2.55vmin;letter-spacing:.22em;color:#f3eee6;text-shadow:0 .1vmin .24vmin rgba(0,0,0,.78);animation:partIn .7s ease 1.15s both;--fy:-14px;">NIKHIL RAMLUKAN</div>
+          <div style="position:absolute;left:28%;top:15.45%;width:44%;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82vmin;letter-spacing:.32em;color:#c7d0dc;animation:partIn .7s ease 1.25s both;--fy:-10px;">CALIBRE NR.1</div>
+
+          <!-- hands -->
+          <div style="position:absolute;inset:0;animation:fadeIn .5s ease 1.3s both;pointer-events:none;">
+            <div style="position:absolute;left:31.02%;top:32.37%;width:1.56%;height:14.63%;transform:rotate({{hourDeg}}deg);transform-origin:50% 100%;">
+              <div style="width:100%;height:100%;clip-path:polygon(50% 0,74% 16%,60% 100%,40% 100%,26% 16%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.15s cubic-bezier(.34,1.25,.4,1) 1.35s both;transform-origin:50% 100%;"></div>
+            </div>
+            <div style="position:absolute;left:31.24%;top:25.42%;width:1.12%;height:21.58%;transform:rotate({{minDeg}}deg);transform-origin:50% 100%;">
+              <div style="width:100%;height:100%;clip-path:polygon(50% 0,80% 11%,58% 100%,42% 100%,20% 11%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.15s cubic-bezier(.34,1.25,.4,1) 1.45s both;transform-origin:50% 100%;"></div>
+            </div>
+            <div style="position:absolute;left:30.85%;top:46.05%;width:1.9%;height:1.9%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0db,#c18b60 45%,#3c2115);box-shadow:0 .14vmin .4vmin rgba(0,0,0,.6);"></div>
+          </div>
+
+          <!-- ============ OUTSIZE DATE ============ -->
+          <div onClick="{{openFeatured}}" onMouseEnter="{{hovFeatured}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:53.5%;top:20.3%;width:20.5%;height:11.5%;cursor:pointer;padding:.5vmin;border-radius:.35vmin;background:linear-gradient(152deg,#fff0db 0%,#e2b48b 22%,#a66d49 55%,#4a291b 80%,#c48c66 100%);box-shadow:0 .32vmin 1vmin rgba(0,0,0,.66),inset 0 .1vmin .2vmin rgba(255,248,234,.78);display:flex;gap:.38vmin;animation:partIn .8s cubic-bezier(.22,1,.36,1) .95s both;--fy:-52px;" style-hover="box-shadow:0 0 0 .25vmin rgba(240,200,150,.55),0 .35vmin 1.1vmin rgba(0,0,0,.6)">
+            <div style="flex:1;background:linear-gradient(176deg,#fffdf7 0%,#f3eee3 48%,#d8d0c0 100%);border-radius:.14vmin;box-shadow:inset 0 .22vmin .5vmin rgba(55,48,34,.38),inset 0 -.12vmin .25vmin rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:5.65vmin;color:#111318;line-height:1;">{{dateTens}}</div>
+            <div style="flex:1;background:linear-gradient(176deg,#fffdf7 0%,#f3eee3 48%,#d8d0c0 100%);border-radius:.14vmin;box-shadow:inset 0 .22vmin .5vmin rgba(55,48,34,.38),inset 0 -.12vmin .25vmin rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:5.65vmin;color:#111318;line-height:1;">{{dateOnes}}</div>
+          </div>
+
+          <!-- ============ POWER RESERVE (AUF / AB) ============ -->
+          <div onClick="{{openResume}}" onMouseEnter="{{hovResume}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:58%;top:34.8%;width:26%;height:25.5%;cursor:pointer;border-radius:1vmin;animation:partIn .8s cubic-bezier(.22,1,.36,1) 1.2s both;--fx:52px;" style-hover="background:rgba(240,200,150,.055)">
+            <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#e8e3d9" stroke-width=".75" opacity=".78"></path>
+              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#f3eee6" stroke-width="2.5" stroke-dasharray=".7 8.2" opacity=".82"></path>
+              <path d="M 74 78 A 51 51 0 0 1 74 90" fill="none" stroke="#b4373f" stroke-width="2.1" opacity=".95"></path>
+            </svg>
+            <div style="position:absolute;left:28.8%;top:49.25%;width:45%;height:1.5%;transform:rotate({{reserveDeg}}deg);transform-origin:0 50%;transition:transform .6s cubic-bezier(.34,1.3,.4,1);">
+              <div style="position:absolute;left:0;top:18%;width:100%;height:64%;clip-path:polygon(0 36%,87% 0,100% 50%,87% 100%,0 64%);background:linear-gradient(180deg,#fff0db,#c18b60 48%,#5a321e);filter:drop-shadow(0 .12vmin .28vmin rgba(0,0,0,.5));"></div>
+            </div>
+            <div style="position:absolute;left:25.9%;top:46.3%;width:6.8%;height:6.8%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0db,#c18b60 50%,#3c2115);box-shadow:0 .12vmin .35vmin rgba(0,0,0,.55);"></div>
+            <div style="position:absolute;right:-.5%;top:3%;font-family:Marcellus,serif;font-size:1.25vmin;letter-spacing:.12em;color:#f3eee6;">AUF</div>
+            <div style="position:absolute;right:3%;bottom:1%;font-family:Marcellus,serif;font-size:1.25vmin;letter-spacing:.12em;color:#f3eee6;">AB</div>
+          </div>
+
+          <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
+          <div style="position:absolute;inset:0;animation:partIn .8s cubic-bezier(.22,1,.36,1) 1.05s both;--fy:52px;">
+            <div onClick="{{openCurrently}}" onMouseEnter="{{hovCurrently}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:46.8%;top:57.2%;width:27.2%;height:27.2%;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 34% 28%,#213a59 0%,#16324f 32%,#0d2742 64%,#061427 100%);box-shadow:inset 0 .5vmin 1.55vmin rgba(0,0,0,.74),inset 0 -.25vmin .8vmin rgba(130,170,240,.1),inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .35vmin 1vmin rgba(0,0,0,.64);" style-hover="box-shadow:inset 0 .4vmin 1.3vmin rgba(0,0,0,.62),0 0 0 .25vmin rgba(240,200,150,.55)"></div>
+            <svg viewBox="0 0 100 100" style="position:absolute;left:46.8%;top:57.2%;width:27.2%;height:27.2%;pointer-events:none;">
+              <circle cx="50" cy="50" r="45.5" fill="none" stroke="#e6dcc8" stroke-width="2.8" stroke-dasharray=".75 6.35" opacity=".6"></circle>
+              <circle cx="50" cy="50" r="45.5" fill="none" stroke="#f3e3c6" stroke-width="3.2" stroke-dasharray="1.1 22.72" opacity=".9"></circle>
+            </svg>
+            <!-- moon aperture -->
+            <div onClick="{{openBooks}}" onMouseEnter="{{hovBooks}}" onMouseLeave="{{hovOff}}" title="Book reviews" style="position:absolute;left:48.55%;top:59.05%;width:5.8%;height:5.8%;border-radius:50%;overflow:hidden;cursor:pointer;background:#070d24;box-shadow:0 0 0 .11vmin rgba(219,179,134,.65),inset 0 .2vmin .55vmin rgba(0,0,0,.78);" style-hover="box-shadow:0 0 0 .24vmin rgba(240,200,150,.8),inset 0 .2vmin .55vmin rgba(0,0,0,.78)">
+              <div style="position:absolute;left:-55%;top:-6%;width:210%;height:210%;border-radius:50%;background:radial-gradient(1.4% 1.4% at 22% 30%,#f0ead8 45%,transparent 60%),radial-gradient(1.1% 1.1% at 68% 18%,#e2e6f2 45%,transparent 60%),radial-gradient(.9% .9% at 45% 55%,#cfd6ea 45%,transparent 60%),radial-gradient(1.15% 1.15% at 80% 62%,#f0ead8 45%,transparent 60%),radial-gradient(.9% .9% at 30% 75%,#cfd6ea 45%,transparent 60%),radial-gradient(1.3% 1.3% at 60% 85%,#f0ead8 45%,transparent 60%),radial-gradient(1% 1% at 14% 52%,#e2e6f2 45%,transparent 60%),radial-gradient(circle at 40% 30%,#16264e 0%,#0d1834 45%,#060c1e 100%);transform:rotate({{moonDeg}}deg);">
+                <div style="position:absolute;left:42.85%;top:14.75%;width:14.3%;height:14.3%;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff6de,#f2d391 46%,#c99a45 100%);box-shadow:0 0 .9vmin rgba(245,215,140,.5),inset 0 -.08vmin .25vmin rgba(120,85,25,.55);"></div>
+                <div style="position:absolute;left:42.85%;top:68.05%;width:14.3%;height:14.3%;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff6de,#f2d391 46%,#c99a45 100%);box-shadow:inset 0 -.08vmin .25vmin rgba(120,85,25,.55);"></div>
+              </div>
+              <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(150deg,rgba(255,250,240,.16),transparent 45%);"></div>
+            </div>
+            <!-- seconds hand -->
+            <div style="position:absolute;left:60.16%;top:63%;width:.48%;height:15.6%;transform:rotate({{secDeg}}deg);transform-origin:50% 50%;pointer-events:none;">
+              <div style="width:100%;height:100%;background:linear-gradient(100deg,#71351f,#ffe6cf 45%,#bb7048);border-radius:.3vmin;filter:drop-shadow(0 .1vmin .3vmin rgba(0,0,0,.5));animation:windUp .9s cubic-bezier(.34,1.25,.4,1) 1.55s both;transform-origin:50% 50%;"></div>
+            </div>
+            <div style="position:absolute;left:59.75%;top:70.15%;width:1.3%;height:1.3%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0db,#c18b60 50%,#3c2115);pointer-events:none;"></div>
+          </div>
+
+          <!-- hours-dial hit zone -->
+          <div onClick="{{openAbout}}" onMouseEnter="{{hovAbout}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;border-radius:50%;cursor:pointer;" style-hover="box-shadow:0 0 0 .25vmin rgba(240,200,150,.52)"></div>
+
+          <!-- ============ SAPPHIRE CRYSTAL ============ -->
+          <div style="position:absolute;inset:3.3%;border-radius:50%;pointer-events:none;overflow:hidden;animation:fadeIn 1.2s ease 1.5s both;">
+            <div style="position:absolute;left:-30%;top:-62%;width:130%;height:118%;border-radius:50%;background:linear-gradient(154deg,rgba(255,252,246,.11) 0%,rgba(255,252,246,.045) 42%,transparent 68%);"></div>
+            <div style="position:absolute;left:-18%;top:-8%;width:66%;height:150%;transform:rotate(-22deg);background:linear-gradient(90deg,transparent,rgba(255,252,246,.05) 40%,rgba(255,252,246,.075) 52%,transparent);"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 .2vmin .6vmin rgba(255,250,240,.22),inset 0 -.5vmin 1.4vmin rgba(0,0,0,.35);"></div>
+            <div style="position:absolute;right:6%;bottom:4%;width:44%;height:26%;border-radius:50%;background:radial-gradient(circle at 60% 70%,rgba(190,215,255,.07),transparent 70%);"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 0 92%,rgba(215,235,255,.14) 95%,rgba(255,252,246,.3) 98%,rgba(120,150,200,.16) 100%);"></div>
+            <div style="position:absolute;left:11%;top:6%;width:30%;height:20%;transform:rotate(-18deg);border-radius:1.4vmin;background:linear-gradient(160deg,rgba(255,253,248,.10),rgba(255,253,248,.03) 60%,transparent);filter:blur(.7vmin);"></div>
+          </div>
+
+          <sc-if value="{{showDots}}" hint-placeholder-val="{{false}}">
+            <div style="position:absolute;inset:0;pointer-events:none;">
+              <div style="position:absolute;left:31.3%;top:51%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out infinite;"></div>
+              <div style="position:absolute;left:68.5%;top:25.5%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .3s infinite;"></div>
+              <div style="position:absolute;left:66%;top:48%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .6s infinite;"></div>
+              <div style="position:absolute;left:60%;top:77%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .9s infinite;"></div>
+              <div style="position:absolute;left:51.2%;top:61.4%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out 1.2s infinite;"></div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- ============ CASEBACK ============ -->
+        <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg) translateZ(1px);opacity:{{backOpacity}};transition:opacity .3s linear .45s;" data-screen-label="Caseback">
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,#f3c5a4,#9f5637 12%,#71351f 24%,#e3ad87 38%,#f4c8a7 50%,#83513a 65%,#572412 78%,#dca27c 90%,#f3c5a4);box-shadow:0 3vmin 9vmin rgba(0,0,0,.75);"></div>
+          <div style="position:absolute;inset:4%;border-radius:50%;background:linear-gradient(200deg,#bc7956,#552817);display:flex;align-items:center;justify-content:center;"></div>
+          <div style="position:absolute;inset:9%;border-radius:50%;overflow:hidden;background:linear-gradient(155deg,#d9d0bf,#bfb49e 55%,#a99c84);box-shadow:inset 0 1vmin 4vmin rgba(0,0,0,.45);">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,rgba(60,45,25,.09) 0 3.2vmin,rgba(255,250,240,.10) 3.2vmin 6.4vmin);"></div>
+            <div style="position:absolute;left:16%;top:14%;width:24%;height:24%;border-radius:50%;border: .5vmin solid rgba(120,90,55,.7);background:radial-gradient(circle at 40% 35%,rgba(255,245,225,.5),rgba(120,90,55,.15));animation:balance .55s ease-in-out infinite;">
+              <div style="position:absolute;left:47%;top:-8%;width:6%;height:116%;background:rgba(120,90,55,.55);"></div>
+              <div style="position:absolute;left:-8%;top:47%;width:116%;height:6%;background:rgba(120,90,55,.55);"></div>
+            </div>
+            <div style="position:absolute;left:55%;top:20%;width:3.4%;height:3.4%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ff8f8f,#a01a2c);box-shadow:0 0 0 .45vmin #c9a05f;"></div>
+            <div style="position:absolute;left:70%;top:34%;width:3.4%;height:3.4%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ff8f8f,#a01a2c);box-shadow:0 0 0 .45vmin #c9a05f;"></div>
+            <div style="position:absolute;left:48%;top:44%;width:3.4%;height:3.4%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ff8f8f,#a01a2c);box-shadow:0 0 0 .45vmin #c9a05f;"></div>
+            <div style="position:absolute;left:24%;top:48%;width:4%;height:4%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#e8e0d0,#8f8570);box-shadow:inset 0 .15vmin .3vmin rgba(0,0,0,.4);"><div style="position:absolute;left:12%;top:44%;width:76%;height:12%;background:#5f584a;transform:rotate(35deg);"></div></div>
+            <div style="position:absolute;left:78%;top:52%;width:4%;height:4%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#e8e0d0,#8f8570);box-shadow:inset 0 .15vmin .3vmin rgba(0,0,0,.4);"><div style="position:absolute;left:12%;top:44%;width:76%;height:12%;background:#5f584a;transform:rotate(-20deg);"></div></div>
+            <div style="position:absolute;left:0;right:0;top:16%;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:1.15vmin;letter-spacing:.4em;color:#6b5b40;">CONTACT</div>
+            <!-- engraved rotor -->
+            <div style="position:absolute;left:8%;right:8%;bottom:-2%;height:52%;border-radius:50% 50% 0 0 / 100% 100% 0 0;background:linear-gradient(170deg,#dba77f,#83513a 55%,#572412);box-shadow:0 -0.6vmin 2vmin rgba(0,0,0,.35),inset 0 .3vmin .8vmin rgba(255,235,210,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8vmin;padding-top:5vmin;">
+              <div style="font-family:Marcellus,serif;font-size:1.9vmin;letter-spacing:.4em;text-indent:.4em;color:#5c3a1e;text-shadow:0 .1vmin 0 rgba(255,240,220,.5);">NIKHIL RAMLUKAN</div>
+              <div style="display:flex;gap:1.4vmin;">
+                <a href="mailto:hello@example.com" style="font-family:'IBM Plex Mono',monospace;font-size:1.25vmin;letter-spacing:.22em;color:#4d3018;padding:.9vmin 1.6vmin;border:.14vmin solid rgba(90,55,25,.55);border-radius:.4vmin;background:rgba(255,240,220,.14);">EMAIL</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:1.25vmin;letter-spacing:.22em;color:#4d3018;padding:.9vmin 1.6vmin;border:.14vmin solid rgba(90,55,25,.55);border-radius:.4vmin;background:rgba(255,240,220,.14);">LINKEDIN</a>
+                <a href="https://github.com" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:1.25vmin;letter-spacing:.22em;color:#4d3018;padding:.9vmin 1.6vmin;border:.14vmin solid rgba(90,55,25,.55);border-radius:.4vmin;background:rgba(255,240,220,.14);">GITHUB</a>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:.95vmin;letter-spacing:.3em;color:#6b4526;">HANDWERKSKUNST · MMXXVI</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- caption -->
+  <div style="height:5vmin;margin-top:2.5vmin;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1.35vmin;letter-spacing:.3em;color:#b9a184;text-align:center;animation:fadeIn 1s ease 1.9s both;transition:opacity .4s;">{{caption}}</div>
+  <sc-if value="{{showHintBar}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;bottom:2.6vmin;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:1.05vmin;letter-spacing:.24em;color:#5b6172;animation:fadeIn 1s ease 2.3s both;">DIAL · DATE · SECONDS · RESERVE · MOON — CLICK TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;CROWN TO FLIP</div>
+  </sc-if>
+
+  <!-- ===================== SECTIONS ===================== -->
+  <sc-if value="{{anyOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:{{overlayJustify}};padding:5vmin;">
+      <div onClick="{{close}}" style="position:absolute;inset:0;"></div>
+
+      <sc-if value="{{showAbout}}" hint-placeholder-val="{{false}}">
+        <div data-screen-label="About" style="position:relative;width:min(720px,92vw);max-height:86vh;overflow:auto;background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.3);border-radius:6px;padding:48px 52px;box-shadow:0 40px 90px rgba(0,0,0,.65);animation:cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;">
+          <div onClick="{{close}}" style="position:absolute;top:18px;right:22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">HOURS &amp; MINUTES — THE CENTER</div>
+          <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:0 0 24px;color:#eef0f5;">About Me</h1>
+          <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;">
+            <image-slot id="portrait" shape="circle" style="width:150px;height:150px;flex:none;" placeholder="Your photo"></image-slot>
+            <div style="flex:1;min-width:260px;font-size:15px;line-height:1.75;color:#c3c9d6;">
+              <p style="margin:0 0 14px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, urna at gravida luctus, sapien ligula fermentum nisl, non commodo massa arcu eget dolor.</p>
+              <p style="margin:0;">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; integer euismod, velit sit amet volutpat pretium.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c98662;border:1px solid rgba(217,162,107,.35);border-radius:3px;padding:7px 12px;">HOROLOGY</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c98662;border:1px solid rgba(217,162,107,.35);border-radius:3px;padding:7px 12px;">RESEARCH</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c98662;border:1px solid rgba(217,162,107,.35);border-radius:3px;padding:7px 12px;">READING</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c98662;border:1px solid rgba(217,162,107,.35);border-radius:3px;padding:7px 12px;">BUILDING</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showFeatured}}" hint-placeholder-val="{{false}}">
+        <div data-screen-label="Featured" style="position:relative;width:min(720px,92vw);max-height:86vh;overflow:auto;background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.3);border-radius:6px;padding:48px 52px;box-shadow:0 40px 90px rgba(0,0,0,.65);animation:cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;">
+          <div onClick="{{close}}" style="position:absolute;top:18px;right:22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">THE OUTSIZE DATE — WHAT'S NEWEST</div>
+          <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:0 0 28px;color:#eef0f5;">Featured</h1>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;gap:22px;align-items:center;border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:20px 24px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="flex:none;width:58px;height:58px;background:linear-gradient(180deg,#f5eddc,#e9dfc8);border:2px solid #9f5637;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:30px;color:#20242c;">01</div>
+              <div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Lorem Ipsum Research Paper</div><div style="font-size:13.5px;line-height:1.6;color:#9aa2b3;">Consectetur adipiscing elit — sed do eiusmod tempor incididunt ut labore. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c98662;letter-spacing:.15em;">JULY 2026</span></div></div>
+            </div>
+            <div style="display:flex;gap:22px;align-items:center;border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:20px 24px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="flex:none;width:58px;height:58px;background:linear-gradient(180deg,#f5eddc,#e9dfc8);border:2px solid #9f5637;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:30px;color:#20242c;">02</div>
+              <div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Dolor Sit Watch Review</div><div style="font-size:13.5px;line-height:1.6;color:#9aa2b3;">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c98662;letter-spacing:.15em;">JUNE 2026</span></div></div>
+            </div>
+            <div style="display:flex;gap:22px;align-items:center;border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:20px 24px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="flex:none;width:58px;height:58px;background:linear-gradient(180deg,#f5eddc,#e9dfc8);border:2px solid #9f5637;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:30px;color:#20242c;">03</div>
+              <div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Amet Consectetur Internship</div><div style="font-size:13.5px;line-height:1.6;color:#9aa2b3;">Duis aute irure dolor in reprehenderit in voluptate velit esse. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c98662;letter-spacing:.15em;">SUMMER 2026</span></div></div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showCurrently}}" hint-placeholder-val="{{false}}">
+        <div data-screen-label="Currently" style="position:relative;width:min(560px,92vw);background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.3);border-radius:6px;padding:48px 52px;box-shadow:0 40px 90px rgba(0,0,0,.65);animation:cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;text-align:center;">
+          <div onClick="{{close}}" style="position:absolute;top:18px;right:22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">THE SMALL SECONDS — ALWAYS IN MOTION</div>
+          <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:0 0 30px;color:#eef0f5;">Currently {{curLabelTitle}}</h1>
+          <div style="font-family:Marcellus,serif;font-size:26px;color:#efc1a0;margin-bottom:10px;">{{curValue}}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;margin-bottom:34px;">{{curSub}}</div>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#c98662;opacity:{{dot0}};transition:opacity .4s;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#c98662;opacity:{{dot1}};transition:opacity .4s;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#c98662;opacity:{{dot2}};transition:opacity .4s;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#c98662;opacity:{{dot3}};transition:opacity .4s;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showResume}}" hint-placeholder-val="{{false}}">
+        <div data-screen-label="Experience" style="position:relative;width:min(720px,92vw);max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.3);border-radius:6px;padding:48px 52px 32px;box-shadow:0 40px 90px rgba(0,0,0,.65);animation:cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;">
+          <div onClick="{{close}}" style="position:absolute;top:18px;right:22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">THE POWER RESERVE — WOUND OVER TIME</div>
+          <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:0 0 8px;color:#eef0f5;">Experience</h1>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8b93a6;">AB</span>
+            <div style="flex:1;height:3px;background:rgba(217,162,107,.15);border-radius:2px;overflow:hidden;"><div style="height:100%;background:linear-gradient(90deg,#83513a,#efc1a0);width:{{reservePct}}%;transition:width .3s;"></div></div>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c98662;">AUF</span>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.25em;color:#5b6172;margin-bottom:18px;">SCROLL TO WIND THE MOVEMENT</div>
+          <div onScroll="{{onResumeScroll}}" style="overflow:auto;flex:1;min-height:0;max-height:44vh;padding-right:14px;">
+            <div style="display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(217,162,107,.25);padding-left:26px;">
+              <div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:#c98662;margin-bottom:6px;">2026 — PRESENT</div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Lorem Ipsum Fellow</div><div style="font-size:13.5px;line-height:1.65;color:#9aa2b3;">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</div></div>
+              <div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:#c98662;margin-bottom:6px;">2025</div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Dolor Sit Internship</div><div style="font-size:13.5px;line-height:1.65;color:#9aa2b3;">Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</div></div>
+              <div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:#c98662;margin-bottom:6px;">2024</div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Amet Research Assistant</div><div style="font-size:13.5px;line-height:1.65;color:#9aa2b3;">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</div></div>
+              <div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:#c98662;margin-bottom:6px;">2023</div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Consectetur Project Lead</div><div style="font-size:13.5px;line-height:1.65;color:#9aa2b3;">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</div></div>
+              <div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:#c98662;margin-bottom:6px;">2022</div><div style="font-family:Marcellus,serif;font-size:19px;color:#eef0f5;margin-bottom:5px;">Adipiscing University</div><div style="font-size:13.5px;line-height:1.65;color:#9aa2b3;">Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam. Fully wound.</div></div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showBooks}}" hint-placeholder-val="{{false}}">
+        <div data-screen-label="Books" style="position:relative;width:min(720px,92vw);max-height:86vh;overflow:auto;background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.3);border-radius:6px;padding:48px 52px;box-shadow:0 40px 90px rgba(0,0,0,.65);animation:cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;">
+          <div onClick="{{close}}" style="position:absolute;top:18px;right:22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">THE MOONPHASE — REFLECTIVE &amp; TIMELESS</div>
+          <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:0 0 28px;color:#eef0f5;">Book Reviews</h1>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+            <div style="border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:22px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="width:16px;height:16px;border-radius:50%;background:#0a1230;border:1.5px solid #e0b662;"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.25em;color:#8b93a6;">NEW MOON · PHILOSOPHY</span></div>
+              <div style="font-family:Marcellus,serif;font-size:18px;color:#eef0f5;margin-bottom:4px;">Lorem Ipsum Meditations</div>
+              <div style="font-size:12.5px;color:#c98662;margin-bottom:10px;">Auctor Nominis</div>
+              <div style="font-size:13px;line-height:1.6;color:#9aa2b3;">Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae.</div>
+            </div>
+            <div style="border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:22px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="width:16px;height:16px;border-radius:50%;background:linear-gradient(90deg,#e0b662 50%,#0a1230 50%);border:1.5px solid #e0b662;"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.25em;color:#8b93a6;">FIRST QUARTER · FICTION</span></div>
+              <div style="font-family:Marcellus,serif;font-size:18px;color:#eef0f5;margin-bottom:4px;">The Dolor of Sit</div>
+              <div style="font-size:12.5px;color:#c98662;margin-bottom:10px;">Scriptor Alius</div>
+              <div style="font-size:13px;line-height:1.6;color:#9aa2b3;">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium.</div>
+            </div>
+            <div style="border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:22px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="width:16px;height:16px;border-radius:50%;background:#e0b662;"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.25em;color:#8b93a6;">FULL MOON · HISTORY</span></div>
+              <div style="font-family:Marcellus,serif;font-size:18px;color:#eef0f5;margin-bottom:4px;">Amet: A History</div>
+              <div style="font-size:12.5px;color:#c98662;margin-bottom:10px;">Historicus Quidam</div>
+              <div style="font-size:13px;line-height:1.6;color:#9aa2b3;">Et harum quidem rerum facilis est et expedita distinctio, nam libero tempore.</div>
+            </div>
+            <div style="border:1px solid rgba(217,162,107,.18);border-radius:5px;padding:22px;" style-hover="border-color:rgba(217,162,107,.5)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="width:16px;height:16px;border-radius:50%;background:linear-gradient(90deg,#0a1230 50%,#e0b662 50%);border:1.5px solid #e0b662;"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.25em;color:#8b93a6;">LAST QUARTER · SCIENCE</span></div>
+              <div style="font-family:Marcellus,serif;font-size:18px;color:#eef0f5;margin-bottom:4px;">Consectetur Principia</div>
+              <div style="font-size:12.5px;color:#c98662;margin-bottom:10px;">Physicus Ignotus</div>
+              <div style="font-size:13px;line-height:1.6;color:#9aa2b3;">Cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime.</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- ===================== REQUEST MODAL ===================== -->
+  <sc-if value="{{reqOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:5vmin;background:rgba(4,5,10,.6);backdrop-filter:blur(3px);">
+      <div onClick="{{closeReq}}" style="position:absolute;inset:0;"></div>
+      <div data-screen-label="Request a Review" style="position:relative;width:min(520px,92vw);background:linear-gradient(165deg,#111726,#0b101c);border:1px solid rgba(217,162,107,.35);border-radius:6px;padding:44px 48px;box-shadow:0 40px 90px rgba(0,0,0,.7);animation:cardUp .55s cubic-bezier(.22,1,.36,1) both;">
+        <div onClick="{{closeReq}}" style="position:absolute;top:16px;right:20px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;" style-hover="color:#c98662">ESC ✕</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;color:#c98662;margin-bottom:14px;">THE HIDDEN PUSHER</div>
+        <h1 style="font-family:Marcellus,serif;font-weight:400;font-size:30px;margin:0 0 26px;color:#eef0f5;">Request a Review</h1>
+        <sc-if value="{{reqNotDone}}" hint-placeholder-val="{{true}}">
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <div style="display:flex;gap:12px;">
+              <div onClick="{{setReqWatch}}" style="flex:1;text-align:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.25em;padding:12px;border-radius:4px;border:1px solid {{reqWatchBorder}};color:{{reqWatchColor}};transition:all .25s;">WATCH</div>
+              <div onClick="{{setReqBook}}" style="flex:1;text-align:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.25em;padding:12px;border-radius:4px;border:1px solid {{reqBookBorder}};color:{{reqBookColor}};transition:all .25s;">BOOK</div>
+            </div>
+            <input placeholder="Watch reference or book title" style="background:rgba(255,255,255,.04);border:1px solid rgba(217,162,107,.25);border-radius:4px;padding:13px 16px;color:#e6e9f0;font-family:Archivo,sans-serif;font-size:14px;outline:none;"></input>
+            <textarea placeholder="Why should it be reviewed? (optional)" rows="4" style="background:rgba(255,255,255,.04);border:1px solid rgba(217,162,107,.25);border-radius:4px;padding:13px 16px;color:#e6e9f0;font-family:Archivo,sans-serif;font-size:14px;outline:none;resize:vertical;"></textarea>
+            <div onClick="{{submitReq}}" style="cursor:pointer;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.3em;padding:14px;border-radius:4px;background:linear-gradient(160deg,#dca27c,#83513a);color:#241206;" style-hover="filter:brightness(1.12)">SUBMIT REQUEST</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{reqDone}}" hint-placeholder-val="{{false}}">
+          <div style="text-align:center;padding:20px 0 8px;">
+            <div style="font-family:Marcellus,serif;font-size:22px;color:#efc1a0;margin-bottom:10px;">Request logged.</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:#8b93a6;">THE MOVEMENT HAS BEEN WOUND. EXPECT A REVIEW SOON.</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;transitionStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;zoom&quot;,&quot;panel&quot;,&quot;takeover&quot;],&quot;default&quot;:&quot;zoom&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;showHints&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;secondsMotion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;mechanical&quot;,&quot;quartz&quot;,&quot;smooth&quot;],&quot;default&quot;:&quot;mechanical&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Movement&quot;}}">
+class Component extends DCLogic {
+  state = { now: Date.now(), active: null, hover: null, flipped: false, reserve: 0.72, touched: false, reqOpen: false, reqDone: false, reqType: 'watch' };
+  componentDidMount() {
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 100);
+    this.onKey = (e) => { if (e.key === 'Escape') this.setState({ active: null, reqOpen: false }); };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { clearInterval(this.timer); window.removeEventListener('keydown', this.onKey); }
+  open(id) { this.setState({ active: id, touched: true, hover: null }); }
+  renderVals() {
+    const s = this.state, d = new Date(s.now);
+    const mode = this.props.secondsMotion ?? 'mechanical';
+    let sec = d.getSeconds() + d.getMilliseconds() / 1000;
+    if (mode === 'mechanical') sec = Math.floor(sec * 6) / 6; else if (mode === 'quartz') sec = Math.floor(sec);
+    const min = d.getMinutes() + sec / 60, hr = (d.getHours() % 12) + min / 60;
+    const date = d.getDate();
+    const syn = 29.530588853;
+    let age = ((s.now - Date.UTC(2000, 0, 6, 18, 14)) / 86400000) % syn; if (age < 0) age += syn;
+    const curItems = [
+      { label: 'READING', title: 'Reading', value: 'Lorem Ipsum: A History', sub: 'P. 142 OF 320' },
+      { label: 'WEARING', title: 'Wearing', value: 'Dolor Sit Ref. 38.5', sub: 'ON GREY SUEDE' },
+      { label: 'BUILDING', title: 'Building', value: 'Consectetur Engine', sub: 'V0.4 — IN PROGRESS' },
+      { label: 'RESEARCHING', title: 'Researching', value: 'Adipiscing Methods', sub: 'DRAFT DUE AUGUST' }
+    ];
+    const curIdx = Math.floor(s.now / 4000) % curItems.length, cur = curItems[curIdx];
+    const captions = {
+      about: 'ABOUT — THE HEART OF THE MATTER',
+      featured: 'FEATURED — THE OUTSIZE DATE',
+      currently: 'CURRENTLY — THE SMALL SECONDS',
+      resume: 'EXPERIENCE — THE POWER RESERVE',
+      books: 'BOOK REVIEWS — THE MOONPHASE',
+      crown: 'CONTACT — PULL THE CROWN, TURN IT OVER',
+      pusher: 'REQUEST A REVIEW — A HIDDEN PUSHER'
+    };
+    const caption = s.hover ? captions[s.hover] : (s.active || s.reqOpen ? '' : (s.flipped ? 'CLICK THE CROWN TO TURN BACK' : 'CURRENTLY ' + cur.label + ' — ' + cur.value.toUpperCase()));
+    const t = this.props.transitionStyle ?? 'zoom';
+    const origins = { about: '31.8% 47%', featured: '63.75% 26.05%', currently: '60.4% 70.8%', resume: '65.5% 47.5%', books: '51.45% 61.95%' };
+    let wt = 'none', wf = 'none', origin = '50% 50%';
+    if (s.active) {
+      if (t === 'zoom') { wt = 'scale(2.3)'; wf = 'blur(12px) brightness(.4)'; origin = origins[s.active] || '50% 50%'; }
+      else if (t === 'panel') { wt = 'translateX(-22vw) scale(.88)'; wf = 'brightness(.8)'; }
+      else { wt = 'scale(.5)'; wf = 'blur(6px) brightness(.3)'; }
+    }
+    const mk = (id) => ({ open: () => this.open(id), hov: () => this.setState({ hover: id }) });
+    const on = 'rgba(217,162,107,.9)', off = 'rgba(217,162,107,.25)';
+    return {
+      hourDeg: (hr * 30).toFixed(2), minDeg: (min * 6).toFixed(2), secDeg: (sec * 6).toFixed(2),
+      dateTens: Math.floor(date / 10), dateOnes: date % 10,
+      moonDeg: ((age / syn) * 180 - 90).toFixed(2),
+      reserveDeg: (18 - s.reserve * 38).toFixed(1), reservePct: Math.round(s.reserve * 100),
+      flipDeg: s.flipped ? 180 : 0,
+      frontOpacity: s.flipped ? 0 : 1, backOpacity: s.flipped ? 1 : 0,
+      watchTransform: wt, watchFilter: wf, watchOrigin: origin,
+      overlayJustify: t === 'panel' ? 'flex-end' : 'center',
+      caption,
+      anyOpen: !!s.active,
+      showAbout: s.active === 'about', showFeatured: s.active === 'featured', showCurrently: s.active === 'currently',
+      showResume: s.active === 'resume', showBooks: s.active === 'books',
+      showDots: (this.props.showHints ?? true) && !s.touched && !s.active && !s.flipped,
+      showHintBar: (this.props.showHints ?? true) && !s.active && !s.reqOpen,
+      curLabelTitle: cur.title, curValue: cur.value, curSub: cur.sub,
+      dot0: curIdx === 0 ? 1 : .22, dot1: curIdx === 1 ? 1 : .22, dot2: curIdx === 2 ? 1 : .22, dot3: curIdx === 3 ? 1 : .22,
+      openAbout: mk('about').open, openFeatured: mk('featured').open, openCurrently: mk('currently').open,
+      openResume: mk('resume').open, openBooks: mk('books').open,
+      hovAbout: mk('about').hov, hovFeatured: mk('featured').hov, hovCurrently: mk('currently').hov,
+      hovResume: mk('resume').hov, hovBooks: mk('books').hov,
+      hovCrown: () => this.setState({ hover: 'crown' }), hovPusher: () => this.setState({ hover: 'pusher' }),
+      hovOff: () => this.setState({ hover: null }),
+      close: () => this.setState({ active: null }),
+      flip: () => this.setState({ flipped: !s.flipped, touched: true, active: null }),
+      openReq: () => this.setState({ reqOpen: true, touched: true, reqDone: false }),
+      closeReq: () => this.setState({ reqOpen: false }),
+      submitReq: () => this.setState({ reqDone: true }),
+      reqNotDone: !s.reqDone, reqDone: s.reqDone,
+      setReqWatch: () => this.setState({ reqType: 'watch' }), setReqBook: () => this.setState({ reqType: 'book' }),
+      reqWatchBorder: s.reqType === 'watch' ? on : off, reqBookBorder: s.reqType === 'book' ? on : off,
+      reqWatchColor: s.reqType === 'watch' ? '#efc1a0' : '#8b93a6', reqBookColor: s.reqType === 'book' ? '#efc1a0' : '#8b93a6',
+      onResumeScroll: (e) => { const el = e.target; const max = el.scrollHeight - el.clientHeight; if (max > 0) this.setState({ reserve: Math.min(1, 0.15 + 0.85 * el.scrollTop / max) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
