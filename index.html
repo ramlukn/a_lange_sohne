@@ -204,233 +204,192 @@
           <div class="cb-aperture">
             <svg class="mv" viewBox="0 0 100 100" aria-label="Hand-wound movement, three-quarter plate">
               <defs>
-                <clipPath id="mvDisc"><circle cx="50" cy="50" r="50"></circle></clipPath>
-                <clipPath id="mvPlateClip"><path d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z"></path></clipPath>
-                <!-- Glashütte ribbing -->
-                <pattern id="mvRib" width="4.6" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(62 50 50)">
-                  <rect width="4.6" height="12" fill="#dcc79b"></rect>
-                  <rect width="2.3" height="12" fill="#c9b184"></rect>
-                  <rect x="2.16" width="0.34" height="12" fill="#f7ecd2"></rect>
-                  <rect x="4.42" width="0.28" height="12" fill="#a68f66"></rect>
+                <clipPath id="mvDisc"><circle cx="50" cy="50" r="50"/></clipPath>
+                <clipPath id="mvPlateClip"><path d="M29.6,6.6 A48,48 0 1 1 30.9,94 C27,84 22.8,62 21.4,49.5 C20.6,36 25,18 29.6,6.6 Z"/></clipPath>
+
+                <!-- Glashuette ribbing: rounded corrugations in untreated German silver -->
+                <linearGradient id="mvRibGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#bab09a"/>
+                  <stop offset=".10" stop-color="#d5ccb6"/>
+                  <stop offset=".34" stop-color="#f4efe1"/>
+                  <stop offset=".50" stop-color="#fbf7ec"/>
+                  <stop offset=".66" stop-color="#eae2ce"/>
+                  <stop offset=".88" stop-color="#c8bfa8"/>
+                  <stop offset="1" stop-color="#bab09a"/>
+                </linearGradient>
+                <pattern id="mvRib" width="4.6" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(62 50 50)">
+                  <rect width="4.6" height="10" fill="url(#mvRibGrad)"/>
                 </pattern>
+
                 <radialGradient id="mvBed" cx="34%" cy="28%" r="86%">
-                  <stop offset="0" stop-color="#8d8064"></stop>
-                  <stop offset="1" stop-color="#4e4635"></stop>
+                  <stop offset="0" stop-color="#8b8168"/>
+                  <stop offset="1" stop-color="#463f31"/>
                 </radialGradient>
-                <linearGradient id="mvCock" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#e6d5ac"></stop>
-                  <stop offset=".45" stop-color="#cbb488"></stop>
-                  <stop offset="1" stop-color="#9c8355"></stop>
+                <linearGradient id="mvCock" x1=".1" y1="0" x2=".9" y2="1">
+                  <stop offset="0" stop-color="#e9e2d2"/>
+                  <stop offset=".42" stop-color="#cec6b3"/>
+                  <stop offset="1" stop-color="#9b917d"/>
                 </linearGradient>
                 <radialGradient id="mvGold" cx="34%" cy="30%" r="72%">
-                  <stop offset="0" stop-color="#fbe6b4"></stop>
-                  <stop offset=".5" stop-color="#d7a748"></stop>
-                  <stop offset="1" stop-color="#8a6420"></stop>
+                  <stop offset="0" stop-color="#fce9bd"/>
+                  <stop offset=".5" stop-color="#dcae52"/>
+                  <stop offset="1" stop-color="#8a6420"/>
                 </radialGradient>
                 <radialGradient id="mvRuby" cx="36%" cy="30%" r="70%">
-                  <stop offset="0" stop-color="#ff8a92"></stop>
-                  <stop offset=".55" stop-color="#c31f38"></stop>
-                  <stop offset="1" stop-color="#7d0c1e"></stop>
+                  <stop offset="0" stop-color="#e4707f"/>
+                  <stop offset=".5" stop-color="#b52036"/>
+                  <stop offset="1" stop-color="#6d0b1a"/>
                 </radialGradient>
-                <radialGradient id="mvBlue" cx="34%" cy="28%" r="74%">
-                  <stop offset="0" stop-color="#6d95e0"></stop>
-                  <stop offset=".5" stop-color="#274b9d"></stop>
-                  <stop offset="1" stop-color="#132a5c"></stop>
+                <radialGradient id="mvBlue" cx="34%" cy="26%" r="76%">
+                  <stop offset="0" stop-color="#7fa3e6"/>
+                  <stop offset=".45" stop-color="#2f56ad"/>
+                  <stop offset="1" stop-color="#16295a"/>
+                </radialGradient>
+                <radialGradient id="mvSteelScrew" cx="34%" cy="28%" r="76%">
+                  <stop offset="0" stop-color="#fdfdfe"/>
+                  <stop offset=".5" stop-color="#c3c8ce"/>
+                  <stop offset="1" stop-color="#7d838b"/>
                 </radialGradient>
                 <linearGradient id="mvSteel" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#f4f6f8"></stop>
-                  <stop offset=".28" stop-color="#c3c8d0"></stop>
-                  <stop offset=".54" stop-color="#5a6068"></stop>
-                  <stop offset=".78" stop-color="#9aa1aa"></stop>
-                  <stop offset="1" stop-color="#43484f"></stop>
+                  <stop offset="0" stop-color="#f6f8fa"/>
+                  <stop offset=".3" stop-color="#c6cbd2"/>
+                  <stop offset=".58" stop-color="#5f656d"/>
+                  <stop offset="1" stop-color="#3f444b"/>
                 </linearGradient>
-                <!-- black-polished steel: bright caught light over a near-black core -->
-                <linearGradient id="mvPolish" x1=".1" y1="0" x2=".9" y2="1">
-                  <stop offset="0" stop-color="#ffffff"></stop>
-                  <stop offset=".22" stop-color="#b9c0c9"></stop>
-                  <stop offset=".55" stop-color="#2c3138"></stop>
-                  <stop offset=".8" stop-color="#7d858f"></stop>
-                  <stop offset="1" stop-color="#1b1f24"></stop>
+                <linearGradient id="mvBalGold" x1=".2" y1="0" x2=".8" y2="1">
+                  <stop offset="0" stop-color="#f0d191"/>
+                  <stop offset=".45" stop-color="#c9a24a"/>
+                  <stop offset="1" stop-color="#8a6420"/>
                 </linearGradient>
-                <!-- frosted German-silver grain -->
+                <linearGradient id="mvSheen" x1="0" y1="0" x2=".85" y2="1">
+                  <stop offset="0" stop-color="#fffaf0" stop-opacity=".55"/>
+                  <stop offset=".4" stop-color="#fffaf0" stop-opacity="0"/>
+                  <stop offset=".72" stop-color="#2a1c08" stop-opacity="0"/>
+                  <stop offset="1" stop-color="#2a1c08" stop-opacity=".62"/>
+                </linearGradient>
+
                 <filter id="mvGrain" x="0" y="0" width="100%" height="100%">
-                  <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" seed="7" result="n"></feTurbulence>
-                  <feColorMatrix in="n" type="saturate" values="0"></feColorMatrix>
-                </filter>
-                <!-- component relief against the plate -->
-                <filter id="mvDrop" x="-40%" y="-40%" width="200%" height="200%">
-                  <feDropShadow dx=".5" dy=".9" stdDeviation=".7" flood-color="#241a08" flood-opacity=".65"></feDropShadow>
+                  <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="3" seed="7" result="n"/>
+                  <feColorMatrix in="n" type="saturate" values="0"/>
                 </filter>
                 <filter id="mvPlateDrop" x="-25%" y="-25%" width="160%" height="160%">
-                  <feDropShadow dx="-1.1" dy="1.1" stdDeviation="1.5" flood-color="#150f04" flood-opacity=".75"></feDropShadow>
+                  <feDropShadow dx="-1.2" dy="1" stdDeviation="1.3" flood-color="#140e04" flood-opacity=".8"/>
                 </filter>
-                <filter id="mvDropSm" x="-60%" y="-60%" width="240%" height="240%">
-                  <feDropShadow dx=".3" dy=".5" stdDeviation=".35" flood-color="#241a08" flood-opacity=".6"></feDropShadow>
+                <filter id="mvDrop" x="-40%" y="-40%" width="200%" height="200%">
+                  <feDropShadow dx=".45" dy=".85" stdDeviation=".6" flood-color="#1d1505" flood-opacity=".7"/>
                 </filter>
-                <!-- single upper-left light source, per the design bible -->
-                <linearGradient id="mvSheen" x1="0" y1="0" x2=".85" y2="1">
-                  <stop offset="0" stop-color="#fffaf0" stop-opacity=".85"></stop>
-                  <stop offset=".38" stop-color="#fffaf0" stop-opacity="0"></stop>
-                  <stop offset=".72" stop-color="#2a1c08" stop-opacity="0"></stop>
-                  <stop offset="1" stop-color="#2a1c08" stop-opacity=".8"></stop>
-                </linearGradient>
-                <path id="mvNameArc" d="M 84,26 A 39,39 0 0 1 84,74"></path>
-                <path id="mvMarkArc" d="M 74,34 A 28,28 0 0 1 74,66"></path>
-                <path id="mvMadeArc" d="M 26,66 A 30,30 0 0 0 44,84"></path>
+                <filter id="mvDropSm" x="-70%" y="-70%" width="260%" height="260%">
+                  <feDropShadow dx=".26" dy=".45" stdDeviation=".3" flood-color="#1d1505" flood-opacity=".62"/>
+                </filter>
+
+                <path id="mvNameArc" d="M 75,35 A 28,28 0 0 1 75,65"/>
+                <path id="mvMarkArc" d="M 70,39 A 23,23 0 0 1 70,61"/>
               </defs>
 
               <g clip-path="url(#mvDisc)">
-                <!-- movement bed, visible through the plate cutout -->
-                <circle cx="50" cy="50" r="50" fill="url(#mvBed)"></circle>
+                <circle cx="50" cy="50" r="50" fill="url(#mvBed)"/>
 
                 <!-- going train under the cutout -->
                 <g class="mv-train">
-                  <!-- ratchet wheel, sunburst-grained, with click and click spring -->
                   <g filter="url(#mvDropSm)">
-                    <circle cx="24" cy="21" r="8.6" fill="#a08e66"></circle>
-                    <circle cx="24" cy="21" r="8.6" fill="none" stroke="#d8c89b" stroke-width="1.5" stroke-dasharray=".9 1.2"></circle>
-                    <circle cx="24" cy="21" r="7" fill="none" stroke="#7d704f" stroke-width=".35"></circle>
-                    <circle cx="24" cy="21" r="6.6" fill="none" stroke="#cabb90" stroke-width="3.4" stroke-dasharray=".28 1.05" opacity=".55"></circle>
-                    <circle cx="24" cy="21" r="2.4" fill="url(#mvGold)"></circle>
-                    <circle cx="24" cy="21" r="1" fill="#6b4f18"></circle>
-                    <path d="M32.4,17.6 C35.6,17 37.4,18.6 37.2,21.2" fill="none" stroke="url(#mvSteel)" stroke-width=".8" stroke-linecap="round"></path>
-                    <path d="M31.6,24.4 L35.6,26.2 L34.8,28 L30.8,26.2 Z" fill="url(#mvPolish)"></path>
+                    <circle cx="25" cy="20" r="8.4" fill="#a2906a"/>
+                    <circle cx="25" cy="20" r="8.4" fill="none" stroke="#d9c99c" stroke-width="1.45" stroke-dasharray=".85 1.2"/>
+                    <circle cx="25" cy="20" r="6.6" fill="none" stroke="#cbbc92" stroke-width="3.2" stroke-dasharray=".26 1" opacity=".5"/>
+                    <circle cx="25" cy="20" r="2.3" fill="url(#mvGold)"/>
+                    <circle cx="25" cy="20" r=".95" fill="#6b4f18"/>
                   </g>
-                  <!-- escape wheel + pallet fork in black-polished steel -->
                   <g filter="url(#mvDropSm)">
-                    <circle cx="26.5" cy="72.5" r="5.6" fill="#a89670"></circle>
-                    <circle cx="26.5" cy="72.5" r="5.6" fill="none" stroke="#dccda2" stroke-width="1.2" stroke-dasharray=".45 1.4"></circle>
-                    <circle cx="26.5" cy="72.5" r="1.35" fill="url(#mvSteel)"></circle>
-                    <path d="M21.4,64.2 C23.4,66.4 25,68.4 26.2,70 L24.4,71.6 C23,70.2 21.2,68.4 19.2,66.4 Z" fill="url(#mvPolish)"></path>
-                    <circle cx="20.2" cy="64" r="1.6" fill="url(#mvGold)"></circle>
-                    <circle cx="20.2" cy="64" r=".66" fill="url(#mvRuby)"></circle>
+                    <circle cx="24.5" cy="74" r="5.2" fill="#ab9974"/>
+                    <circle cx="24.5" cy="74" r="5.2" fill="none" stroke="#ddcfa6" stroke-width="1.1" stroke-dasharray=".42 1.3"/>
+                    <circle cx="24.5" cy="74" r="1.25" fill="url(#mvSteelScrew)"/>
+                    <path d="M19.8,66.6 C21.8,68.6 23.3,70.4 24.4,71.8 L22.7,73.3 C21.4,72 19.7,70.3 17.8,68.5 Z" fill="url(#mvSteel)"/>
+                    <circle cx="18.9" cy="66.4" r="1.5" fill="url(#mvGold)"/>
+                    <circle cx="18.9" cy="66.4" r=".6" fill="url(#mvRuby)"/>
                   </g>
-                  <!-- twin mainspring barrel edge under the plate -->
-                  <g opacity=".92">
-                    <circle cx="15" cy="87" r="10" fill="#8f8060"></circle>
-                    <circle cx="15" cy="87" r="10" fill="none" stroke="#c2b189" stroke-width=".6"></circle>
-                    <circle cx="15" cy="87" r="8" fill="none" stroke="#6f6247" stroke-width=".35"></circle>
-                    <circle cx="15" cy="87" r="10" fill="none" stroke="#d3c39a" stroke-width="1.4" stroke-dasharray=".8 1.15" opacity=".8"></circle>
-                  </g>
-                  <!-- intermediate wheel -->
-                  <g opacity=".95" filter="url(#mvDropSm)">
-                    <circle cx="30.5" cy="41" r="4.4" fill="#a89670"></circle>
-                    <circle cx="30.5" cy="41" r="4.4" fill="none" stroke="#dccda2" stroke-width="1" stroke-dasharray=".4 1.2"></circle>
-                    <circle cx="30.5" cy="41" r="1.5" fill="url(#mvGold)"></circle>
-                    <circle cx="30.5" cy="41" r=".6" fill="url(#mvRuby)"></circle>
+                  <g opacity=".9">
+                    <circle cx="14" cy="88" r="10" fill="#93835f"/>
+                    <circle cx="14" cy="88" r="10" fill="none" stroke="#d3c39a" stroke-width="1.3" stroke-dasharray=".8 1.15" opacity=".8"/>
                   </g>
                 </g>
 
                 <!-- ===== THREE-QUARTER PLATE ===== -->
-                <g class="mv-plate">
-                  <path class="mv-plate-shape" d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="url(#mvRib)" filter="url(#mvPlateDrop)"></path>
-                  <path class="mv-plate-shape" d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="none" stroke="#8d7f60" stroke-width=".7"></path>
-                  <path d="M34,5.6 A47,47 0 1 1 34,94.4 C31.6,82 30.6,66 31.4,53 C32.1,40 32.4,18 34,5.6 Z" fill="none" stroke="rgba(255,250,236,.55)" stroke-width=".45"></path>
-                  <!-- frosted grain over the ribbing -->
-                  <g clip-path="url(#mvPlateClip)">
-                    <rect x="0" y="0" width="100" height="100" filter="url(#mvGrain)" opacity=".1" style="mix-blend-mode:overlay"></rect>
-                  </g>
-                  <!-- polished bevel down the plate edge -->
-                  <path d="M34,5.6 C31.6,18 31.3,40 30.6,53 C29.8,66 30.8,82 34,94.4" fill="none" stroke="rgba(255,252,240,.75)" stroke-width=".7"></path>
-                  <path d="M34.9,6.6 C32.5,18.4 32.2,40 31.5,53 C30.7,66 31.7,81.6 34.9,93.4" fill="none" stroke="rgba(60,40,14,.45)" stroke-width=".5"></path>
-                  <!-- soft form shadow across the plate -->
-                  <path d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="url(#mvSheen)" opacity=".34"></path>
+                <path d="M29.6,6.6 A48,48 0 1 1 30.9,94 C27,84 22.8,62 21.4,49.5 C20.6,36 25,18 29.6,6.6 Z" fill="url(#mvRib)" filter="url(#mvPlateDrop)"/>
+                <g clip-path="url(#mvPlateClip)">
+                  <rect x="0" y="0" width="100" height="100" filter="url(#mvGrain)" opacity=".08" style="mix-blend-mode:overlay"/>
+                  <path d="M29.6,6.6 A48,48 0 1 1 30.9,94 C27,84 22.8,62 21.4,49.5 C20.6,36 25,18 29.6,6.6 Z" fill="url(#mvSheen)" opacity=".3"/>
                 </g>
+                <path d="M29.6,6.6 A48,48 0 1 1 30.9,94 C27,84 22.8,62 21.4,49.5 C20.6,36 25,18 29.6,6.6 Z" fill="none" stroke="#8b7d5e" stroke-width=".55"/>
+                <path d="M29.6,7.8 C25.4,18.6 21.7,36.2 22.5,49.5 C23.9,62 27.9,83.4 31.6,93" fill="none" stroke="rgba(255,253,244,.8)" stroke-width=".6"/>
 
-                <!-- ===== ENGRAVING ON THE PLATE ===== -->
-                <text class="mv-engrave-gold"><textPath href="#mvNameArc" startOffset="50%" text-anchor="middle">NIKHIL RAMLUKAN</textPath></text>
-                <text class="mv-engrave-sm"><textPath href="#mvMarkArc" startOffset="50%" text-anchor="middle">SÄCHSISCHE PRÄZISION</textPath></text>
-                <text class="mv-engrave-sm" x="43" y="13.6">Nr. 1 · MMXXVI</text>
-                <text class="mv-engrave-xs" x="43" y="18">DOPPELFEDERHAUS</text>
-                <text class="mv-engrave-xs" x="43" y="21.2">72 STUNDEN GANGRESERVE</text>
-                <text class="mv-engrave-xs" x="41" y="90">HANDWERKSKUNST</text>
+                <!-- ===== GOLD ENGRAVING ===== -->
+                <text class="mv-gold-sm" x="30" y="12">SIEBENUNDVIERZIG</text>
+                <text class="mv-gold-sm" x="30" y="15.4">(47) RUBINE</text>
+                <text class="mv-gold-sm" x="70" y="14" text-anchor="middle">IN F&#220;NF (5) LAGEN</text>
+                <text class="mv-gold-sm" x="70" y="17.4" text-anchor="middle">REGULIERT</text>
+                <text class="mv-gold-md" x="41" y="23">N&#186; 1 &#183; MMXXVI</text>
+                <text class="mv-gold-md"><textPath href="#mvNameArc" startOffset="50%" text-anchor="middle">NIKHIL RAMLUKAN</textPath></text>
+                <text class="mv-gold-sm"><textPath href="#mvMarkArc" startOffset="50%" text-anchor="middle">CALIBRE NR.1</textPath></text>
 
-                <!-- ===== SCREWED GOLD CHATONS (gold ring + ruby + 3 blued screws) ===== -->
-                <g class="mv-chatons" filter="url(#mvDropSm)">
-                  <g transform="translate(64,29)"><circle r="4.7" fill="url(#mvBlue)" opacity="0"></circle><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(79.5,36.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(66,49.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(84.5,53)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(63,68)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(51,79.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                  <g transform="translate(41.5,70)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
-                </g>
-
-                <!-- ===== LONE THERMALLY-BLUED SCREWS ===== -->
-                <g class="mv-screws">
-                  <g transform="translate(57,20)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(28)"></rect></g>
-                  <g transform="translate(73,23)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-42)"></rect></g>
-                  <g transform="translate(45,36)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(64)"></rect></g>
-                  <g transform="translate(57,41)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(12)"></rect></g>
-                  <g transform="translate(75.5,45)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-18)"></rect></g>
-                  <g transform="translate(47,58)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(50)"></rect></g>
-                  <g transform="translate(71,61)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-66)"></rect></g>
-                  <g transform="translate(56.5,72)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(34)"></rect></g>
-                  <g transform="translate(80,66)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-8)"></rect></g>
-                  <g transform="translate(43,85)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(72)"></rect></g>
-                  <g transform="translate(38,25)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-30)"></rect></g>
-                  <g transform="translate(88,44)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(16)"></rect></g>
-                </g>
+                <!-- ===== BEARINGS, SCREWS, CHATONS ===== -->
+                <g><circle cx="45.5" cy="33.5" r="0.8" fill="url(#mvSteelScrew)"/><circle cx="48.5" cy="38.5" r="0.8" fill="url(#mvSteelScrew)"/><circle cx="51.5" cy="43.5" r="0.8" fill="url(#mvSteelScrew)"/><circle cx="54" cy="52" r="0.7" fill="url(#mvSteelScrew)"/><circle cx="36" cy="52" r="0.6" fill="url(#mvSteelScrew)"/><circle cx="58.5" cy="45" r="0.6" fill="url(#mvSteelScrew)"/></g>
+                <g filter="url(#mvDropSm)"><g transform="translate(37,20)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(35)"/></g><g transform="translate(43,41)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(-20)"/></g><g transform="translate(50,45)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(60)"/></g><g transform="translate(56,58)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(-40)"/></g><g transform="translate(40,66)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(25)"/></g><g transform="translate(63,33)"><circle r="1.28" fill="url(#mvSteelScrew)"/><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".17" fill="#6a6f76" transform="rotate(-10)"/></g></g>
+                <g filter="url(#mvDropSm)"><g transform="translate(55,15)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(28)"/></g><g transform="translate(70,19)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-42)"/></g><g transform="translate(41,31)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(64)"/></g><g transform="translate(58,28)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(12)"/></g><g transform="translate(88,38)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-18)"/></g><g transform="translate(47,52)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(50)"/></g><g transform="translate(77,57)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-66)"/></g><g transform="translate(52.5,68)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(34)"/></g><g transform="translate(83,62)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-8)"/></g><g transform="translate(38,45)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(72)"/></g><g transform="translate(46,88)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-30)"/></g><g transform="translate(66,84)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(16)"/></g><g transform="translate(31,73)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(44)"/></g><g transform="translate(72,40)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(-52)"/></g><g transform="translate(60,50)"><circle r="1.32" fill="url(#mvBlue)"/><circle r="1.32" fill="none" stroke="#0e1c3d" stroke-width=".18"/><rect x="-.95" y="-.2" width="1.9" height=".4" rx=".18" fill="#0c1730" transform="rotate(22)"/></g></g>
+                <g filter="url(#mvDropSm)"><g transform="translate(64,25.3) rotate(10)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(79.3,31.7) rotate(-25)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(67.9,45.7) rotate(40)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(85.7,47) rotate(0)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(61.5,63.5) rotate(20)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(74.2,71.2) rotate(-15)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(44.9,76.3) rotate(55)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(35.5,60) rotate(-40)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g><g transform="translate(52,36) rotate(30)"><circle cx="0" cy="-4.3" r="1.05" fill="url(#mvBlue)"/><circle cx="3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle cx="-3.72" cy="2.15" r="1.05" fill="url(#mvBlue)"/><circle r="2.95" fill="url(#mvGold)" stroke="#8a6420" stroke-width=".2"/><circle r="2.15" fill="none" stroke="#f6e0ac" stroke-width=".35" opacity=".8"/><circle r="1.25" fill="url(#mvRuby)"/></g></g>
 
                 <!-- ===== BALANCE ASSEMBLY ===== -->
-                <!-- hairspring, under the cock -->
-                <polyline class="mv-hairspring" points="17.5,50.4 18.91,50.56 20.13,51.48 20.76,53 20.51,54.74 19.35,56.2 17.5,56.92 15.43,56.51 13.72,55.18 12.92,53 13.34,50.6 14.86,48.39 17.5,47.76 20.23,48.2 22.6,50.04 23.67,53 23.23,56.06 21.32,58.55 17.5,59.56 14.11,59.19 11.44,56.5 10.28,53 10.78,49.28 12.89,46.55 17.5,45.12"></polyline>
+                <polyline class="mv-hairspring" points="17.3,50.6 18.5,50.75 19.55,51.55 20.1,52.85 19.9,54.35 18.9,55.6 17.3,56.2 15.5,55.85 14.05,54.7 13.35,52.85 13.7,50.8 15.0,48.9 17.3,48.35 19.65,48.75 21.7,50.3 22.6,52.85 22.2,55.5 20.55,57.6 17.3,58.5 14.4,58.2 12.1,55.85 11.1,52.85 11.5,49.65 13.3,47.3 17.3,46.15"/>
 
-                <!-- balance wheel, 21,600 vph = 3 Hz -->
-                <g class="mv-balance">
-                  <circle cx="17.5" cy="53" r="12.2" fill="none" stroke="#b0872f" stroke-width="1.5"></circle>
-                  <circle cx="17.5" cy="53" r="12.9" fill="none" stroke="#f2d89c" stroke-width=".3" opacity=".8"></circle>
-                  <circle cx="17.5" cy="53" r="11.5" fill="none" stroke="#8b6a22" stroke-width=".3" opacity=".8"></circle>
-                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4"></rect>
-                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4" transform="rotate(60 17.5 53)"></rect>
-                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4" transform="rotate(120 17.5 53)"></rect>
-                  <!-- eccentric poising weights -->
-                  <circle cx="17.5" cy="40.8" r=".95" fill="url(#mvGold)"></circle>
-                  <circle cx="28.07" cy="59.1" r=".95" fill="url(#mvGold)"></circle>
-                  <circle cx="6.93" cy="59.1" r=".95" fill="url(#mvGold)"></circle>
-                  <circle cx="17.5" cy="65.2" r=".95" fill="url(#mvGold)"></circle>
-                  <circle cx="27.06" cy="46.1" r=".95" fill="url(#mvGold)"></circle>
-                  <circle cx="7.94" cy="46.1" r=".95" fill="url(#mvGold)"></circle>
+                <g class="mv-balance" filter="url(#mvDrop)">
+                  <circle cx="17.3" cy="53" r="10.8" fill="none" stroke="url(#mvBalGold)" stroke-width="2.1"/>
+                  <circle cx="17.3" cy="53" r="11.5" fill="none" stroke="#f3dca4" stroke-width=".28" opacity=".75"/>
+                  <circle cx="17.3" cy="53" r="10.1" fill="none" stroke="#7d5a1c" stroke-width=".28" opacity=".75"/>
+                  <rect x="16.75" y="42.2" width="1.1" height="21.6" fill="#c9a24a" rx=".35"/>
+                  <rect x="16.75" y="42.2" width="1.1" height="21.6" fill="#c9a24a" rx=".35" transform="rotate(60 17.3 53)"/>
+                  <rect x="16.75" y="42.2" width="1.1" height="21.6" fill="#c9a24a" rx=".35" transform="rotate(120 17.3 53)"/>
+                  <circle cx="17.3" cy="42.2" r=".85" fill="url(#mvGold)"/>
+                  <circle cx="26.65" cy="58.4" r=".85" fill="url(#mvGold)"/>
+                  <circle cx="7.95" cy="58.4" r=".85" fill="url(#mvGold)"/>
+                  <circle cx="17.3" cy="63.8" r=".85" fill="url(#mvGold)"/>
+                  <circle cx="26.65" cy="47.6" r=".85" fill="url(#mvGold)"/>
+                  <circle cx="7.95" cy="47.6" r=".85" fill="url(#mvGold)"/>
                 </g>
 
                 <!-- whiplash precision index adjuster -->
                 <g class="mv-whiplash" filter="url(#mvDropSm)">
-                  <path d="M23.8,38.6 C27.2,36 30.4,35.4 32.9,36.3" fill="none" stroke="#9aa0a8" stroke-width=".7" stroke-linecap="round"></path>
-                  <path d="M23.8,38.1 C27.2,35.6 30.4,35 32.9,35.8" fill="none" stroke="#eef1f4" stroke-width=".28" stroke-linecap="round"></path>
-                  <circle cx="33.6" cy="36.2" r="1.2" fill="url(#mvSteel)"></circle>
-                  <rect x="32.75" y="36" width="1.7" height=".36" rx=".17" fill="#5d626a"></rect>
+                  <path d="M22.4,40.6 C25.6,38.2 28.6,37.7 30.9,38.5" fill="none" stroke="#9aa0a8" stroke-width=".65" stroke-linecap="round"/>
+                  <path d="M22.4,40.1 C25.6,37.8 28.6,37.3 30.9,38" fill="none" stroke="#f2f5f8" stroke-width=".26" stroke-linecap="round"/>
+                  <circle cx="31.6" cy="38.4" r="1.15" fill="url(#mvSteelScrew)"/>
                 </g>
 
                 <!-- hand-engraved balance cock -->
                 <g class="mv-cock" filter="url(#mvDrop)">
-                  <path class="mv-cock-body" d="M16,18.4 C10,18.1 8.7,24 9.5,30.2 C10.1,35.2 11.4,40.6 12.2,45.8 C12.55,48.4 12.7,50.7 12.7,52.8 A4.8,4.8 0 0 0 22.3,52.8 C22.3,50.7 22.45,48.4 22.8,45.8 C23.6,40.6 24.9,35.2 25.5,30.2 C26.3,24 25,18.1 16,18.4 Z"></path>
-                  <!-- free-hand floral engraving -->
+                  <path class="mv-cock-body" d="M15.6,17.6 C10,17.3 8.8,22.8 9.6,28.8 C10.2,33.6 11.5,39.2 12.3,44.6 C12.65,47.2 12.8,49.4 12.8,53 A4.5,4.5 0 0 0 21.8,53 C21.8,49.4 21.95,47.2 22.3,44.6 C23.1,39.2 24.4,33.6 25,28.8 C25.8,22.8 24.6,17.3 15.6,17.6 Z"/>
                   <g class="mv-cock-engrave">
-                    <path d="M16,20.6 C11.5,20.5 10.7,24.8 11.3,30.2 C11.8,35 13,40.2 13.8,45.2"></path>
-                    <path d="M16,20.6 C20.5,20.5 21.3,24.8 20.7,30.2 C20.2,35 19,40.2 18.2,45.2"></path>
-                    <path d="M16,24.6 C13.1,24.9 12.6,27.8 13,31.2 C13.4,34.6 14.2,38.4 14.8,41.8"></path>
-                    <path d="M16,24.6 C18.9,24.9 19.4,27.8 19,31.2 C18.6,34.6 17.8,38.4 17.2,41.8"></path>
-                    <path d="M11.9,27.6 C13.6,26.2 15.4,26.5 16.3,28.1"></path>
-                    <path d="M12.7,33.6 C14.4,32.2 16.4,32.5 17.3,34.1"></path>
-                    <path d="M13.4,39.4 C14.9,38.2 16.5,38.5 17.3,39.9"></path>
-                    <path d="M10.6,31.2 C11.6,30.2 12.5,30.4 13,31.4"></path>
-                    <path d="M21.4,31.2 C20.4,30.2 19.5,30.4 19,31.4"></path>
-                    <circle cx="16" cy="22.6" r="1.55"></circle>
-                    <circle cx="16" cy="22.6" r=".64"></circle>
+                    <path d="M15.6,19.8 C11.2,19.7 10.4,23.8 11,29 C11.5,33.6 12.7,38.8 13.5,43.6"/>
+                    <path d="M15.6,19.8 C20,19.7 20.8,23.8 20.2,29 C19.7,33.6 18.5,38.8 17.7,43.6"/>
+                    <path d="M15.6,23.6 C12.8,23.9 12.3,26.7 12.7,30 C13.1,33.2 13.9,36.9 14.5,40.2"/>
+                    <path d="M15.6,23.6 C18.4,23.9 18.9,26.7 18.5,30 C18.1,33.2 17.3,36.9 16.7,40.2"/>
+                    <path d="M11.6,26.5 C13.3,25.1 15,25.4 15.9,27"/>
+                    <path d="M12.4,32.4 C14,31 16,31.3 16.9,32.9"/>
+                    <path d="M13.1,38 C14.5,36.8 16.1,37.1 16.9,38.5"/>
+                    <path d="M10.4,30 C11.4,29 12.2,29.2 12.7,30.2"/>
+                    <path d="M20.8,30 C19.8,29 19,29.2 18.5,30.2"/>
+                    <path d="M13.6,42.6 C14.7,41.7 15.8,41.9 16.4,42.9"/>
+                    <circle cx="15.6" cy="21.8" r="1.5"/>
+                    <circle cx="15.6" cy="21.8" r=".6"/>
                   </g>
-                  <path class="mv-cock-edge" d="M16,18.4 C10,18.1 8.7,24 9.5,30.2 C10.1,35.2 11.4,40.6 12.2,45.8 C12.55,48.4 12.7,50.7 12.7,52.8 A4.8,4.8 0 0 0 22.3,52.8 C22.3,50.7 22.45,48.4 22.8,45.8 C23.6,40.6 24.9,35.2 25.5,30.2 C26.3,24 25,18.1 16,18.4 Z"></path>
-                  <!-- screwed gold chaton over the balance staff -->
-                  <g transform="translate(17.5,52.8)">
-                    <circle cx="0" cy="-3.5" r=".92" fill="url(#mvBlue)"></circle>
-                    <circle cx="3.03" cy="1.75" r=".92" fill="url(#mvBlue)"></circle>
-                    <circle cx="-3.03" cy="1.75" r=".92" fill="url(#mvBlue)"></circle>
-                    <circle r="2.5" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle>
-                    <circle r="1.05" fill="url(#mvRuby)"></circle>
+                  <path class="mv-cock-edge" d="M15.6,17.6 C10,17.3 8.8,22.8 9.6,28.8 C10.2,33.6 11.5,39.2 12.3,44.6 C12.65,47.2 12.8,49.4 12.8,53 A4.5,4.5 0 0 0 21.8,53 C21.8,49.4 21.95,47.2 22.3,44.6 C23.1,39.2 24.4,33.6 25,28.8 C25.8,22.8 24.6,17.3 15.6,17.6 Z"/>
+                  <g transform="translate(17.3,53)">
+                    <circle cx="0" cy="-3.3" r=".85" fill="url(#mvBlue)"/>
+                    <circle cx="2.86" cy="1.65" r=".85" fill="url(#mvBlue)"/>
+                    <circle cx="-2.86" cy="1.65" r=".85" fill="url(#mvBlue)"/>
+                    <circle r="2.35" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".2"/>
+                    <circle r="1" fill="url(#mvRuby)"/>
                   </g>
                 </g>
 
                 <!-- plate inner shadow -->
-                <circle cx="50" cy="50" r="50" fill="none" stroke="rgba(20,12,4,.5)" stroke-width="3"></circle>
+                <circle cx="50" cy="50" r="50" fill="none" stroke="rgba(20,12,4,.55)" stroke-width="3"/>
               </g>
             </svg>
             <div class="cb-sapphire"></div>
