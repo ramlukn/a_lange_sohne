@@ -177,32 +177,219 @@
           </div>
         </div>
 
-        <!-- ============ CASEBACK ============ -->
+        <!-- ============ CASEBACK — hand-wound calibre, no rotor ============ -->
         <div class="face face-back" id="faceBack">
-          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,#f3c5a4,#9f5637 12%,#71351f 24%,#e3ad87 38%,#f4c8a7 50%,#83513a 65%,#572412 78%,#dca27c 90%,#f3c5a4);box-shadow:0 3vmin 9vmin rgba(0,0,0,.75);"></div>
-          <div style="position:absolute;inset:4%;border-radius:50%;background:linear-gradient(200deg,#bc7956,#552817);"></div>
-          <div style="position:absolute;inset:9%;border-radius:50%;overflow:hidden;background:linear-gradient(155deg,#d9d0bf,#bfb49e 55%,#a99c84);box-shadow:inset 0 1vmin 4vmin rgba(0,0,0,.45);">
-            <div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,rgba(60,45,25,.09) 0 3.2vmin,rgba(255,250,240,.10) 3.2vmin 6.4vmin);"></div>
-            <div class="balance">
-              <div style="position:absolute;left:47%;top:-8%;width:6%;height:116%;background:rgba(120,90,55,.55);"></div>
-              <div style="position:absolute;left:-8%;top:47%;width:116%;height:6%;background:rgba(120,90,55,.55);"></div>
-            </div>
-            <div class="jewel" style="left:55%;top:20%;"></div>
-            <div class="jewel" style="left:70%;top:34%;"></div>
-            <div class="jewel" style="left:48%;top:44%;"></div>
-            <div class="screw" style="left:24%;top:48%;"><div class="screw-slot" style="transform:rotate(35deg);"></div></div>
-            <div class="screw" style="left:78%;top:52%;"><div class="screw-slot" style="transform:rotate(-20deg);"></div></div>
-            <div class="caseback-label">CONTACT</div>
-            <!-- engraved rotor -->
-            <div class="rotor">
-              <div class="rotor-name">NIKHIL RAMLUKAN</div>
-              <div class="rotor-links">
-                <a href="mailto:hello@example.com">EMAIL</a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
-                <a href="https://github.com" target="_blank" rel="noopener">GITHUB</a>
-              </div>
-              <div class="rotor-mark">HANDWERKSKUNST · MMXXVI</div>
-            </div>
+          <!-- case band -->
+          <div class="cb-band"></div>
+          <div class="cb-band-grain"></div>
+          <div class="cb-band-step"></div>
+
+          <!-- band engraving: the maker's mark position on a real Lange caseback -->
+          <svg class="cb-band-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <path id="cbTopArc" d="M 6.2,50 A 43.8,43.8 0 0 1 93.8,50"></path>
+            </defs>
+            <text class="cb-engraved"><textPath href="#cbTopArc" startOffset="50%" text-anchor="middle">NIKHIL RAMLUKAN</textPath></text>
+          </svg>
+          <div class="cb-case-screw" style="--a:22deg;"></div>
+          <div class="cb-case-screw" style="--a:68deg;"></div>
+          <div class="cb-case-screw" style="--a:112deg;"></div>
+          <div class="cb-case-screw" style="--a:248deg;"></div>
+          <div class="cb-case-screw" style="--a:292deg;"></div>
+          <div class="cb-case-screw" style="--a:338deg;"></div>
+
+          <!-- ===== MOVEMENT (calibre NR.1, after L121.3) ===== -->
+          <div class="cb-aperture">
+            <svg class="mv" viewBox="0 0 100 100" aria-label="Hand-wound movement, three-quarter plate">
+              <defs>
+                <clipPath id="mvDisc"><circle cx="50" cy="50" r="50"></circle></clipPath>
+                <!-- Glashütte ribbing -->
+                <pattern id="mvRib" width="4.6" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(62 50 50)">
+                  <rect width="4.6" height="12" fill="#ded3b8"></rect>
+                  <rect width="2.3" height="12" fill="#d0c4a6"></rect>
+                  <rect x="2.16" width="0.34" height="12" fill="#f6f0e0"></rect>
+                  <rect x="4.42" width="0.28" height="12" fill="#b3a88c"></rect>
+                </pattern>
+                <radialGradient id="mvBed" cx="34%" cy="28%" r="86%">
+                  <stop offset="0" stop-color="#948a70"></stop>
+                  <stop offset="1" stop-color="#5b5241"></stop>
+                </radialGradient>
+                <linearGradient id="mvCock" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#e2d8bd"></stop>
+                  <stop offset=".45" stop-color="#c7bb9a"></stop>
+                  <stop offset="1" stop-color="#9d8f70"></stop>
+                </linearGradient>
+                <radialGradient id="mvGold" cx="34%" cy="30%" r="72%">
+                  <stop offset="0" stop-color="#fbe6b4"></stop>
+                  <stop offset=".5" stop-color="#d7a748"></stop>
+                  <stop offset="1" stop-color="#8a6420"></stop>
+                </radialGradient>
+                <radialGradient id="mvRuby" cx="36%" cy="30%" r="70%">
+                  <stop offset="0" stop-color="#ff8a92"></stop>
+                  <stop offset=".55" stop-color="#c31f38"></stop>
+                  <stop offset="1" stop-color="#7d0c1e"></stop>
+                </radialGradient>
+                <radialGradient id="mvBlue" cx="34%" cy="28%" r="74%">
+                  <stop offset="0" stop-color="#6d95e0"></stop>
+                  <stop offset=".5" stop-color="#274b9d"></stop>
+                  <stop offset="1" stop-color="#132a5c"></stop>
+                </radialGradient>
+                <linearGradient id="mvSteel" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#e3e6ea"></stop>
+                  <stop offset=".5" stop-color="#a9aeb6"></stop>
+                  <stop offset="1" stop-color="#71767e"></stop>
+                </linearGradient>
+                <!-- single upper-left light source, per the design bible -->
+                <linearGradient id="mvSheen" x1="0" y1="0" x2=".85" y2="1">
+                  <stop offset="0" stop-color="#fffaf0" stop-opacity=".85"></stop>
+                  <stop offset=".38" stop-color="#fffaf0" stop-opacity="0"></stop>
+                  <stop offset=".72" stop-color="#2a1c08" stop-opacity="0"></stop>
+                  <stop offset="1" stop-color="#2a1c08" stop-opacity=".8"></stop>
+                </linearGradient>
+                <path id="mvNameArc" d="M 84,26 A 39,39 0 0 1 84,74"></path>
+                <path id="mvMarkArc" d="M 74,34 A 28,28 0 0 1 74,66"></path>
+                <path id="mvMadeArc" d="M 26,66 A 30,30 0 0 0 44,84"></path>
+              </defs>
+
+              <g clip-path="url(#mvDisc)">
+                <!-- movement bed, visible through the plate cutout -->
+                <circle cx="50" cy="50" r="50" fill="url(#mvBed)"></circle>
+
+                <!-- going train under the cutout -->
+                <g class="mv-train">
+                  <!-- crown / ratchet wheel, upper cutout -->
+                  <circle cx="24" cy="22" r="8.2" fill="#9b8b66"></circle>
+                  <circle cx="24" cy="22" r="8.2" fill="none" stroke="#cbbb90" stroke-width="1.5" stroke-dasharray=".85 1.25"></circle>
+                  <circle cx="24" cy="22" r="5.4" fill="none" stroke="#7d704f" stroke-width=".4"></circle>
+                  <circle cx="24" cy="22" r="1.7" fill="url(#mvSteel)"></circle>
+                  <!-- escape wheel -->
+                  <circle cx="26.5" cy="72" r="5.4" fill="#a08f68"></circle>
+                  <circle cx="26.5" cy="72" r="5.4" fill="none" stroke="#d3c49a" stroke-width="1.15" stroke-dasharray=".5 1.35"></circle>
+                  <circle cx="26.5" cy="72" r="1.35" fill="url(#mvSteel)"></circle>
+                  <!-- pallet fork + its jewelled cock -->
+                  <path d="M21.8,64.6 L26,69.4 L24.6,71 L20.4,66.2 Z" fill="url(#mvSteel)"></path>
+                  <circle cx="20.6" cy="64.4" r="1.5" fill="url(#mvGold)"></circle>
+                  <circle cx="20.6" cy="64.4" r=".62" fill="url(#mvRuby)"></circle>
+                  <!-- barrel edge peeking under the plate -->
+                  <circle cx="16" cy="86" r="9" fill="#8d7f5e" opacity=".7"></circle>
+                  <circle cx="16" cy="86" r="9" fill="none" stroke="#bdad86" stroke-width=".55" opacity=".7"></circle>
+                </g>
+
+                <!-- ===== THREE-QUARTER PLATE ===== -->
+                <g class="mv-plate">
+                  <path class="mv-plate-shape" d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="url(#mvRib)"></path>
+                  <path class="mv-plate-shape" d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="none" stroke="#8d7f60" stroke-width=".7"></path>
+                  <path d="M34,5.6 A47,47 0 1 1 34,94.4 C31.6,82 30.6,66 31.4,53 C32.1,40 32.4,18 34,5.6 Z" fill="none" stroke="rgba(255,250,236,.55)" stroke-width=".45"></path>
+                  <!-- soft form shadow across the plate -->
+                  <path d="M34,4.6 A48,48 0 1 1 34,95.4 C30.6,82 29.6,66 30.4,53 C31.1,40 31.4,18 34,4.6 Z" fill="url(#mvSheen)" opacity=".28"></path>
+                </g>
+
+                <!-- ===== ENGRAVING ON THE PLATE ===== -->
+                <text class="mv-engrave-lg"><textPath href="#mvNameArc" startOffset="50%" text-anchor="middle">NIKHIL RAMLUKAN</textPath></text>
+                <text class="mv-engrave-sm"><textPath href="#mvMarkArc" startOffset="50%" text-anchor="middle">CALIBRE NR.1</textPath></text>
+                <text class="mv-engrave-sm" x="43" y="13.6">Nr. 1 · MMXXVI</text>
+                <text class="mv-engrave-xs" x="43" y="18">DOPPELFEDERHAUS</text>
+                <text class="mv-engrave-xs" x="43" y="21.2">72 STUNDEN GANGRESERVE</text>
+                <text class="mv-engrave-xs" x="41" y="90">HANDWERKSKUNST</text>
+
+                <!-- ===== SCREWED GOLD CHATONS (gold ring + ruby + 3 blued screws) ===== -->
+                <g class="mv-chatons">
+                  <g transform="translate(64,29)"><circle r="4.7" fill="url(#mvBlue)" opacity="0"></circle><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(79.5,36.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(66,49.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(84.5,53)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(63,68)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(51,79.5)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                  <g transform="translate(41.5,70)"><circle cx="0" cy="-4.5" r="1.0" fill="url(#mvBlue)"></circle><circle cx="3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle cx="-3.9" cy="2.25" r="1.0" fill="url(#mvBlue)"></circle><circle r="3.2" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle><circle r="1.35" fill="url(#mvRuby)"></circle></g>
+                </g>
+
+                <!-- ===== LONE THERMALLY-BLUED SCREWS ===== -->
+                <g class="mv-screws">
+                  <g transform="translate(57,20)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(28)"></rect></g>
+                  <g transform="translate(73,23)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-42)"></rect></g>
+                  <g transform="translate(45,36)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(64)"></rect></g>
+                  <g transform="translate(57,41)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(12)"></rect></g>
+                  <g transform="translate(75.5,45)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-18)"></rect></g>
+                  <g transform="translate(47,58)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(50)"></rect></g>
+                  <g transform="translate(71,61)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-66)"></rect></g>
+                  <g transform="translate(56.5,72)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(34)"></rect></g>
+                  <g transform="translate(80,66)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-8)"></rect></g>
+                  <g transform="translate(43,85)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(72)"></rect></g>
+                  <g transform="translate(38,25)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(-30)"></rect></g>
+                  <g transform="translate(88,44)"><circle r="1.25" fill="url(#mvBlue)"></circle><rect x="-.92" y="-.19" width="1.84" height=".38" rx=".2" fill="#0d1c40" transform="rotate(16)"></rect></g>
+                </g>
+
+                <!-- ===== BALANCE ASSEMBLY ===== -->
+                <!-- hairspring, under the cock -->
+                <polyline class="mv-hairspring" points="17.5,50.4 18.91,50.56 20.13,51.48 20.76,53 20.51,54.74 19.35,56.2 17.5,56.92 15.43,56.51 13.72,55.18 12.92,53 13.34,50.6 14.86,48.39 17.5,47.76 20.23,48.2 22.6,50.04 23.67,53 23.23,56.06 21.32,58.55 17.5,59.56 14.11,59.19 11.44,56.5 10.28,53 10.78,49.28 12.89,46.55 17.5,45.12"></polyline>
+
+                <!-- balance wheel, 21,600 vph = 3 Hz -->
+                <g class="mv-balance">
+                  <circle cx="17.5" cy="53" r="12.2" fill="none" stroke="#b0872f" stroke-width="1.5"></circle>
+                  <circle cx="17.5" cy="53" r="12.9" fill="none" stroke="#f2d89c" stroke-width=".3" opacity=".8"></circle>
+                  <circle cx="17.5" cy="53" r="11.5" fill="none" stroke="#8b6a22" stroke-width=".3" opacity=".8"></circle>
+                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4"></rect>
+                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4" transform="rotate(60 17.5 53)"></rect>
+                  <rect x="17" y="41.2" width="1" height="23.6" fill="#c49c48" rx=".4" transform="rotate(120 17.5 53)"></rect>
+                  <!-- eccentric poising weights -->
+                  <circle cx="17.5" cy="40.8" r=".95" fill="url(#mvGold)"></circle>
+                  <circle cx="28.07" cy="59.1" r=".95" fill="url(#mvGold)"></circle>
+                  <circle cx="6.93" cy="59.1" r=".95" fill="url(#mvGold)"></circle>
+                  <circle cx="17.5" cy="65.2" r=".95" fill="url(#mvGold)"></circle>
+                  <circle cx="27.06" cy="46.1" r=".95" fill="url(#mvGold)"></circle>
+                  <circle cx="7.94" cy="46.1" r=".95" fill="url(#mvGold)"></circle>
+                </g>
+
+                <!-- whiplash precision index adjuster -->
+                <g class="mv-whiplash">
+                  <path d="M23.8,38.6 C27.2,36 30.4,35.4 32.9,36.3" fill="none" stroke="#9aa0a8" stroke-width=".7" stroke-linecap="round"></path>
+                  <path d="M23.8,38.1 C27.2,35.6 30.4,35 32.9,35.8" fill="none" stroke="#eef1f4" stroke-width=".28" stroke-linecap="round"></path>
+                  <circle cx="33.6" cy="36.2" r="1.2" fill="url(#mvSteel)"></circle>
+                  <rect x="32.75" y="36" width="1.7" height=".36" rx=".17" fill="#5d626a"></rect>
+                </g>
+
+                <!-- hand-engraved balance cock -->
+                <g class="mv-cock">
+                  <path class="mv-cock-body" d="M16,18.4 C10,18.1 8.7,24 9.5,30.2 C10.1,35.2 11.4,40.6 12.2,45.8 C12.55,48.4 12.7,50.7 12.7,52.8 A4.8,4.8 0 0 0 22.3,52.8 C22.3,50.7 22.45,48.4 22.8,45.8 C23.6,40.6 24.9,35.2 25.5,30.2 C26.3,24 25,18.1 16,18.4 Z"></path>
+                  <!-- free-hand floral engraving -->
+                  <g class="mv-cock-engrave">
+                    <path d="M16,20.6 C11.5,20.5 10.7,24.8 11.3,30.2 C11.8,35 13,40.2 13.8,45.2"></path>
+                    <path d="M16,20.6 C20.5,20.5 21.3,24.8 20.7,30.2 C20.2,35 19,40.2 18.2,45.2"></path>
+                    <path d="M16,24.6 C13.1,24.9 12.6,27.8 13,31.2 C13.4,34.6 14.2,38.4 14.8,41.8"></path>
+                    <path d="M16,24.6 C18.9,24.9 19.4,27.8 19,31.2 C18.6,34.6 17.8,38.4 17.2,41.8"></path>
+                    <path d="M11.9,27.6 C13.6,26.2 15.4,26.5 16.3,28.1"></path>
+                    <path d="M12.7,33.6 C14.4,32.2 16.4,32.5 17.3,34.1"></path>
+                    <path d="M13.4,39.4 C14.9,38.2 16.5,38.5 17.3,39.9"></path>
+                    <path d="M10.6,31.2 C11.6,30.2 12.5,30.4 13,31.4"></path>
+                    <path d="M21.4,31.2 C20.4,30.2 19.5,30.4 19,31.4"></path>
+                    <circle cx="16" cy="22.6" r="1.55"></circle>
+                    <circle cx="16" cy="22.6" r=".64"></circle>
+                  </g>
+                  <path class="mv-cock-edge" d="M16,18.4 C10,18.1 8.7,24 9.5,30.2 C10.1,35.2 11.4,40.6 12.2,45.8 C12.55,48.4 12.7,50.7 12.7,52.8 A4.8,4.8 0 0 0 22.3,52.8 C22.3,50.7 22.45,48.4 22.8,45.8 C23.6,40.6 24.9,35.2 25.5,30.2 C26.3,24 25,18.1 16,18.4 Z"></path>
+                  <!-- screwed gold chaton over the balance staff -->
+                  <g transform="translate(17.5,52.8)">
+                    <circle cx="0" cy="-3.5" r=".92" fill="url(#mvBlue)"></circle>
+                    <circle cx="3.03" cy="1.75" r=".92" fill="url(#mvBlue)"></circle>
+                    <circle cx="-3.03" cy="1.75" r=".92" fill="url(#mvBlue)"></circle>
+                    <circle r="2.5" fill="url(#mvGold)" stroke="#7d5a1c" stroke-width=".22"></circle>
+                    <circle r="1.05" fill="url(#mvRuby)"></circle>
+                  </g>
+                </g>
+
+                <!-- plate inner shadow -->
+                <circle cx="50" cy="50" r="50" fill="none" stroke="rgba(20,12,4,.5)" stroke-width="3"></circle>
+              </g>
+            </svg>
+            <div class="cb-sapphire"></div>
+          </div>
+
+          <!-- contact, engraved into the case band where the hallmarks sit -->
+          <div class="cb-links">
+            <a href="mailto:hello@example.com">EMAIL</a>
+            <span>·</span>
+            <a href="https://linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
+            <span>·</span>
+            <a href="https://github.com" target="_blank" rel="noopener">GITHUB</a>
           </div>
         </div>
 
