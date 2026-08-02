@@ -14,24 +14,28 @@ The target is not a literal branded product page or a generic watch illustration
 
 ## Source of truth and file map
 
-- `index.html` — invisible full-screen web-demo wrapper. It embeds the component and should normally remain simple.
-- `Lange Experience.dc.html` — the entire watch, interactions, motion, panels, and state logic. Make functional and visual edits here.
-- `support.js` — local Design Component runtime. Do not rewrite casually.
-- `image-slot.js` — local image-slot support. Preserve unless an image feature explicitly requires a change.
+- `index.html` — the full watch markup: case, dial, complications, panels, and the request modal.
+- `src/styles.css` — every style token, complication geometry, hover state, and assembly keyframe.
+- `src/main.js` — live time, moon-phase maths, panel/flip/modal state, and all interaction wiring.
 - `WATCH_DESIGN_BIBLE.md` — approved measurements, palette, materials, depth, typography, and motion rules.
 - `uploads/lange-reference.webp` — primary front-view reference for proportions and colors.
 - `uploads/9f44436e1cf67a550df2e664e448cc622fdbe68f.jpg` — secondary three-quarter reference for lighting and case depth.
+- `Lange Experience.dc.html`, `support.js`, `image-slot.js` — the retired Design Component prototype, kept only as historical reference. Do not edit these; they no longer drive the site.
 
-The Git restore commit `4f986b9` predates several approved refinements. Do not reset to that commit. The files in the uploaded bundle are newer and authoritative.
+The Git restore commit `4f986b9` predates several approved refinements. Do not reset to that commit.
 
 ## Runtime and preview
 
-The watch uses a self-contained Design Component format: `<x-dc>`, template bindings such as `{{hourDeg}}`, and a `DCLogic` class in a `text/x-dc` script. Do not convert it to React, Vue, Canvas, Three.js, or an image unless specifically requested.
+The site is a standalone static build: plain HTML, CSS, and vanilla ES modules, bundled with Vite. There is no framework and no runtime CDN dependency — the only external request is the Google Fonts stylesheet. Do not convert it to React, Vue, Canvas, Three.js, or an image unless specifically requested.
 
-Run from the project directory:
+Install once, then run the dev server:
 
 ```bash
-python3 -m http.server 8765
+npm install
+```
+
+```bash
+npm run dev
 ```
 
 Then open:
@@ -40,7 +44,13 @@ Then open:
 http://localhost:8765/
 ```
 
-The demo also opens through `index.html`, but an HTTP server is preferred for repeatable testing.
+Produce the deployable bundle in `dist/` with:
+
+```bash
+npm run build
+```
+
+`npm run preview` serves that built bundle for a final check before deploying.
 
 ## Approved non-negotiable visual state
 
@@ -135,7 +145,7 @@ Motion must explain assembly, mechanical function, panel navigation, or depth. D
 3. Identify the single component involved in the request.
 4. Compare that component against the supplied visual references; use official Lange sources when extra mechanical detail is needed.
 5. State the exact measured property being changed: position, proportion, tangent, radius, color, depth, or timing.
-6. Edit only the smallest relevant section of `Lange Experience.dc.html`.
+6. Edit only the smallest relevant section of `index.html`, `src/styles.css`, or `src/main.js`.
 7. Render the result at desktop size and inspect it visually.
 8. Verify the affected click/hover/keyboard behavior.
 9. Check a narrow/mobile viewport when the change can affect layout.
