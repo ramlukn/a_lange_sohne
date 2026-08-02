@@ -481,56 +481,37 @@ a:hover { color: var(--gold-line-hover); }
 
 /* three-quarter plate */
 .mv-plate-shape { }
-.mv-hairspring { fill: none; stroke: #cfd3d9; stroke-width: .34; opacity: .85; }
+.mv-hairspring { fill: none; stroke: #d7dbe1; stroke-width: .3; opacity: .9; }
 
 /* 21,600 vph = 3 Hz — one full oscillation every 1/3 s */
 .mv-balance {
   transform-box: view-box;
-  transform-origin: 17.5px 53px;
+  transform-origin: 17.3px 53px;
   animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite;
 }
 .mv-cock-body { fill: url(#mvCock); }
-.mv-cock-edge { fill: none; stroke: #8b7c5c; stroke-width: .5; }
+.mv-cock-edge { fill: none; stroke: #857754; stroke-width: .45; }
 .mv-cock-engrave {
   fill: none;
-  stroke: #8a7a58;
-  stroke-width: .32;
+  stroke: #7d7059;
+  stroke-width: .28;
   stroke-linecap: round;
-  opacity: .9;
+  opacity: .95;
 }
-.mv-cock-engrave circle { fill: none; stroke: #8a7a58; stroke-width: .32; }
+.mv-cock-engrave circle { fill: none; stroke: #7d7059; stroke-width: .28; }
 
-/* engraving on the plate */
-.mv-engrave-lg {
-  font-family: var(--font-display);
-  font-size: 2.75px;
-  letter-spacing: .38px;
-  fill: #6d6046;
-  opacity: .82;
-}
 /* gold-filled engraving, as on the plate of the real movement */
-.mv-engrave-gold {
+.mv-gold-md {
   font-family: var(--font-display);
-  font-size: 2.9px;
-  letter-spacing: .4px;
-  fill: #a8842f;
-  paint-order: stroke;
-  stroke: rgba(60,42,12,.45);
-  stroke-width: .18;
+  font-size: 2.6px;
+  letter-spacing: .32px;
+  fill: #b08a34;
 }
-.mv-engrave-sm {
-  font-family: var(--font-mono);
-  font-size: 2.1px;
-  letter-spacing: .28px;
-  fill: #77694d;
-  opacity: .8;
-}
-.mv-engrave-xs {
-  font-family: var(--font-mono);
-  font-size: 1.55px;
-  letter-spacing: .16px;
-  fill: #7d6f52;
-  opacity: .7;
+.mv-gold-sm {
+  font-family: var(--font-display);
+  font-size: 2.05px;
+  letter-spacing: .2px;
+  fill: #ab8433;
 }
 
 /* contact, engraved where the case hallmarks sit */
