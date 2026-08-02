@@ -495,15 +495,23 @@ a:hover { color: var(--gold-line-hover); }
 .mv-cock-edge { fill: none; stroke: #857754; stroke-width: .45; }
 .mv-cock-engrave {
   fill: none;
-  stroke: #6f6349;
-  stroke-width: .22;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.mv-cock-engrave circle { fill: none; }
+/* an engraved line is a V-cut: dark groove, lit far wall just below it */
+.mv-eng-cut, .mv-eng-cut path, .mv-eng-cut circle {
+  stroke: #6b5f45;
+  stroke-width: .22;
   opacity: .95;
 }
-.mv-cock-engrave circle { fill: none; stroke: #6f6349; stroke-width: .22; }
-/* the finest cut lines sit lighter, so the scroll reads with depth */
-.mv-cock-engrave .mv-eng-hair { stroke: #8d8168; stroke-width: .16; opacity: .85; }
+.mv-eng-relief, .mv-eng-relief path, .mv-eng-relief circle {
+  stroke: #fffaea;
+  stroke-width: .26;
+  opacity: .7;
+}
+.mv-eng-cut .mv-eng-hair { stroke: #8b7f66; stroke-width: .16; opacity: .85; }
+.mv-eng-relief .mv-eng-hair { stroke: #fffaea; stroke-width: .18; opacity: .5; }
 
 /* gold-filled engraving, as on the plate of the real movement */
 .mv-gold-md {
