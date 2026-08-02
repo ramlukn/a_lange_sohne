@@ -1,38 +1,348 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#05070c">
-    <meta name="color-scheme" content="dark">
-    <meta name="description" content="Nikhil Ramlukan — an interactive personal portfolio inspired by the precision and asymmetry of the Lange 1.">
-    <title>Nikhil Ramlukan — Lange 1 Portfolio</title>
-    <style>
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-        background: #05070c;
-      }
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070c">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Nikhil Ramlukan — an interactive personal portfolio inspired by the precision and asymmetry of the Lange 1.">
+<title>Nikhil Ramlukan — Calibre NR.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
 
-      .watch-demo {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border: 0;
-        background: #05070c;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe
-      class="watch-demo"
-      src="./Lange%20Experience.dc.html"
-      title="Interactive Lange 1 portfolio watch"
-      allow="fullscreen"
-    ></iframe>
-    <noscript>This interactive watch portfolio requires JavaScript.</noscript>
-  </body>
+<div class="stage">
+  <div class="stage-glow"></div>
+
+  <!-- ===================== LOADING ===================== -->
+  <div class="loader">
+    <div class="loader-name">NIKHIL RAMLUKAN</div>
+    <div class="loader-sub">CALIBRE NR.1 — ASSEMBLING MOVEMENT</div>
+    <div class="loader-track"><div class="loader-fill"></div></div>
+  </div>
+
+  <!-- ===================== WATCH ===================== -->
+  <div class="watch-stage">
+    <div class="watch-pose" id="watchPose">
+      <div class="watch-flip" id="watchFlip">
+
+        <!-- crown + pusher (visible both sides) -->
+        <div class="crown" id="crown" title="Contact — flip the watch"></div>
+        <div class="corrector" id="corrector" title="Request a review — date correction pusher">
+          <!-- flush bowed corrector cap: seated into the case with no visible stand-off -->
+          <svg viewBox="0 -4 100 16" preserveAspectRatio="none" class="corrector-cap">
+            <defs>
+              <linearGradient id="langeCorrectorGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f2d1ad"></stop><stop offset=".16" stop-color="#edc09a"></stop><stop offset=".47" stop-color="#b97c55"></stop><stop offset=".78" stop-color="#8e5438"></stop><stop offset="1" stop-color="#4a291b"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#63351f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
+            <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+          </svg>
+        </div>
+
+        <!-- ============ FRONT FACE ============ -->
+        <div class="face face-front" id="faceFront">
+          <!-- ============ CASE ============ -->
+          <div style="position:absolute;inset:-1.5%;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease .9s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c160d 0deg,#7d4329 22deg,#fff1dd 44deg,#d9a77f 62deg,#a96945 88deg,#4a291b 108deg,#b97c55 130deg,#f2d1ad 156deg,#d5a077 178deg,#7d4c31 200deg,#2e190f 214deg,#8a5437 238deg,#e9c39f 262deg,#c58d67 284deg,#74442d 306deg,#3a2115 330deg,#a86646 348deg,#2c160d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:caseSeat .8s cubic-bezier(.22,1,.36,1) 1.02s both;--fs:1.24;--fr:-2.5deg;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff1dd 0%,#ddb18a 16%,#a96945 46%,#4a291b 70%,#b97c55 88%,#e9c39f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:caseSeat .72s cubic-bezier(.22,1,.36,1) 1.22s both;--fs:1.14;"></div>
+          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;animation:fadeIn .4s ease 1.4s both;"></div>
+          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a291b,#b97c55 40%,#f2d1ad 52%,#9b603f 76%,#2c160d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 1.4s both;--fs:1.09;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);animation:fadeIn .45s ease 1.58s both;"></div>
+
+          <!-- ============ DIAL PLATE ============ -->
+          <div style="position:absolute;inset:5.15%;border-radius:50%;background:radial-gradient(circle at 30% 24%,#213a59 0%,#16324f 26%,#0d2742 54%,#091d34 80%,#061427 100%);box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:dialSeat .72s cubic-bezier(.22,1,.36,1) 1.58s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(205,228,255,.032) 0deg .1deg,rgba(0,10,30,.03) .1deg .26deg);animation:fadeIn .65s ease 1.72s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.11),rgba(255,255,255,.015) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.07) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.09) 93%,rgba(214,232,255,.11) 100%);animation:fadeIn .65s ease 1.78s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);animation:fadeIn .5s ease 1.76s both;"></div>
+
+          <!-- ============ HOURS & MINUTES DIAL ============ -->
+          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 1.88s both;--fx:-38px;--fs:.96;">
+            <div style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#213a59 0%,#16324f 30%,#0d2742 62%,#091e35 88%,#061427 100%);box-shadow:inset 0 .58vmin 1.75vmin rgba(0,0,0,.76),inset 0 -.26vmin .9vmin rgba(150,180,220,.1),inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .12vmin 0 rgba(255,240,215,.24),0 .38vmin 1.05vmin rgba(0,0,0,.68);"></div>
+            <svg viewBox="0 0 100 100" style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;pointer-events:none;">
+              <circle cx="50" cy="50" r="46.4" fill="none" stroke="#d9b386" stroke-width=".35" opacity=".58"></circle>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#f3eee6" stroke-width="2.2" stroke-dasharray=".48 4.18" opacity=".82"></circle>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#f7f2e9" stroke-width="2.75" stroke-dasharray=".9 22.4" opacity=".94"></circle>
+            </svg>
+            <div class="hm-index" style="left:41.34%;top:28.18%;width:.85%;height:3.1%;transform:rotate(30deg);"></div>
+            <div class="hm-index" style="left:48.64%;top:35.48%;width:.85%;height:3.1%;transform:rotate(60deg);"></div>
+            <div class="hm-index" style="left:48.64%;top:55.42%;width:.85%;height:3.1%;transform:rotate(120deg);"></div>
+            <div class="hm-index" style="left:41.34%;top:62.72%;width:.85%;height:3.1%;transform:rotate(150deg);"></div>
+            <div class="hm-index" style="left:21.41%;top:62.72%;width:.85%;height:3.1%;transform:rotate(210deg);"></div>
+            <div class="hm-index" style="left:14.11%;top:55.42%;width:.85%;height:3.1%;transform:rotate(240deg);"></div>
+            <div class="hm-index" style="left:14.11%;top:35.48%;width:.85%;height:3.1%;transform:rotate(300deg);"></div>
+            <div class="hm-index" style="left:21.41%;top:28.18%;width:.85%;height:3.1%;transform:rotate(330deg);"></div>
+            <div class="hm-numeral" style="left:27.7%;top:23.4%;width:8.2%;">XII</div>
+            <div class="hm-numeral" style="left:50.6%;top:44.65%;width:5%;">III</div>
+            <div class="hm-numeral" style="left:27.9%;top:65.1%;width:8.2%;">VI</div>
+            <div class="hm-numeral" style="left:6.8%;top:44.65%;width:6%;">IX</div>
+          </div>
+
+          <!-- name (where the maker's mark would sit) -->
+          <div class="maker-name">NIKHIL RAMLUKAN</div>
+          <div class="maker-calibre">CALIBRE NR.1</div>
+
+          <!-- hands -->
+          <div class="hands">
+            <div class="hand-pivot" id="hourHand" style="left:31.02%;top:32.37%;width:1.56%;height:14.63%;">
+              <div class="hand-blade hand-hour"></div>
+            </div>
+            <div class="hand-pivot" id="minHand" style="left:31.24%;top:25.42%;width:1.12%;height:21.58%;">
+              <div class="hand-blade hand-min"></div>
+            </div>
+            <div class="hand-cap"></div>
+          </div>
+
+          <!-- ============ OUTSIZE DATE ============ -->
+          <div class="date-window" id="dateWindow">
+            <div class="date-disc" id="dateTens">3</div>
+            <div class="date-disc" id="dateOnes">1</div>
+          </div>
+
+          <!-- ============ POWER RESERVE (AUF / AB) ============ -->
+          <div class="reserve" id="reserve">
+            <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#e8e3d9" stroke-width=".75" opacity=".78"></path>
+              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#f3eee6" stroke-width="2.5" stroke-dasharray=".7 8.2" opacity=".82"></path>
+              <path d="M 74 78 A 51 51 0 0 1 74 90" fill="none" stroke="#b4373f" stroke-width="2.1" opacity=".95"></path>
+            </svg>
+            <div class="reserve-hand" id="reserveHand"><div class="reserve-blade"></div></div>
+            <div class="reserve-cap"></div>
+            <div class="reserve-auf">AUF</div>
+            <div class="reserve-ab">AB</div>
+          </div>
+
+          <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
+          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.16s both;--fy:38px;--fs:.96;">
+            <div class="seconds-dial" id="secondsDial"></div>
+            <svg viewBox="0 0 100 100" style="position:absolute;left:46.8%;top:57.2%;width:27.2%;height:27.2%;pointer-events:none;">
+              <circle cx="50" cy="50" r="45.5" fill="none" stroke="#e6dcc8" stroke-width="2.8" stroke-dasharray=".75 6.35" opacity=".6"></circle>
+              <circle cx="50" cy="50" r="45.5" fill="none" stroke="#f3e3c6" stroke-width="3.2" stroke-dasharray="1.1 22.72" opacity=".9"></circle>
+            </svg>
+            <!-- Crisp Lange moon phase: one vector aperture, twin scallops, independent sky and moon discs -->
+            <div class="moon" id="moon" title="Book reviews — moon phase">
+              <svg viewBox="0 0 100 50" preserveAspectRatio="none" shape-rendering="geometricPrecision" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;">
+                <defs>
+                  <clipPath id="langeMoonAperture"><path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z"></path></clipPath>
+                  <linearGradient id="langeMoonSky" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#18a6d8"></stop><stop offset=".38" stop-color="#0873ae"></stop><stop offset=".64" stop-color="#064473"></stop><stop offset="1" stop-color="#02142d"></stop></linearGradient>
+                  <radialGradient id="langeMoonGold" cx="32%" cy="26%" r="72%"><stop offset="0" stop-color="#fff4dc"></stop><stop offset=".36" stop-color="#efc28b"></stop><stop offset=".7" stop-color="#d79b61"></stop><stop offset="1" stop-color="#744127"></stop></radialGradient>
+                </defs>
+                <g clip-path="url(#langeMoonAperture)">
+                  <g id="moonSky">
+                    <circle cx="50" cy="50" r="72" fill="url(#langeMoonSky)"></circle>
+                    <g fill="#f5f8ff">
+                      <circle cx="57" cy="10" r=".55"></circle><circle cx="64" cy="18" r=".35"></circle><circle cx="72" cy="8" r=".42"></circle><circle cx="79" cy="23" r=".5"></circle><circle cx="88" cy="14" r=".3"></circle><circle cx="91" cy="31" r=".42"></circle><circle cx="69" cy="33" r=".28"></circle><circle cx="84" cy="39" r=".34"></circle><circle cx="61" cy="27" r=".26"></circle>
+                    </g>
+                  </g>
+                  <g id="moonOrbit">
+                    <circle cx="50" cy="10" r="6.8" fill="url(#langeMoonGold)" stroke="#6f3e25" stroke-width=".45"></circle>
+                    <circle cx="50" cy="90" r="6.8" fill="url(#langeMoonGold)" stroke="#6f3e25" stroke-width=".45"></circle>
+                  </g>
+                </g>
+                <path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z" fill="none" stroke="rgba(225,183,137,.74)" stroke-width=".5" vector-effect="non-scaling-stroke"></path>
+              </svg>
+            </div>
+            <!-- seconds hand -->
+            <div class="sec-pivot" id="secHand"><div class="sec-blade"></div></div>
+            <div class="sec-cap"></div>
+          </div>
+
+          <!-- hours-dial hit zone -->
+          <div class="about-hit" id="aboutHit"></div>
+
+          <!-- ============ SAPPHIRE CRYSTAL ============ -->
+          <div class="crystal">
+            <div style="position:absolute;left:-30%;top:-62%;width:130%;height:118%;border-radius:50%;background:linear-gradient(154deg,rgba(255,252,246,.11) 0%,rgba(255,252,246,.045) 42%,transparent 68%);"></div>
+            <div style="position:absolute;left:-18%;top:-8%;width:66%;height:150%;transform:rotate(-22deg);background:linear-gradient(90deg,transparent,rgba(255,252,246,.05) 40%,rgba(255,252,246,.075) 52%,transparent);"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 .2vmin .6vmin rgba(255,250,240,.22),inset 0 -.5vmin 1.4vmin rgba(0,0,0,.35);"></div>
+            <div style="position:absolute;right:6%;bottom:4%;width:44%;height:26%;border-radius:50%;background:radial-gradient(circle at 60% 70%,rgba(190,215,255,.07),transparent 70%);"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 0 92%,rgba(215,235,255,.14) 95%,rgba(255,252,246,.3) 98%,rgba(120,150,200,.16) 100%);"></div>
+            <div style="position:absolute;left:11%;top:6%;width:30%;height:20%;transform:rotate(-18deg);border-radius:1.4vmin;background:linear-gradient(160deg,rgba(255,253,248,.10),rgba(255,253,248,.03) 60%,transparent);filter:blur(.7vmin);"></div>
+          </div>
+
+          <div class="hint-dots" id="hintDots">
+            <div class="hint-dot" style="left:31.3%;top:51%;"></div>
+            <div class="hint-dot" style="left:68.5%;top:25.5%;animation-delay:.3s;"></div>
+            <div class="hint-dot" style="left:66%;top:48%;animation-delay:.6s;"></div>
+            <div class="hint-dot" style="left:60%;top:77%;animation-delay:.9s;"></div>
+            <div class="hint-dot" style="left:60%;top:63.3%;animation-delay:1.2s;"></div>
+          </div>
+        </div>
+
+        <!-- ============ CASEBACK ============ -->
+        <div class="face face-back" id="faceBack">
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,#f3c5a4,#9f5637 12%,#71351f 24%,#e3ad87 38%,#f4c8a7 50%,#83513a 65%,#572412 78%,#dca27c 90%,#f3c5a4);box-shadow:0 3vmin 9vmin rgba(0,0,0,.75);"></div>
+          <div style="position:absolute;inset:4%;border-radius:50%;background:linear-gradient(200deg,#bc7956,#552817);"></div>
+          <div style="position:absolute;inset:9%;border-radius:50%;overflow:hidden;background:linear-gradient(155deg,#d9d0bf,#bfb49e 55%,#a99c84);box-shadow:inset 0 1vmin 4vmin rgba(0,0,0,.45);">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,rgba(60,45,25,.09) 0 3.2vmin,rgba(255,250,240,.10) 3.2vmin 6.4vmin);"></div>
+            <div class="balance">
+              <div style="position:absolute;left:47%;top:-8%;width:6%;height:116%;background:rgba(120,90,55,.55);"></div>
+              <div style="position:absolute;left:-8%;top:47%;width:116%;height:6%;background:rgba(120,90,55,.55);"></div>
+            </div>
+            <div class="jewel" style="left:55%;top:20%;"></div>
+            <div class="jewel" style="left:70%;top:34%;"></div>
+            <div class="jewel" style="left:48%;top:44%;"></div>
+            <div class="screw" style="left:24%;top:48%;"><div class="screw-slot" style="transform:rotate(35deg);"></div></div>
+            <div class="screw" style="left:78%;top:52%;"><div class="screw-slot" style="transform:rotate(-20deg);"></div></div>
+            <div class="caseback-label">CONTACT</div>
+            <!-- engraved rotor -->
+            <div class="rotor">
+              <div class="rotor-name">NIKHIL RAMLUKAN</div>
+              <div class="rotor-links">
+                <a href="mailto:hello@example.com">EMAIL</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
+                <a href="https://github.com" target="_blank" rel="noopener">GITHUB</a>
+              </div>
+              <div class="rotor-mark">HANDWERKSKUNST · MMXXVI</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- caption -->
+  <div class="caption" id="caption"></div>
+  <div class="hint-bar" id="hintBar">DIAL · DATE · SECONDS · RESERVE · MOON — CLICK TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;CROWN TO FLIP</div>
+
+  <!-- ===================== SECTIONS ===================== -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="overlay-scrim" data-close></div>
+
+    <section class="card" id="panel-about" hidden>
+      <div class="card-close" data-close>ESC ✕</div>
+      <div class="card-eyebrow">HOURS &amp; MINUTES — THE CENTER</div>
+      <h1 class="card-title">About Me</h1>
+      <div class="about-grid">
+        <div class="portrait" role="img" aria-label="Portrait placeholder"><span>Your photo</span></div>
+        <div class="about-copy">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, urna at gravida luctus, sapien ligula fermentum nisl, non commodo massa arcu eget dolor.</p>
+          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; integer euismod, velit sit amet volutpat pretium.</p>
+        </div>
+      </div>
+      <div class="tag-row">
+        <div class="tag">HOROLOGY</div><div class="tag">RESEARCH</div><div class="tag">READING</div><div class="tag">BUILDING</div>
+      </div>
+    </section>
+
+    <section class="card" id="panel-featured" hidden>
+      <div class="card-close" data-close>ESC ✕</div>
+      <div class="card-eyebrow">THE OUTSIZE DATE — WHAT'S NEWEST</div>
+      <h1 class="card-title">Featured</h1>
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="feature-num">01</div>
+          <div><div class="feature-name">Lorem Ipsum Research Paper</div><div class="feature-desc">Consectetur adipiscing elit — sed do eiusmod tempor incididunt ut labore. <span class="feature-date">JULY 2026</span></div></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">02</div>
+          <div><div class="feature-name">Dolor Sit Watch Review</div><div class="feature-desc">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. <span class="feature-date">JUNE 2026</span></div></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">03</div>
+          <div><div class="feature-name">Amet Consectetur Internship</div><div class="feature-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse. <span class="feature-date">SUMMER 2026</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-narrow card-center" id="panel-currently" hidden>
+      <div class="card-close" data-close>ESC ✕</div>
+      <div class="card-eyebrow">THE SMALL SECONDS — ALWAYS IN MOTION</div>
+      <h1 class="card-title">Currently <span id="curTitle"></span></h1>
+      <div class="cur-value" id="curValue"></div>
+      <div class="cur-sub" id="curSub"></div>
+      <div class="cur-dots">
+        <div class="cur-dot"></div><div class="cur-dot"></div><div class="cur-dot"></div><div class="cur-dot"></div>
+      </div>
+    </section>
+
+    <section class="card card-column" id="panel-resume" hidden>
+      <div class="card-close" data-close>ESC ✕</div>
+      <div class="card-eyebrow">THE POWER RESERVE — WOUND OVER TIME</div>
+      <h1 class="card-title card-title-tight">Experience</h1>
+      <div class="reserve-meter">
+        <span class="meter-label">AB</span>
+        <div class="meter-track"><div class="meter-fill" id="reserveBar"></div></div>
+        <span class="meter-label meter-label-on">AUF</span>
+      </div>
+      <div class="reserve-hint">SCROLL TO WIND THE MOVEMENT</div>
+      <div class="timeline-scroll" id="resumeScroll">
+        <div class="timeline">
+          <div><div class="tl-when">2026 — PRESENT</div><div class="tl-role">Lorem Ipsum Fellow</div><div class="tl-desc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</div></div>
+          <div><div class="tl-when">2025</div><div class="tl-role">Dolor Sit Internship</div><div class="tl-desc">Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</div></div>
+          <div><div class="tl-when">2024</div><div class="tl-role">Amet Research Assistant</div><div class="tl-desc">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</div></div>
+          <div><div class="tl-when">2023</div><div class="tl-role">Consectetur Project Lead</div><div class="tl-desc">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</div></div>
+          <div><div class="tl-when">2022</div><div class="tl-role">Adipiscing University</div><div class="tl-desc">Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam. Fully wound.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="panel-books" hidden>
+      <div class="card-close" data-close>ESC ✕</div>
+      <div class="card-eyebrow">THE MOONPHASE — REFLECTIVE &amp; TIMELESS</div>
+      <h1 class="card-title">Book Reviews</h1>
+      <div class="book-grid">
+        <div class="book">
+          <div class="book-phase"><div class="phase-dot phase-new"></div><span>NEW MOON · PHILOSOPHY</span></div>
+          <div class="book-title">Lorem Ipsum Meditations</div>
+          <div class="book-author">Auctor Nominis</div>
+          <div class="book-desc">Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae.</div>
+        </div>
+        <div class="book">
+          <div class="book-phase"><div class="phase-dot phase-first"></div><span>FIRST QUARTER · FICTION</span></div>
+          <div class="book-title">The Dolor of Sit</div>
+          <div class="book-author">Scriptor Alius</div>
+          <div class="book-desc">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium.</div>
+        </div>
+        <div class="book">
+          <div class="book-phase"><div class="phase-dot phase-full"></div><span>FULL MOON · HISTORY</span></div>
+          <div class="book-title">Amet: A History</div>
+          <div class="book-author">Historicus Quidam</div>
+          <div class="book-desc">Et harum quidem rerum facilis est et expedita distinctio, nam libero tempore.</div>
+        </div>
+        <div class="book">
+          <div class="book-phase"><div class="phase-dot phase-last"></div><span>LAST QUARTER · SCIENCE</span></div>
+          <div class="book-title">Consectetur Principia</div>
+          <div class="book-author">Physicus Ignotus</div>
+          <div class="book-desc">Cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===================== REQUEST MODAL ===================== -->
+  <div class="req-layer" id="reqLayer" hidden>
+    <div class="req-scrim" data-close-req></div>
+    <div class="card req-card">
+      <div class="card-close" data-close-req>ESC ✕</div>
+      <div class="card-eyebrow">THE HIDDEN PUSHER</div>
+      <h1 class="card-title card-title-sm">Request a Review</h1>
+      <form class="req-form" id="reqForm">
+        <div class="req-toggle">
+          <button type="button" class="req-type is-on" id="reqWatch">WATCH</button>
+          <button type="button" class="req-type" id="reqBook">BOOK</button>
+        </div>
+        <input id="reqSubject" placeholder="Watch reference or book title" autocomplete="off">
+        <textarea id="reqNote" placeholder="Why should it be reviewed? (optional)" rows="4"></textarea>
+        <button type="submit" class="req-submit">SUBMIT REQUEST</button>
+      </form>
+      <div class="req-done" id="reqDone" hidden>
+        <div class="req-done-title">Request logged.</div>
+        <div class="req-done-sub">THE MOVEMENT HAS BEEN WOUND. EXPECT A REVIEW SOON.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>
