@@ -14,26 +14,32 @@
 <script src="./image-slot.js"></script>
 <style>
 html,body{margin:0;padding:0;background:#05070c;}
+:root{--moon-day:#159bd0;--moon-mid:#075b95;--moon-night:#03162e;--moon-gold:#e2ad73;--moon-light:#fff0d3;--moon-shadow:#7f4a2d;--case-gold:#b97c55;--case-light:#f2d1ad;--case-shadow:#4a291b}
 a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
 ::selection{background:#c98662;color:#07090f}
 @keyframes fadeOut{to{opacity:0;visibility:hidden}}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes lineFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes partIn{from{opacity:0;transform:translate(var(--fx,0px),var(--fy,0px)) scale(var(--fs,1))}to{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes caseSeat{0%{opacity:0;transform:scale(var(--fs,1.2)) rotate(var(--fr,0deg));filter:blur(1.2px)}72%{opacity:1;transform:scale(.992) rotate(0deg);filter:blur(0)}100%{opacity:1;transform:scale(1) rotate(0deg);filter:blur(0)}}
+@keyframes dialSeat{0%{opacity:0;transform:translateY(-2.2vmin) scale(.92);filter:blur(2px)}74%{opacity:1;transform:translateY(.18vmin) scale(1.004);filter:blur(0)}100%{opacity:1;transform:none;filter:blur(0)}}
+@keyframes partIn{0%{opacity:0;transform:translate(var(--fx,0px),var(--fy,0px)) scale(var(--fs,1));filter:blur(1.2px)}76%{opacity:1;transform:translate(0,0) scale(1.006);filter:blur(0)}100%{opacity:1;transform:translate(0,0) scale(1);filter:blur(0)}}
+@keyframes componentSeat{0%{opacity:0;transform:translate(var(--fx,0px),var(--fy,0px)) scale(.9)}76%{opacity:1;transform:translate(0,0) scale(1.025)}100%{opacity:1;transform:none}}
+@keyframes glassSeat{0%{opacity:0;transform:scale(1.065);filter:blur(1px)}68%{opacity:.76;transform:scale(1.008);filter:blur(0)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
 @keyframes windUp{from{transform:rotate(-160deg)}to{transform:rotate(0deg)}}
 @keyframes cardUp{from{opacity:0;transform:translateY(28px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes balance{0%{transform:rotate(-26deg)}50%{transform:rotate(26deg)}100%{transform:rotate(-26deg)}}
 @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(217,162,107,.4)}100%{box-shadow:0 0 0 12px rgba(217,162,107,0)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
 </style>
 </helmet>
 <div style="min-height:100vh;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(110vmax 110vmax at 50% 34%,#111722 0%,#070a11 52%,#030509 100%);font-family:Archivo,sans-serif;color:#e6e9f0;">
   <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(68vmin 68vmin at 50% 45%,rgba(217,162,107,.035),transparent 72%);"></div>
 
   <!-- ===================== LOADING ===================== -->
-  <div style="position:fixed;inset:0;z-index:100;background:#05060b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vmin;pointer-events:none;animation:fadeOut .8s ease 1.25s forwards;">
+  <div style="position:fixed;inset:0;z-index:100;background:#05060b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vmin;pointer-events:none;animation:fadeOut .45s ease .62s forwards;">
     <div style="font-family:Marcellus,serif;font-size:3.4vmin;letter-spacing:.55em;text-indent:.55em;color:#e8e2d6;">NIKHIL RAMLUKAN</div>
     <div style="font-family:'IBM Plex Mono',monospace;font-size:1.25vmin;letter-spacing:.35em;color:#9a8367;">CALIBRE NR.1 — ASSEMBLING MOVEMENT</div>
-    <div style="width:26vmin;height:1px;background:rgba(217,162,107,.2);overflow:hidden;"><div style="width:100%;height:100%;background:#c98662;transform-origin:left;animation:lineFill 1.2s cubic-bezier(.4,0,.2,1) both;"></div></div>
+    <div style="width:26vmin;height:1px;background:rgba(217,162,107,.2);overflow:hidden;"><div style="width:100%;height:100%;background:#c98662;transform-origin:left;animation:lineFill .62s cubic-bezier(.4,0,.2,1) both;"></div></div>
   </div>
 
   <!-- ===================== WATCH ===================== -->
@@ -42,32 +48,43 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
       <div style="position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY({{flipDeg}}deg);transition:transform 1.15s cubic-bezier(.6,.05,.25,1);">
 
         <!-- crown + pusher (visible both sides) -->
-        <div onClick="{{flip}}" onMouseEnter="{{hovCrown}}" onMouseLeave="{{hovOff}}" title="Contact — flip the watch" style="position:absolute;right:-2.6%;top:47.2%;width:4.4%;height:5.6%;cursor:pointer;border-radius:16% 40% 40% 16%;background:linear-gradient(180deg,#f0c49b,#9a4d2c 45%,#572412 70%,#d59871);box-shadow:0 .4vmin 1vmin rgba(0,0,0,.5);animation:fadeIn .6s ease 1.65s both;" style-hover="filter:brightness(1.2)"></div>
-        <div onClick="{{openReq}}" onMouseEnter="{{hovPusher}}" onMouseLeave="{{hovOff}}" title="Request a review" style="position:absolute;left:8.5%;top:16.5%;width:3.2%;height:3.2%;cursor:pointer;border-radius:50%;background:linear-gradient(135deg,#efba96,#71351f);box-shadow:0 .3vmin .8vmin rgba(0,0,0,.5);transform:rotate(-45deg);animation:fadeIn .6s ease 1.65s both;" style-hover="filter:brightness(1.25)"></div>
+        <div onClick="{{flip}}" onMouseEnter="{{hovCrown}}" onMouseLeave="{{hovOff}}" title="Contact — flip the watch" style="position:absolute;right:-2.6%;top:47.2%;width:4.4%;height:5.6%;cursor:pointer;border-radius:16% 40% 40% 16%;background:linear-gradient(180deg,#f0c49b,#9a4d2c 45%,#572412 70%,#d59871);box-shadow:0 .4vmin 1vmin rgba(0,0,0,.5);animation:componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;--fx:2vmin;" style-hover="filter:brightness(1.2)"></div>
+        <div onClick="{{openReq}}" onMouseEnter="{{hovPusher}}" onMouseLeave="{{hovOff}}" title="Request a review — date correction pusher" style="position:absolute;left:1.7%;top:15%;width:9%;height:18%;cursor:pointer;animation:componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;--fx:-2vmin;z-index:3;" style-hover="filter:brightness(1.09)">
+          <!-- flush bowed corrector cap: partially seated into the case with no visible stand-off -->
+          <svg viewBox="0 -4 100 16" preserveAspectRatio="none" style="position:absolute;left:2%;top:42%;width:96%;height:18%;transform:rotate(-60deg);overflow:visible;filter:drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52));">
+            <defs>
+              <linearGradient id="langeCorrectorGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f2d1ad"></stop><stop offset=".16" stop-color="#edc09a"></stop><stop offset=".47" stop-color="#b97c55"></stop><stop offset=".78" stop-color="#8e5438"></stop><stop offset="1" stop-color="#4a291b"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#63351f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
+            <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+          </svg>
+        </div>
 
         <!-- ============ FRONT FACE ============ -->
         <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(1px);opacity:{{frontOpacity}};transition:opacity .3s linear .45s;" data-screen-label="Dial">
           <!-- ============ CASE ============ -->
-          <div style="position:absolute;inset:-1.5%;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn 1s ease .2s both;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c160d 0deg,#7d4329 22deg,#fff1dd 44deg,#d9a77f 62deg,#a96945 88deg,#4a291b 108deg,#b97c55 130deg,#f2d1ad 156deg,#d5a077 178deg,#7d4c31 200deg,#2e190f 214deg,#8a5437 238deg,#e9c39f 262deg,#c58d67 284deg,#74442d 306deg,#3a2115 330deg,#a86646 348deg,#2c160d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:partIn .9s cubic-bezier(.22,1,.36,1) .2s both;--fs:1.28;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);"></div>
-          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);"></div>
-          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);"></div>
-          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff1dd 0%,#ddb18a 16%,#a96945 46%,#4a291b 70%,#b97c55 88%,#e9c39f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:partIn .9s cubic-bezier(.22,1,.36,1) .32s both;--fs:1.16;"></div>
-          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;"></div>
-          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a291b,#b97c55 40%,#f2d1ad 52%,#9b603f 76%,#2c160d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:partIn .9s cubic-bezier(.22,1,.36,1) .42s both;--fs:1.1;"></div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);"></div>
+          <div style="position:absolute;inset:-1.5%;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease .9s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c160d 0deg,#7d4329 22deg,#fff1dd 44deg,#d9a77f 62deg,#a96945 88deg,#4a291b 108deg,#b97c55 130deg,#f2d1ad 156deg,#d5a077 178deg,#7d4c31 200deg,#2e190f 214deg,#8a5437 238deg,#e9c39f 262deg,#c58d67 284deg,#74442d 306deg,#3a2115 330deg,#a86646 348deg,#2c160d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:caseSeat .8s cubic-bezier(.22,1,.36,1) 1.02s both;--fs:1.24;--fr:-2.5deg;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff1dd 0%,#ddb18a 16%,#a96945 46%,#4a291b 70%,#b97c55 88%,#e9c39f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:caseSeat .72s cubic-bezier(.22,1,.36,1) 1.22s both;--fs:1.14;"></div>
+          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;animation:fadeIn .4s ease 1.4s both;"></div>
+          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a291b,#b97c55 40%,#f2d1ad 52%,#9b603f 76%,#2c160d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 1.4s both;--fs:1.09;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);animation:fadeIn .45s ease 1.58s both;"></div>
 
           <!-- ============ DIAL PLATE ============ -->
-          <div style="position:absolute;inset:5.15%;border-radius:50%;background:radial-gradient(circle at 30% 24%,#213a59 0%,#16324f 26%,#0d2742 54%,#091d34 80%,#061427 100%);box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:partIn .8s ease .55s both;--fs:1.06;"></div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(205,228,255,.032) 0deg .1deg,rgba(0,10,30,.03) .1deg .26deg);animation:fadeIn 1s ease .7s both;"></div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.11),rgba(255,255,255,.015) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.07) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.09) 93%,rgba(214,232,255,.11) 100%);animation:fadeIn 1s ease .75s both;"></div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;background:radial-gradient(circle at 30% 24%,#213a59 0%,#16324f 26%,#0d2742 54%,#091d34 80%,#061427 100%);box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:dialSeat .72s cubic-bezier(.22,1,.36,1) 1.58s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(205,228,255,.032) 0deg .1deg,rgba(0,10,30,.03) .1deg .26deg);animation:fadeIn .65s ease 1.72s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.11),rgba(255,255,255,.015) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.07) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.09) 93%,rgba(214,232,255,.11) 100%);animation:fadeIn .65s ease 1.78s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);animation:fadeIn .5s ease 1.76s both;"></div>
 
 
           <!-- ============ HOURS & MINUTES DIAL ============ -->
-          <div style="position:absolute;inset:0;animation:partIn .8s cubic-bezier(.22,1,.36,1) .75s both;--fx:-42px;">
+          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 1.88s both;--fx:-38px;--fs:.96;">
             <div style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#213a59 0%,#16324f 30%,#0d2742 62%,#091e35 88%,#061427 100%);box-shadow:inset 0 .58vmin 1.75vmin rgba(0,0,0,.76),inset 0 -.26vmin .9vmin rgba(150,180,220,.1),inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .12vmin 0 rgba(255,240,215,.24),0 .38vmin 1.05vmin rgba(0,0,0,.68);"></div>
             <svg viewBox="0 0 100 100" style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;pointer-events:none;">
               <circle cx="50" cy="50" r="46.4" fill="none" stroke="#d9b386" stroke-width=".35" opacity=".58"></circle>
@@ -89,28 +106,28 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
           </div>
 
           <!-- name (where the maker's mark would sit) -->
-          <div style="position:absolute;left:21.5%;top:10.7%;width:57%;text-align:center;font-family:Marcellus,serif;font-size:2.55vmin;letter-spacing:.22em;color:#f3eee6;text-shadow:0 .1vmin .24vmin rgba(0,0,0,.78);animation:partIn .7s ease 1.15s both;--fy:-14px;">NIKHIL RAMLUKAN</div>
-          <div style="position:absolute;left:28%;top:15.45%;width:44%;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82vmin;letter-spacing:.32em;color:#c7d0dc;animation:partIn .7s ease 1.25s both;--fy:-10px;">CALIBRE NR.1</div>
+          <div style="position:absolute;left:21.5%;top:10.7%;width:57%;text-align:center;font-family:Marcellus,serif;font-size:2.55vmin;letter-spacing:.22em;color:#f3eee6;text-shadow:0 .1vmin .24vmin rgba(0,0,0,.78);animation:partIn .62s ease 2.34s both;--fy:-14px;">NIKHIL RAMLUKAN</div>
+          <div style="position:absolute;left:28%;top:15.45%;width:44%;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.82vmin;letter-spacing:.32em;color:#c7d0dc;animation:partIn .62s ease 2.42s both;--fy:-10px;">CALIBRE NR.1</div>
 
           <!-- hands -->
-          <div style="position:absolute;inset:0;animation:fadeIn .5s ease 1.3s both;pointer-events:none;">
+          <div style="position:absolute;inset:0;animation:fadeIn .45s ease 2.42s both;pointer-events:none;">
             <div style="position:absolute;left:31.02%;top:32.37%;width:1.56%;height:14.63%;transform:rotate({{hourDeg}}deg);transform-origin:50% 100%;">
-              <div style="width:100%;height:100%;clip-path:polygon(50% 0,74% 16%,60% 100%,40% 100%,26% 16%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.15s cubic-bezier(.34,1.25,.4,1) 1.35s both;transform-origin:50% 100%;"></div>
+              <div style="width:100%;height:100%;clip-path:polygon(50% 0,74% 16%,60% 100%,40% 100%,26% 16%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.48s both;transform-origin:50% 100%;"></div>
             </div>
             <div style="position:absolute;left:31.24%;top:25.42%;width:1.12%;height:21.58%;transform:rotate({{minDeg}}deg);transform-origin:50% 100%;">
-              <div style="width:100%;height:100%;clip-path:polygon(50% 0,80% 11%,58% 100%,42% 100%,20% 11%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.15s cubic-bezier(.34,1.25,.4,1) 1.45s both;transform-origin:50% 100%;"></div>
+              <div style="width:100%;height:100%;clip-path:polygon(50% 0,80% 11%,58% 100%,42% 100%,20% 11%);background:linear-gradient(102deg,#572412 0%,#bb7048 14%,#ffe6cf 40%,#eeb896 50%,#ca8159 70%,#71351f 88%,#3a170d 100%);filter:drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));animation:windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.57s both;transform-origin:50% 100%;"></div>
             </div>
             <div style="position:absolute;left:30.85%;top:46.05%;width:1.9%;height:1.9%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0db,#c18b60 45%,#3c2115);box-shadow:0 .14vmin .4vmin rgba(0,0,0,.6);"></div>
           </div>
 
           <!-- ============ OUTSIZE DATE ============ -->
-          <div onClick="{{openFeatured}}" onMouseEnter="{{hovFeatured}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:53.5%;top:20.3%;width:20.5%;height:11.5%;cursor:pointer;padding:.5vmin;border-radius:.35vmin;background:linear-gradient(152deg,#fff0db 0%,#e2b48b 22%,#a66d49 55%,#4a291b 80%,#c48c66 100%);box-shadow:0 .32vmin 1vmin rgba(0,0,0,.66),inset 0 .1vmin .2vmin rgba(255,248,234,.78);display:flex;gap:.38vmin;animation:partIn .8s cubic-bezier(.22,1,.36,1) .95s both;--fy:-52px;" style-hover="box-shadow:0 0 0 .25vmin rgba(240,200,150,.55),0 .35vmin 1.1vmin rgba(0,0,0,.6)">
+          <div onClick="{{openFeatured}}" onMouseEnter="{{hovFeatured}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:53.5%;top:20.3%;width:20.5%;height:11.5%;cursor:pointer;padding:.5vmin;border-radius:.35vmin;background:linear-gradient(152deg,#fff0db 0%,#e2b48b 22%,#a66d49 55%,#4a291b 80%,#c48c66 100%);box-shadow:0 .32vmin 1vmin rgba(0,0,0,.66),inset 0 .1vmin .2vmin rgba(255,248,234,.78);display:flex;gap:.38vmin;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.04s both;--fy:-38px;--fs:.96;" style-hover="box-shadow:0 0 0 .25vmin rgba(240,200,150,.55),0 .35vmin 1.1vmin rgba(0,0,0,.6)">
             <div style="flex:1;background:linear-gradient(176deg,#fffdf7 0%,#f3eee3 48%,#d8d0c0 100%);border-radius:.14vmin;box-shadow:inset 0 .22vmin .5vmin rgba(55,48,34,.38),inset 0 -.12vmin .25vmin rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:5.65vmin;color:#111318;line-height:1;">{{dateTens}}</div>
             <div style="flex:1;background:linear-gradient(176deg,#fffdf7 0%,#f3eee3 48%,#d8d0c0 100%);border-radius:.14vmin;box-shadow:inset 0 .22vmin .5vmin rgba(55,48,34,.38),inset 0 -.12vmin .25vmin rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:5.65vmin;color:#111318;line-height:1;">{{dateOnes}}</div>
           </div>
 
           <!-- ============ POWER RESERVE (AUF / AB) ============ -->
-          <div onClick="{{openResume}}" onMouseEnter="{{hovResume}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:58%;top:34.8%;width:26%;height:25.5%;cursor:pointer;border-radius:1vmin;animation:partIn .8s cubic-bezier(.22,1,.36,1) 1.2s both;--fx:52px;" style-hover="background:rgba(240,200,150,.055)">
+          <div onClick="{{openResume}}" onMouseEnter="{{hovResume}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:58%;top:34.8%;width:26%;height:25.5%;cursor:pointer;border-radius:1vmin;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.27s both;--fx:38px;--fs:.96;" style-hover="background:rgba(240,200,150,.055)">
             <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
               <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#e8e3d9" stroke-width=".75" opacity=".78"></path>
               <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#f3eee6" stroke-width="2.5" stroke-dasharray=".7 8.2" opacity=".82"></path>
@@ -125,23 +142,38 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
           </div>
 
           <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
-          <div style="position:absolute;inset:0;animation:partIn .8s cubic-bezier(.22,1,.36,1) 1.05s both;--fy:52px;">
+          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.16s both;--fy:38px;--fs:.96;">
             <div onClick="{{openCurrently}}" onMouseEnter="{{hovCurrently}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:46.8%;top:57.2%;width:27.2%;height:27.2%;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 34% 28%,#213a59 0%,#16324f 32%,#0d2742 64%,#061427 100%);box-shadow:inset 0 .5vmin 1.55vmin rgba(0,0,0,.74),inset 0 -.25vmin .8vmin rgba(130,170,240,.1),inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .35vmin 1vmin rgba(0,0,0,.64);" style-hover="box-shadow:inset 0 .4vmin 1.3vmin rgba(0,0,0,.62),0 0 0 .25vmin rgba(240,200,150,.55)"></div>
             <svg viewBox="0 0 100 100" style="position:absolute;left:46.8%;top:57.2%;width:27.2%;height:27.2%;pointer-events:none;">
               <circle cx="50" cy="50" r="45.5" fill="none" stroke="#e6dcc8" stroke-width="2.8" stroke-dasharray=".75 6.35" opacity=".6"></circle>
               <circle cx="50" cy="50" r="45.5" fill="none" stroke="#f3e3c6" stroke-width="3.2" stroke-dasharray="1.1 22.72" opacity=".9"></circle>
             </svg>
-            <!-- moon aperture -->
-            <div onClick="{{openBooks}}" onMouseEnter="{{hovBooks}}" onMouseLeave="{{hovOff}}" title="Book reviews" style="position:absolute;left:48.55%;top:59.05%;width:5.8%;height:5.8%;border-radius:50%;overflow:hidden;cursor:pointer;background:#070d24;box-shadow:0 0 0 .11vmin rgba(219,179,134,.65),inset 0 .2vmin .55vmin rgba(0,0,0,.78);" style-hover="box-shadow:0 0 0 .24vmin rgba(240,200,150,.8),inset 0 .2vmin .55vmin rgba(0,0,0,.78)">
-              <div style="position:absolute;left:-55%;top:-6%;width:210%;height:210%;border-radius:50%;background:radial-gradient(1.4% 1.4% at 22% 30%,#f0ead8 45%,transparent 60%),radial-gradient(1.1% 1.1% at 68% 18%,#e2e6f2 45%,transparent 60%),radial-gradient(.9% .9% at 45% 55%,#cfd6ea 45%,transparent 60%),radial-gradient(1.15% 1.15% at 80% 62%,#f0ead8 45%,transparent 60%),radial-gradient(.9% .9% at 30% 75%,#cfd6ea 45%,transparent 60%),radial-gradient(1.3% 1.3% at 60% 85%,#f0ead8 45%,transparent 60%),radial-gradient(1% 1% at 14% 52%,#e2e6f2 45%,transparent 60%),radial-gradient(circle at 40% 30%,#16264e 0%,#0d1834 45%,#060c1e 100%);transform:rotate({{moonDeg}}deg);">
-                <div style="position:absolute;left:42.85%;top:14.75%;width:14.3%;height:14.3%;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff6de,#f2d391 46%,#c99a45 100%);box-shadow:0 0 .9vmin rgba(245,215,140,.5),inset 0 -.08vmin .25vmin rgba(120,85,25,.55);"></div>
-                <div style="position:absolute;left:42.85%;top:68.05%;width:14.3%;height:14.3%;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff6de,#f2d391 46%,#c99a45 100%);box-shadow:inset 0 -.08vmin .25vmin rgba(120,85,25,.55);"></div>
-              </div>
-              <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(150deg,rgba(255,250,240,.16),transparent 45%);"></div>
+            <!-- Crisp Lange moon phase: one vector aperture, twin scallops, independent sky and moon discs -->
+            <div onClick="{{openBooks}}" onMouseEnter="{{hovBooks}}" onMouseLeave="{{hovOff}}" title="Book reviews — moon phase" style="position:absolute;left:49.35%;top:58.45%;width:22.1%;height:10.9%;cursor:pointer;" style-hover="filter:brightness(1.08)">
+              <svg viewBox="0 0 100 50" preserveAspectRatio="none" shape-rendering="geometricPrecision" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;">
+                <defs>
+                  <clipPath id="langeMoonAperture"><path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z"></path></clipPath>
+                  <linearGradient id="langeMoonSky" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#18a6d8"></stop><stop offset=".38" stop-color="#0873ae"></stop><stop offset=".64" stop-color="#064473"></stop><stop offset="1" stop-color="#02142d"></stop></linearGradient>
+                  <radialGradient id="langeMoonGold" cx="32%" cy="26%" r="72%"><stop offset="0" stop-color="#fff4dc"></stop><stop offset=".36" stop-color="#efc28b"></stop><stop offset=".7" stop-color="#d79b61"></stop><stop offset="1" stop-color="#744127"></stop></radialGradient>
+                </defs>
+                <g clip-path="url(#langeMoonAperture)">
+                  <g transform="rotate({{dayDeg}} 50 50)">
+                    <circle cx="50" cy="50" r="72" fill="url(#langeMoonSky)"></circle>
+                    <g fill="#f5f8ff">
+                      <circle cx="57" cy="10" r=".55"></circle><circle cx="64" cy="18" r=".35"></circle><circle cx="72" cy="8" r=".42"></circle><circle cx="79" cy="23" r=".5"></circle><circle cx="88" cy="14" r=".3"></circle><circle cx="91" cy="31" r=".42"></circle><circle cx="69" cy="33" r=".28"></circle><circle cx="84" cy="39" r=".34"></circle><circle cx="61" cy="27" r=".26"></circle>
+                    </g>
+                  </g>
+                  <g transform="rotate({{moonDeg}} 50 50)">
+                    <circle cx="50" cy="10" r="6.8" fill="url(#langeMoonGold)" stroke="#6f3e25" stroke-width=".45"></circle>
+                    <circle cx="50" cy="90" r="6.8" fill="url(#langeMoonGold)" stroke="#6f3e25" stroke-width=".45"></circle>
+                  </g>
+                </g>
+                <path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z" fill="none" stroke="rgba(225,183,137,.74)" stroke-width=".5" vector-effect="non-scaling-stroke"></path>
+              </svg>
             </div>
             <!-- seconds hand -->
             <div style="position:absolute;left:60.16%;top:63%;width:.48%;height:15.6%;transform:rotate({{secDeg}}deg);transform-origin:50% 50%;pointer-events:none;">
-              <div style="width:100%;height:100%;background:linear-gradient(100deg,#71351f,#ffe6cf 45%,#bb7048);border-radius:.3vmin;filter:drop-shadow(0 .1vmin .3vmin rgba(0,0,0,.5));animation:windUp .9s cubic-bezier(.34,1.25,.4,1) 1.55s both;transform-origin:50% 50%;"></div>
+              <div style="width:100%;height:100%;background:linear-gradient(100deg,#71351f,#ffe6cf 45%,#bb7048);border-radius:.3vmin;filter:drop-shadow(0 .1vmin .3vmin rgba(0,0,0,.5));animation:windUp .9s cubic-bezier(.34,1.25,.4,1) 2.62s both;transform-origin:50% 50%;"></div>
             </div>
             <div style="position:absolute;left:59.75%;top:70.15%;width:1.3%;height:1.3%;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0db,#c18b60 50%,#3c2115);pointer-events:none;"></div>
           </div>
@@ -150,7 +182,7 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
           <div onClick="{{openAbout}}" onMouseEnter="{{hovAbout}}" onMouseLeave="{{hovOff}}" style="position:absolute;left:6.5%;top:21.7%;width:50.6%;height:50.6%;border-radius:50%;cursor:pointer;" style-hover="box-shadow:0 0 0 .25vmin rgba(240,200,150,.52)"></div>
 
           <!-- ============ SAPPHIRE CRYSTAL ============ -->
-          <div style="position:absolute;inset:3.3%;border-radius:50%;pointer-events:none;overflow:hidden;animation:fadeIn 1.2s ease 1.5s both;">
+          <div style="position:absolute;inset:3.3%;border-radius:50%;pointer-events:none;overflow:hidden;animation:glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s both;">
             <div style="position:absolute;left:-30%;top:-62%;width:130%;height:118%;border-radius:50%;background:linear-gradient(154deg,rgba(255,252,246,.11) 0%,rgba(255,252,246,.045) 42%,transparent 68%);"></div>
             <div style="position:absolute;left:-18%;top:-8%;width:66%;height:150%;transform:rotate(-22deg);background:linear-gradient(90deg,transparent,rgba(255,252,246,.05) 40%,rgba(255,252,246,.075) 52%,transparent);"></div>
             <div style="position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 .2vmin .6vmin rgba(255,250,240,.22),inset 0 -.5vmin 1.4vmin rgba(0,0,0,.35);"></div>
@@ -160,12 +192,12 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
           </div>
 
           <sc-if value="{{showDots}}" hint-placeholder-val="{{false}}">
-            <div style="position:absolute;inset:0;pointer-events:none;">
+            <div style="position:absolute;inset:0;pointer-events:none;animation:fadeIn .5s ease 3.45s both;">
               <div style="position:absolute;left:31.3%;top:51%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out infinite;"></div>
               <div style="position:absolute;left:68.5%;top:25.5%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .3s infinite;"></div>
               <div style="position:absolute;left:66%;top:48%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .6s infinite;"></div>
               <div style="position:absolute;left:60%;top:77%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out .9s infinite;"></div>
-              <div style="position:absolute;left:51.2%;top:61.4%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out 1.2s infinite;"></div>
+              <div style="position:absolute;left:60%;top:63.3%;width:.8%;height:.8%;border-radius:50%;background:rgba(232,170,126,.58);animation:pulseRing 1.8s ease-out 1.2s infinite;"></div>
             </div>
           </sc-if>
         </div>
@@ -204,9 +236,9 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
   </div>
 
   <!-- caption -->
-  <div style="height:5vmin;margin-top:2.5vmin;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1.35vmin;letter-spacing:.3em;color:#b9a184;text-align:center;animation:fadeIn 1s ease 1.9s both;transition:opacity .4s;">{{caption}}</div>
+  <div style="height:5vmin;margin-top:2.5vmin;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1.35vmin;letter-spacing:.3em;color:#b9a184;text-align:center;animation:fadeIn .8s ease 3.05s both;transition:opacity .4s;">{{caption}}</div>
   <sc-if value="{{showHintBar}}" hint-placeholder-val="{{false}}">
-    <div style="position:absolute;bottom:2.6vmin;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:1.05vmin;letter-spacing:.24em;color:#5b6172;animation:fadeIn 1s ease 2.3s both;">DIAL · DATE · SECONDS · RESERVE · MOON — CLICK TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;CROWN TO FLIP</div>
+    <div style="position:absolute;bottom:2.6vmin;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:1.05vmin;letter-spacing:.24em;color:#5b6172;animation:fadeIn .8s ease 3.35s both;">DIAL · DATE · SECONDS · RESERVE · MOON — CLICK TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;CROWN TO FLIP</div>
   </sc-if>
 
   <!-- ===================== SECTIONS ===================== -->
@@ -362,7 +394,7 @@ a{color:#c98662;text-decoration:none} a:hover{color:#efc1a0}
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;transitionStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;zoom&quot;,&quot;panel&quot;,&quot;takeover&quot;],&quot;default&quot;:&quot;zoom&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;showHints&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;secondsMotion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;mechanical&quot;,&quot;quartz&quot;,&quot;smooth&quot;],&quot;default&quot;:&quot;mechanical&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Movement&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;transitionStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;panel&quot;,&quot;zoom&quot;,&quot;takeover&quot;],&quot;default&quot;:&quot;panel&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;showHints&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Experience&quot;},&quot;secondsMotion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;mechanical&quot;,&quot;quartz&quot;,&quot;smooth&quot;],&quot;default&quot;:&quot;mechanical&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Movement&quot;}}">
 class Component extends DCLogic {
   state = { now: Date.now(), active: null, hover: null, flipped: false, reserve: 0.72, touched: false, reqOpen: false, reqDone: false, reqType: 'watch' };
   componentDidMount() {
@@ -398,12 +430,12 @@ class Component extends DCLogic {
       pusher: 'REQUEST A REVIEW — A HIDDEN PUSHER'
     };
     const caption = s.hover ? captions[s.hover] : (s.active || s.reqOpen ? '' : (s.flipped ? 'CLICK THE CROWN TO TURN BACK' : 'CURRENTLY ' + cur.label + ' — ' + cur.value.toUpperCase()));
-    const t = this.props.transitionStyle ?? 'zoom';
-    const origins = { about: '31.8% 47%', featured: '63.75% 26.05%', currently: '60.4% 70.8%', resume: '65.5% 47.5%', books: '51.45% 61.95%' };
+    const t = this.props.transitionStyle ?? 'panel';
+    const origins = { about: '31.8% 47%', featured: '63.75% 26.05%', currently: '60.4% 70.8%', resume: '65.5% 47.5%', books: '60.4% 63.9%' };
     let wt = 'none', wf = 'none', origin = '50% 50%';
     if (s.active) {
-      if (t === 'zoom') { wt = 'scale(2.3)'; wf = 'blur(12px) brightness(.4)'; origin = origins[s.active] || '50% 50%'; }
-      else if (t === 'panel') { wt = 'translateX(-22vw) scale(.88)'; wf = 'brightness(.8)'; }
+      if (t === 'zoom') { wt = 'scale(1.55)'; wf = 'blur(6px) brightness(.5)'; origin = origins[s.active] || '50% 50%'; }
+      else if (t === 'panel') { wt = 'translateX(-28vw) scale(.72)'; wf = 'brightness(.62) saturate(.82)'; }
       else { wt = 'scale(.5)'; wf = 'blur(6px) brightness(.3)'; }
     }
     const mk = (id) => ({ open: () => this.open(id), hov: () => this.setState({ hover: id }) });
@@ -412,6 +444,7 @@ class Component extends DCLogic {
       hourDeg: (hr * 30).toFixed(2), minDeg: (min * 6).toFixed(2), secDeg: (sec * 6).toFixed(2),
       dateTens: Math.floor(date / 10), dateOnes: date % 10,
       moonDeg: ((age / syn) * 180 - 90).toFixed(2),
+      dayDeg: ((((d.getHours() + d.getMinutes() / 60) / 24) * 360) - 90).toFixed(2),
       reserveDeg: (18 - s.reserve * 38).toFixed(1), reservePct: Math.round(s.reserve * 100),
       flipDeg: s.flipped ? 180 : 0,
       frontOpacity: s.flipped ? 0 : 1, backOpacity: s.flipped ? 1 : 0,

@@ -21,6 +21,8 @@ All values are percentages of the circular case diameter.
 | Outsize date | 53.50 | 20.30 | 20.50 | Slightly overlaps the hour-dial field |
 | Power reserve pivot | 65.50 | 47.50 | — | Hand reads toward the right-side scale |
 | Small seconds | 46.80 | 57.20 | 27.20 | Center at 60.40 / 70.80 |
+| Moon phase | 49.35 | 58.45 | 22.10 | Centered in the upper half of small seconds |
+| Date corrector | center 6.20 | center 24.20 | 8.65 × 2.10 | Mirrored bowed cap at −60°, seated flush into the case |
 | Maker signature | 21.50 | 10.70 | 57.00 | Centered above the complications |
 
 ## Color and material tokens
@@ -60,6 +62,9 @@ The case uses a champagne/rose-gold ramp with warm brown shadows—not orange co
 ## Motion and interaction
 
 - Preserve real-time mechanical seconds, live hour/minute hands, loading assembly, complication zooms, hover captions, and crown flip.
+- The opening assembly is visible after the loader clears: outer case seats first, followed by bezel and rehaut, the navy dial, the three complication groups, maker signature, hands, correctors, and finally the sapphire crystal. The sequence completes in roughly 3.7 seconds and collapses to near-instant motion when reduced motion is requested.
+- Content opens in a restrained right-side panel by default; the watch remains visible at reduced scale on the left instead of disappearing under an oversized blurred zoom.
 - Every motion must explain function or depth. No ambient floating, glow, or ornamental looping.
 - The moon/book control remains as a deliberately reduced portfolio affordance so the Lange 1 composition stays dominant.
-
+- The moon display follows Lange's two-level construction: a 24-hour blue day/night disc behind a separate solid-gold double-moon orbit. The aperture, stars, moon edges, and twin lower scallops are crisp SVG geometry with no blurred mask or soft dome overlay.
+- The 10 o'clock review control follows the official Lange date corrector: a compact rose-gold cap (about eight and a half percent of case diameter), aligned to the front-view case tangent at approximately −60°. Its ends and inset corners are mirrored, its long edges bow subtly with the case circumference, and the cap is partially seated into the case with no visible stand-off.
