@@ -508,6 +508,16 @@ a:hover { color: var(--gold-line-hover); }
   fill: #6d6046;
   opacity: .82;
 }
+/* gold-filled engraving, as on the plate of the real movement */
+.mv-engrave-gold {
+  font-family: var(--font-display);
+  font-size: 2.9px;
+  letter-spacing: .4px;
+  fill: #a8842f;
+  paint-order: stroke;
+  stroke: rgba(60,42,12,.45);
+  stroke-width: .18;
+}
 .mv-engrave-sm {
   font-family: var(--font-mono);
   font-size: 2.1px;
