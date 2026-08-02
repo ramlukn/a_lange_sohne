@@ -475,6 +475,11 @@ a:hover { color: var(--gold-line-hover); }
   border-radius: 50%;
   pointer-events: none;
   background:
+    /* soft vertical bands: the room reflected in the sapphire */
+    linear-gradient(90deg,
+      transparent 0 9%, rgba(255,252,246,.05) 12%, rgba(255,252,246,.055) 15%, transparent 19%,
+      transparent 38%, rgba(255,252,246,.035) 43%, transparent 48%,
+      transparent 70%, rgba(255,252,246,.045) 75%, rgba(255,252,246,.03) 78%, transparent 83%),
     linear-gradient(152deg, rgba(255,252,246,.16) 0%, rgba(255,252,246,.05) 34%, transparent 58%),
     radial-gradient(circle at 50% 50%, transparent 0 93%, rgba(215,235,255,.16) 96%, rgba(255,252,246,.3) 99%);
 }
