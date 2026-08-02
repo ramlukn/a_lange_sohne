@@ -1,0 +1,15 @@
+{
+  "name": "lange-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nikhil Ramlukan's personal portfolio expressed as an interactive Lange 1 mechanical watch.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 8765",
+    "build": "vite build",
+    "preview": "vite preview --port 8765"
+  },
+  "devDependencies": {
+    "vite": "^7.1.5"
+  }
+}
