@@ -498,15 +498,17 @@ a:hover { color: var(--gold-line-hover); }
   letter-spacing: .16px;
   fill: #9d7020;
 }
-.dg-cock-engrave { fill: none; stroke: #6d5a2c; stroke-width: .22; stroke-linecap: round; opacity: .9; }
-.dg-cock-engrave circle { fill: none; stroke: #6d5a2c; stroke-width: .22; }
+.dg-cock-engrave { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dg-cock-engrave circle { fill: none; }
+.dg-eng-cut, .dg-eng-cut path, .dg-eng-cut circle { stroke: #6b5426; stroke-width: .24; opacity: .95; }
+.dg-eng-relief, .dg-eng-relief path, .dg-eng-relief circle { stroke: #fff7e2; stroke-width: .28; opacity: .7; }
 .mv-wheel { }
 .mv-hairspring { fill: none; stroke: #d7dbe1; stroke-width: .3; opacity: .9; }
 
 /* 21,600 vph = 3 Hz — one full oscillation every 1/3 s */
 .mv-balance {
   transform-box: view-box;
-  transform-origin: 17.3px 53px;
+  transform-origin: 26px 71px;
   animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite;
 }
 .mv-cock-body { fill: url(#mvCock); }
