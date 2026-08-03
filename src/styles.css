@@ -486,7 +486,20 @@ a:hover { color: var(--gold-line-hover); }
 
 /* three-quarter plate */
 .mv-plate-shape { }
-.mv-sunburst line { stroke: rgba(110,80,26,.28); stroke-width: .09; }
+.dg-eng-lg {
+  font-family: var(--font-display);
+  font-size: 2.9px;
+  letter-spacing: .3px;
+  fill: #a5761f;
+}
+.dg-eng-sm {
+  font-family: var(--font-display);
+  font-size: 1.85px;
+  letter-spacing: .16px;
+  fill: #9d7020;
+}
+.dg-cock-engrave { fill: none; stroke: #6d5a2c; stroke-width: .22; stroke-linecap: round; opacity: .9; }
+.dg-cock-engrave circle { fill: none; stroke: #6d5a2c; stroke-width: .22; }
 .mv-wheel { }
 .mv-hairspring { fill: none; stroke: #d7dbe1; stroke-width: .3; opacity: .9; }
 
@@ -532,84 +545,30 @@ a:hover { color: var(--gold-line-hover); }
   fill: #ab8433;
 }
 
-/* hallmarks on the case band, where they sit on the real case */
-.cb-hallmark {
+/* contacts engraved into the case band, where the hallmarks sit */
+.cb-links {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 2.6%;
-  text-align: center;
+  bottom: 2.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .9vmin;
   font-family: var(--font-mono);
-  font-size: 1.02vmin;
-  letter-spacing: .3em;
+  font-size: 1.15vmin;
+  letter-spacing: .26em;
+}
+.cb-links span { color: rgba(74,38,17,.45); }
+.cb-links a {
   color: #4a2611;
-  opacity: .6;
-  text-shadow: 0 .08vmin 0 rgba(255,236,210,.4);
-  pointer-events: none;
+  opacity: .85;
+  padding: .5vmin .3vmin;
+  text-shadow: 0 .08vmin 0 rgba(255,236,210,.45);
+  transition: opacity .25s, color .25s;
 }
-
-/* Contact pushers, seated in the polished reserve.
-   Sized and placed in % of the aperture, which the movement's
-   0-100 viewBox maps onto 1:1, so they land in the milled pocket. */
-.cb-btn {
-  position: absolute;
-  top: 53.5%;
-  width: 7%;
-  height: 7%;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  /* the gold bezel of a screwed setting */
-  background: radial-gradient(circle at 34% 28%, #fbeec4, #d7a748 52%, #8a6420);
-  box-shadow: 0 .28vmin .7vmin rgba(40,26,6,.55), inset 0 0 0 .1vmin rgba(255,244,214,.7);
-  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s, filter .25s;
-}
-.cb-btn-1 { left: 39.5%; }
-.cb-btn-2 { left: 48.5%; }
-.cb-btn-3 { left: 57.5%; }
-/* the visual size is fixed by the movement's proportions, so grow the
-   hit area instead — up to the gap between pushers, never past it */
-.cb-btn::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 115%;
-  height: 115%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-.cb-btn-face {
-  width: 74%;
-  height: 74%;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  /* the recessed, blued face the icon is engraved into */
-  background: radial-gradient(circle at 36% 28%, #37507f, #1d3260 55%, #101d3c);
-  box-shadow: inset 0 .12vmin .34vmin rgba(0,0,0,.7), inset 0 -.08vmin 0 rgba(150,180,235,.35);
-}
-.cb-btn svg {
-  width: 62%;
-  height: 62%;
-  fill: none;
-  stroke: #f3e6c6;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: .92;
-  transition: stroke .25s;
-}
-.cb-btn:hover,
-.cb-btn:focus-visible {
-  transform: translateY(-.28vmin);
-  filter: brightness(1.08);
-  box-shadow: 0 .5vmin 1.1vmin rgba(40,26,6,.6), inset 0 0 0 .1vmin rgba(255,248,226,.9), 0 0 0 .22vmin rgba(240,206,150,.5);
-  outline: none;
-}
-.cb-btn:hover svg,
-.cb-btn:focus-visible svg { stroke: #fff8e6; opacity: 1; }
-.cb-btn:active { transform: translateY(0); }
+.cb-links a:hover,
+.cb-links a:focus-visible { color: #2c1406; opacity: 1; outline: none; }
 
 /* ===================== CAPTION + HINT BAR ===================== */
 .caption {
@@ -639,16 +598,6 @@ a:hover { color: var(--gold-line-hover); }
   animation: fadeIn .8s ease 3.35s both;
 }
 .hint-bar[hidden] { display: none; }
-
-/* Below ~640px the watch itself is only ~320px across, so the reserve and
-   its pushers are scaled up to keep the tap targets usable. */
-@media (max-width: 640px) {
-  .mv-reserve { transform: scale(1.34); transform-origin: 52px 57px; transform-box: view-box; }
-  .cb-btn { width: 11%; height: 11%; top: 51.5%; }
-  .cb-btn-1 { left: 32%; }
-  .cb-btn-2 { left: 45%; }
-  .cb-btn-3 { left: 58%; }
-}
 
 /* ===================== PANELS ===================== */
 .overlay {
