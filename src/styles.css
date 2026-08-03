@@ -834,8 +834,11 @@ a:hover { color: var(--gold-line-hover); }
 
 
 /* ===================== OPENWORKED LANGE ===================== */
-.lg-tourb { transform-box: view-box; transform-origin: 34px 66px; animation: tourbSpin 60s linear infinite; }
-.lg-bal   { transform-box: view-box; transform-origin: 34px 66px; animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite; }
+
+.lg-bal { transform-box: view-box; transform-origin: 38px 68px; animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite; }
+/* the going train turns: the barrel creeps, the escape wheel ticks */
+.pt-train { transform-box: view-box; }
+.pt-barrel { transform-box: view-box; transform-origin: 30px 33px; }
 .lg-engrave { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .lg-engrave circle { fill: none; }
 .lg-eng-cut, .lg-eng-cut path, .lg-eng-cut circle { stroke: #6b6148; stroke-width: .26; opacity: .95; }
