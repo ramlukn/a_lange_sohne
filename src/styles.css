@@ -55,6 +55,7 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes tourbSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes balanceOsc { 0% { transform: rotate(-118deg); } 50% { transform: rotate(118deg); } 100% { transform: rotate(-118deg); } }
 @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(217,162,107,.4); } 100% { box-shadow: 0 0 0 12px rgba(217,162,107,0); } }
 
@@ -817,3 +818,16 @@ a:hover { color: var(--gold-line-hover); }
 .req-done[hidden] { display: none; }
 .req-done-title { font-family: var(--font-display); font-size: 22px; color: var(--gold-line-hover); margin-bottom: 10px; }
 .req-done-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--muted); }
+
+
+/* ===================== SKELETON TOURBILLON ===================== */
+.sk-tourb {
+  transform-box: view-box;
+  transform-origin: 50px 73px;
+  animation: tourbSpin 60s linear infinite;
+}
+.sk-bal {
+  transform-box: view-box;
+  transform-origin: 50px 73px;
+  animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite;
+}
