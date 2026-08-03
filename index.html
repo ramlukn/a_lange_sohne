@@ -226,6 +226,12 @@
                   <stop offset=".63" stop-color="#fffdf6" stop-opacity=".2"/>
                   <stop offset="1" stop-color="#fffdf6" stop-opacity="0"/>
                 </linearGradient>
+                <linearGradient id="mvReserveFace" x1=".1" y1="0" x2=".35" y2="1">
+                  <stop offset="0" stop-color="#b0a488"/>
+                  <stop offset=".3" stop-color="#ddd3ba"/>
+                  <stop offset=".72" stop-color="#f2ecdb"/>
+                  <stop offset="1" stop-color="#e4dbc4"/>
+                </linearGradient>
                 <linearGradient id="mvWheelLight" x1=".15" y1="0" x2=".85" y2="1">
                   <stop offset="0" stop-color="#ffffff" stop-opacity=".9"/>
                   <stop offset=".42" stop-color="#ffffff" stop-opacity="0"/>
@@ -382,8 +388,8 @@
                   <g transform="translate(51,43)"><circle r="0.55" fill="url(#mvSteelScrew)"/><circle r="0.55" fill="none" stroke="#8b9098" stroke-width=".1"/></g>
                 </g>
                 <g filter="url(#mvDropSm)">
-                  <g transform="translate(40,55) rotate(34)"><circle r="1.02" fill="url(#mvSteelScrew)"/><circle r="1.02" fill="none" stroke="#7f858d" stroke-width=".13"/><rect x="-.7" y="-.14" width="1.4" height=".28" rx=".13" fill="#6a6f76"/></g>
-                  <g transform="translate(58,60) rotate(-20)"><circle r="1.02" fill="url(#mvSteelScrew)"/><circle r="1.02" fill="none" stroke="#7f858d" stroke-width=".13"/><rect x="-.7" y="-.14" width="1.4" height=".28" rx=".13" fill="#6a6f76"/></g>
+                  <g transform="translate(36,40) rotate(34)"><circle r="1.02" fill="url(#mvSteelScrew)"/><circle r="1.02" fill="none" stroke="#7f858d" stroke-width=".13"/><rect x="-.7" y="-.14" width="1.4" height=".28" rx=".13" fill="#6a6f76"/></g>
+                  <g transform="translate(60,36) rotate(-20)"><circle r="1.02" fill="url(#mvSteelScrew)"/><circle r="1.02" fill="none" stroke="#7f858d" stroke-width=".13"/><rect x="-.7" y="-.14" width="1.4" height=".28" rx=".13" fill="#6a6f76"/></g>
                 </g>
                 <g filter="url(#mvDropSm)">
                   <g transform="translate(54,6) rotate(30)"><circle r="1.05" fill="url(#mvBlue)"/><circle r="1.05" fill="none" stroke="#101f45" stroke-width=".13"/><circle r="1.05" fill="none" stroke="#8fb0ee" stroke-width=".16" stroke-dasharray=".9 2.4" opacity=".7"/><rect x="-.72" y="-.14" width="1.44" height=".28" rx=".13" fill="#0b1428"/></g>
@@ -520,6 +526,17 @@
                   </g>
                 </g>
 
+                <!-- contact reserve: a smooth polished pocket milled into the ribbing,
+                     the finishing contrast a watchmaker uses to set an area apart -->
+                <g class="mv-reserve">
+                  <rect x="35.5" y="49" width="33" height="16" rx="8" fill="#4b432f" opacity=".5"/>
+                  <rect x="35.5" y="49" width="33" height="16" rx="8" fill="url(#mvReserveFace)"/>
+                  <rect x="35.5" y="49" width="33" height="16" rx="8" fill="none" stroke="#8a7c5d" stroke-width=".34"/>
+                  <path d="M43.5,49.2 H60.5" stroke="rgba(52,38,14,.45)" stroke-width=".7" fill="none"/>
+                  <rect x="36.1" y="49.6" width="31.8" height="14.8" rx="7.4" fill="none" stroke="rgba(255,253,244,.75)" stroke-width=".3"/>
+                  <text class="mv-gold-sm" x="52" y="46" text-anchor="middle">CONTACT</text>
+                </g>
+
                 <!-- one upper-left light across the whole movement -->
                 <circle cx="50" cy="50" r="50" fill="url(#mvSheen)" opacity=".26" style="mix-blend-mode:soft-light"/>
                 <!-- plate inner shadow -->
@@ -527,16 +544,14 @@
               </g>
             </svg>
             <div class="cb-sapphire"></div>
+            <!-- contacts, seated in the reserve as jewelled pushers -->
+            <a class="cb-btn cb-btn-1" href="mailto:hello@example.com" aria-label="Email" title="Email"><span class="cb-btn-face"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="1.6"/><path d="M3.9 7.2 12 13l8.1-5.8"/></svg></span></a>
+            <a class="cb-btn cb-btn-2" href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><span class="cb-btn-face"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.8" cy="17.6" r="2.4"/><circle cx="12" cy="6.2" r="2.4"/><circle cx="18.2" cy="15.2" r="2.4"/><path d="M7 15.5 10.9 8.4M13.9 7.6 16.5 12.9"/></svg></span></a>
+            <a class="cb-btn cb-btn-3" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><span class="cb-btn-face"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 7.4 4 12l5.2 4.6M14.8 7.4 20 12l-5.2 4.6"/></svg></span></a>
           </div>
 
-          <!-- contact, engraved into the case band where the hallmarks sit -->
-          <div class="cb-links">
-            <a href="mailto:hello@example.com">EMAIL</a>
-            <span>·</span>
-            <a href="https://linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
-            <span>·</span>
-            <a href="https://github.com" target="_blank" rel="noopener">GITHUB</a>
-          </div>
+          <!-- hallmarks, where they sit on the real case -->
+          <div class="cb-hallmark">Au 750 &nbsp;·&nbsp; N&#186; 1 &nbsp;·&nbsp; 250735</div>
         </div>
 
       </div>
