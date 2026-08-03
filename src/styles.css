@@ -835,7 +835,7 @@ a:hover { color: var(--gold-line-hover); }
 
 /* ===================== OPENWORKED LANGE ===================== */
 
-.lg-bal { transform-box: view-box; transform-origin: 38px 68px; animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite; }
+.lg-bal { transform-box: view-box; transform-origin: 26px 64px; animation: balanceOsc .3333s cubic-bezier(.45,0,.55,1) infinite; }
 /* the going train turns: the barrel creeps, the escape wheel ticks */
 .pt-train { transform-box: view-box; }
 .pt-barrel { transform-box: view-box; transform-origin: 30px 33px; }
@@ -843,5 +843,5 @@ a:hover { color: var(--gold-line-hover); }
 .lg-engrave circle { fill: none; }
 .lg-eng-cut, .lg-eng-cut path, .lg-eng-cut circle { stroke: #6b6148; stroke-width: .26; opacity: .95; }
 .lg-eng-relief, .lg-eng-relief path, .lg-eng-relief circle { stroke: #fffdf2; stroke-width: .3; opacity: .7; }
-.lg-eng-gold { font-family: var(--font-display); font-size: 3px; letter-spacing: .28px; fill: #a8802c; }
-.lg-eng-gold-sm { font-family: var(--font-display); font-size: 1.85px; letter-spacing: .16px; fill: #9e7828; }
+.lg-eng-gold { font-family: var(--font-display); font-size: 2.9px; letter-spacing: .26px; fill: #8a6414; }
+.lg-eng-gold-sm { font-family: var(--font-display); font-size: 1.8px; letter-spacing: .15px; fill: #8a6414; }
