@@ -64,6 +64,7 @@ a:hover { color: var(--gold-line-hover); }
     animation-delay: 0s !important;
     transition-duration: .01ms !important;
   }
+  .cb-gear, .cb-balance { animation: none !important; }
 }
 
 /* ===================== STAGE ===================== */
@@ -469,6 +470,13 @@ a:hover { color: var(--gold-line-hover); }
   background: radial-gradient(circle at 34% 28%, #171009, #060309);
 }
 /* the rendered calibre; scaled so its own flange crops out — our ring frames it */
+.cb-movement {
+  position: absolute;
+  inset: 0;
+  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
+  transform: scale(1.56) translate(1.3%, 1.61%);
+  pointer-events: none;
+}
 .cb-movement-image {
   position: absolute;
   inset: 0;
@@ -476,10 +484,36 @@ a:hover { color: var(--gold-line-hover); }
   height: 100%;
   display: block;
   object-fit: cover;
-  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
-  transform: scale(1.56) translate(1.3%, 1.61%);
-  pointer-events: none;
 }
+
+/* living movement: rotating/oscillating cutouts of the render itself, with
+   aligned static patches restoring the bridgework painted above them */
+.cb-anim, .cb-patch {
+  position: absolute;
+  background-image: url('/assets/caseback/l9511-simplified-n-roshan-ramlukan.webp');
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+.cb-patch {
+  -webkit-mask: radial-gradient(circle, #000 0 62%, transparent 88%);
+  mask: radial-gradient(circle, #000 0 62%, transparent 88%);
+}
+.cb-gear {
+  /* circle minus the bridge-finger corridor on the right: the finger and the
+     pixels beneath it stay static; spokes fade out under the bridge's shadow */
+  -webkit-mask-image: radial-gradient(circle, #000 0 92%, transparent 98%), linear-gradient(90deg, transparent 0 76%, #000 85% 100%), radial-gradient(circle at 78% 10%, #000 0 9%, transparent 15%);
+  -webkit-mask-composite: destination-out, destination-out;
+  mask-image: radial-gradient(circle, #000 0 92%, transparent 98%), linear-gradient(90deg, transparent 0 76%, #000 85% 100%), radial-gradient(circle at 78% 10%, #000 0 9%, transparent 15%);
+  mask-composite: subtract, subtract;
+  animation: cbGearSpin 60s linear infinite;
+}
+.cb-balance {
+  -webkit-mask: radial-gradient(circle, transparent 0 58%, #000 66% 92%, transparent 98%);
+  mask: radial-gradient(circle, transparent 0 58%, #000 66% 92%, transparent 98%);
+  animation: cbBalanceSwing .4s cubic-bezier(.37,0,.63,1) infinite;
+}
+@keyframes cbGearSpin { to { transform: rotate(360deg); } }
+@keyframes cbBalanceSwing { 0%, 100% { transform: rotate(-13deg); } 50% { transform: rotate(13deg); } }
 
 /* case wall occluding the movement rim — dark crescent up-left, per the light */
 .cb-case-shadow {
