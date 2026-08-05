@@ -3,3 +3,8 @@ dist/
 .DS_Store
 *.zip
 .image-slots.state.json
+tools/qa/
+.claude/
+.thumbnail
+tmp/
+uploads/
