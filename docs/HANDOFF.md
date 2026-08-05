@@ -1,3 +1,7 @@
+> Restructure note (2026-08-04): legacy prototypes (`support.js`, `image-slot.js`,
+> `Lange Experience.dc.html`) were removed from the tree (git history keeps them);
+> docs and reference images now live in `docs/`; `.claude/` is untracked dev tooling.
+
 # Claude handoff — Nikhil Ramlukan Lange 1 portfolio
 
 ## Copy-paste master prompt
@@ -101,7 +105,7 @@ This control has been refined repeatedly and must not regress.
 | Small seconds | Currently |
 | Power reserve | Experience / resume |
 | Moonphase | Book reviews |
-| Crown at 3 o'clock | Flip to caseback / contact |
+| Crown at 3 o'clock | Flip to the movement display back |
 | Corrector at 10 o'clock | Request a review |
 | Escape key | Close active panel |
 
@@ -133,7 +137,7 @@ Motion must explain assembly, mechanical function, panel navigation, or depth. D
 - Astronomical moon age based on the existing synodic calculation.
 - Time-of-day rotation for the day/night disc.
 - Rotating “currently” text.
-- Crown flip to animated caseback.
+- Crown flip to the sapphire display back; the balance beats at 2.5 Hz (regenerate the movement with `node tools/generate-movement.mjs && node tools/update-movement.mjs`, never by hand-editing the inline SVG).
 - Hover captions and optional interaction hints.
 - Request-review modal and its watch/book selection.
 - Resume scroll updating the power-reserve indicator.
