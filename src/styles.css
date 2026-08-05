@@ -106,7 +106,7 @@ a:hover { color: var(--gold-line-hover); }
 .loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill .62s cubic-bezier(.4,0,.2,1) both; }
 
 /* ===================== WATCH SHELL ===================== */
-.watch-stage { position: relative; width: 86vmin; height: 86vmin; perspective: 2400px; --case-depth: 4.6vmin; }
+.watch-stage { position: relative; width: 86vmin; height: 86vmin; perspective: 2400px; --case-depth: 6vmin; }
 .watch-pose {
   position: absolute;
   inset: 0;
