@@ -64,7 +64,6 @@ a:hover { color: var(--gold-line-hover); }
     animation-delay: 0s !important;
     transition-duration: .01ms !important;
   }
-  .cb-rig { display: none !important; }  /* static original render is the caseback */
 }
 
 /* ===================== STAGE ===================== */
@@ -470,13 +469,6 @@ a:hover { color: var(--gold-line-hover); }
   background: radial-gradient(circle at 34% 28%, #171009, #060309);
 }
 /* the rendered calibre; scaled so its own flange crops out — our ring frames it */
-.cb-movement {
-  position: absolute;
-  inset: 0;
-  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
-  transform: scale(1.56) translate(1.3%, 1.61%);
-  pointer-events: none;
-}
 .cb-movement-image {
   position: absolute;
   inset: 0;
@@ -484,61 +476,9 @@ a:hover { color: var(--gold-line-hover); }
   height: 100%;
   display: block;
   object-fit: cover;
-}
-
-/* living movement: the original render stays the base; native-resolution part
-   sprites rotate above it inside static occluder-masked windows. The spec layer
-   (plus-lighter) keeps the render's low-frequency lighting anchored in space
-   while the metal turns beneath it. Identity at rest is machine-verified. */
-.cb-rig {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
+  transform: scale(1.56) translate(1.3%, 1.61%);
   pointer-events: none;
-}
-@supports ((mask-image: url("")) or (-webkit-mask-image: url(""))) {
-  .rig-ready .cb-rig { opacity: 1; transition: opacity .2s linear; }
-}
-.cb-rig-win {
-  position: absolute;
-  -webkit-mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-}
-.cb-rig-part, .cb-rig-spec {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.cb-rig-spec { mix-blend-mode: plus-lighter; }
-.cb-rig-part { animation-play-state: paused; }
-.is-flipped .cb-rig-part { animation-play-state: running; }
-
-/* 60 s/rev in 300 escapement steps: the train advances 1.2 degrees per balance
-   beat instead of gliding (swap steps(...) for linear if it reads as judder) */
-.cb-rig--gear    { animation: cbRigSpin 60s steps(300, end) infinite; }
-.cb-rig--balance { animation: cbRigSwing .2s cubic-bezier(.37,0,.63,1) infinite; }
-@keyframes cbRigSpin  { to { transform: rotate(360deg); } }
-@keyframes cbRigSwing { 0%, 100% { transform: rotate(-13deg); } 50% { transform: rotate(13deg); } }
-
-/* one pass of light as the caseback lands in the 315-degree key light */
-.cb-rig-sheen {
-  position: absolute;
-  inset: 0 -40%;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(115deg,
-    transparent 40%, rgba(255,250,240,.06) 48%, rgba(255,250,240,.03) 53%, transparent 61%);
-}
-.is-flipped .cb-rig-sheen { animation: cbRigSheen 1.5s cubic-bezier(.33,0,.2,1) .5s both; }
-@keyframes cbRigSheen {
-  from { transform: translateX(-38%); opacity: 0; }
-  15%  { opacity: 1; }
-  85%  { opacity: 1; }
-  to   { transform: translateX(38%); opacity: 0; }
 }
 
 /* case wall occluding the movement rim — dark crescent up-left, per the light */
