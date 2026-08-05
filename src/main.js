@@ -147,6 +147,7 @@ function render() {
   el.pose.style.transformOrigin = pose.origin;
 
   el.flip.style.transform = `rotateY(${state.flipped ? 180 : 0}deg)`;
+  el.flip.classList.toggle('is-flipped', state.flipped);
   el.front.style.opacity = state.flipped ? 0 : 1;
   el.back.style.opacity = state.flipped ? 1 : 0;
 
@@ -235,3 +236,12 @@ window.addEventListener('keydown', (e) => {
 
 render();
 setInterval(render, 100);
+
+// living caseback: reveal the sprite rig only once every layer has loaded,
+// so it can never appear piecemeal. Any failure leaves the original render.
+// (load events, not decode(): decode stalls in background/hidden tabs)
+Promise.all([...document.querySelectorAll('.cb-rig img')].map((i) =>
+  i.complete && i.naturalWidth ? Promise.resolve()
+    : new Promise((res, rej) => { i.addEventListener('load', res); i.addEventListener('error', rej); })
+)).then(() => document.getElementById('faceBack').classList.add('rig-ready'))
+  .catch(() => {});

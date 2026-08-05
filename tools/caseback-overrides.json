@@ -1,0 +1,134 @@
+{
+  "master_sha256": "e26a30d0611878280a0af3728b8c43766f629d56dfaf10b7209ce1901efe9e97",
+  "parts": {
+    "gear": {
+      "seed_center": [
+        501.5,
+        629.5
+      ],
+      "radius_band": [
+        70,
+        92
+      ],
+      "harmonic_band": [
+        60,
+        140
+      ],
+      "occluders": [
+        {
+          "name": "bridge-finger",
+          "mode": "replace",
+          "polygon_px": [
+            [
+              508,
+              516
+            ],
+            [
+              664,
+              516
+            ],
+            [
+              676,
+              640
+            ],
+            [
+              650,
+              708
+            ],
+            [
+              558,
+              708
+            ],
+            [
+              530,
+              674
+            ],
+            [
+              520,
+              636
+            ],
+            [
+              514,
+              568
+            ]
+          ],
+          "feather_px": 1.5
+        }
+      ]
+    },
+    "balance": {
+      "seed_center": [
+        683.5,
+        841.5
+      ],
+      "radius_band": [
+        95,
+        130
+      ],
+      "harmonic_band": [
+        10,
+        40
+      ],
+      "annulus": [
+        78,
+        126
+      ],
+      "occluders": [
+        {
+          "name": "cock-and-regulator",
+          "mode": "replace",
+          "polygon_px": [
+            [
+              683,
+              700
+            ],
+            [
+              760,
+              700
+            ],
+            [
+              980,
+              700
+            ],
+            [
+              980,
+              980
+            ],
+            [
+              770,
+              980
+            ],
+            [
+              726,
+              918
+            ],
+            [
+              700,
+              880
+            ],
+            [
+              694,
+              852
+            ]
+          ],
+          "feather_px": 1.5
+        }
+      ]
+    },
+    "topwheel": {
+      "seed_center": [
+        556,
+        450
+      ],
+      "radius_band": [
+        34,
+        52
+      ],
+      "harmonic_band": [
+        20,
+        90
+      ],
+      "occluders": []
+    }
+  }
+}

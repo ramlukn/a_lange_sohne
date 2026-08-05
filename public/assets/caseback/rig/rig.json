@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "image": {
+    "w": 1254,
+    "h": 1254,
+    "master_sha256": "e26a30d0611878280a0af3728b8c43766f629d56dfaf10b7209ce1901efe9e97"
+  },
+  "parts": [
+    {
+      "name": "gear",
+      "center": [
+        503.59,
+        628.64
+      ],
+      "box_px": [
+        413,
+        538,
+        182,
+        182
+      ],
+      "r_in": 0.0,
+      "r_out": 85.24,
+      "origin_pct": [
+        49.775,
+        49.802
+      ],
+      "files": {
+        "sprite": "gear.webp",
+        "spec": "gear-spec.webp",
+        "occluder": "gear-occluder.png"
+      },
+      "gate": {
+        "core_max": 0.0,
+        "core_over2_px": 0,
+        "ring_p99": 0.18823623657226562
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "cw",
+        "easing": "steps(300, end)"
+      }
+    },
+    {
+      "name": "balance",
+      "center": [
+        681.63,
+        840.64
+      ],
+      "box_px": [
+        550,
+        709,
+        264,
+        264
+      ],
+      "r_in": 78,
+      "r_out": 126,
+      "origin_pct": [
+        49.86,
+        49.864
+      ],
+      "files": {
+        "sprite": "balance.webp",
+        "spec": "balance-spec.webp",
+        "occluder": "balance-occluder.png"
+      },
+      "gate": {
+        "core_max": 0.0,
+        "core_over2_px": 0,
+        "ring_p99": 0.18655380249023412
+      },
+      "anim": {
+        "type": "oscillate",
+        "amplitude_deg": 13,
+        "period_s": 0.2,
+        "easing": "cubic-bezier(.37,0,.63,1)"
+      }
+    }
+  ],
+  "topwheel_demoted": "out-of-round k2=1.79px \u2014 static per ladder"
+}
