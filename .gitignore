@@ -4,3 +4,7 @@ dist/
 *.zip
 .image-slots.state.json
 tools/qa/
+.claude/
+.thumbnail
+tmp/
+uploads/

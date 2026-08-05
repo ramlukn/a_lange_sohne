@@ -1,3 +1,7 @@
+> Restructure note (2026-08-04): legacy prototypes (`support.js`, `image-slot.js`,
+> `Lange Experience.dc.html`) were removed from the tree (git history keeps them);
+> docs and reference images now live in `docs/`; `.claude/` is untracked dev tooling.
+
 # Claude handoff — Nikhil Ramlukan Lange 1 portfolio
 
 ## Copy-paste master prompt
