@@ -406,9 +406,9 @@ a:hover { color: var(--gold-line-hover); }
   animation: pulseRing 1.8s ease-out infinite;
 }
 
-/* ===================== CASEBACK: solid, engraved =====================
-   A closed back. Its whole job is restraint: a polished band carrying the
-   engraving, a recessed circular-grained field, and the contact marks. */
+/* ===================== CASEBACK: exhibition movement =====================
+   The case band remains independent from the movement aperture so the
+   calibre image can change without altering the approved case geometry. */
 .cb-band {
   position: absolute;
   inset: 0;
@@ -472,12 +472,26 @@ a:hover { color: var(--gold-line-hover); }
     0 .3vmin .9vmin rgba(0,0,0,.45);
 }
 .cb-turning { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; }
+.cb-movement-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+}
 .cb-field-sheen {
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  pointer-events: none;
   background: linear-gradient(152deg, rgba(255,246,230,.3) 0%, rgba(255,246,230,.06) 34%, transparent 58%, rgba(50,22,6,.28) 100%);
 }
+
+.cb-medallion[hidden],
+.cb-links[hidden],
+.cb-hallmark[hidden] { display: none !important; }
 
 /* engraved medallion at the centre */
 .cb-medallion {
