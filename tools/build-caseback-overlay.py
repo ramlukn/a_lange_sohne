@@ -180,11 +180,20 @@ def main():
         m = poly_mask(spec["polygon"], dilate=dil, feather=feather)
         if spec.get("up_shadow"):
             # slight upward shadow the support casts on the ring beneath it:
-            # the dilated silhouette shifted up, minus the silhouette itself
+            # the dilated silhouette shifted up, minus the silhouette itself,
+            # clipped to the balance band's radii so it never smears across
+            # the static dome or spring
             grown = poly_mask(spec["polygon"], dilate=4, feather=1.4)
             shifted = np.roll(grown, -3, axis=0)
-            band = np.clip(shifted - m, 0, 1) * 0.38
-            shadow_layers[f"{name}-shadow"] = band
+            band = np.clip(shifted - m, 0, 1) * 0.30
+            bal = next(q for q in cfg["parts"] if q["name"] == "balance")
+            bcx, bcy = bal["center"]
+            yy2, xx2 = np.mgrid[0:IMG, 0:IMG]
+            dd = np.hypot(xx2 + 0.5 - bcx, yy2 + 0.5 - bcy)
+            ring_zone = np.clip((dd - 94) / 3, 0, 1) * np.clip((131 - dd) / 3, 0, 1)
+            band *= ring_zone
+            if band.max() > 0.02:
+                shadow_layers[f"{name}-shadow"] = band
         masks[name] = m
     # shadows must composite before (under) their arms; statics draw in order
     ordered = {}
