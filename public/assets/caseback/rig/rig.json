@@ -1,0 +1,168 @@
+{
+  "version": 4,
+  "image": {
+    "w": 1254,
+    "h": 1254
+  },
+  "parts": [
+    {
+      "name": "centerwheel",
+      "center": [
+        564,
+        556
+      ],
+      "box_px": [
+        484.0,
+        476.0,
+        160,
+        160
+      ],
+      "r_out": 79,
+      "z": 1,
+      "anim": {
+        "type": "spin",
+        "period_s": 120,
+        "direction": "cw"
+      },
+      "file": "part-centerwheel.webp"
+    },
+    {
+      "name": "thirdwheel",
+      "center": [
+        845,
+        600
+      ],
+      "box_px": [
+        762.0,
+        517.0,
+        166,
+        166
+      ],
+      "r_out": 82,
+      "z": 1,
+      "anim": {
+        "type": "spin",
+        "period_s": 90,
+        "direction": "ccw"
+      },
+      "file": "part-thirdwheel.webp"
+    },
+    {
+      "name": "fourthwheel",
+      "center": [
+        741,
+        650
+      ],
+      "box_px": [
+        680.0,
+        589.0,
+        122,
+        122
+      ],
+      "r_out": 60,
+      "z": 2,
+      "anim": {
+        "type": "spin",
+        "period_s": 45,
+        "direction": "ccw"
+      },
+      "file": "part-fourthwheel.webp"
+    },
+    {
+      "name": "secondswheel",
+      "center": [
+        479,
+        620
+      ],
+      "box_px": [
+        402.0,
+        543.0,
+        154,
+        154
+      ],
+      "r_out": 76,
+      "z": 2,
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "ccw",
+        "steps": 300
+      },
+      "file": "part-secondswheel.webp"
+    },
+    {
+      "name": "balance",
+      "center": [
+        675,
+        849.5
+      ],
+      "box_px": [
+        550.0,
+        724.5,
+        250,
+        250
+      ],
+      "r_out": 124,
+      "z": 3,
+      "anim": {
+        "type": "oscillate",
+        "amplitude_deg": 28,
+        "period_s": 0.4
+      },
+      "file": "part-balance.webp"
+    }
+  ],
+  "statics": [
+    {
+      "name": "bridges",
+      "box_px": [
+        519,
+        245,
+        454,
+        491
+      ],
+      "file": "static-bridges.webp"
+    },
+    {
+      "name": "cock",
+      "box_px": [
+        735,
+        683,
+        283,
+        310
+      ],
+      "file": "static-cock.webp"
+    },
+    {
+      "name": "steelarm",
+      "box_px": [
+        639,
+        429,
+        95,
+        131
+      ],
+      "file": "static-steelarm.webp"
+    },
+    {
+      "name": "topslot",
+      "box_px": [
+        745,
+        445,
+        158,
+        165
+      ],
+      "file": "static-topslot.webp"
+    },
+    {
+      "name": "gem-seconds",
+      "box_px": [
+        460.0,
+        601.0,
+        38,
+        38
+      ],
+      "file": "static-gem-seconds.webp"
+    }
+  ],
+  "beat_hz": 2.5
+}

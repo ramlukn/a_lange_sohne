@@ -1,7 +1,133 @@
 {
   "master_sha256": "e26a30d0611878280a0af3728b8c43766f629d56dfaf10b7209ce1901efe9e97",
+  "comment": "v3 rig: full gear train + oscillating balance; bridges cut from the render as top-layer sprites. Ring parts rotate about circles fitted to their own visible tooth-band curvature (lstsq on tooth tips, rms <= 0.33px). The render is AI-invented, so curvature-match inside each window is the correctness criterion, not global mechanical consistency. Windows are boolean geometry (discs/annuli/pies minus bridges); bridge sprites on top absorb boundary error, and the render's baked drop shadows hide the feathered seams.",
+  "bridge_flood": {
+    "comment": "combined name-bridge + S-bridge mask via flood fill on a double-bilateral-smoothed master; harmless plate leaks are acceptable (static content either way). sprite alpha = mask dilated 2px, feather 1.2; window subtraction uses mask dilated 4px.",
+    "seeds": [
+      [
+        560,
+        540
+      ],
+      [
+        620,
+        560
+      ],
+      [
+        590,
+        690
+      ],
+      [
+        660,
+        530
+      ],
+      [
+        700,
+        500
+      ],
+      [
+        740,
+        470
+      ],
+      [
+        580,
+        620
+      ],
+      [
+        880,
+        470
+      ],
+      [
+        900,
+        500
+      ],
+      [
+        915,
+        530
+      ],
+      [
+        870,
+        520
+      ],
+      [
+        850,
+        560
+      ],
+      [
+        830,
+        580
+      ],
+      [
+        810,
+        590
+      ],
+      [
+        790,
+        596
+      ],
+      [
+        770,
+        585
+      ],
+      [
+        755,
+        572
+      ],
+      [
+        745,
+        556
+      ],
+      [
+        800,
+        640
+      ],
+      [
+        820,
+        660
+      ],
+      [
+        795,
+        675
+      ],
+      [
+        835,
+        470
+      ],
+      [
+        860,
+        440
+      ],
+      [
+        890,
+        450
+      ],
+      [
+        845,
+        635
+      ],
+      [
+        566,
+        528
+      ],
+      [
+        590,
+        545
+      ],
+      [
+        548,
+        560
+      ],
+      [
+        575,
+        585
+      ]
+    ],
+    "tolerance": 12,
+    "sprite_dilate_px": 2,
+    "window_dilate_px": 4
+  },
   "parts": {
     "gear": {
+      "kind": "disc",
       "seed_center": [
         501.5,
         629.5
@@ -14,121 +140,659 @@
         60,
         140
       ],
-      "occluders": [
-        {
-          "name": "bridge-finger",
-          "mode": "replace",
-          "polygon_px": [
-            [
-              508,
-              516
+      "refine": true,
+      "spokes": 5,
+      "sprite_r": 88.5,
+      "window": {
+        "disc_r": 88.5,
+        "subtract_bridgemask": true
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "ccw",
+        "steps": 300
+      },
+      "purify": {
+        "sector_deg": [
+          100,
+          172
+        ],
+        "zones": [
+          {
+            "r": [
+              0,
+              74
             ],
-            [
-              664,
-              516
+            "pitch": "spokes"
+          },
+          {
+            "r": [
+              74,
+              88.5
             ],
-            [
-              676,
-              640
+            "pitch": "teeth"
+          }
+        ]
+      },
+      "openwork": true
+    },
+    "upperwheel": {
+      "kind": "disc",
+      "seed_center": [
+        561.5,
+        554.5
+      ],
+      "radius_band": [
+        78,
+        92
+      ],
+      "harmonic_band": [
+        60,
+        140
+      ],
+      "refine": true,
+      "spokes": 6,
+      "sprite_r": 90.0,
+      "window": {
+        "disc_r": 90.0,
+        "subtract_discs": [
+          {
+            "part": "gear",
+            "r": 89.5
+          },
+          {
+            "center": [
+              555,
+              444.5
             ],
-            [
-              650,
-              708
+            "r": 41
+          }
+        ],
+        "subtract_polys": [
+          "plateband",
+          "steelarm"
+        ],
+        "subtract_bridgemask": true
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "cw",
+        "steps": 300
+      },
+      "purify": {
+        "sector_deg": [
+          186,
+          246
+        ],
+        "zones": [
+          {
+            "r": [
+              0,
+              76
             ],
-            [
-              558,
-              708
+            "pitch": "spokes"
+          },
+          {
+            "r": [
+              76,
+              90
             ],
-            [
-              530,
-              674
+            "pitch": "teeth"
+          }
+        ]
+      },
+      "openwork": true
+    },
+    "bandC": {
+      "kind": "annulus",
+      "center": [
+        332.5,
+        492.3
+      ],
+      "annulus": [
+        381,
+        404
+      ],
+      "tooth_r": 400.6,
+      "window": {
+        "annulus": [
+          381,
+          404
+        ],
+        "pie_deg": [
+          1,
+          24
+        ],
+        "subtract_polys": [
+          "steelarm"
+        ],
+        "subtract_bridgemask": true,
+        "erode_px": 2
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 360,
+        "direction": "cw"
+      },
+      "k": 243.0
+    },
+    "wheelAB": {
+      "kind": "disc",
+      "center": [
+        584.7,
+        578.4
+      ],
+      "sprite_r": 124.5,
+      "tooth_r": 120.0,
+      "spokes": 6,
+      "window": {
+        "disc_r": 124.5,
+        "pie_deg": [
+          14,
+          76
+        ],
+        "subtract_discs": [
+          {
+            "part": "upperwheel",
+            "r": 91.5
+          },
+          {
+            "part": "gear",
+            "r": 89.5
+          },
+          {
+            "center": [
+              683.5,
+              841.5
             ],
-            [
-              520,
-              636
+            "r": 141
+          }
+        ],
+        "subtract_bridgemask": true,
+        "erode_px": 2
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 120,
+        "direction": "cw"
+      },
+      "k": 108.0
+    },
+    "bandLOW": {
+      "kind": "disc",
+      "center": [
+        777.9,
+        623.1
+      ],
+      "sprite_r": 74.5,
+      "tooth_r": 70.9,
+      "spokes": 5,
+      "window": {
+        "disc_r": 74.5,
+        "pie_deg": [
+          80,
+          142
+        ],
+        "subtract_discs": [
+          {
+            "center": [
+              683.5,
+              841.5
             ],
-            [
-              514,
-              568
-            ]
-          ],
-          "feather_px": 1.5
-        }
-      ]
+            "r": 141
+          }
+        ],
+        "subtract_polys": [
+          "cock",
+          "slobe"
+        ],
+        "subtract_bridgemask": false,
+        "erode_px": 2
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "cw"
+      },
+      "k": 42.8
+    },
+    "wheelD": {
+      "kind": "annulus",
+      "center": [
+        784.9,
+        595.2
+      ],
+      "annulus": [
+        66,
+        121.5
+      ],
+      "tooth_r": 117.4,
+      "spokes": 6,
+      "window": {
+        "annulus": [
+          66,
+          121.5
+        ],
+        "pie_deg": [
+          2,
+          82
+        ],
+        "subtract_discs": [
+          {
+            "center": [
+              683.5,
+              841.5
+            ],
+            "r": 141
+          }
+        ],
+        "subtract_polys": [
+          "cock"
+        ],
+        "subtract_bridgemask": true,
+        "erode_px": 2
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 90,
+        "direction": "ccw"
+      },
+      "k": 80.7
+    },
+    "bandTOP": {
+      "kind": "annulus",
+      "center": [
+        740.1,
+        402.4
+      ],
+      "annulus": [
+        158,
+        179
+      ],
+      "tooth_r": 171.7,
+      "window": {
+        "annulus": [
+          158,
+          179
+        ],
+        "pie_deg": [
+          48,
+          78
+        ],
+        "subtract_bridgemask": true,
+        "erode_px": 2
+      },
+      "anim": {
+        "type": "spin",
+        "period_s": 150,
+        "direction": "ccw"
+      },
+      "k": 81.4
     },
     "balance": {
+      "kind": "annulus",
       "seed_center": [
         683.5,
         841.5
       ],
       "radius_band": [
-        95,
+        110,
         130
       ],
       "harmonic_band": [
         10,
         40
       ],
+      "refine": true,
       "annulus": [
         78,
         126
       ],
-      "occluders": [
-        {
-          "name": "cock-and-regulator",
-          "mode": "replace",
-          "polygon_px": [
-            [
-              683,
-              700
+      "window": {
+        "annulus": [
+          77.5,
+          124
+        ],
+        "subtract_polys": [
+          "cock"
+        ],
+        "subtract_bridgemask": true
+      },
+      "anim": {
+        "type": "oscillate",
+        "amplitude_deg": 28,
+        "period_s": 0.4
+      },
+      "purify": {
+        "mode": "relight",
+        "sector_deg": [
+          150,
+          186
+        ],
+        "zones": [
+          {
+            "r": [
+              78,
+              126
             ],
-            [
-              760,
-              700
-            ],
-            [
-              980,
-              700
-            ],
-            [
-              980,
-              980
-            ],
-            [
-              770,
-              980
-            ],
-            [
-              726,
-              918
-            ],
-            [
-              700,
-              880
-            ],
-            [
-              694,
-              852
-            ]
-          ],
-          "feather_px": 1.5
-        }
-      ]
-    },
+            "pitch": "teeth"
+          }
+        ]
+      }
+    }
+  },
+  "statics": {
     "topwheel": {
-      "seed_center": [
-        556,
-        450
+      "comment": "demoted static: measured 1.8px out-of-round in v2 registration; its small mesh with the upperwheel is handled by freezing the mesh lens (disc r41 subtracted from the upperwheel window)",
+      "center": [
+        555,
+        444.5
       ],
-      "radius_band": [
-        34,
-        52
+      "r": 37
+    }
+  },
+  "polys": {
+    "cock": {
+      "comment": "engraved balance cock + regulator-arm club end; precise along the balance-facing boundary, loose to the right/bottom into static plate and case",
+      "polygon": [
+        [
+          730,
+          737
+        ],
+        [
+          725,
+          745
+        ],
+        [
+          718,
+          756
+        ],
+        [
+          712,
+          766
+        ],
+        [
+          726,
+          772
+        ],
+        [
+          738,
+          778
+        ],
+        [
+          748,
+          786
+        ],
+        [
+          752,
+          796
+        ],
+        [
+          748,
+          806
+        ],
+        [
+          736,
+          812
+        ],
+        [
+          724,
+          810
+        ],
+        [
+          712,
+          802
+        ],
+        [
+          702,
+          792
+        ],
+        [
+          697,
+          787
+        ],
+        [
+          700,
+          797
+        ],
+        [
+          702,
+          810
+        ],
+        [
+          706,
+          820
+        ],
+        [
+          712,
+          830
+        ],
+        [
+          716,
+          842
+        ],
+        [
+          722,
+          852
+        ],
+        [
+          730,
+          868
+        ],
+        [
+          745,
+          885
+        ],
+        [
+          763,
+          898
+        ],
+        [
+          785,
+          908
+        ],
+        [
+          800,
+          920
+        ],
+        [
+          820,
+          935
+        ],
+        [
+          850,
+          955
+        ],
+        [
+          900,
+          985
+        ],
+        [
+          1010,
+          1010
+        ],
+        [
+          1010,
+          690
+        ],
+        [
+          800,
+          700
+        ]
       ],
-      "harmonic_band": [
-        20,
-        90
+      "feather_px": 1.3,
+      "sprite": true
+    },
+    "plateband": {
+      "comment": "static plate edge covering the upper-left rim of the upperwheel",
+      "polygon": [
+        [
+          452,
+          472
+        ],
+        [
+          470,
+          483
+        ],
+        [
+          490,
+          492
+        ],
+        [
+          510,
+          498
+        ],
+        [
+          530,
+          500
+        ],
+        [
+          548,
+          497
+        ],
+        [
+          558,
+          491
+        ],
+        [
+          562,
+          484
+        ],
+        [
+          562,
+          425
+        ],
+        [
+          448,
+          425
+        ]
       ],
-      "occluders": []
+      "feather_px": 1.3,
+      "sprite": true
+    },
+    "steelarm": {
+      "comment": "static steel cock (small arm with ruby at 667,447) right of the upperwheel; precise on its left edge bordering the upperwheel window",
+      "polygon": [
+        [
+          652,
+          548
+        ],
+        [
+          648,
+          525
+        ],
+        [
+          646,
+          505
+        ],
+        [
+          648,
+          488
+        ],
+        [
+          654,
+          470
+        ],
+        [
+          664,
+          455
+        ],
+        [
+          678,
+          444
+        ],
+        [
+          694,
+          438
+        ],
+        [
+          714,
+          436
+        ],
+        [
+          726,
+          442
+        ],
+        [
+          722,
+          470
+        ],
+        [
+          712,
+          500
+        ],
+        [
+          700,
+          525
+        ],
+        [
+          688,
+          545
+        ],
+        [
+          670,
+          552
+        ]
+      ],
+      "feather_px": 1.3,
+      "sprite": true
+    },
+    "slobe": {
+      "comment": "S-bridge lower lobe blocker for the bandLOW window; precise along its lower-left edge, loose elsewhere (interior of the already-masked lobe)",
+      "polygon": [
+        [
+          731,
+          542
+        ],
+        [
+          727,
+          570
+        ],
+        [
+          724,
+          600
+        ],
+        [
+          727,
+          632
+        ],
+        [
+          736,
+          660
+        ],
+        [
+          749,
+          681
+        ],
+        [
+          765,
+          698
+        ],
+        [
+          784,
+          710
+        ],
+        [
+          805,
+          718
+        ],
+        [
+          830,
+          722
+        ],
+        [
+          870,
+          722
+        ],
+        [
+          870,
+          540
+        ]
+      ],
+      "feather_px": 1.3,
+      "sprite": false
     }
   }
 }

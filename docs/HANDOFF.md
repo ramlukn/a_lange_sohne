@@ -137,7 +137,7 @@ Motion must explain assembly, mechanical function, panel navigation, or depth. D
 - Astronomical moon age based on the existing synodic calculation.
 - Time-of-day rotation for the day/night disc.
 - Rotating “currently” text.
-- Crown flip to the sapphire display back; the balance beats at 2.5 Hz (regenerate the movement with `node tools/generate-movement.mjs && node tools/update-movement.mjs`, never by hand-editing the inline SVG).
+- Crown flip to the sapphire display back with the living overlay rig: five real part sprites turn over the wheel-less base (stepped seconds wheel, centre wheel, third wheel, one-tooth-per-beat escape wheel) and the screwed balance swings ±28° at 2.5 Hz, all under static bridge/cock cutouts so nothing crosses bridgework. Regenerate assets with `python3 tools/build-caseback-overlay.py` and the markup with `node tools/generate-rig-markup.mjs` (paste into the `.cb-rig` block; never hand-edit it). The SVG movement generators (`generate-movement.mjs`/`update-movement.mjs`) feed only the 3D lab.
 - Hover captions and optional interaction hints.
 - Request-review modal and its watch/book selection.
 - Resume scroll updating the power-reserve indicator.
