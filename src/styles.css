@@ -522,10 +522,11 @@ a:hover { color: var(--gold-line-hover); }
   display: block;
   object-fit: cover;
 }
-/* the large lossless floor can miss its first raster inside the 3D-flipped
-   subtree (Chrome compositing stall -> black aperture); promoting it to its
-   own layer while the back shows forces the raster */
-.is-flipped .cb-movement-image { will-change: transform; }
+/* the large lossless floor and the rig's base can miss their first raster
+   inside the 3D-flipped subtree (Chrome compositing stall -> black aperture);
+   promoting them to their own layers while the back shows forces the raster */
+.is-flipped .cb-movement-image,
+.is-flipped .cb-rig-base { will-change: transform; }
 
 /* living movement: the lossless render stays the base; native-resolution part
    sprites rotate above it inside static visible-region windows, and the
@@ -554,6 +555,14 @@ a:hover { color: var(--gold-line-hover); }
 .cb-rig-partwrap {
   position: absolute;
   filter: drop-shadow(0.1vmin 0.14vmin 0.18vmin rgba(15, 8, 4, 0.5));
+}
+/* the balance rides highest in the stack: a deeper, further-thrown shadow */
+.cb-rig-partwrap--high {
+  filter: drop-shadow(0.22vmin 0.3vmin 0.42vmin rgba(15, 8, 4, 0.62));
+}
+/* hugging the plate: tight, faint contact shadow (one of the lowest parts) */
+.cb-rig-partwrap--low {
+  filter: drop-shadow(0.05vmin 0.07vmin 0.1vmin rgba(15, 8, 4, 0.45));
 }
 .cb-rig-part {
   position: absolute;

@@ -15,7 +15,8 @@ out += '              <img class="cb-rig-base" src="/assets/caseback/rig/base.we
 for (const p of rig.parts) {
   const [x, y, w, h] = p.box_px;
   const anim = JSON.stringify(p.anim).replace(/"/g, '&quot;');
-  out += `              <div class="cb-rig-partwrap" style="left:${pct(x)}%;top:${pct(y)}%;width:${pct(w)}%;height:${pct(h)}%">\n`;
+  const wrapCls = p.shadow ? `cb-rig-partwrap cb-rig-partwrap--${p.shadow}` : 'cb-rig-partwrap';
+  out += `              <div class="${wrapCls}" style="left:${pct(x)}%;top:${pct(y)}%;width:${pct(w)}%;height:${pct(h)}%">\n`;
   out += `                <img class="cb-rig-part" data-part="${p.name}" data-anim="${anim}" src="/assets/caseback/rig/${p.file}" alt="" decoding="async">\n`;
   out += `              </div>\n`;
 }

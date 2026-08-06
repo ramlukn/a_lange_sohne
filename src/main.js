@@ -254,19 +254,26 @@ const rig = {
 // subtree (the aperture shows black until any paint invalidation). A style
 // toggle across two frames after the flip transition settles forces it.
 function rigNudgePaint() {
+  // will-change toggle with a forced style flush, held across real frames —
+  // the transform-toggle variant cleared inside coalesced rAFs and never
+  // survived a commit, so the missing raster stayed missing
   const fire = () => {
-    const fl = document.querySelector('.cb-movement-image');
-    if (!fl) return;
-    fl.style.transform = 'translateZ(0)';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      fl.style.transform = '';
-    }));
+    for (const sel of ['.cb-movement-image', '.cb-rig-base']) {
+      const im = document.querySelector(sel);
+      if (!im) continue;
+      im.style.willChange = 'auto';
+      void im.offsetWidth;
+      im.style.willChange = 'transform';
+      void im.offsetWidth;
+      setTimeout(() => { im.style.willChange = ''; }, 150);
+    }
   };
   // the stall appears when the flip transition settles and Chrome
-  // re-rasterizes the 3D subtree — nudge just after it, plus a backup
-  el.flip.addEventListener('transitionend', () => setTimeout(fire, 80), { once: true });
+  // re-rasterizes the 3D subtree — nudge after it, with spaced backstops
+  el.flip.addEventListener('transitionend', () => setTimeout(fire, 120), { once: true });
   clearTimeout(rig.nudgeT);
-  rig.nudgeT = setTimeout(fire, 2200);
+  rig.nudgeT = setTimeout(fire, 2400);
+  setTimeout(fire, 4500);
 }
 
 Promise.all([...document.querySelectorAll('.cb-rig img')].map((i) =>
