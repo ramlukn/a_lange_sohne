@@ -141,6 +141,7 @@ def build_part(p):
         "z": p["z"],
         "anim": p["anim"],
         "file": f"part-{p['name']}.webp",
+        **({"shadow": p["shadow"]} if p.get("shadow") else {}),
     }
 
 
@@ -173,9 +174,47 @@ def main():
     bmf = cv2.dilate(bm, np.ones((2 * dil + 1,) * 2, np.uint8))
     bmf = cv2.GaussianBlur(bmf, (0, 0), 1.2).astype(np.float32) / 255
     masks = {"bridges": bmf}
+    shadow_layers = {}
     for name, spec in cfg["polys"].items():
-        masks[name] = poly_mask(spec["polygon"], dilate=2, feather=1.3)
+        feather = spec.get("feather_px", 1.3)
+        dil = 1 if spec.get("up_shadow") else 2
+        m = poly_mask(spec["polygon"], dilate=dil, feather=feather)
+        if spec.get("up_shadow"):
+            # slight upward shadow the support casts on the ring beneath it:
+            # the dilated silhouette shifted up, minus the silhouette itself,
+            # clipped to the balance band's radii so it never smears across
+            # the static dome or spring
+            grown = poly_mask(spec["polygon"], dilate=4, feather=1.4)
+            shifted = np.roll(grown, -3, axis=0)
+            band = np.clip(shifted - m, 0, 1) * 0.30
+            bal = next(q for q in cfg["parts"] if q["name"] == "balance")
+            bcx, bcy = bal["center"]
+            yy2, xx2 = np.mgrid[0:IMG, 0:IMG]
+            dd = np.hypot(xx2 + 0.5 - bcx, yy2 + 0.5 - bcy)
+            ring_zone = np.clip((dd - 94) / 3, 0, 1) * np.clip((131 - dd) / 3, 0, 1)
+            band *= ring_zone
+            if band.max() > 0.02:
+                shadow_layers[f"{name}-shadow"] = band
+        masks[name] = m
+    # shadows must composite before (under) their arms; statics draw in order
+    ordered = {}
+    for name in masks:
+        if f"{name}-shadow" in shadow_layers:
+            ordered[f"{name}-shadow"] = shadow_layers[f"{name}-shadow"]
+        ordered[name] = masks[name]
+    masks = ordered
     for name, m in masks.items():
+        if name.endswith("-shadow"):
+            ys, xs = np.where(m > 0.004)
+            x0 = max(0, int(xs.min()) - 2); y0 = max(0, int(ys.min()) - 2)
+            x1 = min(IMG, int(xs.max()) + 3); y1 = min(IMG, int(ys.max()) + 3)
+            a = np.clip(np.round(m[y0:y1, x0:x1] * 255), 0, 255).astype(np.uint8)
+            rgba = np.dstack([np.zeros((y1 - y0, x1 - x0, 3), np.uint8), a])
+            Image.fromarray(rgba).save(OUT / f"static-{name}.webp",
+                                       lossless=True, quality=100)
+            statics_out.append({"name": name, "box_px": [x0, y0, x1 - x0, y1 - y0],
+                                "file": f"static-{name}.webp"})
+            continue
         ys, xs = np.where(m > 0.004)
         x0 = max(0, int(xs.min()) - 2); y0 = max(0, int(ys.min()) - 2)
         x1 = min(IMG, int(xs.max()) + 3); y1 = min(IMG, int(ys.max()) + 3)
@@ -220,10 +259,22 @@ def main():
         ch = min(by + h, IMG) - dy0
         s = spr[sy0:sy0 + ch, sx0:sx0 + cw]
         af = s[..., 3:] / 255
-        # baked contact shadow so the fallback matches the runtime drop-shadow
-        sh = np.roll(np.roll(af, 3, axis=0), 2, axis=1) * 0.45
+        # baked contact shadow so the fallback matches the runtime drop-shadow;
+        # "high" parts (the balance) get a deeper, further-thrown shadow so
+        # they read as the tallest component in the stack
+        part_cfg = next(q for q in cfg["parts"] if q["name"] == info["name"])
+        if part_cfg.get("shadow") == "high":
+            sh = np.roll(np.roll(af, 5, axis=0), 4, axis=1) * 0.55
+            floor_mix = 0.35
+        elif part_cfg.get("shadow") == "low":
+            # hugging the plate: tight, faint contact shadow
+            sh = np.roll(np.roll(af, 2, axis=0), 1, axis=1) * 0.35
+            floor_mix = 0.3
+        else:
+            sh = np.roll(np.roll(af, 3, axis=0), 2, axis=1) * 0.45
+            floor_mix = 0.25
         dst = comp[dy0:dy0 + ch, dx0:dx0 + cw]
-        dst = dst * (1 - sh) + dst * sh * 0.25
+        dst = dst * (1 - sh) + dst * sh * floor_mix
         comp[dy0:dy0 + ch, dx0:dx0 + cw] = dst * (1 - af) + s[..., :3] * af
     for info in statics_out:
         spr = np.array(Image.open(OUT / info["file"])).astype(np.float32)
@@ -245,10 +296,15 @@ def main():
     yy, xx = np.mgrid[0:IMG, 0:IMG]
     for info in parts_out:
         cx, cy = info["center"]
-        cover |= np.hypot(xx + 0.5 - cx, yy + 0.5 - cy) <= info["r_out"] + 4
+        margin = 10 if info.get("shadow") == "high" else 4
+        cover |= np.hypot(xx + 0.5 - cx, yy + 0.5 - cy) <= info["r_out"] + margin
     for gem in cfg.get("gems", []):
         gx, gy = gem["at"]
         cover |= np.hypot(xx + 0.5 - gx, yy + 0.5 - gy) <= gem["r"] + 4
+    for info in statics_out:
+        if "shadow" in info["name"]:
+            bx, by, w, h = (int(round(v)) for v in info["box_px"])
+            cover[by:by + h, bx:bx + w] = True
     leaks = diff & ~cover
     n_lab, lab, stats, cents = cv2.connectedComponentsWithStats(
         leaks.astype(np.uint8), connectivity=8)
