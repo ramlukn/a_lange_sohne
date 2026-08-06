@@ -184,9 +184,9 @@ def main():
             # the dilated silhouette shifted up, minus the silhouette itself,
             # clipped to the balance band's radii so it never smears across
             # the static dome or spring
-            grown = poly_mask(spec["polygon"], dilate=4, feather=1.4)
-            shifted = np.roll(grown, -3, axis=0)
-            band = np.clip(shifted - m, 0, 1) * 0.30
+            grown = poly_mask(spec["polygon"], dilate=2, feather=0.7)
+            shifted = np.roll(grown, -2, axis=0)
+            band = np.clip(shifted - m, 0, 1) * 0.22
             bal = next(q for q in cfg["parts"] if q["name"] == "balance")
             bcx, bcy = bal["center"]
             yy2, xx2 = np.mgrid[0:IMG, 0:IMG]
