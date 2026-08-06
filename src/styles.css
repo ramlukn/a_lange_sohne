@@ -64,6 +64,7 @@ a:hover { color: var(--gold-line-hover); }
     animation-delay: 0s !important;
     transition-duration: .01ms !important;
   }
+  .cb-rig { display: none !important; }  /* static original render is the caseback */
 }
 
 /* ===================== STAGE ===================== */
@@ -506,6 +507,13 @@ a:hover { color: var(--gold-line-hover); }
   background: radial-gradient(circle at 34% 28%, #171009, #060309);
 }
 /* the rendered calibre; scaled so its own flange crops out — our ring frames it */
+.cb-movement {
+  position: absolute;
+  inset: 0;
+  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
+  transform: scale(1.56) translate(1.3%, 1.61%);
+  pointer-events: none;
+}
 .cb-movement-image {
   position: absolute;
   inset: 0;
@@ -513,9 +521,68 @@ a:hover { color: var(--gold-line-hover); }
   height: 100%;
   display: block;
   object-fit: cover;
-  /* measured crop: disc centre (-1.3%,-1.61%) off image centre, radius 32.46% -> x1.56 fills the aperture */
-  transform: scale(1.56) translate(1.3%, 1.61%);
+}
+/* the large lossless floor can miss its first raster inside the 3D-flipped
+   subtree (Chrome compositing stall -> black aperture); promoting it to its
+   own layer while the back shows forces the raster */
+.is-flipped .cb-movement-image { will-change: transform; }
+
+/* living movement: the lossless render stays the base; native-resolution part
+   sprites rotate above it inside static visible-region windows, and the
+   bridges — cut from the same untouched render — sit on top so every window
+   boundary lands under exact original pixels. The spec layer (plus-lighter)
+   keeps the render's low-frequency lighting anchored in space while the metal
+   turns beneath it. Identity at rest is machine-verified (full-stack diff 0). */
+.cb-rig {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
   pointer-events: none;
+}
+@supports ((mask-image: url("")) or (-webkit-mask-image: url(""))) {
+  .rig-ready .cb-rig { opacity: 1; transition: opacity .2s linear; }
+}
+.cb-rig-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* shadow lives on the static wrapper: filters apply before transforms, so a
+   drop-shadow on the rotating img itself would swing its offset around */
+.cb-rig-partwrap {
+  position: absolute;
+  filter: drop-shadow(0.1vmin 0.14vmin 0.18vmin rgba(15, 8, 4, 0.5));
+}
+.cb-rig-part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.is-flipped .cb-rig-part { will-change: transform; }
+.cb-rig-static {
+  position: absolute;
+  display: block;
+}
+
+/* one pass of light as the caseback lands in the 315-degree key light */
+.cb-rig-sheen {
+  position: absolute;
+  inset: 0 -40%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(115deg,
+    transparent 40%, rgba(255,250,240,.06) 48%, rgba(255,250,240,.03) 53%, transparent 61%);
+}
+.is-flipped .cb-rig-sheen { animation: cbRigSheen 1.5s cubic-bezier(.33,0,.2,1) .5s both; }
+@keyframes cbRigSheen {
+  from { transform: translateX(-38%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  to   { transform: translateX(38%); opacity: 0; }
 }
 
 /* case wall occluding the movement rim — dark crescent up-left, per the light */

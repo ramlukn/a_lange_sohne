@@ -1,0 +1,389 @@
+{
+  "comment": "v4 overlay rig: real part sprites (user-supplied renders) spin over the wheel-less caseback base; static occluders cut from the same base sit on top so moving parts never cross bridgework. Placements fitted to the base's pocket/hub circles (ring-energy fit).",
+  "base": "tools/assets-src/caseback-empty.png",
+  "parts": [
+    {
+      "name": "centerwheel",
+      "src": "tools/assets-src/parts/02-train-wheel-large.png",
+      "center": [
+        564,
+        556
+      ],
+      "r_out": 79,
+      "z": 1,
+      "anim": {
+        "type": "spin",
+        "period_s": 120,
+        "direction": "cw"
+      }
+    },
+    {
+      "name": "thirdwheel",
+      "src": "tools/assets-src/parts/03-train-wheel-medium.png",
+      "center": [
+        845,
+        600
+      ],
+      "r_out": 82,
+      "z": 1,
+      "anim": {
+        "type": "spin",
+        "period_s": 90,
+        "direction": "ccw"
+      }
+    },
+    {
+      "name": "fourthwheel",
+      "src": "tools/assets-src/parts/02-train-wheel-large.png",
+      "center": [
+        741,
+        650
+      ],
+      "r_out": 60,
+      "z": 2,
+      "anim": {
+        "type": "spin",
+        "period_s": 45,
+        "direction": "ccw"
+      }
+    },
+    {
+      "name": "secondswheel",
+      "src": "tools/assets-src/parts/04-train-wheel-small.png",
+      "center": [
+        479,
+        620
+      ],
+      "r_out": 76,
+      "z": 2,
+      "anim": {
+        "type": "spin",
+        "period_s": 60,
+        "direction": "ccw",
+        "steps": 300
+      }
+    },
+    {
+      "name": "balance",
+      "src": "tools/assets-src/parts/01-balance-wheel.png",
+      "center": [
+        675,
+        849.5
+      ],
+      "r_out": 124,
+      "z": 3,
+      "anim": {
+        "type": "oscillate",
+        "amplitude_deg": 28,
+        "period_s": 0.4
+      }
+    }
+  ],
+  "flood": {
+    "comment": "combined bridge mask on the new base; same seeds as v3 (base aligned within 1px)",
+    "seeds": [
+      [
+        560,
+        540
+      ],
+      [
+        620,
+        560
+      ],
+      [
+        590,
+        690
+      ],
+      [
+        660,
+        530
+      ],
+      [
+        700,
+        500
+      ],
+      [
+        740,
+        470
+      ],
+      [
+        580,
+        620
+      ],
+      [
+        880,
+        470
+      ],
+      [
+        900,
+        500
+      ],
+      [
+        915,
+        530
+      ],
+      [
+        870,
+        520
+      ],
+      [
+        850,
+        560
+      ],
+      [
+        830,
+        580
+      ],
+      [
+        810,
+        590
+      ],
+      [
+        790,
+        596
+      ],
+      [
+        770,
+        585
+      ],
+      [
+        755,
+        572
+      ],
+      [
+        745,
+        556
+      ],
+      [
+        800,
+        640
+      ],
+      [
+        820,
+        660
+      ],
+      [
+        795,
+        675
+      ],
+      [
+        835,
+        470
+      ],
+      [
+        860,
+        440
+      ],
+      [
+        890,
+        450
+      ],
+      [
+        845,
+        635
+      ],
+      [
+        566,
+        528
+      ],
+      [
+        590,
+        545
+      ],
+      [
+        548,
+        560
+      ],
+      [
+        575,
+        585
+      ]
+    ],
+    "tolerance": 12,
+    "hole_fill_px": 3500,
+    "sprite_dilate_px": 2
+  },
+  "polys": {
+    "cock": {
+      "comment": "engraved balance cock incl. its left screw-arm; precise along the balance-facing edge",
+      "polygon": [
+        [
+          745,
+          770
+        ],
+        [
+          742,
+          795
+        ],
+        [
+          742,
+          820
+        ],
+        [
+          748,
+          845
+        ],
+        [
+          757,
+          868
+        ],
+        [
+          770,
+          892
+        ],
+        [
+          786,
+          914
+        ],
+        [
+          806,
+          934
+        ],
+        [
+          830,
+          952
+        ],
+        [
+          858,
+          966
+        ],
+        [
+          890,
+          976
+        ],
+        [
+          930,
+          982
+        ],
+        [
+          1010,
+          985
+        ],
+        [
+          1010,
+          700
+        ],
+        [
+          870,
+          690
+        ],
+        [
+          800,
+          715
+        ],
+        [
+          760,
+          745
+        ]
+      ]
+    },
+    "steelarm": {
+      "comment": "small steel cock right of the upper pocket",
+      "polygon": [
+        [
+          652,
+          548
+        ],
+        [
+          648,
+          525
+        ],
+        [
+          646,
+          505
+        ],
+        [
+          648,
+          488
+        ],
+        [
+          654,
+          470
+        ],
+        [
+          664,
+          455
+        ],
+        [
+          678,
+          444
+        ],
+        [
+          694,
+          438
+        ],
+        [
+          714,
+          436
+        ],
+        [
+          726,
+          442
+        ],
+        [
+          722,
+          470
+        ],
+        [
+          712,
+          500
+        ],
+        [
+          700,
+          525
+        ],
+        [
+          688,
+          545
+        ],
+        [
+          670,
+          552
+        ]
+      ]
+    },
+    "topslot": {
+      "comment": "covers the small depression above the S-bridge waist so the third wheel shows only in the right-side depression",
+      "polygon": [
+        [
+          752,
+          452
+        ],
+        [
+          895,
+          452
+        ],
+        [
+          895,
+          602
+        ],
+        [
+          802,
+          602
+        ],
+        [
+          802,
+          575
+        ],
+        [
+          752,
+          575
+        ]
+      ]
+    }
+  },
+  "gems": [
+    {
+      "name": "seconds",
+      "at": [
+        479,
+        620
+      ],
+      "donor": [
+        569,
+        556
+      ],
+      "r": 17
+    }
+  ]
+}

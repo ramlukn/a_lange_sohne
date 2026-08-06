@@ -149,6 +149,8 @@ function render() {
   el.flip.style.transform = `rotateY(${state.flipped ? 180 : 0}deg)`;
   el.front.style.opacity = state.flipped ? 0 : 1;
   el.back.style.opacity = state.flipped ? 1 : 0;
+  el.back.classList.toggle('is-flipped', state.flipped);
+  if (state.flipped) rigPlay(); else rigStop();
 
   el.overlay.hidden = !state.active;
   el.overlay.dataset.justify = CONFIG.transitionStyle === 'panel' ? 'flex-end' : 'center';
@@ -232,6 +234,79 @@ window.addEventListener('keydown', (e) => {
     render();
   }
 });
+
+// ---- living caseback rig ---------------------------------------------------
+// Every wheel animates via WAAPI against one shared epoch, so the stepped
+// seconds pair advances on the same 5-per-second beat grid as the balance
+// swing. Animations exist only while the caseback shows; cancel() returns
+// each sprite to the untransformed (crisp) raster path, keeping the at-rest
+// caseback byte-identical to the render. Reduced motion never animates, and
+// the rig only fades in once every layer has loaded (any failure leaves the
+// original render showing).
+const rig = {
+  parts: [...document.querySelectorAll('.cb-rig-part')],
+  anims: [],
+  reduced: matchMedia('(prefers-reduced-motion: reduce)'),
+  nudgeT: 0,
+};
+
+// Chrome can miss the lossless floor's first raster inside the 3D-flipped
+// subtree (the aperture shows black until any paint invalidation). A style
+// toggle across two frames after the flip transition settles forces it.
+function rigNudgePaint() {
+  const fire = () => {
+    const fl = document.querySelector('.cb-movement-image');
+    if (!fl) return;
+    fl.style.transform = 'translateZ(0)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fl.style.transform = '';
+    }));
+  };
+  // the stall appears when the flip transition settles and Chrome
+  // re-rasterizes the 3D subtree — nudge just after it, plus a backup
+  el.flip.addEventListener('transitionend', () => setTimeout(fire, 80), { once: true });
+  clearTimeout(rig.nudgeT);
+  rig.nudgeT = setTimeout(fire, 2200);
+}
+
+Promise.all([...document.querySelectorAll('.cb-rig img')].map((i) =>
+  i.complete && i.naturalWidth ? Promise.resolve()
+    : new Promise((res, rej) => { i.addEventListener('load', res); i.addEventListener('error', rej); })
+)).then(() => el.back.classList.add('rig-ready'))
+  .catch(() => {});
+
+function rigPlay() {
+  if (rig.reduced.matches || rig.anims.length) return;
+  rigNudgePaint();
+  const t0 = document.timeline.currentTime + 60;
+  for (const img of rig.parts) {
+    let cfg;
+    try { cfg = JSON.parse(img.dataset.anim); } catch { continue; }
+    let a;
+    if (cfg.type === 'spin') {
+      const to = cfg.direction === 'ccw' ? -360 : 360;
+      a = img.animate(
+        [{ transform: 'rotate(0deg)' }, { transform: `rotate(${to}deg)` }],
+        { duration: cfg.period_s * 1000, iterations: Infinity,
+          easing: cfg.steps ? `steps(${cfg.steps}, jump-end)` : 'linear' });
+    } else {
+      // balance: one swing per iteration, alternate; iterationStart .5 makes
+      // it depart from 0 deg (the identity pose) at the flip moment
+      a = img.animate(
+        [{ transform: `rotate(${-cfg.amplitude_deg}deg)` },
+         { transform: `rotate(${cfg.amplitude_deg}deg)` }],
+        { duration: cfg.period_s * 500, iterations: Infinity,
+          direction: 'alternate', easing: 'ease-in-out', iterationStart: 0.5 });
+    }
+    a.startTime = t0;
+    rig.anims.push(a);
+  }
+}
+
+function rigStop() {
+  for (const a of rig.anims) a.cancel();
+  rig.anims.length = 0;
+}
 
 render();
 setInterval(render, 100);
