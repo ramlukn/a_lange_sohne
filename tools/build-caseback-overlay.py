@@ -173,9 +173,38 @@ def main():
     bmf = cv2.dilate(bm, np.ones((2 * dil + 1,) * 2, np.uint8))
     bmf = cv2.GaussianBlur(bmf, (0, 0), 1.2).astype(np.float32) / 255
     masks = {"bridges": bmf}
+    shadow_layers = {}
     for name, spec in cfg["polys"].items():
-        masks[name] = poly_mask(spec["polygon"], dilate=2, feather=1.3)
+        feather = spec.get("feather_px", 1.3)
+        dil = 1 if spec.get("up_shadow") else 2
+        m = poly_mask(spec["polygon"], dilate=dil, feather=feather)
+        if spec.get("up_shadow"):
+            # slight upward shadow the support casts on the ring beneath it:
+            # the dilated silhouette shifted up, minus the silhouette itself
+            grown = poly_mask(spec["polygon"], dilate=4, feather=1.4)
+            shifted = np.roll(grown, -3, axis=0)
+            band = np.clip(shifted - m, 0, 1) * 0.38
+            shadow_layers[f"{name}-shadow"] = band
+        masks[name] = m
+    # shadows must composite before (under) their arms; statics draw in order
+    ordered = {}
+    for name in masks:
+        if f"{name}-shadow" in shadow_layers:
+            ordered[f"{name}-shadow"] = shadow_layers[f"{name}-shadow"]
+        ordered[name] = masks[name]
+    masks = ordered
     for name, m in masks.items():
+        if name.endswith("-shadow"):
+            ys, xs = np.where(m > 0.004)
+            x0 = max(0, int(xs.min()) - 2); y0 = max(0, int(ys.min()) - 2)
+            x1 = min(IMG, int(xs.max()) + 3); y1 = min(IMG, int(ys.max()) + 3)
+            a = np.clip(np.round(m[y0:y1, x0:x1] * 255), 0, 255).astype(np.uint8)
+            rgba = np.dstack([np.zeros((y1 - y0, x1 - x0, 3), np.uint8), a])
+            Image.fromarray(rgba).save(OUT / f"static-{name}.webp",
+                                       lossless=True, quality=100)
+            statics_out.append({"name": name, "box_px": [x0, y0, x1 - x0, y1 - y0],
+                                "file": f"static-{name}.webp"})
+            continue
         ys, xs = np.where(m > 0.004)
         x0 = max(0, int(xs.min()) - 2); y0 = max(0, int(ys.min()) - 2)
         x1 = min(IMG, int(xs.max()) + 3); y1 = min(IMG, int(ys.max()) + 3)
@@ -249,6 +278,10 @@ def main():
     for gem in cfg.get("gems", []):
         gx, gy = gem["at"]
         cover |= np.hypot(xx + 0.5 - gx, yy + 0.5 - gy) <= gem["r"] + 4
+    for info in statics_out:
+        if "shadow" in info["name"]:
+            bx, by, w, h = (int(round(v)) for v in info["box_px"])
+            cover[by:by + h, bx:bx + w] = True
     leaks = diff & ~cover
     n_lab, lab, stats, cents = cv2.connectedComponentsWithStats(
         leaks.astype(np.uint8), connectivity=8)

@@ -522,10 +522,11 @@ a:hover { color: var(--gold-line-hover); }
   display: block;
   object-fit: cover;
 }
-/* the large lossless floor can miss its first raster inside the 3D-flipped
-   subtree (Chrome compositing stall -> black aperture); promoting it to its
-   own layer while the back shows forces the raster */
-.is-flipped .cb-movement-image { will-change: transform; }
+/* the large lossless floor and the rig's base can miss their first raster
+   inside the 3D-flipped subtree (Chrome compositing stall -> black aperture);
+   promoting them to their own layers while the back shows forces the raster */
+.is-flipped .cb-movement-image,
+.is-flipped .cb-rig-base { will-change: transform; }
 
 /* living movement: the lossless render stays the base; native-resolution part
    sprites rotate above it inside static visible-region windows, and the

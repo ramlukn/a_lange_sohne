@@ -29,12 +29,12 @@
     {
       "name": "thirdwheel",
       "center": [
-        838,
-        600
+        830,
+        608
       ],
       "box_px": [
-        755.0,
-        517.0,
+        747.0,
+        525.0,
         166,
         166
       ],
@@ -50,16 +50,16 @@
     {
       "name": "fourthwheel",
       "center": [
-        621,
-        650
+        626,
+        645
       ],
       "box_px": [
-        560.0,
-        589.0,
-        122,
-        122
+        559.0,
+        578.0,
+        134,
+        134
       ],
-      "r_out": 60,
+      "r_out": 66,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -75,12 +75,12 @@
         624
       ],
       "box_px": [
-        393.0,
-        542.0,
-        164,
-        164
+        389.0,
+        538.0,
+        172,
+        172
       ],
-      "r_out": 81,
+      "r_out": 85,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -149,17 +149,97 @@
         745,
         445,
         158,
-        211
+        238
       ],
       "file": "static-topslot.webp"
     },
     {
+      "name": "support-top-shadow",
+      "box_px": [
+        673,
+        697,
+        73,
+        82
+      ],
+      "file": "static-support-top-shadow.webp"
+    },
+    {
+      "name": "support-top",
+      "box_px": [
+        677,
+        704,
+        64,
+        73
+      ],
+      "file": "static-support-top.webp"
+    },
+    {
+      "name": "support-left-shadow",
+      "box_px": [
+        543,
+        810,
+        103,
+        57
+      ],
+      "file": "static-support-left-shadow.webp"
+    },
+    {
+      "name": "support-left",
+      "box_px": [
+        547,
+        817,
+        94,
+        48
+      ],
+      "file": "static-support-left.webp"
+    },
+    {
+      "name": "support-bottomleft-shadow",
+      "box_px": [
+        601,
+        904,
+        85,
+        63
+      ],
+      "file": "static-support-bottomleft-shadow.webp"
+    },
+    {
+      "name": "support-bottomleft",
+      "box_px": [
+        605,
+        911,
+        76,
+        54
+      ],
+      "file": "static-support-bottomleft.webp"
+    },
+    {
+      "name": "support-bottom-shadow",
+      "box_px": [
+        686,
+        904,
+        40,
+        75
+      ],
+      "file": "static-support-bottom-shadow.webp"
+    },
+    {
+      "name": "support-bottom",
+      "box_px": [
+        690,
+        911,
+        31,
+        66
+      ],
+      "file": "static-support-bottom.webp"
+    },
+    {
       "name": "gem-seconds",
       "box_px": [
-        456.0,
-        605.0,
-        38,
-        38
+        461.0,
+        609.0,
+        30,
+        30
       ],
       "file": "static-gem-seconds.webp"
     }
