@@ -155,156 +155,6 @@
       "file": "static-topslot.webp"
     },
     {
-      "name": "support-top-shadow",
-      "box_px": [
-        680,
-        718,
-        57,
-        53
-      ],
-      "file": "static-support-top-shadow.webp"
-    },
-    {
-      "name": "support-top",
-      "box_px": [
-        682,
-        707,
-        54,
-        76
-      ],
-      "file": "static-support-top.webp"
-    },
-    {
-      "name": "support-toptab-shadow",
-      "box_px": [
-        669,
-        723,
-        41,
-        39
-      ],
-      "file": "static-support-toptab-shadow.webp"
-    },
-    {
-      "name": "support-toptab",
-      "box_px": [
-        674,
-        731,
-        31,
-        39
-      ],
-      "file": "static-support-toptab.webp"
-    },
-    {
-      "name": "support-left-shaft",
-      "box_px": [
-        593,
-        827,
-        57,
-        35
-      ],
-      "file": "static-support-left-shaft.webp"
-    },
-    {
-      "name": "support-left-pad-shadow",
-      "box_px": [
-        552,
-        794,
-        44,
-        82
-      ],
-      "file": "static-support-left-pad-shadow.webp"
-    },
-    {
-      "name": "support-left-pad",
-      "box_px": [
-        557,
-        802,
-        49,
-        73
-      ],
-      "file": "static-support-left-pad.webp"
-    },
-    {
-      "name": "support-bl-shaft-shadow",
-      "box_px": [
-        614,
-        922,
-        44,
-        31
-      ],
-      "file": "static-support-bl-shaft-shadow.webp"
-    },
-    {
-      "name": "support-bl-shaft",
-      "box_px": [
-        619,
-        892,
-        58,
-        59
-      ],
-      "file": "static-support-bl-shaft.webp"
-    },
-    {
-      "name": "support-bl-pad-shadow",
-      "box_px": [
-        595,
-        913,
-        71,
-        63
-      ],
-      "file": "static-support-bl-pad-shadow.webp"
-    },
-    {
-      "name": "support-bl-pad",
-      "box_px": [
-        600,
-        912,
-        61,
-        62
-      ],
-      "file": "static-support-bl-pad.webp"
-    },
-    {
-      "name": "support-bottom-shadow",
-      "box_px": [
-        682,
-        928,
-        48,
-        53
-      ],
-      "file": "static-support-bottom-shadow.webp"
-    },
-    {
-      "name": "support-bottom",
-      "box_px": [
-        685,
-        905,
-        40,
-        75
-      ],
-      "file": "static-support-bottom.webp"
-    },
-    {
-      "name": "support-eleven-shadow",
-      "box_px": [
-        582,
-        724,
-        52,
-        58
-      ],
-      "file": "static-support-eleven-shadow.webp"
-    },
-    {
-      "name": "support-eleven",
-      "box_px": [
-        587,
-        716,
-        43,
-        67
-      ],
-      "file": "static-support-eleven.webp"
-    },
-    {
       "name": "balance-arc-cover",
       "box_px": [
         685,
@@ -313,6 +163,156 @@
         273
       ],
       "file": "static-balance-arc-cover.webp"
+    },
+    {
+      "name": "support-eleven-shadow",
+      "box_px": [
+        582,
+        727,
+        47,
+        53
+      ],
+      "file": "static-support-eleven-shadow.webp"
+    },
+    {
+      "name": "support-eleven",
+      "box_px": [
+        585,
+        708,
+        39,
+        70
+      ],
+      "file": "static-support-eleven.webp"
+    },
+    {
+      "name": "support-top-shadow",
+      "box_px": [
+        692,
+        718,
+        54,
+        48
+      ],
+      "file": "static-support-top-shadow.webp"
+    },
+    {
+      "name": "support-top",
+      "box_px": [
+        697,
+        702,
+        46,
+        62
+      ],
+      "file": "static-support-top.webp"
+    },
+    {
+      "name": "support-toptab-shadow",
+      "box_px": [
+        675,
+        729,
+        37,
+        34
+      ],
+      "file": "static-support-toptab-shadow.webp"
+    },
+    {
+      "name": "support-toptab",
+      "box_px": [
+        680,
+        737,
+        27,
+        32
+      ],
+      "file": "static-support-toptab.webp"
+    },
+    {
+      "name": "support-left-pad-shadow",
+      "box_px": [
+        542,
+        815,
+        45,
+        63
+      ],
+      "file": "static-support-left-pad-shadow.webp"
+    },
+    {
+      "name": "support-left-pad",
+      "box_px": [
+        546,
+        823,
+        53,
+        53
+      ],
+      "file": "static-support-left-pad.webp"
+    },
+    {
+      "name": "support-left-arm-shadow",
+      "box_px": [
+        555,
+        810,
+        35,
+        36
+      ],
+      "file": "static-support-left-arm-shadow.webp"
+    },
+    {
+      "name": "support-left-arm",
+      "box_px": [
+        560,
+        814,
+        54,
+        30
+      ],
+      "file": "static-support-left-arm.webp"
+    },
+    {
+      "name": "support-bl-pad-shadow",
+      "box_px": [
+        600,
+        919,
+        63,
+        57
+      ],
+      "file": "static-support-bl-pad-shadow.webp"
+    },
+    {
+      "name": "support-bl-pad",
+      "box_px": [
+        605,
+        922,
+        53,
+        53
+      ],
+      "file": "static-support-bl-pad.webp"
+    },
+    {
+      "name": "support-bl-arm",
+      "box_px": [
+        631,
+        898,
+        38,
+        41
+      ],
+      "file": "static-support-bl-arm.webp"
+    },
+    {
+      "name": "support-bottom-shadow",
+      "box_px": [
+        690,
+        931,
+        40,
+        48
+      ],
+      "file": "static-support-bottom-shadow.webp"
+    },
+    {
+      "name": "support-bottom",
+      "box_px": [
+        688,
+        914,
+        37,
+        64
+      ],
+      "file": "static-support-bottom.webp"
     },
     {
       "name": "gem-seconds",
