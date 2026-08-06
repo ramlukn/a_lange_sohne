@@ -560,6 +560,10 @@ a:hover { color: var(--gold-line-hover); }
 .cb-rig-partwrap--high {
   filter: drop-shadow(0.22vmin 0.3vmin 0.42vmin rgba(15, 8, 4, 0.62));
 }
+/* hugging the plate: tight, faint contact shadow (one of the lowest parts) */
+.cb-rig-partwrap--low {
+  filter: drop-shadow(0.05vmin 0.07vmin 0.1vmin rgba(15, 8, 4, 0.45));
+}
 .cb-rig-part {
   position: absolute;
   inset: 0;

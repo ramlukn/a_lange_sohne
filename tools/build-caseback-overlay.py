@@ -266,6 +266,10 @@ def main():
         if part_cfg.get("shadow") == "high":
             sh = np.roll(np.roll(af, 5, axis=0), 4, axis=1) * 0.55
             floor_mix = 0.35
+        elif part_cfg.get("shadow") == "low":
+            # hugging the plate: tight, faint contact shadow
+            sh = np.roll(np.roll(af, 2, axis=0), 1, axis=1) * 0.35
+            floor_mix = 0.3
         else:
             sh = np.roll(np.roll(af, 3, axis=0), 2, axis=1) * 0.45
             floor_mix = 0.25

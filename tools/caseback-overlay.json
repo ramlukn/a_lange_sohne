@@ -6,8 +6,8 @@
       "name": "centerwheel",
       "src": "tools/assets-src/parts/02-train-wheel-large.png",
       "center": [
-        564,
-        556
+        560,
+        552
       ],
       "r_out": 87,
       "z": 1,
@@ -21,10 +21,10 @@
       "name": "thirdwheel",
       "src": "tools/assets-src/parts/03-train-wheel-medium.png",
       "center": [
-        824,
-        614
+        830,
+        620
       ],
-      "r_out": 86,
+      "r_out": 82,
       "z": 1,
       "anim": {
         "type": "spin",
@@ -36,8 +36,8 @@
       "name": "fourthwheel",
       "src": "tools/assets-src/parts/02-train-wheel-large.png",
       "center": [
-        626,
-        645
+        631,
+        639
       ],
       "r_out": 72,
       "z": 2,
@@ -51,10 +51,10 @@
       "name": "secondswheel",
       "src": "tools/assets-src/parts/04-train-wheel-small.png",
       "center": [
-        475,
+        471,
         624
       ],
-      "r_out": 89,
+      "r_out": 87,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -77,7 +77,7 @@
         "amplitude_deg": 28,
         "period_s": 0.4
       },
-      "shadow": "high"
+      "shadow": "low"
     }
   ],
   "flood": {
@@ -276,7 +276,8 @@
           760,
           745
         ]
-      ]
+      ],
+      "feather_px": 0.7
     },
     "steelarm": {
       "comment": "small steel cock right of the upper pocket",
@@ -423,7 +424,7 @@
           777.9
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-toptab": {
@@ -477,7 +478,7 @@
           762.3
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-left-shaft": {
@@ -531,7 +532,7 @@
           835.0
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-left-pad": {
@@ -585,7 +586,7 @@
           814.1
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-bl-shaft": {
@@ -639,7 +640,7 @@
           897.1
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-bl-pad": {
@@ -693,7 +694,7 @@
           921.2
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     },
     "support-bottom": {
@@ -747,7 +748,7 @@
           910.8
         ]
       ],
-      "feather_px": 0.45,
+      "feather_px": 0.35,
       "up_shadow": true
     }
   },
@@ -755,7 +756,7 @@
     {
       "name": "seconds",
       "at": [
-        478,
+        474,
         624
       ],
       "donor": [
