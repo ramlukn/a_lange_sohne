@@ -21,7 +21,7 @@
       "name": "thirdwheel",
       "src": "tools/assets-src/parts/03-train-wheel-medium.png",
       "center": [
-        845,
+        838,
         600
       ],
       "r_out": 82,
@@ -36,7 +36,7 @@
       "name": "fourthwheel",
       "src": "tools/assets-src/parts/02-train-wheel-large.png",
       "center": [
-        741,
+        621,
         650
       ],
       "r_out": 60,
@@ -51,10 +51,10 @@
       "name": "secondswheel",
       "src": "tools/assets-src/parts/04-train-wheel-small.png",
       "center": [
-        479,
-        620
+        475,
+        624
       ],
-      "r_out": 76,
+      "r_out": 81,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -363,11 +363,11 @@
         ],
         [
           802,
-          575
+          648
         ],
         [
           752,
-          575
+          648
         ]
       ]
     }
@@ -376,8 +376,8 @@
     {
       "name": "seconds",
       "at": [
-        479,
-        620
+        475,
+        624
       ],
       "donor": [
         569,
