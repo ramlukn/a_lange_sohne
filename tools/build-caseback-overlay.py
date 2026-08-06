@@ -141,6 +141,7 @@ def build_part(p):
         "z": p["z"],
         "anim": p["anim"],
         "file": f"part-{p['name']}.webp",
+        **({"shadow": p["shadow"]} if p.get("shadow") else {}),
     }
 
 
@@ -258,10 +259,18 @@ def main():
         ch = min(by + h, IMG) - dy0
         s = spr[sy0:sy0 + ch, sx0:sx0 + cw]
         af = s[..., 3:] / 255
-        # baked contact shadow so the fallback matches the runtime drop-shadow
-        sh = np.roll(np.roll(af, 3, axis=0), 2, axis=1) * 0.45
+        # baked contact shadow so the fallback matches the runtime drop-shadow;
+        # "high" parts (the balance) get a deeper, further-thrown shadow so
+        # they read as the tallest component in the stack
+        part_cfg = next(q for q in cfg["parts"] if q["name"] == info["name"])
+        if part_cfg.get("shadow") == "high":
+            sh = np.roll(np.roll(af, 5, axis=0), 4, axis=1) * 0.55
+            floor_mix = 0.35
+        else:
+            sh = np.roll(np.roll(af, 3, axis=0), 2, axis=1) * 0.45
+            floor_mix = 0.25
         dst = comp[dy0:dy0 + ch, dx0:dx0 + cw]
-        dst = dst * (1 - sh) + dst * sh * 0.25
+        dst = dst * (1 - sh) + dst * sh * floor_mix
         comp[dy0:dy0 + ch, dx0:dx0 + cw] = dst * (1 - af) + s[..., :3] * af
     for info in statics_out:
         spr = np.array(Image.open(OUT / info["file"])).astype(np.float32)
@@ -283,7 +292,8 @@ def main():
     yy, xx = np.mgrid[0:IMG, 0:IMG]
     for info in parts_out:
         cx, cy = info["center"]
-        cover |= np.hypot(xx + 0.5 - cx, yy + 0.5 - cy) <= info["r_out"] + 4
+        margin = 10 if info.get("shadow") == "high" else 4
+        cover |= np.hypot(xx + 0.5 - cx, yy + 0.5 - cy) <= info["r_out"] + margin
     for gem in cfg.get("gems", []):
         gx, gy = gem["at"]
         cover |= np.hypot(xx + 0.5 - gx, yy + 0.5 - gy) <= gem["r"] + 4

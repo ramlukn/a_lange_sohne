@@ -556,6 +556,10 @@ a:hover { color: var(--gold-line-hover); }
   position: absolute;
   filter: drop-shadow(0.1vmin 0.14vmin 0.18vmin rgba(15, 8, 4, 0.5));
 }
+/* the balance rides highest in the stack: a deeper, further-thrown shadow */
+.cb-rig-partwrap--high {
+  filter: drop-shadow(0.22vmin 0.3vmin 0.42vmin rgba(15, 8, 4, 0.62));
+}
 .cb-rig-part {
   position: absolute;
   inset: 0;

@@ -9,7 +9,7 @@
         564,
         556
       ],
-      "r_out": 83,
+      "r_out": 87,
       "z": 1,
       "anim": {
         "type": "spin",
@@ -24,7 +24,7 @@
         824,
         614
       ],
-      "r_out": 82,
+      "r_out": 86,
       "z": 1,
       "anim": {
         "type": "spin",
@@ -39,7 +39,7 @@
         626,
         645
       ],
-      "r_out": 69,
+      "r_out": 72,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -54,7 +54,7 @@
         475,
         624
       ],
-      "r_out": 85,
+      "r_out": 89,
       "z": 2,
       "anim": {
         "type": "spin",
@@ -76,7 +76,8 @@
         "type": "oscillate",
         "amplitude_deg": 28,
         "period_s": 0.4
-      }
+      },
+      "shadow": "high"
     }
   ],
   "flood": {
@@ -346,7 +347,7 @@
       "comment": "covers the small depression above the S-bridge waist so the third wheel shows only in the right-side depression",
       "polygon": [
         [
-          736,
+          728,
           452
         ],
         [
@@ -366,7 +367,7 @@
           680
         ],
         [
-          736,
+          728,
           680
         ]
       ]
