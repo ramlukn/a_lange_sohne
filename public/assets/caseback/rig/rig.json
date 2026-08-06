@@ -97,17 +97,17 @@
         849.5
       ],
       "box_px": [
-        552.0,
-        726.5,
-        246,
-        246
+        558.0,
+        732.5,
+        234,
+        234
       ],
-      "r_out": 121.5,
+      "r_out": 115.5,
       "z": 3,
       "anim": {
         "type": "oscillate",
         "amplitude_deg": 28,
-        "period_s": 0.4
+        "period_s": 0.52
       },
       "file": "part-balance.webp",
       "shadow": "low"
@@ -157,10 +157,10 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        676,
+        678,
         714,
-        147,
-        282
+        145,
+        281
       ],
       "file": "static-balance-arc-cover.webp"
     },
@@ -187,10 +187,10 @@
     {
       "name": "sec-eleven",
       "box_px": [
-        564,
-        705,
-        97,
-        87
+        573,
+        710,
+        77,
+        77
       ],
       "file": "static-sec-eleven.webp"
     },
@@ -198,19 +198,19 @@
       "name": "sec-nine",
       "box_px": [
         528,
-        778,
-        86,
-        116
+        786,
+        83,
+        99
       ],
       "file": "static-sec-nine.webp"
     },
     {
       "name": "sec-seven",
       "box_px": [
-        578,
-        902,
-        92,
-        94
+        584,
+        905,
+        82,
+        90
       ],
       "file": "static-sec-seven.webp"
     },
