@@ -157,10 +157,10 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        678,
+        681,
         714,
-        145,
-        281
+        142,
+        278
       ],
       "file": "static-balance-arc-cover.webp"
     },
@@ -205,14 +205,34 @@
       "file": "static-sec-nine.webp"
     },
     {
-      "name": "sec-seven",
+      "name": "support-bottom",
       "box_px": [
-        584,
-        905,
-        82,
-        90
+        687,
+        913,
+        39,
+        66
       ],
-      "file": "static-sec-seven.webp"
+      "file": "static-support-bottom.webp"
+    },
+    {
+      "name": "support-bl-pad",
+      "box_px": [
+        604,
+        921,
+        55,
+        55
+      ],
+      "file": "static-support-bl-pad.webp"
+    },
+    {
+      "name": "support-bl-arm",
+      "box_px": [
+        630,
+        897,
+        40,
+        43
+      ],
+      "file": "static-support-bl-arm.webp"
     },
     {
       "name": "gem-seconds",
