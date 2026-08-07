@@ -106,8 +106,8 @@
       "z": 3,
       "anim": {
         "type": "oscillate",
-        "amplitude_deg": 28,
-        "period_s": 0.52
+        "amplitude_deg": 135,
+        "period_s": 0.78
       },
       "file": "part-balance.webp",
       "shadow": "low"
