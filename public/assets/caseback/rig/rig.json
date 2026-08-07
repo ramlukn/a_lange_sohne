@@ -217,10 +217,10 @@
     {
       "name": "support-bl-pad",
       "box_px": [
-        607,
+        604,
         921,
-        55,
-        66
+        63,
+        68
       ],
       "file": "static-support-bl-pad.webp"
     },
