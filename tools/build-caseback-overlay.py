@@ -21,6 +21,7 @@ at-rest fallback (shown when the rig is hidden / reduced motion).
 Usage: python3 tools/build-caseback-overlay.py
 """
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -122,6 +123,44 @@ def build_part(p):
     cw = min(x0 + size, src.shape[1]) - cx0
     ch = min(y0 + size, src.shape[0]) - cy0
     pad[sy0:sy0 + ch, sx0:sx0 + cw] = src[cy0:cy0 + ch, cx0:cx0 + cw]
+    if p.get("circularize"):
+        # the render's ring is measurably oval (k=2 ~ 3.3px at r479); warp it
+        # radially so the smooth low-harmonic radius profile becomes constant
+        ac = (pad[..., 3] > 10).astype(np.float32)
+        n_ang = 720
+        th = np.linspace(0, 2 * math.pi, n_ang, endpoint=False)
+        rr = np.arange(r_src * 0.75, r_src * 1.05, 0.5)
+        edge = np.full(n_ang, np.nan)
+        ctr = size / 2
+        for i, ang in enumerate(th):
+            xs_s = np.clip((ctr + rr * math.cos(ang)).astype(int), 0, size - 1)
+            ys_s = np.clip((ctr + rr * math.sin(ang)).astype(int), 0, size - 1)
+            on = np.where(ac[ys_s, xs_s] > 0.5)[0]
+            if len(on):
+                edge[i] = rr[on.max()]
+        ok = ~np.isnan(edge)
+        lim = np.percentile(edge[ok], 72)
+        band = np.minimum(edge, lim)
+        prof = np.copy(band)
+        prof[~ok] = np.nanmean(band)
+        # smooth profile: harmonics k<=4 only (screws and noise excluded)
+        F = np.fft.rfft(prof)
+        F[5:] = 0
+        smooth = np.fft.irfft(F, n_ang)
+        target = smooth.mean()
+        scale_th = smooth / target  # source radius per unit target radius
+        yy_g, xx_g = np.mgrid[0:size, 0:size].astype(np.float32)
+        dxg, dyg = xx_g - ctr, yy_g - ctr
+        r_g = np.hypot(dxg, dyg)
+        th_g = np.arctan2(dyg, dxg) % (2 * math.pi)
+        s_g = np.interp(th_g.ravel(), th, scale_th, period=2 * math.pi) \
+            .reshape(size, size).astype(np.float32)
+        map_x = (ctr + dxg * s_g).astype(np.float32)
+        map_y = (ctr + dyg * s_g).astype(np.float32)
+        pad = cv2.remap(pad, map_x, map_y, cv2.INTER_LINEAR)
+        print(f"  {p['name']}: circularized (ovality profile span "
+              f"{smooth.min():.1f}..{smooth.max():.1f} -> {target:.1f})")
+
     rot = p.get("rot_deg", 0) % 360
     if rot:
         if rot % 90 == 0:
