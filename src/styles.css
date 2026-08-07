@@ -390,18 +390,47 @@ a:hover { color: var(--gold-line-hover); }
 }
 .seconds-dial:hover { box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .25vmin rgba(240,200,150,.55); }
 
-/* Concentric with .seconds-dial (centre 60.4%) and riding 6.9% of the face
-   above it -- the offset the two dials were drawn with in b1e68fe, not a
-   derived figure (half the 13.6% subdial radius would be 6.8). That puts the
-   aperture's widest points 11.6% from the subdial centre, inside the sprite's
-   marking band at 12.85%. Keep left = 60.4 - width/2 whenever the subdial
-   moves. */
+/* Sized so the aperture's outer arc sits flush inside the seconds track.
+   Two invariants, both load-bearing:
+
+   1. left = 60.4 - width/2, so the box stays on the subdial axis (60.4%).
+   2. top is set so the ARC's centre lands on the subdial centre (73.8%).
+      The arc "A48 48" has its centre at v=56.74677 in the 0 0 100 50 viewBox,
+      so arc-centre-y = top + (56.74677/50) * height. Solving for 73.8 gives
+      60.25. That concentricity is what makes the fit even the whole way
+      round; it was already true to 0.02% before this resize, and holding it
+      is worth more than holding the wheel pivot's old 1.45% offset (see
+      below), since both are the same one degree of freedom.
+
+   Aperture extent is measured, not assumed: sampling the clip path with
+   getPointAtLength -- in FACE-LOCAL layout space, mapped through the SVG's
+   own getCTM() -- puts the widest points at the arc endpoints (u=97,v=47),
+   11.61% from the subdial centre. Do not sample via getScreenCTM: the intro
+   transform on the group and the perspective translateZ on #faceFront inflate
+   screen-space radii, and comparing those against a layout-space subdial
+   centre is what produced the bogus 11.56% figure this resize replaced.
+
+   Target comes from the sprite itself: a radial luminance scan of
+   seconds-dial.webp finds no tick ink inside 0.866 of the subdial radius,
+   first ink at 0.867 (the three long markers) and all 60 ticks by 0.879.
+   0.867 * 13.6 = 11.79%, so 11.61% leaves ~0.19% of the face -- a ~1.2px
+   hairline at a 900px viewport, half of which the aperture's own 0.5px
+   non-scaling stroke occupies. Deliberate gap, not a collision.
+
+   Scale is 1.095x on the previous 22.1 x 10.9 box; aspect held at 2.027 so
+   the preserveAspectRatio="none" stretch leaves the drawn shape alone. The
+   wheel pivot (box bottom centre, the axis main.js spins #moonOrbit about)
+   moves 72.35 -> 72.19, i.e. 1.45% -> 1.61% above the subdial centre. That
+   offset is a consequence of the aperture geometry, not an independent
+   anchor: pivot and aperture are both fixed in viewBox units, so a uniform
+   box scale preserves their relationship exactly and the moon art is
+   unaffected. Keep both invariants above whenever the subdial moves. */
 .moon {
   position: absolute;
-  left: 49.35%;
-  top: 61.45%;
-  width: 22.1%;
-  height: 10.9%;
+  left: 48.3%;
+  top: 60.25%;
+  width: 24.2%;
+  height: 11.94%;
   cursor: pointer;
 }
 .moon:hover { filter: brightness(1.08); }
