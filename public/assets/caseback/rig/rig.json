@@ -107,7 +107,7 @@
       "anim": {
         "type": "oscillate",
         "amplitude_deg": 135,
-        "period_s": 1.365
+        "period_s": 2.6
       },
       "file": "part-balance.webp",
       "shadow": "low"
