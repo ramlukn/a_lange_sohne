@@ -167,10 +167,10 @@
     {
       "name": "support-top",
       "box_px": [
+        691,
         696,
-        701,
-        48,
-        64
+        57,
+        73
       ],
       "file": "static-support-top.webp"
     },

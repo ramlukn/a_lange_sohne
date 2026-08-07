@@ -606,7 +606,8 @@
           722
         ]
       ],
-      "feather_px": 0.35
+      "feather_px": 1.1,
+      "dilate_px": 5
     },
     "support-toptab": {
       "polygon": [
