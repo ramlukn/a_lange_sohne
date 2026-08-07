@@ -223,19 +223,18 @@ a:hover { color: var(--gold-line-hover); }
 }
 
 /* ===================== HOURS & MINUTES ===================== */
-.hm-index {
+/* Dial plates and subdials are rendered art (tools/build-dial-art.py); the
+   minute tracks, applied indices and Roman numerals are baked into the sprites. */
+.dial-art {
   position: absolute;
-  border-radius: .1vmin;
-  background: linear-gradient(96deg, #5a321e, #c18b60 24%, #fff0db 46%, #e6bb91 58%, #a56d48 80%, #3c2115);
-  box-shadow: 0 .12vmin .35vmin rgba(0,0,0,.55);
-}
-.hm-numeral {
-  position: absolute;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 3.15vmin;
-  color: #e4b887;
-  text-shadow: 0 .12vmin .3vmin #24140c;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .maker-name {
@@ -383,10 +382,9 @@ a:hover { color: var(--gold-line-hover); }
   height: 27.2%;
   border-radius: 50%;
   cursor: pointer;
-  background: radial-gradient(circle at 34% 28%, #213a59 0%, #16324f 32%, #0d2742 64%, #061427 100%);
-  box-shadow: inset 0 .5vmin 1.55vmin rgba(0,0,0,.74), inset 0 -.25vmin .8vmin rgba(130,170,240,.1), inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .09vmin rgba(219,179,134,.52), 0 .35vmin 1vmin rgba(0,0,0,.64);
+  box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 .35vmin 1vmin rgba(0,0,0,.64);
 }
-.seconds-dial:hover { box-shadow: inset 0 .4vmin 1.3vmin rgba(0,0,0,.62), 0 0 0 .25vmin rgba(240,200,150,.55); }
+.seconds-dial:hover { box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .25vmin rgba(240,200,150,.55); }
 
 .moon {
   position: absolute;
