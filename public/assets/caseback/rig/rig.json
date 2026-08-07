@@ -157,10 +157,10 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        681,
+        685,
         714,
-        142,
-        278
+        138,
+        274
       ],
       "file": "static-balance-arc-cover.webp"
     },
