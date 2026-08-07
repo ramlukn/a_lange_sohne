@@ -122,6 +122,13 @@ def build_part(p):
     cw = min(x0 + size, src.shape[1]) - cx0
     ch = min(y0 + size, src.shape[0]) - cy0
     pad[sy0:sy0 + ch, sx0:sx0 + cw] = src[cy0:cy0 + ch, cx0:cx0 + cw]
+    rot = p.get("rot_deg", 0) % 360
+    if rot:
+        if rot % 90 == 0:
+            pad = np.rot90(pad, -(rot // 90)).copy()  # lossless quarter turns, CW
+        else:
+            M = cv2.getRotationMatrix2D((size / 2, size / 2), -rot, 1.0)
+            pad = cv2.warpAffine(pad, M, (size, size), flags=cv2.INTER_LINEAR)
     out_px = int(round(size * scale))
     out_px += out_px % 2
     spr = cv2.resize(pad, (out_px, out_px), interpolation=cv2.INTER_AREA)
@@ -184,9 +191,9 @@ def main():
             # the dilated silhouette shifted up, minus the silhouette itself,
             # clipped to the balance band's radii so it never smears across
             # the static dome or spring
-            grown = poly_mask(spec["polygon"], dilate=4, feather=1.4)
-            shifted = np.roll(grown, -3, axis=0)
-            band = np.clip(shifted - m, 0, 1) * 0.30
+            grown = poly_mask(spec["polygon"], dilate=2, feather=0.7)
+            shifted = np.roll(grown, -2, axis=0)
+            band = np.clip(shifted - m, 0, 1) * 0.22
             bal = next(q for q in cfg["parts"] if q["name"] == "balance")
             bcx, bcy = bal["center"]
             yy2, xx2 = np.mgrid[0:IMG, 0:IMG]
