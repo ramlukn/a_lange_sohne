@@ -255,6 +255,56 @@
       "file": "static-support-left-pad.webp"
     },
     {
+      "name": "corr-one",
+      "box_px": [
+        675,
+        751,
+        30,
+        63
+      ],
+      "file": "static-corr-one.webp"
+    },
+    {
+      "name": "corr-eleven",
+      "box_px": [
+        617,
+        774,
+        44,
+        49
+      ],
+      "file": "static-corr-eleven.webp"
+    },
+    {
+      "name": "corr-nine",
+      "box_px": [
+        600,
+        819,
+        42,
+        50
+      ],
+      "file": "static-corr-nine.webp"
+    },
+    {
+      "name": "corr-seven",
+      "box_px": [
+        633,
+        876,
+        40,
+        38
+      ],
+      "file": "static-corr-seven.webp"
+    },
+    {
+      "name": "corr-five",
+      "box_px": [
+        680,
+        879,
+        38,
+        52
+      ],
+      "file": "static-corr-five.webp"
+    },
+    {
       "name": "gem-seconds",
       "box_px": [
         461.0,
