@@ -390,10 +390,12 @@ a:hover { color: var(--gold-line-hover); }
 }
 .seconds-dial:hover { box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .25vmin rgba(240,200,150,.55); }
 
-/* Concentric with .seconds-dial (centre 60.4%) and riding 6.9% of the face --
-   half the 13.6% subdial radius -- above it. That puts the aperture's widest
-   points 11.6% from the subdial centre, inside the sprite's marking band at
-   12.85%. Keep left = 60.4 - width/2 whenever the subdial moves. */
+/* Concentric with .seconds-dial (centre 60.4%) and riding 6.9% of the face
+   above it -- the offset the two dials were drawn with in b1e68fe, not a
+   derived figure (half the 13.6% subdial radius would be 6.8). That puts the
+   aperture's widest points 11.6% from the subdial centre, inside the sprite's
+   marking band at 12.85%. Keep left = 60.4 - width/2 whenever the subdial
+   moves. */
 .moon {
   position: absolute;
   left: 49.35%;
