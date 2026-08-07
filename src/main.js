@@ -29,7 +29,7 @@ const ZOOM_ORIGINS = {
   featured: '63.75% 26.05%',
   currently: '60.4% 73.8%',
   resume: '65.5% 47.5%',
-  books: '61.9% 67.9%'
+  books: '60.4% 66.9%'
 };
 
 const $ = (id) => document.getElementById(id);
