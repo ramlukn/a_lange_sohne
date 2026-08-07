@@ -184,7 +184,7 @@ def main():
     shadow_layers = {}
     for name, spec in cfg["polys"].items():
         feather = spec.get("feather_px", 1.3)
-        dil = 1 if spec.get("up_shadow") else 2
+        dil = spec.get("dilate_px", 1 if spec.get("up_shadow") else 2)
         m = poly_mask(spec["polygon"], dilate=dil, feather=feather)
         if spec.get("up_shadow"):
             # slight upward shadow the support casts on the ring beneath it:

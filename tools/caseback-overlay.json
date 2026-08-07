@@ -879,7 +879,8 @@
           948.0
         ]
       ],
-      "feather_px": 0.35
+      "feather_px": 0.35,
+      "dilate_px": 0
     },
     "support-bl-arm": {
       "polygon": [
