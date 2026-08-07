@@ -29,16 +29,16 @@
     {
       "name": "thirdwheel",
       "center": [
-        830,
-        620
+        834,
+        616
       ],
       "box_px": [
-        747.0,
-        537.0,
-        166,
-        166
+        753.0,
+        535.0,
+        162,
+        162
       ],
-      "r_out": 82,
+      "r_out": 80,
       "z": 1,
       "anim": {
         "type": "spin",
@@ -93,21 +93,21 @@
     {
       "name": "balance",
       "center": [
-        675,
-        849.5
+        674.5,
+        846.5
       ],
       "box_px": [
-        550.0,
-        724.5,
-        250,
-        250
+        557.5,
+        729.5,
+        234,
+        234
       ],
-      "r_out": 124,
+      "r_out": 115.5,
       "z": 3,
       "anim": {
         "type": "oscillate",
         "amplitude_deg": 28,
-        "period_s": 0.4
+        "period_s": 0.52
       },
       "file": "part-balance.webp",
       "shadow": "low"
@@ -155,134 +155,84 @@
       "file": "static-topslot.webp"
     },
     {
-      "name": "support-top-shadow",
+      "name": "balance-arc-cover",
       "box_px": [
-        680,
-        718,
-        57,
-        53
+        685,
+        714,
+        138,
+        274
       ],
-      "file": "static-support-top-shadow.webp"
+      "file": "static-balance-arc-cover.webp"
     },
     {
       "name": "support-top",
       "box_px": [
-        682,
-        707,
-        54,
-        76
+        696,
+        701,
+        48,
+        64
       ],
       "file": "static-support-top.webp"
     },
     {
-      "name": "support-toptab-shadow",
-      "box_px": [
-        669,
-        723,
-        41,
-        39
-      ],
-      "file": "static-support-toptab-shadow.webp"
-    },
-    {
       "name": "support-toptab",
       "box_px": [
-        674,
-        731,
-        31,
-        39
+        679,
+        736,
+        29,
+        34
       ],
       "file": "static-support-toptab.webp"
     },
     {
-      "name": "support-left-shaft",
+      "name": "sec-eleven",
       "box_px": [
-        593,
-        827,
-        57,
-        35
+        573,
+        710,
+        77,
+        77
       ],
-      "file": "static-support-left-shaft.webp"
+      "file": "static-sec-eleven.webp"
     },
     {
-      "name": "support-left-pad-shadow",
+      "name": "sec-nine",
       "box_px": [
-        557,
-        800,
-        37,
-        72
+        528,
+        786,
+        83,
+        99
       ],
-      "file": "static-support-left-pad-shadow.webp"
-    },
-    {
-      "name": "support-left-pad",
-      "box_px": [
-        562,
-        808,
-        39,
-        63
-      ],
-      "file": "static-support-left-pad.webp"
-    },
-    {
-      "name": "support-bl-shaft-shadow",
-      "box_px": [
-        616,
-        924,
-        40,
-        28
-      ],
-      "file": "static-support-bl-shaft-shadow.webp"
-    },
-    {
-      "name": "support-bl-shaft",
-      "box_px": [
-        621,
-        893,
-        55,
-        57
-      ],
-      "file": "static-support-bl-shaft.webp"
-    },
-    {
-      "name": "support-bl-pad-shadow",
-      "box_px": [
-        600,
-        916,
-        62,
-        53
-      ],
-      "file": "static-support-bl-pad-shadow.webp"
-    },
-    {
-      "name": "support-bl-pad",
-      "box_px": [
-        605,
-        917,
-        52,
-        50
-      ],
-      "file": "static-support-bl-pad.webp"
-    },
-    {
-      "name": "support-bottom-shadow",
-      "box_px": [
-        682,
-        928,
-        48,
-        53
-      ],
-      "file": "static-support-bottom-shadow.webp"
+      "file": "static-sec-nine.webp"
     },
     {
       "name": "support-bottom",
       "box_px": [
-        685,
-        905,
-        40,
-        75
+        697,
+        913,
+        29,
+        65
       ],
       "file": "static-support-bottom.webp"
+    },
+    {
+      "name": "support-bl-pad",
+      "box_px": [
+        604,
+        921,
+        55,
+        55
+      ],
+      "file": "static-support-bl-pad.webp"
+    },
+    {
+      "name": "support-bl-arm",
+      "box_px": [
+        630,
+        897,
+        40,
+        43
+      ],
+      "file": "static-support-bl-arm.webp"
     },
     {
       "name": "gem-seconds",
