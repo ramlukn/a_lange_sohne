@@ -67,8 +67,8 @@
       "name": "balance",
       "src": "tools/assets-src/parts/01-balance-wheel.png",
       "center": [
-        674.1,
-        848.3
+        674.35,
+        848.05
       ],
       "r_out": 115.5,
       "z": 3,
