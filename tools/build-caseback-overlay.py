@@ -122,6 +122,13 @@ def build_part(p):
     cw = min(x0 + size, src.shape[1]) - cx0
     ch = min(y0 + size, src.shape[0]) - cy0
     pad[sy0:sy0 + ch, sx0:sx0 + cw] = src[cy0:cy0 + ch, cx0:cx0 + cw]
+    rot = p.get("rot_deg", 0) % 360
+    if rot:
+        if rot % 90 == 0:
+            pad = np.rot90(pad, -(rot // 90)).copy()  # lossless quarter turns, CW
+        else:
+            M = cv2.getRotationMatrix2D((size / 2, size / 2), -rot, 1.0)
+            pad = cv2.warpAffine(pad, M, (size, size), flags=cv2.INTER_LINEAR)
     out_px = int(round(size * scale))
     out_px += out_px % 2
     spr = cv2.resize(pad, (out_px, out_px), interpolation=cv2.INTER_AREA)

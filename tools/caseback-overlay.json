@@ -77,7 +77,8 @@
         "amplitude_deg": 28,
         "period_s": 0.52
       },
-      "shadow": "low"
+      "shadow": "low",
+      "rot_deg": 90
     }
   ],
   "flood": {
