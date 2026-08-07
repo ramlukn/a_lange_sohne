@@ -93,12 +93,12 @@
     {
       "name": "balance",
       "center": [
-        674.5,
-        846.5
+        674.1,
+        848.3
       ],
       "box_px": [
-        557.5,
-        729.5,
+        557.1,
+        731.3,
         234,
         234
       ],
@@ -106,8 +106,8 @@
       "z": 3,
       "anim": {
         "type": "oscillate",
-        "amplitude_deg": 28,
-        "period_s": 0.52
+        "amplitude_deg": 135,
+        "period_s": 2.6
       },
       "file": "part-balance.webp",
       "shadow": "low"
@@ -127,10 +127,10 @@
     {
       "name": "cock",
       "box_px": [
-        736,
-        684,
-        280,
-        307
+        730,
+        685,
+        285,
+        305
       ],
       "file": "static-cock.webp"
     },
@@ -157,40 +157,40 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        685,
         714,
-        138,
-        274
+        761,
+        108,
+        137
       ],
       "file": "static-balance-arc-cover.webp"
     },
     {
       "name": "support-top",
       "box_px": [
+        691,
         696,
-        701,
-        48,
-        64
+        57,
+        73
       ],
       "file": "static-support-top.webp"
     },
     {
       "name": "support-toptab",
       "box_px": [
-        679,
-        736,
-        29,
-        34
+        684,
+        738,
+        21,
+        26
       ],
       "file": "static-support-toptab.webp"
     },
     {
       "name": "sec-eleven",
       "box_px": [
-        573,
-        710,
-        77,
-        77
+        576,
+        719,
+        69,
+        78
       ],
       "file": "static-sec-eleven.webp"
     },
@@ -198,29 +198,29 @@
       "name": "sec-nine",
       "box_px": [
         528,
-        786,
-        83,
-        99
+        832,
+        78,
+        53
       ],
       "file": "static-sec-nine.webp"
     },
     {
       "name": "support-bottom",
       "box_px": [
-        697,
-        913,
-        29,
-        65
+        693,
+        912,
+        36,
+        68
       ],
       "file": "static-support-bottom.webp"
     },
     {
       "name": "support-bl-pad",
       "box_px": [
-        604,
-        921,
-        55,
-        55
+        599,
+        909,
+        67,
+        80
       ],
       "file": "static-support-bl-pad.webp"
     },
@@ -233,6 +233,56 @@
         43
       ],
       "file": "static-support-bl-arm.webp"
+    },
+    {
+      "name": "support-left-arm",
+      "box_px": [
+        567,
+        819,
+        47,
+        34
+      ],
+      "file": "static-support-left-arm.webp"
+    },
+    {
+      "name": "support-left-pad",
+      "box_px": [
+        551,
+        826,
+        44,
+        44
+      ],
+      "file": "static-support-left-pad.webp"
+    },
+    {
+      "name": "corr-one",
+      "box_px": [
+        680,
+        751,
+        25,
+        29
+      ],
+      "file": "static-corr-one.webp"
+    },
+    {
+      "name": "corr-eleven",
+      "box_px": [
+        614,
+        771,
+        31,
+        26
+      ],
+      "file": "static-corr-eleven.webp"
+    },
+    {
+      "name": "corr-five",
+      "box_px": [
+        689,
+        910,
+        31,
+        24
+      ],
+      "file": "static-corr-five.webp"
     },
     {
       "name": "gem-seconds",
