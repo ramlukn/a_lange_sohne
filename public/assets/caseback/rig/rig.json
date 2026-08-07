@@ -237,12 +237,22 @@
     {
       "name": "support-left-arm",
       "box_px": [
-        561,
-        815,
-        52,
-        28
+        567,
+        819,
+        47,
+        34
       ],
       "file": "static-support-left-arm.webp"
+    },
+    {
+      "name": "support-left-pad",
+      "box_px": [
+        551,
+        826,
+        44,
+        44
+      ],
+      "file": "static-support-left-pad.webp"
     },
     {
       "name": "gem-seconds",
