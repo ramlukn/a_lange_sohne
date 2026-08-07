@@ -235,14 +235,14 @@
       "file": "static-support-bl-arm.webp"
     },
     {
-      "name": "sec-nine-armhalo",
+      "name": "support-left-arm",
       "box_px": [
         561,
         815,
         52,
         28
       ],
-      "file": "static-sec-nine-armhalo.webp"
+      "file": "static-support-left-arm.webp"
     },
     {
       "name": "gem-seconds",
