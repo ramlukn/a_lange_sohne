@@ -198,9 +198,9 @@
       "name": "sec-nine",
       "box_px": [
         528,
-        818,
+        821,
         78,
-        67
+        64
       ],
       "file": "static-sec-nine.webp"
     },
@@ -233,6 +233,16 @@
         43
       ],
       "file": "static-support-bl-arm.webp"
+    },
+    {
+      "name": "sec-nine-armhalo",
+      "box_px": [
+        560,
+        811,
+        54,
+        36
+      ],
+      "file": "static-sec-nine-armhalo.webp"
     },
     {
       "name": "gem-seconds",
