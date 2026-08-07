@@ -74,12 +74,11 @@
       "z": 3,
       "anim": {
         "type": "oscillate",
-        "amplitude_deg": 135,
+        "amplitude_deg": 28,
         "period_s": 0.52
       },
       "shadow": "low",
-      "rot_deg": 90,
-      "circularize": true
+      "rot_deg": 90
     }
   ],
   "flood": {
