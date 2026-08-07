@@ -210,16 +210,16 @@
       "comment": "engraved balance cock incl. its left screw-arm; precise along the balance-facing edge",
       "polygon": [
         [
-          745,
-          770
+          767,
+          769
         ],
         [
-          742,
-          795
+          735,
+          793
         ],
         [
-          742,
-          820
+          739,
+          818
         ],
         [
           748,
@@ -278,7 +278,8 @@
           745
         ]
       ],
-      "feather_px": 0.7
+      "feather_px": 0.7,
+      "dilate_px": 1
     },
     "steelarm": {
       "comment": "small steel cock right of the upper pocket",
