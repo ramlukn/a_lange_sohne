@@ -157,10 +157,10 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        686,
+        685,
         714,
-        137,
-        269
+        138,
+        274
       ],
       "file": "static-balance-arc-cover.webp"
     },
@@ -233,16 +233,6 @@
         43
       ],
       "file": "static-support-bl-arm.webp"
-    },
-    {
-      "name": "sec-seven",
-      "box_px": [
-        588,
-        907,
-        76,
-        87
-      ],
-      "file": "static-sec-seven.webp"
     },
     {
       "name": "gem-seconds",
