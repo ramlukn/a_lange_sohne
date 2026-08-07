@@ -207,9 +207,9 @@
     {
       "name": "support-bottom",
       "box_px": [
-        695,
+        686,
         913,
-        31,
+        40,
         65
       ],
       "file": "static-support-bottom.webp"
