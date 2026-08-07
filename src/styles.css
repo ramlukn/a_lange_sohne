@@ -279,7 +279,7 @@ a:hover { color: var(--gold-line-hover); }
 .hand-cap {
   position: absolute;
   left: 30.85%;
-  top: 47.25%;
+  top: 49.05%;
   width: 1.9%;
   height: 1.9%;
   border-radius: 50%;
@@ -377,7 +377,7 @@ a:hover { color: var(--gold-line-hover); }
 .seconds-dial {
   position: absolute;
   left: 46.8%;
-  top: 57.2%;
+  top: 60.2%;
   width: 27.2%;
   height: 27.2%;
   border-radius: 50%;
@@ -389,7 +389,7 @@ a:hover { color: var(--gold-line-hover); }
 .moon {
   position: absolute;
   left: 50.85%;
-  top: 59.45%;
+  top: 62.45%;
   width: 22.1%;
   height: 10.9%;
   cursor: pointer;
@@ -399,7 +399,7 @@ a:hover { color: var(--gold-line-hover); }
 .sec-pivot {
   position: absolute;
   left: 60.16%;
-  top: 63%;
+  top: 66%;
   width: .48%;
   height: 15.6%;
   transform-origin: 50% 50%;
@@ -417,7 +417,7 @@ a:hover { color: var(--gold-line-hover); }
 .sec-cap {
   position: absolute;
   left: 59.75%;
-  top: 70.15%;
+  top: 73.15%;
   width: 1.3%;
   height: 1.3%;
   border-radius: 50%;
@@ -428,7 +428,7 @@ a:hover { color: var(--gold-line-hover); }
 .about-hit {
   position: absolute;
   left: 6.5%;
-  top: 22.9%;
+  top: 24.7%;
   width: 50.6%;
   height: 50.6%;
   border-radius: 50%;
