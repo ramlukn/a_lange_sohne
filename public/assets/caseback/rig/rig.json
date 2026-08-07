@@ -217,9 +217,9 @@
     {
       "name": "support-bl-pad",
       "box_px": [
-        604,
-        921,
-        59,
+        599,
+        909,
+        60,
         67
       ],
       "file": "static-support-bl-pad.webp"
