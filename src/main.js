@@ -121,7 +121,10 @@ function render() {
   const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
 
-  el.reserveHand.style.transform = `rotate(${(18 - state.reserve * 38).toFixed(1)}deg)`;
+  // 0deg points at 12 for every hand. The scale sprite's end stops measure out
+  // at 40.7deg (AUF, full) and 138.9deg (AB, empty) about the arc's own centre
+  // -- see tools/build-dial-art.py -- so the pointer covers all 98.2deg of it.
+  el.reserveHand.style.transform = `rotate(${(138.9 - state.reserve * 98.2).toFixed(1)}deg)`;
   el.reserveBar.style.width = `${Math.round(state.reserve * 100)}%`;
 
   const curIdx = Math.floor(now / 4000) % CURRENTLY.length;

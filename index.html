@@ -128,38 +128,35 @@
           <div class="maker-name">NIKHIL RAMLUKAN</div>
           <div class="maker-calibre">CALIBRE NR.1</div>
 
-          <!-- hands -->
+          <!-- hands: rendered sprites, each cropped square about its own pivot boss -->
           <div class="hands">
-            <div class="hand-pivot" id="hourHand" style="left:31.02%;top:35.37%;width:1.56%;height:14.63%;">
-              <div class="hand-blade hand-hour"></div>
+            <div class="hand-pivot hand-hour" id="hourHand">
+              <img class="sprite-art" src="/assets/dial/hand-hour.webp" alt="" decoding="async">
             </div>
-            <div class="hand-pivot" id="minHand" style="left:31.24%;top:28.42%;width:1.12%;height:21.58%;">
-              <div class="hand-blade hand-min"></div>
+            <div class="hand-pivot hand-min" id="minHand">
+              <img class="sprite-art" src="/assets/dial/hand-minute.webp" alt="" decoding="async">
             </div>
-            <div class="hand-cap"></div>
           </div>
 
           <!-- ============ OUTSIZE DATE ============ -->
+          <!-- rose-gold twin frame is rendered art; the numerals are drawn into its panes -->
           <div class="date-window" id="dateWindow">
-            <div class="date-disc" id="dateTens">3</div>
-            <div class="date-disc" id="dateOnes">1</div>
+            <div class="date-frame"><img class="sprite-art" src="/assets/dial/date-window.webp" alt="" decoding="async"></div>
+            <div class="date-digit date-tens" id="dateTens">3</div>
+            <div class="date-digit date-ones" id="dateOnes">1</div>
           </div>
 
           <!-- ============ POWER RESERVE (AUF / AB) ============ -->
+          <!-- AUF/AB, arc and ticks are baked into the scale sprite -->
           <div class="reserve" id="reserve">
-            <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
-              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#e8e3d9" stroke-width=".75" opacity=".78"></path>
-              <path d="M 74 10 A 51 51 0 0 1 74 90" fill="none" stroke="#f3eee6" stroke-width="2.5" stroke-dasharray=".7 8.2" opacity=".82"></path>
-              <path d="M 74 78 A 51 51 0 0 1 74 90" fill="none" stroke="#b4373f" stroke-width="2.1" opacity=".95"></path>
-            </svg>
-            <div class="reserve-hand" id="reserveHand"><div class="reserve-blade"></div></div>
-            <div class="reserve-cap"></div>
-            <div class="reserve-auf">AUF</div>
-            <div class="reserve-ab">AB</div>
+            <div class="reserve-scale"><img class="sprite-art" src="/assets/dial/reserve-scale.webp" alt="" decoding="async"></div>
+            <div class="reserve-hand" id="reserveHand">
+              <img class="sprite-art" src="/assets/dial/reserve-hand.webp" alt="" decoding="async">
+            </div>
           </div>
 
           <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
-          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.16s both;--fy:38px;--fs:.96;">
+          <div style="position:absolute;inset:0;pointer-events:none;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.16s both;--fy:38px;--fs:.96;">
             <div class="seconds-dial" id="secondsDial">
               <img class="dial-art" src="/assets/dial/seconds-dial.webp" alt="" decoding="async">
             </div>
@@ -181,8 +178,9 @@
               </svg>
             </div>
             <!-- seconds hand -->
-            <div class="sec-pivot" id="secHand"><div class="sec-blade"></div></div>
-            <div class="sec-cap"></div>
+            <div class="sec-pivot" id="secHand">
+              <img class="sprite-art" src="/assets/dial/hand-seconds.webp" alt="" decoding="async">
+            </div>
           </div>
 
           <!-- hours-dial hit zone -->

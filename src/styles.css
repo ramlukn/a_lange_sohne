@@ -236,6 +236,18 @@ a:hover { color: var(--gold-line-hover); }
   -webkit-user-drag: none;
   user-select: none;
 }
+/* The same hygiene for the rectangular sprites -- hands, date frame, reserve
+   scale -- but without the round plate clip: a 50% radius on a hand's square
+   would shave the tip off, since the tip reaches the very edge of the crop. */
+.sprite-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
 
 .maker-name {
   position: absolute;
@@ -265,113 +277,106 @@ a:hover { color: var(--gold-line-hover); }
   --fy: -10px;
 }
 
+/* Every hand is a rendered sprite cropped to a square whose exact centre is the
+   pivot boss -- so the wrapper is a square centred on the dial's axis and both
+   the JS rotation and the windUp intro turn about `50% 50%`. The numbers below
+   are printed by tools/build-dial-art.py; rebuild it if the art changes.
+   Hours + minutes turn about (31.80%, 50.00%), the centre of the hours dial. */
 .hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s both; pointer-events: none; }
-.hand-pivot { position: absolute; transform-origin: 50% 100%; }
-.hand-blade {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(102deg, #572412 0%, #bb7048 14%, #ffe6cf 40%, #eeb896 50%, #ca8159 70%, #71351f 88%, #3a170d 100%);
-  filter: drop-shadow(0 .18vmin .4vmin rgba(0,0,0,.55));
-  transform-origin: 50% 100%;
+.hand-pivot { position: absolute; transform-origin: 50% 50%; }
+.hand-pivot .sprite-art {
+  transform-origin: 50% 50%;
+  filter: drop-shadow(-.1vmin .2vmin .42vmin rgba(0,0,0,.58));
 }
-.hand-hour { clip-path: polygon(50% 0, 74% 16%, 60% 100%, 40% 100%, 26% 16%); animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.48s both; }
-.hand-min { clip-path: polygon(50% 0, 80% 11%, 58% 100%, 42% 100%, 20% 11%); animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.57s both; }
-.hand-cap {
-  position: absolute;
-  left: 30.85%;
-  top: 49.05%;
-  width: 1.9%;
-  height: 1.9%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 28%, #fff0db, #c18b60 45%, #3c2115);
-  box-shadow: 0 .14vmin .4vmin rgba(0,0,0,.6);
-}
+.hand-hour { left: 14.720%; top: 32.920%; width: 34.159%; height: 34.159%; }
+.hand-min  { left:  9.680%; top: 27.880%; width: 44.240%; height: 44.240%; }
+.hand-hour .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.48s both; }
+.hand-min  .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.57s both; }
 
-/* ===================== OUTSIZE DATE ===================== */
+/* ===================== OUTSIZE DATE =====================
+   The rose-gold twin frame and its two cream panes are one rendered sprite;
+   the box carries the sprite's own 1041x628 aspect. Pane rectangles come from
+   tools/build-dial-art.py, and the numerals are drawn over them here. */
 .date-window {
   position: absolute;
   left: 53.5%;
   top: 20.3%;
   width: 20.5%;
-  height: 11.5%;
+  height: 12.367%;
   cursor: pointer;
-  padding: .5vmin;
-  border-radius: .35vmin;
-  background: linear-gradient(152deg, #fff0db 0%, #e2b48b 22%, #a66d49 55%, #4a291b 80%, #c48c66 100%);
-  box-shadow: 0 .32vmin 1vmin rgba(0,0,0,.66), inset 0 .1vmin .2vmin rgba(255,248,234,.78);
-  display: flex;
-  gap: .38vmin;
+  border-radius: .4vmin;
   animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.04s both;
   --fy: -38px;
   --fs: .96;
 }
-.date-window:hover { box-shadow: 0 0 0 .25vmin rgba(240,200,150,.55), 0 .35vmin 1.1vmin rgba(0,0,0,.6); }
-.date-disc {
-  flex: 1;
-  background: linear-gradient(176deg, #fffdf7 0%, #f3eee3 48%, #d8d0c0 100%);
-  border-radius: .14vmin;
-  box-shadow: inset 0 .22vmin .5vmin rgba(55,48,34,.38), inset 0 -.12vmin .25vmin rgba(255,255,255,.94);
+.date-frame { position: absolute; inset: 0; filter: drop-shadow(0 .3vmin .85vmin rgba(0,0,0,.62)); }
+.date-window:hover { box-shadow: 0 0 0 .25vmin rgba(240,200,150,.55); }
+
+/* Depth, not flat type. The fill is a vertical tone ramp clipped to the glyph
+   -- a lit crest where the lacquer catches the light, a dense core, and warm
+   bounce off the cream pane at the foot. The relief around it is done with
+   chained drop-shadow() rather than text-shadow, because `background-clip:
+   text` paints in the background layer, *below* text shadows: an opaque
+   text-shadow silhouette would simply cover the ramp up. drop-shadow() always
+   composites behind the finished glyph, so the pale meniscus above, the lip
+   below-right and the contact shadow on the pane all stay at the edges. */
+.date-digit {
+  position: absolute;
+  top: 7.96%;
+  width: 44.7%;
+  height: 85.35%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: Georgia, serif;
-  font-size: 5.65vmin;
-  color: #111318;
+  font-family: var(--font-display);
+  font-size: 7.4vmin;
   line-height: 1;
+  color: #161009;
+  background-image: linear-gradient(177deg, #5b452c 0%, #241a11 17%, #100c07 46%, #0d0906 68%, #2b2015 90%, #503b26 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(0 -.06vmin .03vmin rgba(255,252,245,.85))
+    drop-shadow(.06vmin .1vmin .05vmin rgba(92,69,45,.55))
+    drop-shadow(.14vmin .26vmin .4vmin rgba(70,51,31,.4))
+    drop-shadow(0 .5vmin 1vmin rgba(56,41,25,.22));
+  pointer-events: none;
 }
+.date-tens { left: 4.13%; }
+.date-ones { left: 51.39%; }
 
-/* ===================== POWER RESERVE ===================== */
+/* ===================== POWER RESERVE =====================
+   AUF/AB, the scale arc and its ticks are all baked into one sprite. The
+   pointer has to pivot on that arc's centre, which measures out at 501.8px /
+   R = 13.673% of the face -- one sprite-width to the LEFT of the sprite, hence
+   the negative offset. The stops sit at 40.7deg (AUF) and 138.9deg (AB), so
+   main.js maps the reserve across that 98.2deg sweep. */
 .reserve {
   position: absolute;
-  left: 58%;
-  top: 34.8%;
+  left: 62%;
+  top: 34%;
   width: 26%;
-  height: 25.5%;
+  height: 26%;
   cursor: pointer;
-  border-radius: 1vmin;
   animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.27s both;
   --fx: 38px;
   --fs: .96;
 }
-.reserve:hover { background: rgba(240,200,150,.055); }
+.reserve-scale { position: absolute; left: 57%; top: 6.435%; width: 24.104%; height: 89.715%; }
+.reserve:hover .reserve-scale { filter: brightness(1.14); }
 .reserve-hand {
   position: absolute;
-  left: 28.8%;
-  top: 49.25%;
-  width: 45%;
-  height: 1.5%;
-  transform-origin: 0 50%;
+  left: -28.073%;
+  top: -.304%;
+  width: 104.838%;
+  height: 104.838%;
+  transform: rotate(138.9deg);  /* parked at AB until main.js winds it up */
+  transform-origin: 50% 50%;
   transition: transform .6s cubic-bezier(.34,1.3,.4,1);
+  pointer-events: none;
 }
-.reserve-blade {
-  position: absolute;
-  left: 0;
-  top: 18%;
-  width: 100%;
-  height: 64%;
-  clip-path: polygon(0 36%, 87% 0, 100% 50%, 87% 100%, 0 64%);
-  background: linear-gradient(180deg, #fff0db, #c18b60 48%, #5a321e);
-  filter: drop-shadow(0 .12vmin .28vmin rgba(0,0,0,.5));
-}
-.reserve-cap {
-  position: absolute;
-  left: 25.9%;
-  top: 46.3%;
-  width: 6.8%;
-  height: 6.8%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 28%, #fff0db, #c18b60 50%, #3c2115);
-  box-shadow: 0 .12vmin .35vmin rgba(0,0,0,.55);
-}
-.reserve-auf, .reserve-ab {
-  position: absolute;
-  font-family: var(--font-display);
-  font-size: 1.25vmin;
-  letter-spacing: .12em;
-  color: var(--ivory);
-}
-.reserve-auf { right: -.5%; top: 3%; }
-.reserve-ab { right: 3%; bottom: 1%; }
+.reserve-hand .sprite-art { filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52)); }
 
 /* ===================== SMALL SECONDS + MOON ===================== */
 .seconds-dial {
@@ -396,34 +401,28 @@ a:hover { color: var(--gold-line-hover); }
 }
 .moon:hover { filter: brightness(1.08); }
 
+/* Square sprite centred on (60.40%, 73.80%) -- the small-seconds axis, which is
+   the centre of .seconds-dial above. Keep the two in step if that dial moves. */
 .sec-pivot {
   position: absolute;
-  left: 60.16%;
-  top: 66%;
-  width: .48%;
-  height: 15.6%;
+  left: 48.723%;
+  top: 62.123%;
+  width: 23.354%;
+  height: 23.354%;
   transform-origin: 50% 50%;
   pointer-events: none;
 }
-.sec-blade {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(100deg, #71351f, #ffe6cf 45%, #bb7048);
-  border-radius: .3vmin;
-  filter: drop-shadow(0 .1vmin .3vmin rgba(0,0,0,.5));
+.sec-pivot .sprite-art {
+  transform-origin: 50% 50%;
+  filter: drop-shadow(-.06vmin .12vmin .3vmin rgba(0,0,0,.5));
   animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 2.62s both;
-  transform-origin: 50% 50%;
 }
-.sec-cap {
-  position: absolute;
-  left: 59.75%;
-  top: 73.15%;
-  width: 1.3%;
-  height: 1.3%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 28%, #fff0db, #c18b60 50%, #3c2115);
-  pointer-events: none;
-}
+
+/* The small-seconds + moon group is a full-face `inset:0` wrapper, so it was
+   sitting on top of the date window and the power reserve and swallowing every
+   click aimed at them. It now stays out of hit testing; its own two targets
+   opt back in here rather than in their layout rules. */
+#secondsDial, #moon { pointer-events: auto; }
 
 .about-hit {
   position: absolute;
