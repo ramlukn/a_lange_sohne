@@ -157,20 +157,20 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        685,
-        714,
-        138,
-        274
+        684,
+        710,
+        139,
+        278
       ],
       "file": "static-balance-arc-cover.webp"
     },
     {
       "name": "support-top",
       "box_px": [
-        696,
-        701,
-        48,
-        64
+        697,
+        704,
+        44,
+        51
       ],
       "file": "static-support-top.webp"
     },
