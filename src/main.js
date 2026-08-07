@@ -44,7 +44,6 @@ const el = {
   sec: $('secHand'),
   dateTens: $('dateTens'),
   dateOnes: $('dateOnes'),
-  moonSky: $('moonSky'),
   moonOrbit: $('moonOrbit'),
   reserveHand: $('reserveHand'),
   reserveBar: $('reserveBar'),
@@ -117,11 +116,10 @@ function render() {
   el.dateTens.textContent = Math.floor(date / 10);
   el.dateOnes.textContent = date % 10;
 
+  // The starfield is engraved on the lunar wheel itself, so sky and moon share one rotation.
   const age = moonAge(now);
   const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90).toFixed(2);
-  const dayDeg = (((d.getHours() + d.getMinutes() / 60) / 24) * 360 - 90).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
-  el.moonSky.setAttribute('transform', `rotate(${dayDeg} 50 50)`);
 
   el.reserveHand.style.transform = `rotate(${(18 - state.reserve * 38).toFixed(1)}deg)`;
   el.reserveBar.style.width = `${Math.round(state.reserve * 100)}%`;
