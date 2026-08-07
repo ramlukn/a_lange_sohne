@@ -373,7 +373,11 @@ a:hover { color: var(--gold-line-hover); }
 .reserve-auf { right: -.5%; top: 3%; }
 .reserve-ab { right: 3%; bottom: 1%; }
 
-/* ===================== SMALL SECONDS + MOON ===================== */
+/* ===================== SMALL SECONDS + MOON =====================
+   The whole group is keyed to one centre: 60.4% / 73.8% of the face.
+   .sec-pivot, .sec-cap and .moon are all derived from it, as are
+   ZOOM_ORIGINS.currently / .books in main.js and the two .hint-dot
+   positions in index.html. Move the subdial and all of them follow. */
 .seconds-dial {
   position: absolute;
   left: 46.8%;
@@ -386,10 +390,14 @@ a:hover { color: var(--gold-line-hover); }
 }
 .seconds-dial:hover { box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .25vmin rgba(240,200,150,.55); }
 
+/* Concentric with .seconds-dial (centre 60.4%) and riding 6.9% of the face --
+   half the 13.6% subdial radius -- above it. That puts the aperture's widest
+   points 11.6% from the subdial centre, inside the sprite's marking band at
+   12.85%. Keep left = 60.4 - width/2 whenever the subdial moves. */
 .moon {
   position: absolute;
-  left: 50.85%;
-  top: 62.45%;
+  left: 49.35%;
+  top: 61.45%;
   width: 22.1%;
   height: 10.9%;
   cursor: pointer;
