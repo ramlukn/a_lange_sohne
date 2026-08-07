@@ -75,7 +75,7 @@
       "anim": {
         "type": "oscillate",
         "amplitude_deg": 135,
-        "period_s": 0.78
+        "period_s": 1.365
       },
       "shadow": "low",
       "rot_deg": 90
