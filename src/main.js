@@ -25,11 +25,11 @@ const CAPTIONS = {
 };
 
 const ZOOM_ORIGINS = {
-  about: '31.8% 47%',
+  about: '31.8% 48.2%',
   featured: '63.75% 26.05%',
   currently: '60.4% 70.8%',
   resume: '65.5% 47.5%',
-  books: '60.4% 63.9%'
+  books: '61.9% 64.9%'
 };
 
 const $ = (id) => document.getElementById(id);
