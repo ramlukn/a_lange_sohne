@@ -157,9 +157,9 @@
     {
       "name": "balance-arc-cover",
       "box_px": [
-        669,
+        694,
         709,
-        153,
+        128,
         189
       ],
       "file": "static-balance-arc-cover.webp"
@@ -257,50 +257,30 @@
     {
       "name": "corr-one",
       "box_px": [
-        675,
+        680,
         751,
-        30,
-        63
+        25,
+        29
       ],
       "file": "static-corr-one.webp"
     },
     {
       "name": "corr-eleven",
       "box_px": [
-        617,
-        774,
-        44,
-        49
+        614,
+        771,
+        31,
+        26
       ],
       "file": "static-corr-eleven.webp"
     },
     {
-      "name": "corr-nine",
-      "box_px": [
-        600,
-        819,
-        42,
-        50
-      ],
-      "file": "static-corr-nine.webp"
-    },
-    {
-      "name": "corr-seven",
-      "box_px": [
-        633,
-        876,
-        40,
-        38
-      ],
-      "file": "static-corr-seven.webp"
-    },
-    {
       "name": "corr-five",
       "box_px": [
-        680,
-        879,
-        38,
-        52
+        689,
+        910,
+        31,
+        24
       ],
       "file": "static-corr-five.webp"
     },
