@@ -25,10 +25,92 @@
     <div class="loader-track"><div class="loader-fill"></div></div>
   </div>
 
+  <!-- ===================== THE KEY LIGHT =====================
+       One gradient and one blur, shared by every layer that speaks in light:
+       the .hint-index hairlines, the five dial pulse marks, and the two
+       fittings' marks out on the case. They live HERE, in a layer of their own
+       that nothing ever hides, and that is not tidiness -- it is the fix for a
+       real and total failure.
+
+       WHAT WENT WRONG. #hintKey used to live in the .hint-index <svg>'s own
+       <defs>, and .pulse-mark strokes with url(#hintKey). render() sets
+       `el.hintIndex.hidden = ... && !state.touched`, and state.touched is set by
+       the first click and never cleared -- so from the first click onward the
+       index layer is `display: none` FOREVER. In Chrome a paint server inside a
+       display:none subtree stops resolving, and an SVG stroke whose paint server
+       will not resolve paints nothing at all. So every hover highlight on the
+       watch went completely invisible after the first click, permanently.
+       It measured as invisible, not merely faint: the luminance the band adds to
+       the face at 900x760, hovered minus not, went from 145k dL to -1k.
+
+       It was invisible in a way that hides from the obvious check. The computed
+       style is untouched -- getComputedStyle still reports opacity .385 and
+       stroke url("#hintKey"), and data-hover still names the part -- so anything
+       that inspects state concludes the highlight is fine. Only pixels show it.
+       Isolated by bisection in real Chrome: un-hiding .hint-index restored the
+       band (148k), re-hiding it killed it again (-1k), a literal stroke colour
+       painted regardless (150k), and moving #hintKey out of the hidden layer
+       fixed it with nothing else changed (149k).
+
+       WHY IT LIVES HERE NOW. A paint server that is only alive while some other
+       layer happens to be displayed is a trap, and the same trap was set twice:
+       #pulseSoft was in the .hover-pulse <svg>, so if that layer were ever
+       hidden the marks would not merely lose their blur -- an unresolvable
+       `filter` reference means the element is not rendered at all. Both are
+       document resources used by three separate layers now, so both belong to
+       the document, not to one of the three.
+       display:none is exactly what must not happen to this element: it is
+       width/height 0 and out of flow instead, which is the one way to park
+       defs off-screen while keeping them resolvable. Do not "tidy" it into
+       `display: none`, and do not move these defs back inside a layer that
+       render() can hide. -->
+  <svg class="key-light" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- The marks are lit, not coloured: one ramp across the whole face from
+           the 315deg key light, so a mark is near-specular where it faces the
+           light and falls to the warm shadow tone where it turns away -- the
+           same thing the case and the dial furniture do. userSpaceOnUse, not
+           objectBoundingBox, so all the marks share ONE light rather than each
+           being lit in its own little frame. This is what keeps a hairline
+           reading as an edge of metal instead of as a UI ring.
+           The ramp is stated in the face's 0..100 user space, and every layer
+           that uses it is a window onto that same space -- including the crown
+           and corrector layers, which sit at x 101..104 and x 3..9. So the two
+           fittings are lit by their real position under the same key: the
+           corrector at 10 o'clock takes the bright end of the ramp, the crown
+           at 3 o'clock the warm one. Nothing had to be added for them. -->
+      <linearGradient id="hintKey" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
+        <stop offset="0"   stop-color="#fde9d0"/>
+        <stop offset=".45" stop-color="#f0c9a1"/>
+        <stop offset="1"   stop-color="#b07d5c"/>
+      </linearGradient>
+      <!-- userSpaceOnUse over the face and then some: the marks range from a
+           3.6-unit-wide arc bbox to a 50-unit circle, and a bbox-relative
+           filter region would clip the blur off the thin one while wasting a
+           huge region on the fat one.
+           The region is -6..112 rather than 0..100 because two of the seven
+           marks are not on the face. The crown's mark sits at x 101.03..103.79
+           -- the crown protrudes past the case -- and the corrector's reaches
+           x 3.08 with its blur, and a filter region clips: at 0..100 the crown's
+           band was cut off entirely. 6 units of margin clears the 1.6-unit band
+           and the 1.15 blur (3 sigma = 3.45) at both ends. -->
+      <filter id="pulseSoft" filterUnits="userSpaceOnUse"
+              x="-6" y="-6" width="118" height="118"
+              color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="1.15"/>
+      </filter>
+    </defs>
+  </svg>
+
   <!-- ===================== WATCH ===================== -->
   <div class="watch-stage">
     <div class="watch-pose" id="watchPose">
-      <div class="watch-flip" id="watchFlip">
+      <!-- data-hover lives HERE, not on .hover-pulse, because the highlight now
+           covers seven parts and two of them -- the crown and the corrector --
+           are siblings of the front face rather than children of it. This is the
+           nearest element that contains all seven marks, so one attribute still
+           IS the whole state. See render() in main.js. -->
+      <div class="watch-flip" id="watchFlip" data-hover="">
 
         <!-- case middle: the rim that gives the flip its thickness -->
         <div class="case-edge" aria-hidden="true">
@@ -88,6 +170,15 @@
              drawn inline, so its cap is the element. -->
         <div class="crown" id="crown" title="The movement — flip the watch">
           <img class="sprite-art crown-art" src="/assets/dial/crown.webp" alt="" decoding="async">
+          <!-- The crown's own silhouette, lit. See FITTING MARKS in styles.css
+               for why the viewBox is a window onto the face's user space rather
+               than a space of its own, and how the barrel bounds were measured
+               off the sprite's alpha. -->
+          <svg class="fitting-pulse" viewBox="99.92 46.87 3.88 6.25"
+               preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="pulse-mark" data-part="crown"
+                  d="M101.212 46.870H102.900A0.89 0.89 0 0 1 103.790 47.760V52.230A0.89 0.89 0 0 1 102.900 53.120H101.212A0.18 0.18 0 0 1 101.032 52.940V47.050A0.18 0.18 0 0 1 101.212 46.870Z"/>
+          </svg>
         </div>
         <div class="corrector" id="corrector" title="Run the watch through its paces">
           <!-- flush bowed corrector cap: seated into the case with no visible stand-off.
@@ -106,11 +197,30 @@
               <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#633d1f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
               <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
             </svg>
+            <!-- The cap's own outline, lit -- the same drawing as the cap's
+                 stroke above, restated in the face's user space so it is blurred
+                 and lit exactly as the five dial marks are. The mark gets a copy
+                 on each plane for the same reason the cap does: it is a fitting
+                 in the band, and it is there from either side of the watch.
+                 The numbers are baked rather than reached with a transform, and
+                 that is load-bearing: #hintKey is userSpaceOnUse, so a rotate()
+                 on the element would swing the key light 60deg on this one mark
+                 alone. Derivation in FITTING MARKS in styles.css. -->
+            <svg class="fitting-pulse" viewBox="1.7 15 9 18"
+                 preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path class="pulse-mark" data-part="pusher"
+                    d="M3.913 27.250Q5.235 23.623 7.715 20.665Q8.019 20.341 8.676 20.621Q9.246 21.050 9.188 21.515Q6.709 24.474 5.386 28.100Q5.013 28.383 4.356 28.103Q3.785 27.674 3.913 27.250Z"/>
+            </svg>
           </div>
           <div class="corrector-plane corrector-plane-back">
             <svg viewBox="0 -4 100 16" preserveAspectRatio="none" class="corrector-cap">
               <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#633d1f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
               <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+            </svg>
+            <svg class="fitting-pulse" viewBox="1.7 15 9 18"
+                 preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path class="pulse-mark" data-part="pusher"
+                    d="M3.913 27.250Q5.235 23.623 7.715 20.665Q8.019 20.341 8.676 20.621Q9.246 21.050 9.188 21.515Q6.709 24.474 5.386 28.100Q5.013 28.383 4.356 28.103Q3.785 27.674 3.913 27.250Z"/>
             </svg>
           </div>
         </div>
@@ -254,21 +364,10 @@
           <div class="hint-index" id="hintIndex">
           <svg viewBox="0 0 100 100"
                preserveAspectRatio="none" aria-hidden="true" focusable="false">
-            <defs>
-              <!-- The marks are lit, not coloured: one ramp across the whole
-                   face from the 315deg key light, so a mark is near-specular
-                   where it faces the light and falls to the warm shadow tone
-                   where it turns away -- the same thing the case and the dial
-                   furniture do. userSpaceOnUse, not objectBoundingBox, so all
-                   five share ONE light rather than each being lit in its own
-                   little frame. This is what keeps a hairline reading as an
-                   edge of metal instead of as a UI ring. -->
-              <linearGradient id="hintKey" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
-                <stop offset="0"   stop-color="#fde9d0"/>
-                <stop offset=".45" stop-color="#f0c9a1"/>
-                <stop offset="1"   stop-color="#b07d5c"/>
-              </linearGradient>
-            </defs>
+            <!-- #hintKey is NOT defined here any more. It used to be, and
+                 because render() hides this whole layer from the first click
+                 onward, that took the hover highlight's paint server down with
+                 it -- permanently. See THE KEY LIGHT at the top of this file. -->
             <circle class="hint-mark" style="--i:0" pathLength="100" cx="31.797" cy="49.999" r="25.299"/>
             <rect   class="hint-mark" style="--i:1" pathLength="100" x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
             <path   class="hint-mark" style="--i:2" pathLength="100" d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
@@ -301,21 +400,14 @@
                two channels are nested rather than in disagreement. Geometry and
                the reasoning behind it: the POWER RESERVE MARK block in
                src/styles.css. -->
-          <div class="hover-pulse" id="hoverPulse" data-hover="">
+          <div class="hover-pulse" id="hoverPulse">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none"
                aria-hidden="true" focusable="false">
-            <defs>
-              <!-- userSpaceOnUse over the whole face: the marks range from a
-                   3.6-unit-wide arc bbox to a 50-unit circle, and a bbox-
-                   relative filter region would clip the blur off the thin one
-                   while wasting a huge region on the fat one. -->
-              <filter id="pulseSoft" filterUnits="userSpaceOnUse"
-                      x="0" y="0" width="100" height="100"
-                      color-interpolation-filters="sRGB">
-                <feGaussianBlur stdDeviation="1.15"/>
-              </filter>
-            </defs>
-
+            <!-- #pulseSoft is NOT defined here any more, for the reason
+                 #hintKey is not defined in .hint-index: a layer's defs die with
+                 the layer, and these marks are no longer the only users. The
+                 crown's and corrector's marks reference both from their own
+                 <svg>s. See THE KEY LIGHT at the top of this file. -->
             <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
             <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
             <path   class="pulse-mark" data-part="resume"    d="M61.830 47.572L76.830 34.803A15.320 15.320 0 0 1 76.919 60.235Z"/>

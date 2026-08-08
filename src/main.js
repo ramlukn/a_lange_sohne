@@ -116,7 +116,6 @@ const el = {
   reserveBar: $('reserveBar'),
   caption: $('caption'),
   hintIndex: $('hintIndex'),
-  hoverPulse: $('hoverPulse'),
   hintBar: $('hintBar'),
   overlay: $('overlay'),
   curTitle: $('curTitle'),
@@ -357,10 +356,30 @@ function render() {
   // interval, so the value is only written when it actually differs -- an
   // unconditional write is a restyle of the whole layer ten times a second, and
   // any future :hover-adjacent rule would flicker on it.
-  // Crown and pusher also set state.hover; they have no mark here, so they
-  // simply clear it. Nothing pulses behind an open panel or the caseback.
-  const lit = (state.active || state.flipped) ? '' : (state.hover || '');
-  if (el.hoverPulse.dataset.hover !== lit) el.hoverPulse.dataset.hover = lit;
+  //
+  // It is written on .watch-flip rather than on the .hover-pulse layer because
+  // the highlight now covers seven parts and two of them, the crown and the
+  // corrector, are siblings of the front face rather than children of it. The
+  // flip is the nearest element containing all seven marks.
+  //
+  // THE CASEBACK KEEPS ITS FITTINGS LIT. An open panel still blacks the whole
+  // highlight out -- you are reading, not pointing. Turning the watch over used
+  // to do the same, and for the five dial parts it still does: they are face-up
+  // furniture and there is nothing to light. But the crown and the corrector
+  // are fittings in the case band. They are visible from the back, they are
+  // still clickable from the back, and the crown is the ONLY way back to the
+  // dial. Suppressing their highlight there would mean the one control you
+  // actually need is the one control that stops answering, which is a worse
+  // version of the bug this pass exists to fix.
+  // The five dial marks need no guard of their own -- .face-front is
+  // backface-hidden, so past 90deg it is neither painted nor hit-tested and
+  // state.hover cannot become a dial part -- but the test is written on the
+  // fittings rather than against the parts so that a hover left STALE by the
+  // flip (the pointer was on the moon when the crown was clicked) cannot leak
+  // a lit mark onto the back of the watch.
+  const onFitting = state.hover === 'crown' || state.hover === 'pusher';
+  const lit = (state.active || (state.flipped && !onFitting)) ? '' : (state.hover || '');
+  if (el.flip.dataset.hover !== lit) el.flip.dataset.hover = lit;
 }
 
 function open(id) {

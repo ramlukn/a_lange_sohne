@@ -106,17 +106,32 @@ a:hover { color: var(--gold-line-hover); }
    matching. Do not restore a decay to 0 here: that made the highlight a
    780ms one-shot that died under a stationary cursor. */
 @keyframes hoverBloom {
-  /* Asymmetric on purpose: 170ms up, 610ms settle. A symmetric flash reads as a
-     blink -- a notification -- where a fast rise into a long fall reads as
+  /* Asymmetric on purpose: 172ms up, 258ms settle. A symmetric flash reads as a
+     blink -- a notification -- where a fast rise into a longer fall reads as
      light arriving on metal. The timing functions are per keyframe rather than
      on the animation, so the rise can be eased out and the settle eased in-out
      independently; one easing across the whole thing put the entire fall
      inside the first 200ms.
      The 100% frame restates the base values rather than hard-coding them, so
      the resting glow is defined in exactly one place and reduced motion (which
-     drops this animation entirely) lands on the same band. */
+     drops this animation entirely) lands on the same band.
+
+     THE SETTLE USED TO BE 610ms, AND IT WAS READ AS THE HIGHLIGHT DYING.
+     Reported as "the ring dims after a second", and measured, it was: the band
+     peaked at --pk and then fell away for another 0.6s. That is long enough to
+     be a process rather than a moment, and a slow fall on a stationary cursor
+     has only one meaning -- it is going out. Which defeats the whole point of
+     making the highlight sustained.
+     Two things fix the reading, and both were needed. The drop is now 10% of
+     the peak instead of 30% (see --hold), which is at the edge of what a slow
+     ramp can even show; and it is over in a quarter-second instead of six
+     tenths, so it lands as the tail of the arrival rather than as a separate
+     event afterwards. A flare into a steady state, not a fade.
+     Do not lengthen this again to "make the arrival more graceful". The
+     graceful part is the 172ms rise; everything after it is the light settling,
+     and settling is not something you should have time to watch. */
   0%   { opacity: 0;          stroke-width: 3.4px; animation-timing-function: cubic-bezier(.25,.85,.4,1); }
-  22%  { opacity: var(--pk);  stroke-width: 3.1px; animation-timing-function: cubic-bezier(.4,0,.5,1); }
+  40%  { opacity: var(--pk);  stroke-width: 3.1px; animation-timing-function: cubic-bezier(.4,0,.5,1); }
   100% { opacity: var(--hold); stroke-width: var(--hw); }
 }
 
@@ -373,7 +388,17 @@ a:hover { color: var(--gold-line-hover); }
   --fx: 2vmin;
 }
 .crown-art { filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)); }
-.crown:hover { filter: brightness(1.2); }
+/* The lift rides on the sprite, not on .crown -- the same move the corrector
+   already makes below, and now for a second reason as well as the first.
+   The first is 3D: `filter` is a grouping property, so one on .crown flattens
+   its subtree. The second is that .crown now contains the crown's pulse mark,
+   and on every other part the bloom layers on TOP of the brightness lift
+   rather than being multiplied by it. Left on the parent, brightness(1.2)
+   would have lit the glow as well as the metal and put the crown a fifth
+   brighter than the five dial marks for no reason anyone chose. */
+.crown:hover .crown-art {
+  filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)) brightness(1.2);
+}
 
 /* The corrector is an inline SVG cap again, laid diagonally across a box that
    straddles the case outline at 10 o'clock. */
@@ -896,6 +921,18 @@ a:hover { color: var(--gold-line-hover); }
   transform: translateZ(var(--z-glass));
   animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s backwards;
 }
+/* The shared gradient and blur, parked off-screen. Out of flow and zero-sized
+   rather than display:none, which is the whole point of it: display:none is
+   what stopped #hintKey resolving when it lived inside .hint-index, and it
+   would do the same here. See THE KEY LIGHT at the top of index.html. */
+.key-light {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 /* ===================== INTERACTION INDEX =====================
    How the watch says "these five parts are live".
 
@@ -927,6 +964,11 @@ a:hover { color: var(--gold-line-hover); }
        resting hairline is the affordance, so zeroing the animation leaves it
        fully drawn instead of leaving nothing.
      - It recedes. main.js drops the whole layer once state.touched is set.
+       That still stands, and the argument for keeping it is in the HOVER PULSE
+       block. What does NOT stand is the layer owning anything the rest of the
+       watch needs: #hintKey used to be defined in this <svg>, and dropping the
+       layer dropped the hover highlight's paint server with it, permanently.
+       The gradient now lives in .key-light. Nothing else may move in here.
 
    Alternatives prototyped over the real dial and rejected -- see the report:
      - Pulsing rings around each part (the shape the brief floated). Scaling a
@@ -978,7 +1020,11 @@ a:hover { color: var(--gold-line-hover); }
 .hint-index svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .hint-mark {
   fill: none;
-  stroke: url(#hintKey);  /* the 315deg key light -- see <defs> in index.html */
+  /* the 315deg key light -- see THE KEY LIGHT at the top of index.html. It is
+     NOT defined in this layer's own <svg> any more: render() hides this layer
+     permanently after the first click, and a paint server inside a display:none
+     subtree stops resolving, which took the hover highlight down with it. */
+  stroke: url(#hintKey);
   /* DO NOT PUT `vector-effect: non-scaling-stroke` BACK ON THIS ELEMENT.
      It was here, and it is incompatible with the way the mark is revealed.
      non-scaling-stroke moves the whole stroke -- dash pattern included -- into
@@ -1009,7 +1055,7 @@ a:hover { color: var(--gold-line-hover); }
 }
 
 /* ===================== HOVER PULSE =====================
-   "You are on this one." The key light arrives on the hovered part over 780ms
+   "You are on this one." The key light arrives on the hovered part over 430ms
    and then STAYS on it, for exactly as long as the pointer is there. Not the
    old .hint-dots: those looped forever with nothing causing them, which is the
    thing the design bible forbids ("no ambient floating, glow, or ornamental
@@ -1031,8 +1077,8 @@ a:hover { color: var(--gold-line-hover); }
        .pulse-mark below has a real start and end value to run between rather
        than depending on how a browser treats the removal of a filling
        animation. The animation masks it while it runs and hands over at the
-       identical value, so there is no step at 780ms.
-     - the release is that transition: 240ms out, against 780ms in. Quicker,
+       identical value, so there is no step at 430ms.
+     - the release is that transition: 240ms out, against 430ms in. Quicker,
        because leaving is not an event the way arriving is -- you already know
        you left. Only opacity moves; --hw is the base width AND the animation's
        last frame, so the band never widens as it dies.
@@ -1040,6 +1086,32 @@ a:hover { color: var(--gold-line-hover); }
    attribute, so it is on iff data-hover names the part, and main.js recomputes
    that from state.hover every render (including its 100ms pump) and clears
    state.hover on window blur and on the pointer leaving the document.
+
+   AND IT MUST ACTUALLY REACH THE SCREEN, which for a while it did not. Every
+   mark strokes with url(#hintKey), and that gradient used to live inside the
+   .hint-index <svg> -- a layer render() sets to display:none from the first
+   click onward and never brings back. A paint server in a display:none subtree
+   stops resolving in Chrome, and an SVG stroke whose paint server will not
+   resolve paints nothing, so the whole highlight went invisible after the first
+   click and stayed that way: 145k dL added to the face before the first click,
+   -1k after it. Everything a reader would normally check still looked right --
+   data-hover named the part, the computed opacity was .385, the computed stroke
+   was still url("#hintKey") -- because none of that is what broke. The light
+   now lives in its own layer that nothing hides; see THE KEY LIGHT in
+   index.html. Anything this layer references must live there too.
+
+   KNOWN AND NOT FIXED HERE: THE MOON IS OCCLUDED. The moon aperture's mark sits
+   at z 0 with the rest of this layer, and the small-seconds/moonphase plate it
+   traces is applied at --z-applied (.22vmin), so the plate is painted over
+   nearly all of it. Measured: hovering the moon adds 6k dL against 187k for the
+   date frame, and lifting this layer above --z-applied takes it to 236k. The
+   small-seconds rim loses less (195k, against 367k lifted) because half its
+   band falls off the edge of the plate. That is a fault in where this layer
+   sits in the z ladder, not in what it is worth per part, so --pk for the moon
+   is deliberately left at .55 with the group it belongs to -- do not "fix" it
+   by inflating --pk, which would only make the sliver that does escape the
+   plate brighter than every other mark. It needs the layer moved, which is a
+   change to the depth model and wants its own pass.
 
    THREE CHANNELS, NOT TWO. The face already says two things and this adds a
    third; they must not speak the same language:
@@ -1049,6 +1121,25 @@ a:hover { color: var(--gold-line-hover); }
                Sustained for as long as the pointer is there.
      bloom  -- this layer: the same answer, said in light on the part's own
                edge. Arrives as a moment, then holds as a state.
+
+   THE INDEX STILL RETIRES, AND THIS LAYER IS WHY IT CAN. It was put to us that
+   the index should come back when a panel closes, or recede to a low resting
+   hairline instead of vanishing, because after the first click a part carries
+   only this glow and users reported that hovering then showed them nothing. It
+   showed them nothing literally: the paint-server bug above meant the glow was
+   not being drawn at all from the first click onward, and the missing index was
+   the only thing anyone could see the absence of. With the glow actually
+   reaching the screen and held at 90% of its peak, a hovered part is marked
+   every time and by a channel that answers the question the index cannot --
+   the index says which five parts are live, the same answer forever; the glow
+   says which ONE you are on, and only while you are on it.
+   So the index keeps its one job and keeps retiring. Bringing it back on every
+   panel close would re-teach something already learnt, and leaving it up at a
+   permanent low hairline would put five brightened lines on the dial for good,
+   competing with the 315deg key -- and for the reserve, whose index arc is not
+   a line the dial actually has, drawing furniture that is not there. Line
+   teaches once; light answers continuously. That separation is the design, and
+   it only failed because one of the two was silently broken.
    So this pulse deliberately does NOT draw a line. It is a wide, blurred band
    of the same #hintKey ramp -- light, not linework -- which is why it can sit
    on the same geometry as a .hint-mark without the two colliding. It layers on
@@ -1089,9 +1180,14 @@ a:hover { color: var(--gold-line-hover); }
 
    Guarded by (hover: hover). Touch gets no pulse -- it has no pointer to enter
    with -- and keeps what it already had: the .hint-index, which persists there
-   until the first tap. Reduced motion keeps the whole resting state and drops
-   only the arrival: it lands on the same --hold band, so it degrades to a
-   static version of the same highlight rather than to a different one.
+   until the first tap, and after that the panel itself, which a tap opens
+   directly. Nothing about touch changes in this pass except that the index's
+   gradient now survives, so the marks it scribes are drawn from the same one
+   place as everything else. Reduced motion keeps the whole resting state and
+   drops only the arrival: it lands on the same --hold band, so it degrades to a
+   static version of the same highlight rather than to a different one -- and
+   that band is now the brighter .9 one, so reduced motion gets MORE of the
+   highlight than it used to, not less.
    Decorative: never takes a pointer event. */
 .hover-pulse {
   position: absolute;
@@ -1124,32 +1220,56 @@ a:hover { color: var(--gold-line-hover); }
      others. */
   --pk: .55;
   /* THE RESTING GLOW: what is held, indefinitely, while the pointer is on the
-     part. One ratio off --pk rather than five numbers, so the per-part
+     part. One ratio off --pk rather than seven numbers, so the per-part
      calibration above keeps doing its job unaltered and there is one knob.
      Derived against the arrival, by measurement rather than by eye: hover each
      part in Chrome at 900x760, screenshot the face with the pulse layer hidden
      (that isolates brightness(1.16)) and again with it shown, and sum the
-     luminance the band alone adds to the dial. The held band should carry about
-     half the light the arrival peak does -- unmistakably quieter than the
-     flash, unmistakably still there. Measured, held light as a fraction of peak
-     light, averaged over the five marks:
-         --hw 1.0px, ratio .48   0.23   invisible; the width collapse and the
-                                        opacity cut compound into a 4x drop
-         --hw 1.0px, ratio 1.0   0.40   reads as a LINE, not light: 1.0 under a
-                                        1.15 blur is too tight to stay a band
-         --hw 1.6px, ratio .55   0.44
-         --hw 1.6px, ratio .7    0.53   <- this
-         --hw 1.6px, ratio .85   0.57
-     .7 * --pk lands at .385 for the date frame, small seconds and moon, .315
-     for the reserve and .21 for the hours dial. */
-  --hold: calc(var(--pk) * .7);
+     luminance the band alone adds. Held light as a fraction of peak light,
+     averaged over the four dial marks that are not occluded (see the note on
+     the moon under FITTING MARKS), measured over the whole watch box:
+         ratio .55   0.28
+         ratio .70   0.35   was this, and it was read as the highlight dying
+         ratio .85   0.43
+         ratio .90   0.45   <- this
+         ratio 1.0   0.50
+     .9 * --pk lands at .495 for the date frame, small seconds and moon, .405
+     for the reserve, .27 for the hours dial, .585 for the crown and .225 for
+     the corrector.
+
+     WHY .9 AND NOT .7. The old ratio was chosen so the held band carried about
+     half the light of the arrival -- "unmistakably quieter than the flash,
+     unmistakably still there". That target was wrong, and it was reported as
+     wrong: a 30% opacity drop spread over 610ms is not a quieter version of the
+     same thing, it is a fade, and the one thing a sustained highlight must
+     never look like is a highlight going out.
+
+     WHAT MAKES IT SAFE TO HOLD THIS HIGH is in the right-hand column above: even
+     at ratio 1.0, where the opacity does not drop at all, the held band still
+     carries only HALF the light of the arrival. The stroke-width collapse from
+     3.1 to 1.6 is doing that on its own. So the arrival was never mostly an
+     opacity event -- it is mostly a spread event -- and taking the opacity drop
+     from 30% to 10% costs the flare almost nothing while removing the entire
+     reason anyone read it as dying. The peak per-pixel delta on the date frame
+     is 74 at the top of the arrival against 41 held: the flare is still plainly
+     a flare.
+     Note what stayed put. --hw is still 1.6 (see below: raising the WIDTH to
+     make the hold more visible is the halo failure, raising --hold is the
+     supported knob), the blur is still 1.15, and --pk is still per part. The
+     earlier "ratio 1.0 reads as a LINE" finding was made on a 1.0px band, which
+     is not this one: at 1.6 the band is 10.5 screen px at 900x760 before the
+     blur spreads it, and nothing that wide reads as a drawn line. 1.0 was left
+     on the table anyway, so that --hold stays a real second value and the
+     arrival keeps a brightness component as well as a width one.
+     Do not take this back toward .7 to "let the arrival breathe". */
+  --hold: calc(var(--pk) * .9);
   /* The width the glow rests at, and the base width, so that RELEASING never
      widens the band -- light lets go by dimming, not by spreading. The collapse
      3.4 -> 3.1 -> 1.6 about a stationary centreline is what gathers the light
      into the edge, and the edge is where it should stay while it is held.
      1.6 is not a new number: it is what the reduced-motion fallback below has
      always used, and it was picked for exactly this case -- a band that is on
-     screen indefinitely rather than for 170ms. Both paths now share it.
+     screen indefinitely rather than for 172ms. Both paths now share it.
      Do not raise it to "make the hold more visible": a fatter held band is the
      halo read this layer exists to avoid. Raise --hold instead. And do not drop
      it back to 1.0, which was the old decay's endpoint and only ever had to
@@ -1159,7 +1279,7 @@ a:hover { color: var(--gold-line-hover); }
   /* The release. Only opacity moves (see --hw), and it moves from --hold, which
      the matched rule declares as a specified value -- so this runs on a plain
      specified-value change and does not depend on how the removal of a filling
-     animation is treated. 240ms against the 780ms arrival: leaving is not news.
+     animation is treated. 240ms against the 430ms arrival: leaving is not news.
      Eased out of the hold so the band lets go immediately and then trails,
      which is the same shape as light leaving metal, played backwards. */
   transition: opacity .24s cubic-bezier(.35,0,.65,1);
@@ -1189,17 +1309,157 @@ a:hover { color: var(--gold-line-hover); }
    (For scale, the hours rim is 1583 held / 2179 peak at its own --pk .3: it is
    2.3x the outline of anything else and stays the loudest by design.) */
 .pulse-mark[data-part="resume"] { --pk: .45; }
+
+/* ===================== FITTING MARKS =====================
+   The crown and the corrector, lit by the same light as the five dial parts.
+
+   THEY ARE NOT ON THE FACE, AND THAT IS THE WHOLE DIFFICULTY. Both are
+   siblings of .face-front inside .watch-flip, deliberately, so that they show
+   on both sides of the watch -- and the crown is further out than that: at
+   right: -3.8% it protrudes PAST the case, so it is not merely outside the
+   .hover-pulse layer, it is outside the 0..100 user space that layer is drawn
+   in. The corrector is worse again: its cap is two 3D planes, one per side of
+   the case, because a single copy on the band plane is sorted behind whichever
+   face is toward the camera.
+
+   THE ANSWER IS A WINDOW, NOT A NEW COORDINATE SYSTEM. Each fitting gets its
+   own tiny <svg> inside the element it belongs to, and each one's viewBox is a
+   WINDOW onto the face's own 0..100 space rather than a space of its own:
+     .crown             right -3.8%, top 46.87%, 3.88% x 6.25% of .watch-flip
+                        -> viewBox "99.92 46.87 3.88 6.25"
+     .corrector-plane   left 1.7%, top 15%, 9% x 18%
+                        -> viewBox "1.7 15 9 18"
+   Both boxes are square-container percentages of the same element, so both
+   windows land at 6.54 px per user unit at 900x760 -- the same scale as the
+   face layer, to within the 0.96% the front face gains from being 3vmin nearer
+   the camera. That is what makes ONE light possible rather than merely
+   intended: stroke-width 1.6 is the same 10.5 screen px on all seven marks, the
+   1.15 blur is the same blur, and #hintKey -- userSpaceOnUse across 0,0..100,100
+   -- lights each fitting from its REAL position under the 315deg key. The
+   corrector at 10 o'clock takes the bright end of the ramp (t = .15), the crown
+   at 3 o'clock the warm end (t = .76). Nothing was added or tuned for them.
+   Two consequences worth keeping:
+     - the marks carry no transform. A rotate() would take the gradient with it
+       and swing the key light 60deg on the corrector alone, so its outline is
+       baked in face units instead (numbers below).
+     - #pulseSoft's region had to grow past the face. See index.html.
+
+   WHAT SHAPE, WHEN THE PART OWNS NO LINE. The five dial marks trace linework
+   that is really on the dial. Neither fitting has any:
+     crown      Solid gold seen edge-on. What it owns is its SILHOUETTE, which
+                is a real lit edge -- it is the one part of the watch with sky
+                behind it. Traced off the sprite's own alpha (crown.webp, 300x483,
+                and the div is cropped to that ink, so sprite px map linearly):
+                the barrel spans x 86..299 and the full height, giving
+                101.032..103.790 by 46.870..53.120 in face units. The stem is
+                left out on purpose: it is buried in the case band, so its
+                outline is a join rather than an edge that catches anything.
+                The corners really are unequal -- 14 sprite px on the case side
+                against 69 on the domed cap side, so 0.18 and 0.89 face units --
+                and the path uses both, though at a 1.15-unit blur the
+                difference is well under what survives.
+     corrector  This one DOES own a closed line: the cap's own outline, which
+                the inline SVG already strokes in #633d1f. So the mark is that
+                same drawing, restated in face units. Its cap svg is
+                viewBox "0 -4 100 16" with preserveAspectRatio="none" over a box
+                at left 2% / top 42% / 96% x 18% of the plane, then rotated
+                -60deg about its centre, so
+                    x = 1.88 + u * .0864      y = 22.56 + (v + 4) * .2025
+                and then rotate -60deg about (6.200, 24.180). Quadratics are
+                affine-invariant, so transforming the seven control points is
+                exact rather than a refit. Verified against the rendered cap:
+                the model puts its box centre at 160.92, 181.08 css px and
+                getBoundingClientRect measures 160.92, 181.08.
+
+   BOTH ARE SMALL, AND THE BAND DOES NOT SHRINK WITH THEM. The crown's outline
+   is 17.1 face units and the cap's 21.9, against 63.9 for the date frame and
+   158.9 for the hours rim; the band stays 1.6 wide because that width is what
+   makes it light rather than linework. So on these two the inner and outer
+   halves of the band overlap and the part reads as lit through rather than
+   rim-lit. That is the honest result for an object this size -- a 25 x 41 px
+   crown cannot be given a legible rim light at any display size -- and it is
+   still registered to the part's own edge, which is the thing the halo failure
+   was about. Do not thin the band for these two to "keep the outline": a
+   narrower band on the fittings is two different lights on one watch. */
+/* CALIBRATED ON LOCAL CONTRAST, NOT ON TOTAL LIGHT -- and that is the one place
+   these two part company with the five. Every dial mark was matched on the
+   TOTAL luminance the band adds to the face, because they are all roughly the
+   same size and sit on the same lit dial, so equal totals meant equal weight.
+   That breaks here. These parts have a quarter of the outline and a much
+   smaller area, and they sit against the dark ground outside the case rather
+   than on blue dial, so matching totals would mean driving them to an opacity
+   above 1 -- which is the tell that the wrong quantity is being matched. What
+   the eye compares on a small bright object against a dark ground is the LOCAL
+   contrast, so that is what these are matched on: the peak per-pixel luminance
+   the band adds, hovered minus not, at 900x760 with the band shown against the
+   band hidden. Totals in thousands of dL, peak per pixel in 0..255:
+                        held total   held peak
+       date frame            187        40.9    the group these must sit with
+       small seconds         195        36.6
+       reserve               305        41.8
+       crown  @.25             6        15.9
+       crown  @.50            13        31.3
+       crown  @.65            19        40.2    <- level with the date frame
+       crown  @.80            22        49.5    visibly the hottest thing on
+                                                the watch
+       pusher @.25            45        39.6    <- level, at a THIRD of the
+                                                crown's opacity
+       pusher @.50            90        76.0
+       pusher @.80           143       115.9    a white smudge on the case edge
+   THE 2.6x IS NOT A MISTAKE, and it is worth knowing where it comes from
+   before anyone "harmonises" these two numbers. Measured, it is one factor of
+   1.29 and one of 2.0:
+     - THE CORRECTOR'S MARK IS DRAWN TWICE. It gets a copy on each
+       .corrector-plane, for the reason the cap does -- it is a fitting in the
+       band and must be there from either side -- and the two copies are the
+       same drawing at two depths, so wherever the opposite face is transparent
+       the far one shows through and the alpha compounds. Measured at --pk .25,
+       peak per-pixel: 39.6 with both, 30.6 with the far copy hidden. It is
+       symmetric, which is what matters: face-up reads 39.6 and flipped reads
+       40.3, so the pusher is the same brightness from both sides. Do not
+       "deduplicate" this by drawing the mark once at z 0 -- a single copy on
+       the band plane is sorted behind whichever face is toward the camera and
+       would be eaten by the case exactly where it crosses it.
+     - THE REST IS THE PART. Even one copy at a time, the cap takes about twice
+       the light per unit of opacity that the crown does: it is 2.37 units deep
+       against a 1.6-wide band, so its own inner and outer halves overlap almost
+       completely where the crown's 2.76-across barrel keeps a gap; and #hintKey
+       is a 315deg ramp, so the corrector at 10 o'clock takes t = .15,
+       near-white, while the crown at 3 o'clock takes t = .76, warm and much
+       darker. Same opacity, different light -- the gradient doing its job.
+   So the two numbers differ because the parts differ, in the same way the
+   hours dial's .3 differs from the date frame's .55. Match the measurement,
+   not the constant. */
+.pulse-mark[data-part="crown"]  { --pk: .65; }
+.pulse-mark[data-part="pusher"] { --pk: .25; }
+/* The fittings' layers. Same contract as .hover-pulse: decorative, never takes
+   a pointer event -- the hit targets are #crown and #corrector themselves, and
+   the mark sits inside them, so it must not eat the click it advertises. */
+.fitting-pulse {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;   /* the crown's mark is outside its own viewBox */
+}
+/* The lit rule. It hangs off .watch-flip rather than off .hover-pulse because
+   two of the seven marks -- the crown's and the corrector's -- are not inside
+   the front face at all; .watch-flip is the nearest element that contains all
+   seven, so one attribute still IS the whole state. */
 @media (hover: hover) {
-  .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
-  .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
-  .hover-pulse[data-hover="resume"]    .pulse-mark[data-part="resume"],
-  .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
-  .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
+  .watch-flip[data-hover="about"]     .pulse-mark[data-part="about"],
+  .watch-flip[data-hover="featured"]  .pulse-mark[data-part="featured"],
+  .watch-flip[data-hover="resume"]    .pulse-mark[data-part="resume"],
+  .watch-flip[data-hover="currently"] .pulse-mark[data-part="currently"],
+  .watch-flip[data-hover="books"]     .pulse-mark[data-part="books"],
+  .watch-flip[data-hover="crown"]     .pulse-mark[data-part="crown"],
+  .watch-flip[data-hover="pusher"]    .pulse-mark[data-part="pusher"] {
     /* The state ... */
     opacity: var(--hold);
     /* ... and the one pass of light that arrives at it. `both` so it holds its
        last frame, which is this same value. Shaping is per keyframe. */
-    animation: hoverBloom .78s linear both;
+    animation: hoverBloom .43s linear both;
   }
 }
 /* The global reduced-motion rule collapses every duration to .01ms, so the
@@ -1211,11 +1471,13 @@ a:hover { color: var(--gold-line-hover); }
    this is the same highlight with the arrival taken out of it. */
 @media (prefers-reduced-motion: reduce) {
   @media (hover: hover) {
-    .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
-    .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
-    .hover-pulse[data-hover="resume"]    .pulse-mark[data-part="resume"],
-    .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
-    .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
+    .watch-flip[data-hover="about"]     .pulse-mark[data-part="about"],
+    .watch-flip[data-hover="featured"]  .pulse-mark[data-part="featured"],
+    .watch-flip[data-hover="resume"]    .pulse-mark[data-part="resume"],
+    .watch-flip[data-hover="currently"] .pulse-mark[data-part="currently"],
+    .watch-flip[data-hover="books"]     .pulse-mark[data-part="books"],
+    .watch-flip[data-hover="crown"]     .pulse-mark[data-part="crown"],
+    .watch-flip[data-hover="pusher"]    .pulse-mark[data-part="pusher"] {
       animation: none !important;
     }
   }
