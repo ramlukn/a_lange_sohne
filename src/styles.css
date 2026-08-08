@@ -416,54 +416,27 @@ html.no-mvt .watch-mvt { display: none; }
    That is the scale the viewer actually reads, and it is the one every --z-*
    below is quoted in. (The case's own 6vmin is only 2.7mm at that scale -- the
    case is stylised thin, which is why the case depth is NOT used as the ruler
-   for things drawn on the dial. It is used for the tilt clamp, where it is the
-   right ruler, because there the case is the subject.)
+   for things drawn on the dial.)
 
-   --tilt-max, the one number this whole effect hangs on:
+   A pointer tilt used to turn the whole watch toward the cursor, and it is what
+   the depth below was built to be seen under. It was removed on request; the
+   working version is kept on the branch `archive/pointer-tilt`, whose
+   --tilt-max derivation, sunburst-vs-angle screenshots and hit-test findings
+   are the record if it is ever wanted back. The depth itself stays, because it
+   is real geometry and does not need the watch to move to be worth having: the
+   date is a hole with a wall, the hands stand off the dial and cast onto it,
+   and the sapphire sits above them both.
 
-     rotating the case by theta sweeps the silhouette R*theta around the band.
-     Setting that arc equal to one case depth -- the rotation at which the band
-     first presents its full thickness rather than a sliver -- gives
-     theta = D_depth / R = 6 / 42.7 = 0.1405 rad = 8.05deg, and atan(6/42.7)
-     agrees at 8.00deg. So +-8deg is the smallest tilt at which the case reads
-     as a solid with a side, which is the entire point of tilting it.
-
-     There are two ceilings above it, and they agree.
-
-     The aesthetic one: main-dial.webp has its sunburst brilliance axis BAKED,
-     and a baked sunburst cannot sweep as the watch turns. Past some angle the
-     dial stops reading as brushed metal and starts reading as a printed
-     sticker in a real gold case. Screenshots at 6/12/16/18/20/26deg, both axes
-     together: clean at 6 and 12; at 16 the tell is visible if you look for it
-     -- the case's specular has plainly migrated and the dial's has not moved
-     at all; by 20 it is a photograph in a gold case, and 26 is not arguable.
-     So: fine to 12, do not go past 16.
-
-     The technical one, which is the harder limit and was not expected. Clicks
-     were driven through the real browser hit-test path (CDP Input events, not
-     elementFromPoint, which disagrees with the compositor here and cannot be
-     trusted for this). At clamp 8 all five dial targets AND the crown answer.
-     At clamp 12 the five still answer but the CROWN stops -- it sits at the
-     extreme right of the case, so it sees the most local tilt of anything on
-     the watch. At clamp 20 three of the five have gone too. Chromium's hit
-     testing degrades as .face-front's many separate planes rotate away from
-     the screen, and it degrades from the outside in.
-     (Note this is NOT the finding in docs/3D-ASSESSMENT.md #5. Hit testing was
-     byte-identical at 48deg there because .face-front was FLAT -- one plane,
-     trivially testable. Opening it to preserve-3d is what introduced this.)
-
-     8deg is what geometry asked for, it is half the aesthetic ceiling, and it
-     is the largest value at which every control on the watch still works.
-     THIS IS THE ONLY KNOB. Turn it here and everything else follows -- but
-     re-run the click test if you raise it, because the crown goes first. */
+   One method note outlives it. Every click claim in this file was measured by
+   driving the real browser hit-test path (CDP Input events), NOT
+   elementFromPoint, which disagrees with the compositor here and cannot be
+   trusted for it. Re-measure that way if you move anything in the ladder. */
 .watch-stage {
   position: relative;
   width: 86vmin;
   height: 86vmin;
   perspective: 2400px;
   --case-depth: 6vmin;
-
-  --tilt-max: 8deg;
 
   /* THE HEIGHT LADDER, in mm above the dial surface at 1mm = 2.218vmin.
 
@@ -519,17 +492,6 @@ html.no-mvt .watch-mvt { display: none; }
   inset: 0;
   transform-style: preserve-3d;
   transition: transform 1s cubic-bezier(.3,.8,.25,1), filter 1s ease;
-}
-/* The pointer tilt gets a layer of its own rather than a share of one that is
-   already spoken for: .watch-pose carries the 1s panel pose and .watch-flip the
-   1.15s flip, and both are written by render() at 10Hz. A tilt on either would
-   be a second writer AND would inherit a ~1s transition, which is exactly the
-   wrong easing for something tracking a cursor. This layer has no transition at
-   all -- src/main.js damps it in a rAF loop and writes only here. */
-.watch-tilt {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
 }
 .watch-flip {
   position: absolute;
@@ -601,7 +563,8 @@ html.no-mvt .watch-mvt { display: none; }
       and it drops the filling filter the moment the animation ends. See the
       four `backwards` fills below; do not put them back to `both`.
       (.hint-index keeps `both`, and must: its `to` state is NOT its base
-      style -- the mark would un-draw itself.) */
+      style -- the mark would un-draw itself.)
+
    .watch-mvt is exempt, and deliberately: the movement-assembly layer is
    display:none by 3.00s and the crown does not seat until 3.38s, so it can
    never be on screen during a flip and needs nothing from this rule. Leaving
@@ -754,20 +717,16 @@ html.no-mvt .watch-mvt { display: none; }
    `backwards` rather than `both` -- see THE FLATTENING / BACKFACE PROBLEM. */
 .hands { position: absolute; inset: 0; animation: fadeIn .45s ease 3.08s backwards; pointer-events: none; transform-style: preserve-3d; }
 .hand-pivot { position: absolute; transform-origin: 50% 50%; }
-/* --shx/--shy is the hand's cast shadow being held STILL on the dial while the
-   hand itself parallaxes over it. A shadow belongs to the light, not to the
-   eye: the 315deg key does not move when you move, so the shadow must not
-   either -- but this drop-shadow rides on the sprite, which does move, by
-   h*sin(tilt). Subtracting that back out is the whole trick, and it is what
-   makes the hands read as floating rather than printed: at --tilt-max the
-   minute hand and its shadow slide 1.8vmin*sin(8deg) apart in each direction,
-   so the gap between them opens and closes as you move the pointer.
-   main.js computes it, rotated into each hand's own frame because this filter
-   is inside the pivot's rotate(). Zero at rest, so the resting art is
-   byte-identical to what it was. */
+/* The cast shadow the lift buys: offset down and slightly left, which is where
+   the dial's own 315deg key throws it, and blurred in proportion to how high
+   the hand sits. It is what separates a hand standing over the dial from one
+   printed on it. (A companion --shx/--shy correction used to slide these
+   shadows against the sprite as the watch turned; it went with the pointer
+   tilt -- see `archive/pointer-tilt` -- and it was zero at rest, so the resting
+   art is unchanged.) */
 .hand-pivot .sprite-art {
   transform-origin: 50% 50%;
-  filter: drop-shadow(calc(-.1vmin + var(--shx, 0px)) calc(.2vmin + var(--shy, 0px)) .42vmin rgba(0,0,0,.58));
+  filter: drop-shadow(-.1vmin .2vmin .42vmin rgba(0,0,0,.58));
 }
 .hand-hour { left: 14.720%; top: 32.920%; width: 34.159%; height: 34.159%; }
 .hand-min  { left:  9.680%; top: 27.880%; width: 44.240%; height: 44.240%; }
@@ -800,8 +759,8 @@ html.no-mvt .watch-mvt { display: none; }
    drop-shadow survives; the printed numerals are ink and stay unlit. */
 
 /* ---- the aperture, as a hole rather than a picture of one ----
-   The outsize date was the flattest thing on the dial under tilt and should be
-   the deepest: it is a window cut through the dial with two discs turning
+   The outsize date was the flattest thing on the dial and should be the
+   deepest: it is a window cut through the dial with two discs turning
    underneath. Three planes, all relative to .date-window's own applied plate:
 
      0           the disc surface -- date-window.webp, whose cream panes ARE
@@ -819,16 +778,13 @@ html.no-mvt .watch-mvt { display: none; }
 
    The frame is not lifted separately from the panes, because date-window.webp
    is one image of frame AND panes and cannot be split without new art. So the
-   twin frame sits at the disc surface rather than at the rim. That costs a
-   1.3px shift at full tilt on a 38.5mm dial; nobody reads it. What everybody
-   reads is what the shadow does.
+   twin frame sits at the disc surface rather than at the rim. That is not what
+   the eye reads anyway. What it reads is what the shadow does.
 
    Which is the point of .date-pane: it is the wall of the well, and it stays at
-   the RIM, because a cast shadow is pinned to the edge that casts it. So as the
-   watch turns, the shadow holds still on the aperture rim while the digits
-   slide under it by 1.22vmin * sin(tilt) -- 1.25px at --tilt-max. That relative
-   slide IS the depth cue; the numerals are seen through a hole rather than
-   printed in one.
+   the RIM, because a cast shadow is pinned to the edge that casts it. The
+   numerals sit a well's depth below it and are lit through it, so they are seen
+   through a hole rather than printed in one.
 
    The 315deg key comes over the top-left lip, so the well is dark along its top
    and left and takes a warm bounce off the cream disc opposite. The offsets are
@@ -960,7 +916,7 @@ html.no-mvt .watch-mvt { display: none; }
 .reserve-hand .sprite-art {
   transform: scale(1, .98);
   transform-origin: 50% 50%;
-  filter: drop-shadow(calc(-.08vmin + var(--shx, 0px)) calc(.16vmin + var(--shy, 0px)) .34vmin rgba(0,0,0,.52));
+  filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52));
 }
 
 /* ===================== SMALL SECONDS + MOON =====================
@@ -1058,7 +1014,7 @@ html.no-mvt .watch-mvt { display: none; }
 }
 .sec-pivot .sprite-art {
   transform-origin: 50% 50%;
-  filter: drop-shadow(calc(-.06vmin + var(--shx, 0px)) calc(.12vmin + var(--shy, 0px)) .3vmin rgba(0,0,0,.5));
+  filter: drop-shadow(-.06vmin .12vmin .3vmin rgba(0,0,0,.5));
   animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 3.28s both;
 }
 
@@ -1068,21 +1024,23 @@ html.no-mvt .watch-mvt { display: none; }
    It is the one group on the dial that does not open a 3D context, and the
    reason is measured rather than stylistic. With `transform-style: preserve-3d`
    here, `document.elementFromPoint` at the centres of #secondsDial and #moon
-   stops resolving to them the moment the watch is tilted at all -- it returns
-   #watchPose, i.e. the whole subtree drops out of hit testing. Bisected in
-   headless Chrome at rotateY(8deg)/rotateX(-8deg) against fourteen variants:
-   pointer-events on the wrapper, the wrapper's size, the hands layer, the
-   crystal, the index marks and the children's own heights all make no
-   difference; `transform-style: flat` on this element is the only thing that
-   restores it, and it restores it every time. .date-window and .reserve are
-   preserve-3d in the same tilt and hit-test perfectly, so this is specific to
-   a pointer-events:none 3D group whose descendants opt back in.
-   Two live click targets are worth more than one small hand's parallax.
+   stops resolving to them as soon as the watch turns away from the screen at
+   all -- it returns #watchPose, i.e. the whole subtree drops out of hit
+   testing. Bisected in headless Chrome at rotateY(8deg)/rotateX(-8deg) against
+   fourteen variants: pointer-events on the wrapper, the wrapper's size, the
+   hands layer, the crystal, the index marks and the children's own heights all
+   make no difference; `transform-style: flat` on this element is the only
+   thing that restores it, and it restores it every time. .date-window and
+   .reserve are preserve-3d under the same rotation and hit-test perfectly, so
+   this is specific to a pointer-events:none 3D group whose descendants opt back
+   in. Two live click targets are worth more than one small hand's parallax --
+   and the flip turns the face through 180deg on every crown press, so the
+   condition is still reachable.
 
    What it costs: the seconds hand gets no geometric lift. What it keeps: the
-   seconds hand's cast-shadow separation, which is a 2D filter offset and works
-   in a flat context -- and on a hand this small that was always the cue doing
-   the work. And the group as a whole IS how a Lange 1 is built: small seconds
+   seconds hand's cast shadow, which is a 2D filter offset and works in a flat
+   context -- and on a hand this small that was always the cue doing the work.
+   And the group as a whole IS how a Lange 1 is built: small seconds
    and moonphase share one applied plate, which is what --z-applied describes.
    --seatz carries that height through the seat animation; see partIn. */
 .dial-group {
@@ -1157,9 +1115,7 @@ html.no-mvt .watch-mvt { display: none; }
    not a question of DOM order any more -- painting follows z. So it gets a real
    height: --z-glass, 0.90mm at the dial scale, which is where the underside of
    a domed crystal sits above a Lange 1's dial. That also clears --z-hand-min
-   (0.75mm), which is the constraint that actually sets it. Its highlights then
-   slide ~1vmin*sin(tilt) across the dial as the watch turns, which is what
-   sapphire does. */
+   (0.75mm), which is the constraint that actually sets it. */
 .crystal {
   position: absolute;
   inset: 3.3%;
