@@ -108,12 +108,7 @@ const el = {
   curTitle: $('curTitle'),
   curValue: $('curValue'),
   curSub: $('curSub'),
-  curDots: document.querySelectorAll('.cur-dot'),
-  reqLayer: $('reqLayer'),
-  reqForm: $('reqForm'),
-  reqDone: $('reqDone'),
-  reqWatch: $('reqWatch'),
-  reqBook: $('reqBook')
+  curDots: document.querySelectorAll('.cur-dot')
 };
 
 const panels = {
@@ -147,9 +142,6 @@ const state = {
   flipped: false,
   reserve: RESERVE_REST,
   touched: false,
-  reqOpen: false,
-  reqDone: false,
-  reqType: 'watch',
   demo: null   // { t0, reduced } while the pusher's sweep is running
 };
 
@@ -268,7 +260,7 @@ function render() {
         : 'DEMONSTRATION — ALL FUNCTIONS IN MOTION')
     : state.hover
     ? CAPTIONS[state.hover]
-    : (state.active || state.reqOpen)
+    : state.active
       ? ''
       : state.flipped
         ? 'CLICK THE CROWN TO TURN BACK'
@@ -292,13 +284,7 @@ function render() {
   // The interaction index recedes the moment the watch has been understood:
   // any click sets state.touched, and the scribed marks go with it.
   el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
-  el.hintBar.hidden = !(CONFIG.showHints && !state.active && !state.reqOpen);
-
-  el.reqLayer.hidden = !state.reqOpen;
-  el.reqForm.hidden = state.reqDone;
-  el.reqDone.hidden = !state.reqDone;
-  el.reqWatch.classList.toggle('is-on', state.reqType === 'watch');
-  el.reqBook.classList.toggle('is-on', state.reqType === 'book');
+  el.hintBar.hidden = !(CONFIG.showHints && !state.active);
 }
 
 function open(id) {
@@ -366,21 +352,6 @@ $('corrector').addEventListener('mouseleave', () => { state.hover = null; render
 document.querySelectorAll('[data-close]').forEach((node) =>
   node.addEventListener('click', () => { state.active = null; render(); })
 );
-document.querySelectorAll('[data-close-req]').forEach((node) =>
-  node.addEventListener('click', () => { state.reqOpen = false; render(); })
-);
-
-// NOTE: the review-request layer (#reqLayer / #reqForm / #reqDone and the
-// handlers below) is currently UNREACHABLE. The pusher used to open it and now
-// runs the demonstration sweep instead, and nothing else sets state.reqOpen.
-// Left intact and working, pending a decision about where it should live.
-el.reqWatch.addEventListener('click', () => { state.reqType = 'watch'; render(); });
-el.reqBook.addEventListener('click', () => { state.reqType = 'book'; render(); });
-el.reqForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  state.reqDone = true;
-  render();
-});
 
 $('resumeScroll').addEventListener('scroll', (e) => {
   const node = e.currentTarget;
@@ -399,7 +370,6 @@ $('resumeScroll').addEventListener('scroll', (e) => {
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     state.active = null;
-    state.reqOpen = false;
     render();
   }
 });
