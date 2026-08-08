@@ -309,21 +309,11 @@
                attribute changing is what arms and re-arms the one-shot. See
                the HOVER PULSE block in styles.css for the reasoning.
 
-               data-mode picks between the two arrangements prototyped:
-                 registered -- each bloom on its own part's geometry, the same
-                               shapes .hint-index uses, so the light lands on
-                               the rim / frame / aperture that is actually live.
-                 symmetric  -- five identical r6 discs at 72deg intervals on a
-                               ring of radius 33 about the case centre (50,50),
-                               each assigned to the part nearest its bearing.
-                               Kept in the file because the comparison is the
-                               argument: four of the five land plausibly and the
-                               moon's lands bottom-LEFT while the moon is
-                               bottom-right, because five points spaced evenly
-                               cannot map onto five parts crowded into the
-                               right-hand third of a deliberately asymmetric
-                               dial. Set data-mode="symmetric" to see it. -->
-          <div class="hover-pulse" id="hoverPulse" data-mode="registered" data-hover="">
+               The shapes are the .hint-index shapes, deliberately: the same
+               rim, frame, arc and aperture, so the bloom lands on the linework
+               that is actually live. Move a complication and BOTH sets of
+               geometry follow it. -->
+          <div class="hover-pulse" id="hoverPulse" data-hover="">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none"
                aria-hidden="true" focusable="false">
             <defs>
@@ -338,29 +328,11 @@
               </filter>
             </defs>
 
-            <!-- registered: the live part's own silhouette, lit -->
-            <g class="pulse-set-registered">
-              <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
-              <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
-              <path   class="pulse-mark" data-part="resume"    d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
-              <circle class="pulse-mark" data-part="currently" cx="64.498" cy="75.112" r="13.599"/>
-              <path   class="pulse-mark" data-part="books"     d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
-            </g>
-
-            <!-- symmetric: five equal r4.5 discs at 72deg intervals on a ring of
-                 radius 38.5 about the case centre, each given to the part whose
-                 own bearing from (50,50) is nearest. 38.5 is the only radius
-                 that works at all: the dial plate ends at 44.85 and the
-                 complications reach out to ~33, so anything tighter puts a
-                 marker inside the hours dial or the small seconds, and anything
-                 wider runs the blur off the plate. -->
-            <g class="pulse-set-symmetric">
-              <circle class="pulse-mark" data-part="featured"  cx="50"     cy="11.5"   r="4.5"/>
-              <circle class="pulse-mark" data-part="resume"    cx="86.616" cy="38.103" r="4.5"/>
-              <circle class="pulse-mark" data-part="currently" cx="72.630" cy="81.147" r="4.5"/>
-              <circle class="pulse-mark" data-part="books"     cx="27.370" cy="81.147" r="4.5"/>
-              <circle class="pulse-mark" data-part="about"     cx="13.384" cy="38.103" r="4.5"/>
-            </g>
+            <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
+            <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
+            <path   class="pulse-mark" data-part="resume"    d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
+            <circle class="pulse-mark" data-part="currently" cx="64.498" cy="75.112" r="13.599"/>
+            <path   class="pulse-mark" data-part="books"     d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
           </svg>
           </div>
         </div>

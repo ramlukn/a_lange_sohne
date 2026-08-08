@@ -821,6 +821,24 @@ a:hover { color: var(--gold-line-hover); }
    lit band is ~4% of the face wide at peak: about 34px on a 900px viewport and
    ~11px at 390px. The .hint-dots it descends from were 5.3px and 2.7px.
 
+   SYMMETRIC PLACEMENT, PROTOTYPED AND REJECTED (43a3efd has it behind a
+   data-mode switch if you want to look at it again). The alternative was five
+   identical r4.5 discs at 72deg intervals on a ring concentric with the case,
+   each given to the part whose own bearing from (50,50) is nearest -- calm,
+   even, a deliberate counterpoint to an asymmetric dial. It does not work, and
+   the reason is the watch itself. Radius 38.5 is the only radius available at
+   all: the plate ends at 44.85 and the complications reach out to ~33, so
+   anything tighter drops a marker inside the hours dial or the small seconds.
+   And five evenly spaced bearings cannot be matched to five parts that are all
+   crowded into the right-hand third of the face -- the date, reserve, small
+   seconds and moon sit between 30deg and 150deg, so two of them have to be
+   given markers on the empty left side. Hovering the moonphase at bottom-RIGHT
+   lights a disc at bottom-LEFT. Worse, a bloom that is not sitting on any of
+   the dial's own linework has nothing to amplify: on bare plate the same light
+   that reads as a rim catching a highlight reads as a smudge under the
+   crystal. Symmetry here is not restraint, it is a second layout competing
+   with the Lange 1's.
+
    Guarded by (hover: hover). Touch gets no pulse -- it has no pointer to enter
    with -- and keeps what it already had: the .hint-index, which persists there
    until the first tap. Reduced motion drops the animation and substitutes a
@@ -853,13 +871,6 @@ a:hover { color: var(--gold-line-hover); }
   --pk: .55;
 }
 .pulse-mark[data-part="about"] { --pk: .3; }
-/* Two arrangements, prototyped side by side; see the report. `registered` puts
-   each bloom on its own part's geometry, `symmetric` puts five identical discs
-   at 72deg intervals on a ring concentric with the case. Only one set is ever
-   in the tree. */
-.hover-pulse[data-mode="registered"] .pulse-set-symmetric,
-.hover-pulse[data-mode="symmetric"]  .pulse-set-registered { display: none; }
-
 @media (hover: hover) {
   .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
   .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
