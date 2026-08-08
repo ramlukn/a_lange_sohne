@@ -146,6 +146,38 @@ a:hover { color: var(--gold-line-hover); }
   to   { stroke-dashoffset: 0; }
 }
 
+/* ===================== THE PARTS ARE NOT LIVE YET =====================
+   A clock, and nothing else. The seven .part-hit buttons are laid out at their
+   final positions from the very first frame, so a pointer crossing the stage
+   during the intro used to light a mark and print that part's caption over a
+   dial which had not arrived -- at 1.0s the moonphase's arc glows in empty
+   black, half a second before the case exists. main.js holds the whole flip
+   `inert` until this animation finishes and then lets it go; see THE WATCH IS
+   NOT ANSWERING YET there for why inert and not pointer-events.
+
+   WHY THE MOMENT IS --hint-at. The interaction index is the site's own
+   statement that these parts are live, and it is made on a finished watch --
+   that is what --hint-at is for, and THE INTRO'S LAST BEAT at the top of this
+   file is its derivation. A part that answers before the index has named it is
+   the watch keeping a promise it has not made, so the two are one instant:
+   nothing is live until the index says it is. There is no second number here,
+   and retiming the index still retimes this with it.
+
+   WHY IT IS AN ANIMATION AND NOT A TIMEOUT. A wall-clock wait in JS would have
+   to know about all three ways someone arrives, and would lock a deep-link
+   visitor out of their own watch for four seconds. An animation-delay needs to
+   know nothing: both rules that collapse the intro -- prefers-reduced-motion
+   above and html[data-direct] below -- zero every animation-delay inside the
+   stage, and this is one of them. So the gate opens the moment the watch does,
+   by the same rule that put the watch there.
+
+   The keyframe deliberately moves nothing. --parts-live is read by no one; the
+   animation exists to be waited on, the way loaderGone exists to be a deadline.
+   The fill IS load-bearing, though: a finished animation with no fill is
+   dropped from getAnimations(), and on the deep-link path this one has already
+   finished before main.js runs. */
+@keyframes partsLive { to { --parts-live: 1; } }
+
 /* THERE IS NO hoverBloom KEYFRAME ANY MORE, and its removal is the whole of the
    second fix. It ran opacity 0 -> --pk -> --hold and stroke-width 3.4 -> 3.1 ->
    1.6, so the light peaked at 172ms and then fell for another 258ms. The
@@ -357,6 +389,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transform-style: preserve-3d;
   transform: rotateY(0deg);
   transition: transform 1.15s cubic-bezier(.6,.05,.25,1);
+  /* The intro's gate, hung on the element that already owns data-hover and
+     contains all seven hit targets. It animates a custom property nobody reads
+     -- deliberately, so it cannot disturb this element's 3D context -- and
+     main.js waits on it. See THE PARTS ARE NOT LIVE YET in ANIMATIONS. */
+  animation: partsLive 0s linear var(--hint-at) forwards;
 }
 /* the case middle band: rim segments spanning the gap between the faces */
 .case-edge { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }

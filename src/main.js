@@ -1076,6 +1076,69 @@ function rigStop() {
   rig.anims.length = 0;
 }
 
+// ---- THE WATCH IS NOT ANSWERING YET ----------------------------------------
+// The seven hit targets are laid out at their final positions from the first
+// frame, so until the watch has assembled they answer a pointer crossing a dial
+// that is not there: a lit pulse mark and the part's caption over empty black.
+//
+// INERT, NOT pointer-events. The gate has to close four doors, and inert is the
+// only one primitive that closes all four -- the pointer, the tab stop, Enter
+// and Space, and the accessibility tree. pointer-events would leave the
+// keyboard walking into an unbuilt watch and opening a section from it, which
+// is the same bug with a different input device. It also has no holes:
+// #secondsDial and #moon opt back into hit testing with an id (see the
+// pointer-events note on .dial-group), and no class rule can outrank that.
+//
+// WHEN IT OPENS is not a number here, and not a timeout. It is the end of the
+// partsLive animation in styles.css, whose delay is --hint-at -- the instant
+// the interaction index declares these parts live -- so the gate and the
+// promise are the same moment. Waiting on an animation rather than on a clock
+// is what makes the three arrival paths one path: the two rules that collapse
+// the intro for a deep link and for reduced motion zero that delay along with
+// every other, so the gate opens as soon as the watch is there in all three.
+// .finished rather than an animationend listener, because on the deep-link path
+// the animation is already over by the time this line runs.
+//
+// A CLICK DURING THE INTRO IS SWALLOWED, and does not cut the intro short.
+// Before the watch is on screen there is nothing to have clicked -- opening a
+// section from a click on empty black is answering a question nobody asked --
+// and the site has already decided it gives the same intro every time, which is
+// why the sessionStorage intro-skip was removed (see ARRIVING MID-SITE in
+// index.html). Someone who wants in immediately has the address, and #/resume
+// is exactly the path that skips this.
+//
+// state.touched is left alone. It means "the visitor has operated the watch",
+// and nothing that happens behind the gate is an operation, so the interaction
+// index is still unspent at the moment it is scribed.
+let pointerAt = null;
+const trackPointer = (e) => { pointerAt = { x: e.clientX, y: e.clientY }; };
+
+function goLive() {
+  removeEventListener('pointermove', trackPointer);
+  el.flip.inert = false;
+  // The pointer may have rested on a part for the whole intro, and a subtree
+  // that stops being inert generates no boundary event of its own -- so the
+  // part under the cursor would stay dark until the visitor happened to move.
+  // Ask what is under the last known pointer and let that part say what it
+  // would have said. Dispatching the event rather than writing state.hover
+  // keeps this from drifting from bind()'s handlers and the fittings' own.
+  if (!pointerAt) return;
+  const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
+  const part = under && under.closest('.part-hit');
+  if (part) part.dispatchEvent(new MouseEvent('mouseenter'));
+}
+
+const gate = el.flip.getAnimations().find((a) => a.animationName === 'partsLive');
+// No clock, no gate. If the rule is ever renamed or the stylesheet fails, the
+// watch is live immediately rather than inert for ever: a missing gate must
+// cost the fix, never the site.
+if (!gate) goLive();
+else {
+  el.flip.inert = true;
+  addEventListener('pointermove', trackPointer, { passive: true });
+  gate.finished.then(goLive, goLive);   // a cancelled clock opens the gate too
+}
+
 // The idle pump. 'mechanical' quantises the seconds hand onto a 1/6s beat, and
 // a fixed 100ms period cannot land on one: the hand still takes every 1deg step
 // and drops none, but it takes them 200, 200, then 100ms apart, which is an even
@@ -1084,6 +1147,7 @@ function rigStop() {
 // capped at the old 100ms so nothing else on the dial refreshes more slowly than
 // it used to. The demo puts rAF on top of this for its own four seconds -- see
 // demoPump() -- and this pump keeps running underneath it either way.
+
 // The address the visitor actually arrived on, applied once before the first
 // pump: a reload lands where you were, and a shared link opens what it names.
 // No history entry is created here -- the entry we are standing on is the one
