@@ -1,5 +1,14 @@
 # Making the watch 3D — feasibility assessment
 
+> **Merged (2026-08-07):** this document's recommendations now live inside
+> `docs/SITE-DIRECTION.md` §8, which phases the pointer tilt and closes four of
+> the six open questions in §8 below (tilt vs. the "no ambient motion" rule: yes,
+> pointer-driven only; tilt behind an open panel: off; touch: nothing, no
+> `deviceorientation`; the three.js lab: delete — it no longer even runs, since
+> `three` is in `package.json` but not installed and `npx vite` fails its
+> dependency scan on it). Only the clamp angle is still open. The research and
+> measurements below stand as taken; read §8 there rather than §8 here.
+
 > "Look into making the watch 3d ish. Will it look good. Is it possible?"
 
 A research document. **No application code was written or changed.** Everything below
