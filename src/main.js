@@ -21,7 +21,7 @@ const CURRENTLY = [
 // ---- THE SECTIONS ----------------------------------------------------------
 // One row per section, and every place that has to agree about a section reads
 // it from here: the caption, the zoom origin, the panel, the click binding, the
-// accessible name and the hint bar are all derived below. A section's identity
+// accessible name and the rail are all derived below. A section's identity
 // used to live in four objects plus the markup plus a hard-coded sentence;
 // renaming one meant six edits and there was no way to be sure you had found
 // them all. Adding, renaming or dropping a section is now one row.
@@ -29,9 +29,9 @@ const CURRENTLY = [
 //   key     what state.active / state.hover carry, and what the pulse mark's
 //           data-part says in index.html
 //   label   the word the section is called -- caption, panel title, and the
-//           rail's link text when Phase 2 builds it
+//           rail's link text
 //   part    the watch part it hangs off, as the caption prints it (no article:
-//           "THE " is added where it is used, so the hint bar can drop it)
+//           "THE " is added where it is used, so a caller can drop it)
 //   hit     the element id of the thing you click on the watch
 //   panel   the id of the <section> it opens
 //   origin  transform-origin for the 'zoom' transition style
@@ -142,18 +142,85 @@ const el = {
   reserveBar: $('reserveBar'),
   caption: $('caption'),
   hintIndex: $('hintIndex'),
-  hintBar: $('hintBar'),
+  rail: $('rail'),
   overlay: $('overlay'),
   crown: $('crown')
 };
 
 const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 
-// The hint bar names the live parts, and the live parts ARE the sections, so
-// the sentence is assembled rather than typed. (Phase 2 replaces the whole
-// element with the six-link rail, from this same list.)
-el.hintBar.textContent =
-  `${SECTIONS.map((s) => s.part).join(' · ')} — CLICK TO EXPLORE  ·  CROWN TO FLIP`;
+// ---- THE RAIL --------------------------------------------------------------
+// The navigation, built from the same SECTIONS list the captions, the click
+// targets and the panels come from: one <a> per row, in that list's order, top
+// to bottom. It is #hintBar promoted -- the sentence that used to name the live
+// parts said the same thing in prose and could not be clicked. Its mode line,
+// "CROWN TO FLIP", moved into the caption; the part names moved into the words.
+//
+// The reveal order is this list's order and NOT the interaction index's scribe
+// order. Matching them was considered and is cleverness with no audience: the
+// index finishes four seconds before the first word arrives, and nobody can
+// hold an ordering across that gap to notice it agreeing.
+//
+// THE SIXTH ITEM IS ABSENT, AND THAT IS A DECISION.
+// The rail was specified as six -- Contact is the sixth -- but Contact was to
+// live on the caseback and that work has been called off, so there is nothing
+// for a CONTACT link to open. This project's own rule for a section with no
+// content is that it leaves the rail (docs/PLAN.md: "it doesn't ship: it leaves
+// the rail"), and a link that looks live and does nothing is the worst of the
+// available options; rendering it greyed out is the same lie with an apology
+// printed next to it. So it is not here. When Contact has a destination it is
+// one more row in SECTIONS above, and nothing in this block changes.
+const railLinks = new Map();
+el.rail.append(...SECTIONS.map((s, i) => {
+  const a = document.createElement('a');
+  a.className = 'rail-link';
+  // A real href, so the link behaves like one -- middle-click, copy link
+  // address, the status bar -- and so Phase 3's routing has only to drop the
+  // preventDefault in the click handler below and listen for hashchange. The
+  // fragment deliberately matches no element id, so the default action would be
+  // a no-op rather than a scroll even if it ever got through.
+  a.href = `#/${s.key}`;
+  a.dataset.key = s.key;
+  a.style.setProperty('--i', i);   // this word's place in the reveal queue
+  a.textContent = s.label;
+  railLinks.set(s.key, a);
+  return a;
+}));
+
+// Where you are. A short gold hairline in the marker channel, level with the
+// open section, which travels to the next one over 200ms instead of fading out
+// and in -- one pointer along a scale, the gesture the reserve hand already
+// makes against AUF/AB. It is one element for all five positions, which is what
+// makes travel the only thing it CAN do.
+const railMarker = document.createElement('span');
+railMarker.className = 'rail-marker';
+railMarker.setAttribute('aria-hidden', 'true');
+el.rail.append(railMarker);   // last child: the CSS reaches it with `~`
+
+// Both centres are written every time and the stylesheet uses whichever one is
+// its own axis -- vertical in the column, horizontal in the bottom row. That is
+// deliberate: it keeps the 1200px breakpoint written once, in CSS, instead of
+// copying it into a matchMedia here that could drift from it. offsetTop and
+// offsetLeft are measured from the same padding edge the marker's own left/top
+// of 0 resolves to, so there is no origin to correct for in either layout.
+let markerAt = null;
+function placeRailMarker(force) {
+  if (!force && markerAt === state.active) return;
+  const node = state.active ? railLinks.get(state.active) : null;
+  // A hidden rail measures zero; keep the last good value rather than parking
+  // the mark at the top of a box that is not being laid out.
+  if (node && !node.offsetHeight) return;
+  markerAt = state.active;
+  if (!node) return;   // nothing open -- CSS fades the mark out where it stands
+  el.rail.style.setProperty('--mx', `${(node.offsetLeft + node.offsetWidth / 2).toFixed(1)}px`);
+  el.rail.style.setProperty('--my', `${(node.offsetTop + node.offsetHeight / 2).toFixed(1)}px`);
+}
+// The rail's own box changes when the layout flips to the bottom row and on
+// every resize while it is there, and both move the items out from under the
+// mark. A ResizeObserver rather than a resize listener for the reason
+// hintHairline() uses one: it is coalesced to one callback per frame after
+// layout, so it cannot read a stale box.
+new ResizeObserver(() => placeRailMarker(true)).observe(el.rail);
 
 // Where the reserve hand sits at rest: the first notch above AB, measured off
 // the scale sprite rather than guessed. Alpha-scanning reserve-scale.webp's
@@ -350,7 +417,13 @@ function render() {
       ? ''
       : state.flipped
         ? 'CLICK THE CROWN TO TURN BACK'
-        : `CURRENTLY ${cur.label} — ${cur.value.toUpperCase()}`;
+        // "CROWN TO FLIP" is the hint sentence's mode line, moved here when the
+        // rail took the element it used to live in. It belongs with the status
+        // line rather than in the rail: the rail says where you can GO, and the
+        // crown does not go anywhere -- it turns the object over. This is the
+        // one state in which nothing else is being said, which is why it can
+        // carry it without displacing anything.
+        : `CURRENTLY ${cur.label} — ${cur.value.toUpperCase()}   ·   CROWN TO FLIP`;
 
   const pose = watchPose();
   el.pose.style.transform = pose.transform;
@@ -370,7 +443,29 @@ function render() {
   // The interaction index recedes the moment the watch has been understood:
   // any click sets state.touched, and the scribed marks go with it.
   el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
-  el.hintBar.hidden = !(CONFIG.showHints && !state.active);
+  // The rail does NOT recede with it, and no longer hides behind an open panel
+  // as the sentence it replaced did. It is navigation now: it sits above the
+  // overlay so you can go section to section without closing one first, and it
+  // stays up on the caseback so the way back to a section is always on screen.
+  el.rail.hidden = !CONFIG.showHints;
+
+  // The rail, painted from the same two fields the watch is painted from. This
+  // is the reciprocal cue's second half: state.hover already lights the part and
+  // names it in the caption, so a pointer on the moonphase lighting the word
+  // BOOKS costs one more reader of the same value -- there is no second state,
+  // and no way for the two ends to disagree.
+  // Active outranks hover, so the word you are reading stays the word that is
+  // lit while the pointer wanders. Written only on change: render() also runs on
+  // a 100ms pump, and an unconditional write would restyle five links ten times
+  // a second and retrigger the colour transition on each.
+  for (const [key, node] of railLinks) {
+    const want = state.active === key ? 'active' : state.hover === key ? 'hover' : '';
+    if (node.dataset.state === want) continue;
+    node.dataset.state = want;
+    if (want === 'active') node.setAttribute('aria-current', 'page');
+    else node.removeAttribute('aria-current');
+  }
+  placeRailMarker();
 
   // This one attribute IS the hover highlight's whole state. The CSS rule that
   // carries it only matches while data-hover names the part, so '' -> 'books'
@@ -421,6 +516,23 @@ function open(id, from) {
   // After render(), because the panel is [hidden] until then and a hidden
   // element cannot take focus. tabindex="-1" on .card is what makes this legal.
   if (panel) panel.focus();
+}
+
+// One door into a section, for all of the ways in. open() is the mechanism --
+// it moves focus and remembers where from -- and this is the intent: "show me
+// this section, whatever the watch is currently doing". The watch's own hit
+// targets, the rail and (Phase 3) an address in the bar all come through here,
+// so a rule that has to hold for every one of them is written once.
+//
+// The one such rule today is the flip. The rail stays up while the watch is
+// turned over, so a section can be asked for from the caseback -- and every
+// section lives on the front of the watch, so the panel would otherwise open
+// over the back of a watch you had just navigated away from.
+function goToSection(key, from) {
+  if (!SECTION.has(key)) return;
+  railCue(null);   // whether this call is the cue's own or something that beat it
+  if (state.flipped) state.flipped = false;
+  open(key, from || null);
 }
 
 function close() {
@@ -497,7 +609,7 @@ function bind(section) {
   const id = section.key;
   const node = $(section.hit);
   node.setAttribute('aria-label', `${section.label} — the ${section.part.toLowerCase()}`);
-  node.addEventListener('click', () => open(id, node));
+  node.addEventListener('click', () => goToSection(id, node));
   node.addEventListener('mouseenter', () => { state.hover = id; render(); });
   // Focus is the keyboard's pointer, so it lights the part and prints the same
   // caption a hover does. The focus ring in styles.css says WHERE the keyboard
@@ -521,6 +633,59 @@ function bind(section) {
 }
 
 SECTIONS.forEach(bind);
+
+// The rail's other end of the same wiring. These handlers write the SAME
+// state.hover the watch's own hit targets write, which is the whole reciprocal
+// cue: the caption, the part's brightness lift and the bloom on its silhouette
+// all arrive from one value, so hovering the word BOOKS and hovering the
+// moonphase cannot say different things. Focus is included for the reason bind()
+// includes it -- focus is the keyboard's pointer -- and the guards on leave and
+// blur are the same guards, for the same reason.
+const COARSE_POINTER = matchMedia('(hover: none)');
+const TOUCH_CUE_MS = 600;
+let touchCue = 0;
+
+// The cue's own attribute, and the only two lines that write it. It is separate
+// from data-hover because it has to be: on touch there is no mouseleave, so the
+// part's :hover treatment is walled inside (hover: hover) -- see THE TOUCH CUE
+// in styles.css -- and a cue driven by a timer is the one form of it that
+// cannot get stuck. Clearing is unconditional and idempotent, and every path
+// out of the cue goes through it.
+function railCue(key) {
+  clearTimeout(touchCue);
+  if (key) el.flip.dataset.cue = key;
+  else el.flip.removeAttribute('data-cue');
+}
+
+for (const [key, node] of railLinks) {
+  node.addEventListener('mouseenter', () => { state.hover = key; render(); });
+  node.addEventListener('focus', () => { state.hover = key; render(); });
+  node.addEventListener('mouseleave', () => {
+    if (state.hover === key) { state.hover = null; render(); }
+  });
+  node.addEventListener('blur', () => {
+    if (state.hover === key) { state.hover = null; render(); }
+  });
+  node.addEventListener('click', (e) => {
+    // Phase 3 owns the address bar. Until it lands the href is there for what a
+    // real link gives you off the primary click; the navigation itself is this.
+    e.preventDefault();
+    // A touch device has no hover, so a tap would open the panel with the watch
+    // never having answered -- and the one thing a phone visitor has to learn is
+    // that the watch IS this rail. So the tap lights the part first and opens
+    // 600ms later: long enough to see which complication just replied, short
+    // enough that it does not read as a stall. On a pointer device the hover has
+    // already said it, so there is nothing to wait for.
+    if (COARSE_POINTER.matches) {
+      state.hover = key;
+      railCue(key);
+      render();
+      touchCue = setTimeout(() => goToSection(key, node), TOUCH_CUE_MS);
+      return;
+    }
+    goToSection(key, node);
+  });
+}
 
 // The two ways a pointer can stop being on a part without that part ever
 // hearing about it. Both used to cost 780ms of stale glow, which nobody would

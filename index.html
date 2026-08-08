@@ -498,10 +498,13 @@
 
   <!-- caption -->
   <div class="caption" id="caption"></div>
-  <!-- Written from SECTIONS by main.js: the parts it names ARE the sections, so
-       the words belong to that list and not to this file. (Phase 2 turns this
-       element into the six-link rail; same element, same source.) -->
-  <div class="hint-bar" id="hintBar"></div>
+  <!-- THE RAIL. This was #hintBar, a centred sentence naming the live parts;
+       it is the navigation now, and it is empty here on purpose -- main.js
+       builds one <a> per row of SECTIONS, in that list's order, so the words
+       belong to the list and not to this file. The sentence's mode line
+       ("CROWN TO FLIP") moved into the caption above. Shape and clearances:
+       THE RAIL in src/styles.css. -->
+  <nav class="rail" id="rail" aria-label="Sections"></nav>
 
   <!-- ===================== SECTIONS ===================== -->
   <div class="overlay" id="overlay" hidden>

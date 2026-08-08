@@ -17,6 +17,30 @@
   --font-display: Marcellus, serif;
   --font-ui: Archivo, sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+
+  /* THE INTRO'S LAST BEAT. These three used to live on .hint-index, which owned
+     them alone; the rail now waits on the same clock, and a custom property is
+     only readable down the tree, so they moved up here rather than being copied.
+     Retiming the index is still a one-number edit -- and it now retimes the rail
+     with it, which is the point: the rail is defined as "after the index has
+     finished", not as a second constant that happens to be later today.
+
+       --hint-at    when the index is scribed, after assembly. 3.45s is the wait
+                    the old .hint-dots layer used, and the crystal seats at
+                    2.78s, so the index arrives on a finished watch. It briefly
+                    went to 4.11s while a movement-assembly act ran in front of
+                    the build and pushed the crystal out; that act was removed
+                    and this followed it back.
+       --hint-step  the gap between one mark and the next.
+       --hint-draw  how long one mark takes to draw.
+
+     Five marks, so the last one starts at --hint-at + 4 * --hint-step and the
+     layer is finished --hint-draw after that: 3.45 + .92 + .46 = 4.83s. That
+     sum is --rail-at below, and nothing in the rail is written as a number. */
+  --hint-at: 3.45s;
+  --hint-step: .23s;
+  --hint-draw: .46s;
+  --rail-at: calc(var(--hint-at) + 4 * var(--hint-step) + var(--hint-draw));
 }
 
 html, body { margin: 0; padding: 0; background: #05070c; }
@@ -1109,14 +1133,9 @@ a:hover { color: var(--gold-line-hover); }
   height: 100%;
   pointer-events: none;
   overflow: visible;
-  /* One knob for the whole layer: when the index is scribed, after assembly.
-     3.45s is the wait the old .hint-dots layer used, and the crystal seats at
-     2.78s, so the index arrives on a finished watch. It briefly went to 4.11s
-     while a movement-assembly act ran in front of the build and pushed the
-     crystal out; that act was removed and this followed it back. Kept in one
-     place so retiming the intro stays a one-number edit. */
-  --hint-at: 3.45s;
-  --hint-step: .23s;
+  /* --hint-at / --hint-step / --hint-draw drive the scribe below and live in
+     :root -- see THE INTRO'S LAST BEAT there. They moved up because the rail
+     starts when this layer finishes and had to be able to read them. */
   /* The hairline, in USER UNITS -- see the note on stroke-width below. This is
      only the fallback: hintHairline() in main.js overwrites it with the value
      that lands on exactly one CSS pixel for the box the layer is currently
@@ -1152,7 +1171,7 @@ a:hover { color: var(--gold-line-hover); }
      Dashes stay in user space here, which is what pathLength="100" on every
      shape is for: one dash exactly spans one path, whatever the path is, so
      offset 100 hides it completely, offset 0 draws it completely, and all five
-     draw over the same .46s -- which is what makes --i * --hint-step the only
+     draw over the same --hint-draw -- which is what makes --i * --hint-step the only
      thing deciding the order. The hairline is held constant the other way, by
      writing the width in user units for the layer's current size; see
      --hint-hair above and hintHairline() in main.js. (.pulse-mark next door
@@ -1161,7 +1180,7 @@ a:hover { color: var(--gold-line-hover); }
   stroke-dasharray: 100;   /* = the whole path, via pathLength="100" */
   stroke-dashoffset: 100;  /* = hidden. The scribe walks this to 0. */
   opacity: 0;
-  animation: hintScribe .46s cubic-bezier(.3,.7,.25,1)
+  animation: hintScribe var(--hint-draw) cubic-bezier(.3,.7,.25,1)
              calc(var(--hint-at) + var(--i, 0) * var(--hint-step)) both;
 }
 
@@ -1870,19 +1889,210 @@ a:hover { color: var(--gold-line-hover); }
   animation: fadeIn .8s ease 3.05s both;
   transition: opacity .4s;
 }
-.hint-bar {
+/* ===================== THE RAIL =====================
+   The navigation: one word per section, in a column down the right edge, over
+   the panels rather than under them. It is #hintBar promoted -- same corner of
+   the page, same typeface, same resting colour as the sentence it replaces --
+   and main.js paints it from the one SECTIONS list, so the words here cannot
+   drift from the words the captions and the click targets use.
+
+   RIGHT, AND NOT LEFT, IS THE WHOLE ARGUMENT. The open pose is
+   translateX(-28vw): the watch moves AWAY from the right margin by exactly the
+   amount it moves into the left one. Measured at 1440x900, case edge to rail:
+
+     nothing open   case reaches x 1107, rail starts at 1299   ->  192px
+     panel open     case reaches x  595, rail starts at 1299   ->  704px
+
+   The gap GROWS by 512px in the state where navigation matters most. The same
+   rail on the left measured -126px in that state -- sitting on the case. Only
+   the sign changes. (docs/SITE-DIRECTION.md 4.8 has the derivation.)
+
+   96px IS DERIVED, NOT CHOSEN. IBM Plex Mono advances 0.6em; at 11px with this
+   site's .24em tracking that is 9.24px per character. PROJECTS and RESEARCH are
+   the longest labels at 8 characters -- 71.3px of ink -- and the marker channel
+   is 24px. 72 + 24 = 96. The type size is the input: at 12px the rail is 104px
+   and the card's column 592, so set the size first and re-derive, do not nudge
+   the width. The px are fixed rather than vmin for the same reason: a rail
+   whose ink is measured in characters cannot have a width that floats.
+
+   THE CARD PAYS FOR IT, NOT THE WATCH. .overlay's right padding gains 120px and
+   .card's column loses 120px (720 -> 600), so the card's total shrinks by 120
+   and its right edge moves left by 120: the LEFT edge -- the side facing the
+   watch -- is W - 5vmin - 826 before and after, at every width above the 92vw
+   clamp. Measured 569 both ways at 1440x900. The pose is untouched, the overlap
+   between card and posed watch is unchanged, and the 24px gutter between card
+   and rail falls out of the arithmetic rather than being set.
+
+   THREE MOTIONS, AND NO OTHERS.
+     arrival   the words fade up top to bottom, 90ms apart, over 4px of settle,
+               starting when the interaction index has finished scribing --
+               --rail-at in :root, which is that sum and not a second constant.
+     position  a short gold hairline in the marker channel, level with the open
+               section, which TRAVELS to the next one in 200ms. One pointer
+               along a scale: the gesture the reserve hand already makes against
+               AUF/AB. Never a pill, a fill or a box.
+     reciprocal the word lights when the pointer is on it OR on its part.
+   Nothing here loops, drifts or breathes. */
+.rail {
   position: absolute;
-  bottom: 2.6vmin;
-  left: 0;
-  right: 0;
-  text-align: center;
+  /* over .overlay's 40. The rail stays up with a panel open, so you can go
+     section to section without closing one first, and the keyboard can reach
+     the navigation from inside a panel. */
+  z-index: 50;
+  top: 50%;
+  /* the page's existing outer margin -- .overlay's own 5vmin padding -- so the
+     rail sits INSIDE the margin rather than eating into it */
+  right: 5vmin;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  width: 96px;
+  padding-left: 24px;   /* the marker channel; the words start at its inner edge */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   font-family: var(--font-mono);
-  font-size: 1.05vmin;
+  font-size: 11px;
   letter-spacing: .24em;
-  color: #5b6172;
-  animation: fadeIn .8s ease 3.35s both;
 }
-.hint-bar[hidden] { display: none; }
+.rail[hidden] { display: none; }
+
+/* The paint comes from [data-state], which main.js writes from state.hover and
+   state.active -- NOT from :hover. It has to: the same word must light when the
+   pointer is on the moonphase, and a CSS :hover cannot know that. Written at
+   .rail .rail-link so the global `a:hover` rule cannot outrank it and quietly
+   become a second, half-right source for the same colour. */
+.rail .rail-link {
+  display: block;
+  color: #5b6172;
+  text-decoration: none;
+  text-transform: uppercase;
+  /* letter-spacing lays its tracking after the LAST character too, so an
+     8-character label advances 73.92px where its ink is 71.28. Reclaiming that
+     trailing column is what keeps the longest label inside the 72px the width
+     was derived for, and in the bottom row it is what makes the gaps between
+     words the gaps they are set to. */
+  margin-right: -.24em;
+  padding: 4px 0;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color .28s ease;
+  /* `backwards`, not `both`: the last keyframe IS the base style, and a filling
+     transform would leave every link a containing block forever. Same rule the
+     seat animations follow -- see THE FLATTENING / BACKFACE PROBLEM. */
+  animation: railIn .5s cubic-bezier(.22,1,.36,1)
+             calc(var(--rail-at) + var(--i, 0) * 90ms) backwards;
+}
+.rail .rail-link[data-state='hover'] { color: var(--gold-line-hover); }
+.rail .rail-link[data-state='active'] { color: var(--gold-line); }
+/* The same focus vocabulary the seven watch controls use -- one gold hairline
+   of #f0c9a1 held .55vmin off the thing it marks -- because it is the same
+   answer to the same question. main.js writes state.hover on focus as well, so
+   the part lights and the caption names it exactly as under the pointer. */
+.rail .rail-link:focus { outline: none; }
+.rail .rail-link:focus-visible {
+  outline: 1px solid #f0c9a1;
+  outline-offset: .55vmin;
+}
+
+/* The marker travels because the transition is on transform and main.js moves
+   it by writing a centre, not by re-rendering it somewhere else: one element
+   for every position, so there is nothing to cross-fade between. The
+   centring is done here (translate -50%) rather than in main.js, so the script
+   never has to know how long the hairline is -- or, in the row below, which way
+   the rail is pointing. --mx and --my are both always written; each layout uses
+   the one that is its own axis. */
+.rail-marker {
+  position: absolute;
+  left: 6px;              /* centred in the 24px channel */
+  top: 0;
+  width: 12px;
+  height: 1px;
+  background: var(--gold-line);
+  opacity: 0;
+  transform: translateY(calc(var(--my, 0px) - 50%));
+  transition: transform .2s cubic-bezier(.4,0,.2,1), opacity .2s ease;
+  pointer-events: none;
+}
+/* Lit only while a section is open, and driven off the link's own state rather
+   than a second attribute saying the same thing. The marker is the last child,
+   so every link precedes it. */
+.rail .rail-link[data-state='active'] ~ .rail-marker { opacity: 1; }
+
+@keyframes railIn { from { opacity: 0; transform: translateY(4px); } }
+
+/* Below 1200px the same list ranges horizontally along the bottom, where the
+   hint sentence used to sit -- the card already covers most of the posed watch
+   at that width, so a right-hand column would be under it. One <nav>, the same
+   links, the same type scale and the same marker: this query changes the flex
+   direction and what the two ends are anchored to, and nothing else. The
+   channel goes from a column beside the words to a band beneath them, and the
+   hairline still sits in it, still travels, still points at one item.
+   The overlay gives back the 120px it was paying the rail, and takes the same
+   clearance at the bottom instead. */
+@media (max-width: 1199px) {
+  .rail {
+    top: auto;
+    bottom: 2.6vmin;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: auto;
+    padding: 0 5vmin 24px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 4vmin;
+  }
+  .rail-marker {
+    left: 0;
+    top: auto;
+    bottom: 12px;         /* centred in the 24px channel, now underneath */
+    transform: translateX(calc(var(--mx, 0px) - 50%));
+  }
+  /* The overlay's half of this swap lives with .overlay itself, further down --
+     same query, stated where the property it overrides is, because a rule of
+     equal specificity written up here would lose to the base rule below it. */
+}
+
+/* ===================== THE TOUCH CUE =====================
+   A tap on a rail word lights its watch part for 600ms before the panel opens.
+   It is the only way a phone visitor can learn that the watch IS this rail:
+   there is no hover to teach it, and once a panel is open the watch is behind
+   it. Tap BOOKS, watch the moonphase answer, then read.
+
+   It cannot borrow THE LIVE PARTS' HOVER, which is deliberately walled inside
+   (hover: hover): a tap fires a compatibility mouseenter and never a
+   mouseleave, so an ungated :hover would leave a part lit for the rest of the
+   session. That guard is right and stays. The cue is written here as its own
+   cause instead -- main.js puts data-cue on .watch-flip and takes it off on one
+   timer, so the light lasts exactly as long as the timer and there is no
+   pointer state left over to get stuck on.
+
+   It is the SAME mark, not a new one: brightness 1.16 on the part's own sprite,
+   the wash on the hours dial. Three causes now say it -- pointer, focus ring,
+   this -- and they all say it in light, which is the one vocabulary the dial
+   has for "this one". The bloom on .pulse-mark deliberately does NOT join in:
+   it is hover-only by its own reasoning (see HOVER PULSE), and widening that is
+   its call to make, not this one's. */
+@media (hover: none) {
+  .about-hit {
+    opacity: 0;
+    background: radial-gradient(circle at 32% 30%,
+      rgba(255,240,218,.15), rgba(255,240,218,.05) 52%, transparent 74%);
+  }
+  .watch-flip[data-cue] .about-hit,
+  .watch-flip[data-cue] .date-window .date-frame .sprite-art,
+  .watch-flip[data-cue] .reserve-scale,
+  .watch-flip[data-cue] .seconds-dial .dial-art,
+  .watch-flip[data-cue] .moon {
+    transition: filter .18s ease, opacity .18s ease;
+  }
+  .watch-flip[data-cue='about']    .about-hit                           { opacity: 1; }
+  .watch-flip[data-cue='projects'] .date-window .date-frame .sprite-art { filter: brightness(1.16) saturate(1.04); }
+  .watch-flip[data-cue='resume']   .reserve-scale                       { filter: brightness(1.16) saturate(1.04); }
+  .watch-flip[data-cue='research'] .seconds-dial .dial-art              { filter: brightness(1.16) saturate(1.04); }
+  .watch-flip[data-cue='books']    .moon                                { filter: brightness(1.14) saturate(1.04); }
+}
 
 /* ===================== PANELS ===================== */
 .overlay {
@@ -1892,7 +2102,22 @@ a:hover { color: var(--gold-line-hover); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5vmin;
+  /* The extra 120px on the right is the rail's rent, and .card's column pays it
+     back by narrowing 720 -> 600. Both numbers are the same 120, which is what
+     holds the card's LEFT edge -- the side facing the watch -- at
+     W - 5vmin - 826 exactly where it was. See THE RAIL. */
+  padding: 5vmin calc(5vmin + 120px) 5vmin 5vmin;
+}
+/* The other side of THE RAIL's breakpoint. Below 1200px the rail is a row along
+   the bottom, so the 120px it was renting on the right goes back and the
+   clearance is taken underneath instead. The row's box is 43px and it sits
+   2.6vmin up, of which the padding already covers 5vmin, so what is actually
+   owed is 43 + 2.6vmin - 5vmin: 21px at 900 tall, 28px at 620. 48 covers the
+   range and leaves the card visibly clear of the words rather than touching
+   them. Stated here and not beside the rail's own query so that it can outrank
+   the base padding above it. */
+@media (max-width: 1199px) {
+  .overlay { padding: 5vmin 5vmin calc(5vmin + 48px); }
 }
 .overlay[hidden] { display: none; }
 .overlay[data-justify='flex-end'] { justify-content: flex-end; }
@@ -1900,7 +2125,11 @@ a:hover { color: var(--gold-line-hover); }
 
 .card {
   position: relative;
-  width: min(720px, 92vw);
+  /* 600, not 720: the rail's 96px plus its gutter comes out of this column and
+     not out of the watch. 720px of Archivo body text is a long measure anyway
+     and 600 is a comfortable one, so the bill lands on the one number that was
+     already too big. */
+  width: min(600px, 92vw);
   max-height: 86vh;
   overflow: auto;
   background: linear-gradient(165deg, #111726, #0b101c);
