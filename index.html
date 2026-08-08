@@ -261,12 +261,56 @@
             <div style="position:absolute;left:11%;top:6%;width:30%;height:20%;transform:rotate(-18deg);border-radius:1.4vmin;background:linear-gradient(160deg,rgba(255,253,248,.10),rgba(255,253,248,.03) 60%,transparent);filter:blur(.7vmin);"></div>
           </div>
 
-          <div class="hint-dots" id="hintDots">
-            <div class="hint-dot" style="left:31.3%;top:54%;"></div>
-            <div class="hint-dot" style="left:68.5%;top:25.5%;animation-delay:.3s;"></div>
-            <div class="hint-dot" style="left:66%;top:48%;animation-delay:.6s;"></div>
-            <div class="hint-dot" style="left:64.1%;top:81.315%;animation-delay:.9s;"></div>
-            <div class="hint-dot" style="left:64.1%;top:66.915%;animation-delay:1.2s;"></div>
+          <!-- ============ INTERACTION INDEX ============
+               Each live part's own principal line, scribed on once after
+               assembly and left at a resting hairline until the first
+               interaction. Geometry is the hit targets' geometry, in face
+               percent, so these marks sit exactly ON the linework the dial art
+               already draws -- rims, the date frame, the moon aperture -- and
+               read as that linework picked out rather than as an overlay:
+                 about  circle  centre 31.797/49.999  r 25.299   (.about-hit)
+                 date    rect   53.5/20.299  20.5 x 12.367       (.date-window)
+                 reserve arc    centre 68.330/47.548  r 12.55,
+                                AUF 40.7deg .. AB 138.9deg, inside the ticks
+                 seconds circle centre 64.498/75.112  r 13.599   (.seconds-dial)
+                 moon    path   the .moon aperture, mapped out of its own
+                                0 0 100 50 viewBox (x = 52.398 + u*0.24198,
+                                y = 61.563 + v*0.238787), so the A48 arc
+                                becomes rx 11.615 / ry 11.462
+               Move a complication and these must move with it, exactly as the
+               .hint-dot percentages had to. --i is the scribe order.
+               pathLength="100" lets one dash rule drive all four shape types.
+               The layer is decorative: it never takes a pointer event. -->
+          <!-- The <svg> is wrapped in a plain div deliberately. render() hides
+               this layer with `el.hintIndex.hidden = ...`, and `hidden` is an
+               HTMLElement property: assigning it on an SVGElement sets a JS
+               expando that never reflects to the content attribute, so the
+               layer would silently never hide. A div keeps that one line
+               identical to every other `.hidden =` in render(). -->
+          <div class="hint-index" id="hintIndex">
+          <svg viewBox="0 0 100 100"
+               preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <defs>
+              <!-- The marks are lit, not coloured: one ramp across the whole
+                   face from the 315deg key light, so a mark is near-specular
+                   where it faces the light and falls to the warm shadow tone
+                   where it turns away -- the same thing the case and the dial
+                   furniture do. userSpaceOnUse, not objectBoundingBox, so all
+                   five share ONE light rather than each being lit in its own
+                   little frame. This is what keeps a hairline reading as an
+                   edge of metal instead of as a UI ring. -->
+              <linearGradient id="hintKey" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
+                <stop offset="0"   stop-color="#fde9d0"/>
+                <stop offset=".45" stop-color="#f0c9a1"/>
+                <stop offset="1"   stop-color="#b07d5c"/>
+              </linearGradient>
+            </defs>
+            <circle class="hint-mark" style="--i:0" pathLength="100" cx="31.797" cy="49.999" r="25.299"/>
+            <rect   class="hint-mark" style="--i:1" pathLength="100" x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
+            <path   class="hint-mark" style="--i:2" pathLength="100" d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
+            <circle class="hint-mark" style="--i:3" pathLength="100" cx="64.498" cy="75.112" r="13.599"/>
+            <path   class="hint-mark" style="--i:4" pathLength="100" d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
+          </svg>
           </div>
         </div>
 
