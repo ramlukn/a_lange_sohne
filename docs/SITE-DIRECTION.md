@@ -441,6 +441,10 @@ structurally broken. Neither is the answer.
 
 ### 4.3 Recommendation: a bottom index bar, built by promoting `#hintBar`
 
+> **Superseded by §4.8 — the answer is a right-hand rail.** Everything below
+> about promoting `#hintBar`, the marker, the reciprocal cue and the vocabulary
+> still holds; only the axis changed.
+
 The site already has one. `.hint-bar` sits at `bottom: 2.6vmin`, full width, in
 IBM Plex Mono at `.24em` tracking, and reads:
 
@@ -556,6 +560,67 @@ My recommendation remains the bottom bar, and the deciding reason is §4.2: the
 vertical axis is already fully spent, and the bottom is the only place a
 persistent index can go without either shrinking the watch or sitting on it.
 
+### 4.8 Superseded: a right-hand rail, which is what we are building
+
+**§4.3 is overridden.** The owner asked for a sidebar, so the job became
+designing one that survives §4.2's measurement rather than restating why the
+left one didn't. It does survive, because §4.2 measured the wrong side.
+
+**Right, not left.** The pose is `translateX(-28vw)`. The watch moves *away*
+from the right margin by exactly the amount it moves *into* the left one. The
+finding that killed the left rail is the same finding that recommends a right
+one; only the sign changes.
+
+**The rail, derived.** IBM Plex Mono advances 0.6em; at 11px with the site's
+existing `.24em` tracking that is 9.24px per character. The longest labels,
+PROJECTS and RESEARCH, are 8 characters — 71.3px of ink, call it 72. Add a 24px
+channel for the position marker and its gap: **96px**. It sits inside the page's
+existing 45px outer margin (`.overlay`'s `padding: 5vmin` at 1440×900), so at
+1440 wide the rail occupies **x 1299 → 1395**.
+
+**Clearance, both states, at 1440×900.**
+
+| State | Watch spans | Rail spans | Gap |
+| --- | --- | --- | --- |
+| Nothing open | 333 → 1107 (`86vmin` = 774px, centred) | 1299 → 1395 | **192px** |
+| Panel open | 30 → 594 (measured, §2) | 1299 → 1395 | **705px** |
+
+Compare the left rail's −126px in the open state. The gap here *grows* by 513px
+in exactly the state where navigation matters most, and rule 9.7 ("nothing
+overlaps the case circle in any state") is satisfied without qualification.
+
+**The card yields, and it costs nothing visible.** Today the card is
+`min(720px, 92vw)` + `52px` padding either side + 1px of border = 826px, right
+edge at `W − 5vmin`, left edge at 569 when W = 1440. Change two things by the
+same 120px:
+
+- `.overlay` right padding: `5vmin` → `calc(5vmin + 120px)`
+- `.card` width: `min(720px, 92vw)` → `min(600px, 92vw)`
+
+New card total is 706px, right edge `W − 5vmin − 120`, **left edge
+`W − 5vmin − 826` — algebraically identical to today, at every window width**
+above the `92vw` clamp. The overlap between card and posed watch is therefore
+unchanged, the watch pose is untouched, and the 24px gutter between card and
+rail falls out of the arithmetic. The narrower column is a bonus: 720px of
+Archivo body text is a long measure, 600 is a comfortable one.
+
+**Below 1200px** the card already covers most of the posed watch (true today,
+unchanged by this), so the rail moves to `bottom: 2.6vmin` — the position
+`#hintBar` occupies now — and ranges horizontally. This is §4.1's point 5
+("two designs for one job") answered rather than conceded: one `<nav>`, six
+`<a>`s, one type scale, one marker; a single media query flips
+`flex-direction` and the anchoring. Markup and vocabulary are identical in both.
+
+**Behaviour** is §4.4–§4.6 unchanged in substance, re-aimed at a column: the
+active marker is a gold hairline in the marker channel that travels vertically
+between items in 200ms rather than cross-fading (one pointer on a scale, as the
+reserve hand is against AUF/AB); hover is reciprocal in both directions via
+`state.hover`; the six items reveal top to bottom, 90ms apart, after the
+interaction index has finished scribing, and nothing appears before ~4.1s.
+The reveal order is the reading order, *not* the index's scribe order — a
+visitor cannot compare an ordering against marks that finished four seconds ago,
+so matching them is cleverness with no audience.
+
 ---
 
 ## 5. What sections the site has
@@ -585,6 +650,9 @@ But hold this next line above it, because §0.1 outranks everything:
 
 ### 5.2 Proposed sections
 
+> **Superseded by §5.6.** The list below was five sections plus Contact; the
+> settled list is six, and one binding moved. Kept for the reasoning.
+
 | Section | Complication | Status |
 | --- | --- | --- |
 | About | hours dial | Keep. Needs real copy and a real portrait. `.portrait` is a dashed circle saying "Your photo". |
@@ -596,6 +664,11 @@ But hold this next line above it, because §0.1 outranks everything:
 | Writing | — | **Deferred.** Only if and when there are two real pieces. Do not create the slot first. |
 
 ### 5.3 "Currently" — what was actually being asked
+
+> **Answered, against the recommendation below: Option B, near enough.**
+> "Currently" is not a section on the final list. The rotating line stays in the
+> caption, the panel goes, and the small seconds now opens Research rather than
+> About. See §5.6. The analysis below is why that is the right answer.
 
 You wrote *"Explain?"* against this one. Here is the question in full.
 
@@ -656,6 +729,63 @@ Two reasons beyond tidiness: writing prose is much easier in a file that is pros
 than in a file that is 33KB of generated rig markup; and while several agents are
 editing the watch, new content in a new file is the lowest-merge-risk shape
 available.
+
+### 5.6 The settled six, and the re-map
+
+The section list is now fixed at six: **About, Resume, Projects, Research,
+Books, Contact/links**. §5.2 and §5.3 are superseded where they disagree.
+
+**What each part actually does, and what that is a metaphor for.**
+
+| Part | Opens | Reasoning from the mechanism |
+| --- | --- | --- |
+| Hours dial | About | Carries `.maker-name`. Clicking the surface printed with a name to find out whose it is needs no caption. Challenged and kept: the biggest, most central part opening the most generic section looks like waste, but any other pairing actively misleads, and About being thin is a content problem, not a mapping problem. |
+| Outsize date | Projects | Challenged against Research, which is also dated and discrete. The date wins for Projects on a different property: it is the Lange 1's *signature* — the thing the watch is known for — and Projects is the portfolio's headline. Signature opens headline. Its typographic, jumps-value-to-value character then matches a numbered list of dated work. |
+| Small seconds | Research | The only hand that never stops. Research is the work that is never finished; projects are the ones that are. This is a better claim on the part than "Currently" ever had, and it is the one binding that moves. |
+| Power reserve | Resume | Winds up over time and stores what you put in, and shows how much is left. Survives scrutiny unchanged. Scroll-to-wind is the best interaction on the site; do not touch it. |
+| Moonphase | Books | Slow, useless, lovely, 29.5 days to make its point. Survives scrutiny unchanged. Renamed Reading → Books to match the owner's list. |
+| Crown → caseback | Contact/links | Settled in §6. You turn a watch over to find the maker's marks. |
+
+**"Currently" is deleted as a section.** §5.3 recommended Option A (a dated
+running log, with an 8-week self-standing-down rule). That recommendation is
+withdrawn for two reasons: it is not on the owner's final list, and §5.3's own
+measurement — the panel's entire content is one line that already reads
+continuously in the caption — means it never earned a navigation slot. The
+`CURRENTLY` array in `main.js` **stays** and keeps feeding the caption; only
+`#panel-currently` goes. Deleting the section also deletes the staleness risk
+the 8-week rule existed to manage, which is a better outcome than managing it.
+
+**Full cost of the changes.**
+
+| Change | Touches |
+| --- | --- |
+| Small seconds → Research | `bind($('secondsDial'), 'research')`; `CAPTIONS.currently` → `.research` with new text; `ZOOM_ORIGINS.currently` → `.research`, **same coordinates**; `el.panels.currently` → `.research`; `#panel-currently` → `#panel-research` + eyebrow and title; the rail's word. |
+| Currently deleted | The panel's markup and its `.cur-*` styles. `CURRENTLY`, the caption line and `.cur-dot`'s rotation stay. |
+| `featured` → `projects` | Key in `CAPTIONS`, `ZOOM_ORIGINS`, `bind()`, `el.panels`; `#panel-featured`; eyebrow, title, rail word. Cosmetic — same values. |
+| Reading → Books, Experience → Resume | Labels only. The `books` and `resume` ids are already correct. |
+| About caption reworded | One string: "THE HEART OF THE MATTER" → "THE MAIN DIAL". |
+| Book moon-phase labels dropped | `.book-phase` markup and rule. |
+
+**Untouched by all of the above:** every `ZOOM_ORIGINS` coordinate, the five
+`.hint-mark` shapes, the `--i:` scribe order, the hit-target geometry, and the
+`.cb-rig` block. No part moves; only what it opens changes. Do the key renames
+inside Phase 0's `SECTIONS` list so each name is edited once rather than four
+times.
+
+**On the exact fit.** Six sections against five dial parts plus the crown is
+arithmetic, not design, and the risk is that a perfect fit hides the ceiling.
+The 10 o'clock corrector is the seventh clickable feature and it already has a
+job (the demonstration sweep); it does not get a section, and no hardware gets
+invented — `HANDOFF.md` forbids it. §5.1's rule stands above the fit: **seven is
+a ceiling, not a target.** Research is a section with zero words in it today and
+Books is the easiest to pad; if either has nothing real, it leaves the rail and
+its complication goes back to being a plain part of the watch — no light, no
+index mark, no dead click. Five sections and one quiet part is a good site. Six
+with a padded one is not.
+
+**And the arithmetic on §0.1 got worse, not better.** Six sections is more
+writing than five, and one of the six starts from nothing. The lorem problem is
+now bigger than it was when this document was written.
 
 ---
 
@@ -1183,12 +1313,11 @@ essay worth its own preview card.
 
 Eight questions became three, and none of them block Phase 0 or Phase 1.
 
-1. **Top bar or bottom index bar?** §4 recommends the bottom bar and gives the
-   measured reason (the vertical axis is already spent; the left margin belongs to
-   the watch when a panel is open). §4.7 states the terms that would make a top bar
-   work if you want conventionality more than the 7% of watch diameter it costs.
-   **This is the one place where a different answer from you changes the plan's
-   shape**, so it is worth a decision before Phase 2.
+1. ~~**Top bar or bottom index bar?**~~ **Answered: a right-hand rail**, §4.8.
+   The owner asked for a sidebar; §4.8 designs one that clears the case in both
+   states and shows the numbers. §4.3 (bottom bar) and §4.7 (top bar) are kept
+   for the reasoning, not as live options. What remains open is one number: the
+   rail's type size, from which its 96px width is derived.
 
 2. **Does anything need its own preview card?** §7.1's question: do you expect to
    paste a link to one specific project or essay and want it to preview with *that
@@ -1219,10 +1348,16 @@ coming rather than choices:
 - **The panels, not the navigation, are the slop risk.** The card is a generic
   dark-mode component sitting inside a watch that is measured to two decimal
   places. Open About at 900×760 and you will see it immediately.
-- **Neither a top bar nor a left rail fits.** The vertical axis is already spent
-  (58px free at 1440×900) and the left margin belongs to the watch whenever a
-  panel is open (the case reaches x=30). The bottom bar already exists as
-  `#hintBar`; promote it. One design, every viewport, zero layout cost.
+- **Navigation is a right-hand rail** (§4.8, which supersedes §4.3). A top bar
+  costs the watch 7% of its diameter and a *left* rail sits on the case for
+  126px when a panel is open — but the watch poses left, so the right margin is
+  the one place that gets roomier exactly when navigation is needed: 192px of
+  clearance at rest, 705px with a panel open. The card gives up 120px of width
+  to pay for it and its left edge does not move by a pixel.
+- **One binding moves and one section dies** (§5.6). Small seconds: Currently →
+  **Research** — the hand that never stops opens the work that is never
+  finished. "Currently" was one line that already reads in the caption; it stays
+  in the caption and loses its panel. Nothing measured changes.
 - **Contact goes in the empty bottom lens of the caseback band**, above the
   hallmark, as four engraved words that take the light on hover, with the actual
   address read out in the caption line. Nothing goes inside the sapphire.
