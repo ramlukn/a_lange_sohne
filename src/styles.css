@@ -1965,47 +1965,98 @@ html[data-direct] .hint-index { --hint-at: 0s; }
   transition: opacity .4s;
 }
 /* ===================== THE RAIL =====================
-   The navigation: one word per section, in a column down the right edge, over
-   the panels rather than under them. It is #hintBar promoted -- same corner of
-   the page, same typeface, same resting colour as the sentence it replaces --
-   and main.js paints it from the one SECTIONS list, so the words here cannot
-   drift from the words the captions and the click targets use.
+   The navigation: one word per section, in a column in the top-left corner,
+   over the panels rather than under them. main.js paints it from the one
+   SECTIONS list, so the words here cannot drift from the words the captions and
+   the click targets use.
 
-   RIGHT, AND NOT LEFT, IS THE WHOLE ARGUMENT. The open pose is
-   translateX(-28vw): the watch moves AWAY from the right margin by exactly the
-   amount it moves into the left one. Measured at 1440x900, case edge to rail:
+   THE CORNER, AND WHAT IT COSTS. The rail used to run down the right edge, and
+   the argument for that side was the open pose: translateX(-28vw) moves the
+   watch away from the right margin by exactly the amount it moves into the left
+   one, so the gap to a right-hand rail GREW by 512px in the state where
+   navigation matters most. The top-left gives that up, and the geometry has to
+   be stated rather than hoped for. Measured, not modelled -- .face-front is the
+   outermost disc the case paints, and these are its rects at 1440x900:
 
-     nothing open   case reaches x 1107, rail starts at 1299   ->  192px
-     panel open     case reaches x  595, rail starts at 1299   ->  704px
+     nothing open   centre (720.0, 416.2)  r 391.4   left edge  x 328.6
+     panel open     centre (312.2, 416.2)  r 281.8   top edge   y 134.4
 
-   The gap GROWS by 512px in the state where navigation matters most. The same
-   rail on the left measured -126px in that state -- sitting on the case. Only
-   the sign changes. (docs/SITE-DIRECTION.md 4.8 has the derivation.)
+   416.2 and not 450 because the caption sits under the watch and the stage
+   centres the pair, so the case rides 0.0375 * vmin above the middle. Every
+   clearance below is taken off that centre and not off the viewport's.
 
-   96px IS DERIVED, NOT CHOSEN. IBM Plex Mono advances 0.6em; at 11px with this
-   site's .24em tracking that is 9.24px per character. PROJECTS and RESEARCH are
-   the longest labels at 8 characters -- 71.3px of ink -- and the marker channel
-   is 24px. 72 + 24 = 96. The type size is the input: at 12px the rail is 104px
-   and the card's column 592, so set the size first and re-derive, do not nudge
-   the width. The px are fixed rather than vmin for the same reason: a rail
-   whose ink is measured in characters cannot have a width that floats.
+   Closed, the corner is free -- the case reaches no further left than x 328.6
+   at any height and the rail ends at x 163, so every width clears by 100px or
+   more. Open is the whole problem: the posed case is smaller but its centre has
+   moved to x 312, so its upper-left arc sweeps through the corner, crossing
+   y 134.4 at the top and x 38.2 at the left.
 
-   THE CARD PAYS FOR IT, NOT THE WATCH. .overlay's right padding gains 120px and
-   .card's column loses 120px (720 -> 600), so the card's total shrinks by 120
-   and its right edge moves left by 120: the LEFT edge -- the side facing the
-   watch -- is W - 5vmin - 826 before and after, at every width above the 92vw
-   clamp. Measured 569 both ways at 1440x900. The pose is untouched, the overlap
-   between card and posed watch is unchanged, and the 24px gutter between card
-   and rail falls out of the arithmetic rather than being set.
+   AND IT DOES NOT CLEAR EVERYWHERE. A real limit, not a rounding error.
+   Clearance from each word's INK to that arc, with a panel open, measured:
 
-   THREE MOTIONS, AND NO OTHERS.
+     1920x1080   +65      1440x900    +4      1280x800   -14
+     1366x768     +0.5    1201x800   -25      1200x900   -26
+
+   BOOKS is the binding item at every width -- last down the column, and the one
+   the arc reaches first. The rail clears from about 1366px up and fouls the
+   bezel below it, and no choice of size fixes that: the rail as it was, 96 x 151
+   at 11px, is also negative at 1200x900 moved to this corner. A column of five
+   items simply does not fit beside the posed case around 1200-1280px wide. What
+   lands there is the tail of RESEARCH and BOOKS over the dimmed bezel, and it
+   stays legible because the rail paints above the overlay and the posed case is
+   held at brightness(.62). The card is doing the same thing at exactly those
+   widths -- measured 93px over the posed case at 1200x900 -- and nobody calls
+   that a collision. The right-hand rail had no such case to answer; this one
+   does, and it is bounded, measured and written down rather than found later.
+
+   118px IS DERIVED, NOT CHOSEN. IBM Plex Mono advances 0.6em; at 16px that is
+   9.60px, and the tracking below adds 2.64px, so one character advances 12.24px.
+   PROJECTS and RESEARCH are the longest labels at 8 characters -- 97.92px of
+   advance, and 95.28px of ink once the link reclaims the trailing tracking
+   column. The marker channel is 22px. 95.28 + 22 = 117.28 -> 118.
+
+   .165em IS THE SAME LETTER GAP IT ALWAYS WAS. The rail was 11px at .24em,
+   which is 2.64px between characters. At 16px, .165em is 2.64px between
+   characters. The type is 45% bigger and the letters sit exactly as far apart:
+   tracking compensates for size, so it has to fall as the size rises, and
+   holding the gap in px is what keeps a word a word instead of eight letters in
+   a row. Set the size first and re-derive both numbers; do not nudge either.
+   The px stay fixed rather than vmin for the old reason -- a rail whose ink is
+   measured in characters cannot have a width that floats.
+
+   THE CHANNEL IS THE POINTER PLUS ITS CLEARANCE. 16px of pointer, its length
+   set to the type size so the mark is as long as the words are tall, and 6px
+   before the ink starts. 16 + 6 = 22.
+
+   THE GRADUATIONS ARE SPACED AT TWO TYPE SIZES. A scale wants an even division,
+   and the one the type gives is 2 * 16 = 32px from mark to mark. A link's box is
+   the 16px line plus 4px of padding either side, which is 24, so the gap between
+   them is 32 - 24 = 8 and the column comes to 5 * 24 + 4 * 8 = 152. The gap is
+   the remainder of the pitch, not a spacing that was chosen: change the size and
+   the pitch, the gap and the height all follow.
+
+   THE CARD STOPS PAYING RENT. .overlay's right padding used to carry an extra
+   120px so the card cleared a right-hand rail. There is no right-hand rail, so
+   the padding is 5vmin on all four sides again and the card re-centres. .card
+   keeps its 600px column: that number was billed to the rail, but 600 is simply
+   the better measure and taking it back to 720 would undo a good line length
+   for an accounting reason.
+
+   FOUR MOTIONS, AND NO OTHERS.
      arrival   the words fade up top to bottom, 90ms apart, over 4px of settle,
                starting when the interaction index has finished scribing --
                --rail-at in :root, which is that sum and not a second constant.
-     position  a short gold hairline in the marker channel, level with the open
-               section, which TRAVELS to the next one in 200ms. One pointer
-               along a scale: the gesture the reserve hand already makes against
-               AUF/AB. Never a pill, a fill or a box.
+     scale     five graduations, one per item, printed in the channel in the
+               label's own ink at half weight. They do not light, travel or
+               answer the pointer: a printed scale does not. They are what makes
+               the travel legible -- the mark crosses from graduation to
+               graduation instead of through empty space -- and they are why the
+               channel is a scale and not a margin.
+     position  a gold hairline in the channel, level with the open section,
+               which TRAVELS to the next one in 200ms at twice a graduation's
+               length, so it reads as the one moving mark against five fixed
+               ones. The gesture the reserve hand already makes against AUF/AB.
+               Never a pill, a fill or a box.
      reciprocal the word lights when the pointer is on it OR on its part.
    Nothing here loops, drifts or breathes. */
 .rail {
@@ -2014,21 +2065,21 @@ html[data-direct] .hint-index { --hint-at: 0s; }
      section to section without closing one first, and the keyboard can reach
      the navigation from inside a panel. */
   z-index: 50;
-  top: 50%;
-  /* the page's existing outer margin -- .overlay's own 5vmin padding -- so the
-     rail sits INSIDE the margin rather than eating into it */
-  right: 5vmin;
-  transform: translateY(-50%);
+  /* the page's existing outer margin -- .overlay's own 5vmin padding -- on both
+     axes now, so the rail sits INSIDE the margin in the corner rather than
+     eating into it */
+  top: 5vmin;
+  left: 5vmin;
   box-sizing: border-box;
-  width: 96px;
-  padding-left: 24px;   /* the marker channel; the words start at its inner edge */
+  width: 118px;
+  padding-left: 22px;   /* the marker channel; the words start at its inner edge */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
+  gap: 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .24em;
+  font-size: 16px;
+  letter-spacing: .165em;
 }
 .rail[hidden] { display: none; }
 
@@ -2039,15 +2090,17 @@ html[data-direct] .hint-index { --hint-at: 0s; }
    become a second, half-right source for the same colour. */
 .rail .rail-link {
   display: block;
+  /* the graduation below is placed against this box, out in the channel */
+  position: relative;
   color: #5b6172;
   text-decoration: none;
   text-transform: uppercase;
   /* letter-spacing lays its tracking after the LAST character too, so an
-     8-character label advances 73.92px where its ink is 71.28. Reclaiming that
-     trailing column is what keeps the longest label inside the 72px the width
+     8-character label advances 97.92px where its ink is 95.28. Reclaiming that
+     trailing column is what keeps the longest label inside the 96px the width
      was derived for, and in the bottom row it is what makes the gaps between
      words the gaps they are set to. */
-  margin-right: -.24em;
+  margin-right: -.165em;
   padding: 4px 0;
   line-height: 1;
   white-space: nowrap;
@@ -2057,6 +2110,31 @@ html[data-direct] .hint-index { --hint-at: 0s; }
      seat animations follow -- see THE FLATTENING / BACKFACE PROBLEM. */
   animation: railIn .5s cubic-bezier(.22,1,.36,1)
              calc(var(--rail-at) + var(--i, 0) * 90ms) backwards;
+}
+/* The graduation this item sits at. It rides on the link rather than on five
+   more elements in main.js, so a section cannot exist without its mark and the
+   mark cannot land anywhere but the middle of the word it belongs to -- the
+   same centre placeRailMarker() writes into --my, arrived at from the other
+   side. left:-22px is the channel's full width measured back from the link's
+   own edge, so the graduation and the pointer start from one line.
+
+   8px is half the pointer's 16, and the colour is the label's resting ink at
+   half weight: the scale is printed in the same pass as the words it graduates,
+   one step behind them. It takes no [data-state] and no transition on purpose.
+   A printed scale does not answer the hand. */
+.rail .rail-link::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 50%;
+  /* the same -50% the marker carries, for the same reason: `top: 50%` alone
+     hangs a 1px rule half a pixel below the centre the pointer is centred on,
+     and the two marks have to land on one line */
+  transform: translateY(-50%);
+  width: 8px;
+  height: 1px;
+  background: rgba(91, 97, 114, .55);
+  pointer-events: none;
 }
 .rail .rail-link[data-state='hover'] { color: var(--gold-line-hover); }
 .rail .rail-link[data-state='active'] { color: var(--gold-line); }
@@ -2079,9 +2157,9 @@ html[data-direct] .hint-index { --hint-at: 0s; }
    the one that is its own axis. */
 .rail-marker {
   position: absolute;
-  left: 6px;              /* centred in the 24px channel */
+  left: 0;                /* flush with the graduations it points along */
   top: 0;
-  width: 12px;
+  width: 16px;            /* the type size: as long as the words are tall */
   height: 1px;
   background: var(--gold-line);
   opacity: 0;
@@ -2098,25 +2176,48 @@ html[data-direct] .hint-index { --hint-at: 0s; }
 
 /* Below 1200px the same list ranges horizontally along the bottom, where the
    hint sentence used to sit -- the card already covers most of the posed watch
-   at that width, so a right-hand column would be under it. One <nav>, the same
-   links, the same type scale and the same marker: this query changes the flex
-   direction and what the two ends are anchored to, and nothing else. The
-   channel goes from a column beside the words to a band beneath them, and the
-   hairline still sits in it, still travels, still points at one item.
-   The overlay gives back the 120px it was paying the rail, and takes the same
-   clearance at the bottom instead. */
+   at that width, so a corner column would be under it. One <nav>, the same
+   links, the same marker and the same graduations: this query changes the flex
+   direction, what the two ends are anchored to, and the type size. The channel
+   goes from a column beside the words to a band beneath them, and the hairline
+   still sits in it, still travels, still points at one item. The overlay takes
+   its clearance at the bottom instead, which is the only padding it changes now
+   that the rail rents nothing on the right.
+
+   THE ROW IS ITS OWN DERIVATION, and that is why the size drops back. The
+   column fills a 118px corner; the row has to fit five words and four gaps
+   across the narrowest screen the site serves. At 390px the margins take
+   2 * 5vmin = 39 and the gaps 4 * 4vmin = 62, leaving 289px of ink for 32
+   characters. Ink comes to size * (19.2 + 27 * tracking), so .24em tracking
+   allows 12.2px and .165em allows 12.8px: 16px overruns the phone by 150px and
+   there is no tracking that saves it. 11px at .24em is what fit before and
+   still fits, with 29px to spare -- so the row keeps it, and the three
+   properties the column derived differently are put back here together. */
 @media (max-width: 1199px) {
   .rail {
     top: auto;
     bottom: 2.6vmin;
     left: 0;
     right: 0;
-    transform: none;
     width: auto;
     padding: 0 5vmin 24px;
     flex-direction: row;
     justify-content: center;
     gap: 4vmin;
+    font-size: 11px;
+    letter-spacing: .24em;
+  }
+  .rail .rail-link { margin-right: -.24em; }
+  /* The graduation turns with the scale: out of the channel beside the word and
+     down into the band under it, onto the same line the pointer travels along.
+     -12px below the link's own box is where .rail's 24px of padding-bottom puts
+     that line, which is the marker's `bottom: 12px` arrived at from the link's
+     side instead of the rail's. */
+  .rail .rail-link::before {
+    left: 50%;
+    top: auto;
+    bottom: -12px;
+    transform: translateX(-50%);
   }
   .rail-marker {
     left: 0;
@@ -2177,20 +2278,22 @@ html[data-direct] .hint-index { --hint-at: 0s; }
   display: flex;
   align-items: center;
   justify-content: center;
-  /* The extra 120px on the right is the rail's rent, and .card's column pays it
-     back by narrowing 720 -> 600. Both numbers are the same 120, which is what
-     holds the card's LEFT edge -- the side facing the watch -- at
-     W - 5vmin - 826 exactly where it was. See THE RAIL. */
-  padding: 5vmin calc(5vmin + 120px) 5vmin 5vmin;
+  /* Plain 5vmin on all four sides. The right side used to carry an extra 120px
+     as the rail's rent, and that is refunded: the rail is in the top-left corner
+     now and ends at x 163, while the card is right-aligned in panel mode
+     (data-justify below) and so starts at W - 5vmin - 706 -- x 689 at 1440x900,
+     x 449 at 1200x900. 526px and 286px of daylight: they no longer share an
+     axis, so there is nothing to pay. Refunding it also puts the card back on
+     the same 5vmin margin as everything else on the page. See THE RAIL. */
+  padding: 5vmin;
 }
 /* The other side of THE RAIL's breakpoint. Below 1200px the rail is a row along
-   the bottom, so the 120px it was renting on the right goes back and the
-   clearance is taken underneath instead. The row's box is 43px and it sits
-   2.6vmin up, of which the padding already covers 5vmin, so what is actually
-   owed is 43 + 2.6vmin - 5vmin: 21px at 900 tall, 28px at 620. 48 covers the
-   range and leaves the card visibly clear of the words rather than touching
-   them. Stated here and not beside the rail's own query so that it can outrank
-   the base padding above it. */
+   the bottom, so the clearance is taken underneath. The row's box is 43px and it
+   sits 2.6vmin up, of which the padding already covers 5vmin, so what is
+   actually owed is 43 + 2.6vmin - 5vmin: 21px at 900 tall, 28px at 620. 48
+   covers the range and leaves the card visibly clear of the words rather than
+   touching them. Stated here and not beside the rail's own query so that it can
+   outrank the base padding above it. */
 @media (max-width: 1199px) {
   .overlay { padding: 5vmin 5vmin calc(5vmin + 48px); }
 }
@@ -2200,10 +2303,11 @@ html[data-direct] .hint-index { --hint-at: 0s; }
 
 .card {
   position: relative;
-  /* 600, not 720: the rail's 96px plus its gutter comes out of this column and
-     not out of the watch. 720px of Archivo body text is a long measure anyway
-     and 600 is a comfortable one, so the bill lands on the one number that was
-     already too big. */
+  /* 600, not 720. It was set here to pay the right-hand rail's rent, and that
+     rail has moved to the corner and stopped charging -- but the number stays,
+     because 720px of Archivo body text is a long measure and 600 is a
+     comfortable one. It was the right width for a reason that outlived the one
+     it was billed to. */
   width: min(600px, 92vw);
   max-height: 86vh;
   overflow: auto;
