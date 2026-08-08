@@ -27,6 +27,9 @@
   <!-- ===================== WATCH ===================== -->
   <div class="watch-stage">
     <div class="watch-pose" id="watchPose">
+      <!-- pointer tilt: its own layer, written only by the rAF loop in
+           src/main.js. See THE DEPTH BUDGET in src/styles.css. -->
+      <div class="watch-tilt" id="watchTilt">
       <div class="watch-flip" id="watchFlip">
 
         <!-- case middle: the rim that gives the flip its thickness -->
@@ -199,6 +202,9 @@
             <div class="date-frame"><img class="sprite-art" src="/assets/dial/date-window.webp" alt="" decoding="async"></div>
             <div class="date-digit date-tens" id="dateTens">3</div>
             <div class="date-digit date-ones" id="dateOnes">1</div>
+            <!-- the wall of the aperture, casting onto the discs below it -->
+            <div class="date-pane date-pane-tens" aria-hidden="true"></div>
+            <div class="date-pane date-pane-ones" aria-hidden="true"></div>
           </div>
 
           <!-- ============ POWER RESERVE (AUF / AB) ============ -->
@@ -211,7 +217,7 @@
           </div>
 
           <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
-          <div style="position:absolute;inset:0;pointer-events:none;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.82s both;--fy:38px;--fs:.96;">
+          <div class="dial-group">
             <div class="seconds-dial" id="secondsDial">
               <img class="dial-art" src="/assets/dial/seconds-dial.webp" alt="" decoding="async">
             </div>
@@ -372,7 +378,8 @@
 
           <div class="cb-hallmark">Au 750 &nbsp;&#183;&nbsp; N&#186; 1 &nbsp;&#183;&nbsp; 250735</div>
         </div>
-      </div>
+      </div><!-- /.watch-flip -->
+      </div><!-- /.watch-tilt -->
     </div>
   </div>
 
