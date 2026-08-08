@@ -349,12 +349,14 @@ function render() {
   el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
   el.hintBar.hidden = !(CONFIG.showHints && !state.active);
 
-  // The hover pulse is armed by the attribute CHANGING: the CSS rule that
-  // carries the animation only matches while data-hover names the part, so
-  // going '' -> 'books' starts one pass and 'books' -> '' ends it. render() is
-  // also pumped on a 100ms interval, so the value is only written when it
-  // actually differs -- rewriting the same string would be a restyle per tick,
-  // and any future :hover-adjacent rule would flicker on it.
+  // This one attribute IS the hover highlight's whole state. The CSS rule that
+  // carries it only matches while data-hover names the part, so '' -> 'books'
+  // starts the arrival and holds the glow, and 'books' -> '' releases it -- the
+  // mark is lit if and only if this string names it, which is what makes a
+  // stuck highlight impossible to express. render() is also pumped on a 100ms
+  // interval, so the value is only written when it actually differs -- an
+  // unconditional write is a restyle of the whole layer ten times a second, and
+  // any future :hover-adjacent rule would flicker on it.
   // Crown and pusher also set state.hover; they have no mark here, so they
   // simply clear it. Nothing pulses behind an open panel or the caseback.
   const lit = (state.active || state.flipped) ? '' : (state.hover || '');
@@ -411,7 +413,18 @@ new ResizeObserver(hintHairline).observe(el.hintIndex);
 function bind(node, id) {
   node.addEventListener('click', () => open(id));
   node.addEventListener('mouseenter', () => { state.hover = id; render(); });
-  node.addEventListener('mouseleave', () => { state.hover = null; render(); });
+  // Only clear what this node actually owns. The five hit boxes are unrelated
+  // siblings rather than a nest, and two of them overlap -- .moon's box sits
+  // over .seconds-dial's -- so a crossing is a leave and an enter on two
+  // elements with no ancestor relationship, and nothing in the DOM guarantees
+  // the leave is delivered first. An unconditional `state.hover = null` that
+  // lands second blanks the part the pointer has just arrived on; the guard
+  // makes a stale leave a no-op instead. It matters more than it did: the
+  // highlight is held now, not 780ms long, so a dropped one stays dropped until
+  // the pointer moves again.
+  node.addEventListener('mouseleave', () => {
+    if (state.hover === id) { state.hover = null; render(); }
+  });
 }
 
 bind($('aboutHit'), 'about');
@@ -419,6 +432,27 @@ bind($('dateWindow'), 'featured');
 bind($('secondsDial'), 'currently');
 bind($('reserve'), 'resume');
 bind($('moon'), 'books');
+
+// The two ways a pointer can stop being on a part without that part ever
+// hearing about it. Both used to cost 780ms of stale glow, which nobody would
+// have noticed; now they would cost an indefinitely lit mark, so they are shut
+// off explicitly rather than trusted to the hit boxes.
+//   - the pointer leaving the window. Chrome does fire mouseleave on the way
+//     out, but only if the exit path crosses the element's box -- a fast
+//     diagonal out of the corner, or the pointer being captured by a native
+//     scrollbar or the dev tools, can skip it.
+//   - the window losing focus with the pointer parked on a part (cmd-tab,
+//     another app taking over). No pointer event is generated at all: the
+//     cursor is still geometrically over the watch, and it may be somewhere
+//     else entirely by the time focus comes back.
+// Both are idempotent and cost one render each, and neither can fire while the
+// pointer is genuinely on a part, so nothing legitimate is cancelled.
+document.addEventListener('mouseleave', () => {
+  if (state.hover) { state.hover = null; render(); }
+});
+window.addEventListener('blur', () => {
+  if (state.hover) { state.hover = null; render(); }
+});
 
 $('crown').addEventListener('click', () => {
   state.flipped = !state.flipped;
@@ -432,7 +466,11 @@ $('crown').addEventListener('click', () => {
   render();
 });
 $('crown').addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
-$('crown').addEventListener('mouseleave', () => { state.hover = null; render(); });
+// Same guard as bind()'s: the crown and the pusher own state.hover too, and a
+// leave of theirs arriving after a part's enter would blank the part.
+$('crown').addEventListener('mouseleave', () => {
+  if (state.hover === 'crown') { state.hover = null; render(); }
+});
 
 // render() is normally pumped by a 100ms interval, which is far too coarse for
 // a spinning seconds hand. The demo borrows requestAnimationFrame for its own
@@ -461,7 +499,9 @@ $('corrector').addEventListener('click', () => {
   render();
 });
 $('corrector').addEventListener('mouseenter', () => { state.hover = 'pusher'; render(); });
-$('corrector').addEventListener('mouseleave', () => { state.hover = null; render(); });
+$('corrector').addEventListener('mouseleave', () => {
+  if (state.hover === 'pusher') { state.hover = null; render(); }
+});
 
 document.querySelectorAll('[data-close]').forEach((node) =>
   node.addEventListener('click', () => { state.active = null; render(); })

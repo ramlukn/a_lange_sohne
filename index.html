@@ -364,15 +364,29 @@
           </div>
 
           <!-- ============ HOVER PULSE ============
-               One breath of the key light over the part the pointer just
-               entered. main.js writes data-hover here from state.hover; the
-               attribute changing is what arms and re-arms the one-shot. See
-               the HOVER PULSE block in styles.css for the reasoning.
+               The key light arriving on the part the pointer entered, and
+               staying there. main.js writes data-hover here from state.hover;
+               the
+               attribute IS the state: while it names a part, that part's mark
+               is lit, and the light arrives over 780ms and then holds. See the
+               HOVER PULSE block in styles.css for the reasoning.
 
-               The shapes are the .hint-index shapes, deliberately: the same
-               rim, frame, arc and aperture, so the bloom lands on the linework
-               that is actually live. Move a complication and BOTH sets of
-               geometry follow it. -->
+               Four of the five shapes are the .hint-index shapes, deliberately:
+               the same rim, frame and aperture, so the bloom lands on the
+               linework that is actually live. Move a complication and BOTH sets
+               of geometry follow it.
+
+               The reserve is the one that differs, and it has to. The other
+               four parts ARE closed silhouettes, so tracing the part and
+               enclosing the part are the same drawing. The reserve is a pointer
+               on an arc: its index mark traces the printed scale but leaves the
+               hand -- the thing you actually read -- outside. The pulse
+               therefore encloses the whole indicator instead, pivot and
+               counterweight and hand and scale, and the index arc lies wholly
+               inside that fan (2.2 units of clearance at its tightest), so the
+               two channels are nested rather than in disagreement. Geometry and
+               the reasoning behind it: the POWER RESERVE MARK block in
+               src/styles.css. -->
           <div class="hover-pulse" id="hoverPulse" data-hover="">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none"
                aria-hidden="true" focusable="false">
@@ -390,7 +404,7 @@
 
             <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
             <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
-            <path   class="pulse-mark" data-part="resume"    d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
+            <path   class="pulse-mark" data-part="resume"    d="M61.830 47.572L76.830 34.803A15.320 15.320 0 0 1 76.919 60.235Z"/>
             <circle class="pulse-mark" data-part="currently" cx="64.498" cy="75.112" r="13.599"/>
             <path   class="pulse-mark" data-part="books"     d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
           </svg>

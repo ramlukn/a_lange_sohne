@@ -176,20 +176,30 @@ html.mvt-hold .loader-fill { animation-play-state: running; }
    nothing. Nothing downstream depended on the movement having been there. */
 html.no-mvt .watch-mvt { display: none; }
 
-/* One breath of light across a part's own silhouette, fired by hover. See the
-   HOVER PULSE block below for why it thins rather than expands: the width
-   collapses about a stationary centreline, so the glow tightens ONTO the edge
-   it is lighting instead of sailing off it. */
+/* Light ARRIVING on a part's own silhouette, fired by hover, and settling to the
+   steady glow it then holds for as long as the pointer is there. See the HOVER
+   PULSE block below for why it thins rather than expands: the width collapses
+   about a stationary centreline, so the glow tightens ONTO the edge it is
+   lighting instead of sailing off it.
+
+   This is the arrival only. It does not put the light out again -- its `to`
+   frame IS the resting state (--hold / --hw), it fills forwards, and the
+   release is a transition on .pulse-mark that runs when the rule stops
+   matching. Do not restore a decay to 0 here: that made the highlight a
+   780ms one-shot that died under a stationary cursor. */
 @keyframes hoverBloom {
-  /* Asymmetric on purpose: 170ms up, 610ms down. A symmetric flash reads as a
-     blink -- a notification -- where a fast rise into a long decay reads as
-     light arriving on metal and leaving it. The timing functions are per
-     keyframe rather than on the animation, so the rise can be eased out and
-     the decay eased in-out independently; one easing across the whole thing
-     put the entire fall inside the first 200ms. */
+  /* Asymmetric on purpose: 170ms up, 610ms settle. A symmetric flash reads as a
+     blink -- a notification -- where a fast rise into a long fall reads as
+     light arriving on metal. The timing functions are per keyframe rather than
+     on the animation, so the rise can be eased out and the settle eased in-out
+     independently; one easing across the whole thing put the entire fall
+     inside the first 200ms.
+     The 100% frame restates the base values rather than hard-coding them, so
+     the resting glow is defined in exactly one place and reduced motion (which
+     drops this animation entirely) lands on the same band. */
   0%   { opacity: 0;          stroke-width: 3.4px; animation-timing-function: cubic-bezier(.25,.85,.4,1); }
   22%  { opacity: var(--pk);  stroke-width: 3.1px; animation-timing-function: cubic-bezier(.4,0,.5,1); }
-  100% { opacity: 0;          stroke-width: 1.0px; }
+  100% { opacity: var(--hold); stroke-width: var(--hw); }
 }
 
 
@@ -1204,11 +1214,37 @@ html.no-mvt .watch-mvt { display: none; }
 }
 
 /* ===================== HOVER PULSE =====================
-   "You are on this one." One breath of the key light over the hovered part,
-   fired by pointer entry and finished in 780ms. Not the old .hint-dots: those
-   looped forever with nothing causing them, which is the thing the design bible
-   forbids ("no ambient floating, glow, or ornamental looping"). This one has a
-   cause -- the pointer -- and it explains a state, so it is the permitted case.
+   "You are on this one." The key light arrives on the hovered part over 780ms
+   and then STAYS on it, for exactly as long as the pointer is there. Not the
+   old .hint-dots: those looped forever with nothing causing them, which is the
+   thing the design bible forbids ("no ambient floating, glow, or ornamental
+   looping"). This one has a cause -- the pointer -- and it explains a state, so
+   it is the permitted case.
+
+   A SUSTAINED STATE, NOT A REPEATING ANIMATION. It used to be a one-shot: the
+   bloom rose in 170ms, decayed over 610ms and was gone while the cursor had not
+   moved, so the part the pointer was actually on ended up looking exactly like
+   the four it was not. The fix is NOT animation-iteration-count: infinite --
+   that is the ornamental loop the bible forbids and the reason .hint-dots died.
+   It is to make the animation an ARRIVAL that lands on a resting value:
+     - hoverBloom keeps its authored asymmetry and its `both` fill, but its
+       100% frame is now --hold / --hw rather than opacity 0. Light arrives,
+       gathers into the edge, and stops there.
+     - the matched rule ALSO declares `opacity: var(--hold)` outright. That is
+       the load-bearing line for the release: it makes the SPECIFIED value
+       change when data-hover stops naming the part, so the transition on
+       .pulse-mark below has a real start and end value to run between rather
+       than depending on how a browser treats the removal of a filling
+       animation. The animation masks it while it runs and hands over at the
+       identical value, so there is no step at 780ms.
+     - the release is that transition: 240ms out, against 780ms in. Quicker,
+       because leaving is not an event the way arriving is -- you already know
+       you left. Only opacity moves; --hw is the base width AND the animation's
+       last frame, so the band never widens as it dies.
+   Nothing can leave a mark stuck lit: the lit state is a selector match on one
+   attribute, so it is on iff data-hover names the part, and main.js recomputes
+   that from state.hover every render (including its 100ms pump) and clears
+   state.hover on window blur and on the pointer leaving the document.
 
    THREE CHANNELS, NOT TWO. The face already says two things and this adds a
    third; they must not speak the same language:
@@ -1216,18 +1252,21 @@ html.no-mvt .watch-mvt { display: none; }
                gone after the first click.
      light  -- brightness(1.16) on the part's own sprite: WHICH one you are on.
                Sustained for as long as the pointer is there.
-     bloom  -- this layer: THE MOMENT you arrived on it. Transient, one shot.
+     bloom  -- this layer: the same answer, said in light on the part's own
+               edge. Arrives as a moment, then holds as a state.
    So this pulse deliberately does NOT draw a line. It is a wide, blurred band
    of the same #hintKey ramp -- light, not linework -- which is why it can sit
    on the same geometry as a .hint-mark without the two colliding. It layers on
    the brightness lift rather than replacing it: brightness is the state, the
-   bloom is the edge of the state.
+   bloom is the edge of the state. That layering is why --hold is well under
+   --pk (see below): the two are now BOTH permanent, and the band must not
+   become the louder of the pair.
 
    WHY IT THINS INSTEAD OF EXPANDING. The pulsing rings prototyped earlier
    failed because scaling a silhouette unregisters it from the edge it traces --
    at 1.06x it is no longer the part's rim, it is a halo hovering over the dial,
    the exact "web page with hotspots on it" read. Here the geometry never moves.
-   The band is stationary and stroke-width collapses 3.1 -> 1.1 about its own
+   The band is stationary and stroke-width collapses 3.4 -> 1.6 about its own
    centreline, so the light gathers INTO the edge instead of leaving it. Same
    perceived pulse, no detachment, and nothing to mistake for a UI ring.
 
@@ -1255,9 +1294,9 @@ html.no-mvt .watch-mvt { display: none; }
 
    Guarded by (hover: hover). Touch gets no pulse -- it has no pointer to enter
    with -- and keeps what it already had: the .hint-index, which persists there
-   until the first tap. Reduced motion drops the animation and substitutes a
-   static lit band for as long as the part is hovered, so it degrades to a
-   legible highlight rather than to nothing.
+   until the first tap. Reduced motion keeps the whole resting state and drops
+   only the arrival: it lands on the same --hold band, so it degrades to a
+   static version of the same highlight rather than to a different one.
    Decorative: never takes a pointer event. */
 .hover-pulse {
   position: absolute;
@@ -1269,35 +1308,112 @@ html.no-mvt .watch-mvt { display: none; }
 .pulse-mark {
   fill: none;
   stroke: url(#hintKey);   /* the same 315deg key as the index -- one light */
-  stroke-width: 1.9;       /* user units = % of the face, so it scales */
   stroke-linecap: round;
+  /* Required, not cosmetic, since the reserve mark became a closed fan: its
+     apex is an 80deg corner, and the default miter join runs a spike out to
+     1 / sin(40deg) = 1.55x the band width, which lands as a bright dart
+     pointing away from the part. Round joins put the same radius at the corner
+     that stroke-linecap already puts at an end. */
+  stroke-linejoin: round;
   filter: url(#pulseSoft); /* wide + blurred = light, not a line */
   opacity: 0;
-  /* Peak brightness. It is per part and not a constant because the band has a
-     constant WIDTH, so the area of dial it covers goes with the part's
-     perimeter -- and perceived weight goes with area. The four small marks
-     (date frame 66 units of outline, reserve arc 22, seconds rim 85, moon
-     aperture ~60) all sit right at .55. The hours-dial rim is 159 units, twice
-     the seconds rim, and at .55 it stops reading as that rim catching light
-     and starts reading as a ring drawn around a hotspot -- the exact failure
-     that killed the earlier pulsing-ring prototype. Halving it puts the same
-     amount of light on the dial as the others. */
+  /* Peak brightness, at the top of the arrival. It is per part and not a
+     constant because the band has a constant WIDTH, so the area of dial it
+     covers goes with the part's perimeter -- and perceived weight goes with
+     area. The three small marks that hug existing furniture (date frame 66
+     units of outline, seconds rim 85, moon aperture 60) all sit right at .55.
+     The hours-dial rim is 159 units, twice the seconds rim, and at .55 it stops
+     reading as that rim catching light and starts reading as a ring drawn
+     around a hotspot -- the exact failure that killed the earlier pulsing-ring
+     prototype. Halving it puts the same amount of light on the dial as the
+     others. */
   --pk: .55;
+  /* THE RESTING GLOW: what is held, indefinitely, while the pointer is on the
+     part. One ratio off --pk rather than five numbers, so the per-part
+     calibration above keeps doing its job unaltered and there is one knob.
+     Derived against the arrival, by measurement rather than by eye: hover each
+     part in Chrome at 900x760, screenshot the face with the pulse layer hidden
+     (that isolates brightness(1.16)) and again with it shown, and sum the
+     luminance the band alone adds to the dial. The held band should carry about
+     half the light the arrival peak does -- unmistakably quieter than the
+     flash, unmistakably still there. Measured, held light as a fraction of peak
+     light, averaged over the five marks:
+         --hw 1.0px, ratio .48   0.23   invisible; the width collapse and the
+                                        opacity cut compound into a 4x drop
+         --hw 1.0px, ratio 1.0   0.40   reads as a LINE, not light: 1.0 under a
+                                        1.15 blur is too tight to stay a band
+         --hw 1.6px, ratio .55   0.44
+         --hw 1.6px, ratio .7    0.53   <- this
+         --hw 1.6px, ratio .85   0.57
+     .7 * --pk lands at .385 for the date frame, small seconds and moon, .315
+     for the reserve and .21 for the hours dial. */
+  --hold: calc(var(--pk) * .7);
+  /* The width the glow rests at, and the base width, so that RELEASING never
+     widens the band -- light lets go by dimming, not by spreading. The collapse
+     3.4 -> 3.1 -> 1.6 about a stationary centreline is what gathers the light
+     into the edge, and the edge is where it should stay while it is held.
+     1.6 is not a new number: it is what the reduced-motion fallback below has
+     always used, and it was picked for exactly this case -- a band that is on
+     screen indefinitely rather than for 170ms. Both paths now share it.
+     Do not raise it to "make the hold more visible": a fatter held band is the
+     halo read this layer exists to avoid. Raise --hold instead. And do not drop
+     it back to 1.0, which was the old decay's endpoint and only ever had to
+     look right on its way to opacity 0. */
+  --hw: 1.6px;
+  stroke-width: var(--hw);
+  /* The release. Only opacity moves (see --hw), and it moves from --hold, which
+     the matched rule declares as a specified value -- so this runs on a plain
+     specified-value change and does not depend on how the removal of a filling
+     animation is treated. 240ms against the 780ms arrival: leaving is not news.
+     Eased out of the hold so the band lets go immediately and then trails,
+     which is the same shape as light leaving metal, played backwards. */
+  transition: opacity .24s cubic-bezier(.35,0,.65,1);
 }
-.pulse-mark[data-part="about"] { --pk: .3; }
+.pulse-mark[data-part="about"]  { --pk: .3; }
+/* The reserve gets a trim too, for the same reason: its mark is no longer a
+   21.5-unit arc alongside the scale but a 69.4-unit fan around the whole
+   indicator (see POWER RESERVE MARK below), and unlike the other four it
+   encloses bare plate rather than hugging a bright object, so all of that extra
+   outline lands as new light on empty dial. At --pk .55 the fan puts 3x the
+   light on the dial that the arc did.
+   Calibrated on the HELD state rather than on the peak, because the held state
+   is the one that is on screen indefinitely -- and calibrated on what the eye
+   actually receives, which is the band PLUS the brightness(1.16) lift, not the
+   band alone. (Those two orderings differ: the reserve's lift is small, 61
+   against the date frame's 216, so band-only parity would leave the reserve
+   visibly the quietest part on the dial. It did, at .35, which is where this
+   landed first.) Total luminance added to the face at 900x760, hovered minus
+   not, in thousands of dL:
+                     held   peak
+       date frame     378    665
+       small seconds  334    633
+       reserve @.35   264    596   too quiet -- the largest mark, the faintest
+       reserve @.45   324    745   <- parity with the group on the held state
+       reserve @.55   377    897   peak 1.35x the group; the fan starts reading
+                                   as a shape drawn on the dial
+   (For scale, the hours rim is 1583 held / 2179 peak at its own --pk .3: it is
+   2.3x the outline of anything else and stays the loudest by design.) */
+.pulse-mark[data-part="resume"] { --pk: .45; }
 @media (hover: hover) {
   .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
   .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
   .hover-pulse[data-hover="resume"]    .pulse-mark[data-part="resume"],
   .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
   .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
-    animation: hoverBloom .78s linear both;  /* shaping is per keyframe */
+    /* The state ... */
+    opacity: var(--hold);
+    /* ... and the one pass of light that arrives at it. `both` so it holds its
+       last frame, which is this same value. Shaping is per keyframe. */
+    animation: hoverBloom .78s linear both;
   }
 }
-/* The global reduced-motion rule collapses every duration to .01ms, which would
-   land this on its `to` frame -- opacity 0, i.e. nothing. Hover still needs an
-   answer, so the animation is dropped outright and replaced by a steady band
-   held for as long as the pointer is on the part. */
+/* The global reduced-motion rule collapses every duration to .01ms, so the
+   arrival would be over before it was seen -- but it would now land ON the
+   resting glow rather than on nothing, which is already the right answer. The
+   animation is dropped anyway so that what remains is honestly a state and not
+   a 0.01ms event, and the transition collapses with it: the band simply is,
+   or is not, on the part under the pointer. --hold and --hw are untouched, so
+   this is the same highlight with the arrival taken out of it. */
 @media (prefers-reduced-motion: reduce) {
   @media (hover: hover) {
     .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
@@ -1306,11 +1422,95 @@ html.no-mvt .watch-mvt { display: none; }
     .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
     .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
       animation: none !important;
-      opacity: .4;
-      stroke-width: 1.6;
     }
   }
 }
+
+/* ===================== POWER RESERVE MARK =====================
+   Why the reserve's pulse is the one shape that is NOT its .hint-index shape.
+
+   The other four parts are closed silhouettes -- the hours rim, the date's twin
+   frame, the small-seconds rim, the moon aperture -- so tracing the part and
+   enclosing the part are the same drawing. The reserve is not a silhouette, it
+   is a pointer on an arc, and the two are different drawings: the index arc at
+   r 12.55 traces the printed scale beautifully and leaves the HAND, which is
+   the thing you actually read, outside the highlight. So the pulse encloses the
+   whole indicator instead: pivot, counterweight, hand and scale.
+
+   THE MEASUREMENTS IT IS BUILT FROM (face %, and all of them already in this
+   file or in tools/build-dial-art.py -- nothing here moves the reserve itself):
+     pivot            68.330, 47.549   = the scale arc's centre = the
+                                         .reserve-hand box centre
+     end stops        40.7deg (AUF) .. 138.9deg (AB), CSS bearings
+     scale ink        r 13.14 .. 14.40 (alpha scan of reserve-scale.webp)
+     AUF / AB legends r 16.23 .. 18.89, at 46..53deg and 127..133deg
+     pointer tip      r 13.235  = the 13.50 tip reach in build-dial-art.py's
+                                  HANDS, times the scale(1,.98) on .sprite-art
+     counterweight    r 3.096   (51px of 220 in reserve-hand.webp, x .98)
+     pointer width    +/- 0.929 (15px of 220; X is not scaled)
+
+   THE THREE NUMBERS IN THE PATH, each forced rather than chosen:
+     Ro = 15.32   The outer arc. There is exactly one clean corridor to put it
+                  in -- outside the tick ink (14.40) and inside the legends
+                  (16.23) -- and 15.32 is the middle of it, 0.9 clear of each.
+     splay 7deg   The arc runs 33.7 .. 145.9, not 40.7 .. 138.9. With the
+                  pointer hard against a stop its tip CORNER is not on the stop
+                  bearing but atan(0.929 / 13.235) = 4.0deg outside it, so an
+                  arc that ended on the stops would cut that corner off. 4.0 is
+                  the minimum; 7 leaves three more degrees.
+     apex 6.5     Behind the pivot, on the scale's bisector, so the two straight
+                  edges pass OUTSIDE the counterweight's own swept circle
+                  instead of having to bulge around it. Verified rather than
+                  eyeballed: sampling the pointer's outline every 0.25deg across
+                  the printed sweep, every point is inside the path with 0.9 to
+                  spare -- one pointer half-width.
+
+   ONLY THE PRINTED SWEEP, NOT THE DEMONSTRATION'S 160deg. The pusher demo
+   drives the hand 9.8 .. 169.8, deliberately past both ends (see RESERVE_OVER
+   in main.js), and the fan does not follow it there. Two reasons, and the
+   second is decisive:
+     - main.js calls the printed 98.2deg "the definition of on scale". The
+       overshoot is explicitly off it, and it is a flourish belonging to a
+       pusher press, which has its own caption; this mark answers a hover.
+     - it does not fit. At Ro 15.32 the 9.8deg end lands at 70.94, 32.45 --
+       INSIDE the date frame's rect (x 53.5..74, y 20.3..32.67) -- and the
+       169.8deg end lands 0.50 outside the small-seconds rim centreline, i.e.
+       overlapping it once the band is blurred. The fan as drawn clears the date
+       frame by 3.5, the hours rim by 4.8 and the seconds rim by 5.8.
+
+   SHAPES PROTOTYPED OVER THE REAL DIAL AND REJECTED:
+     - A circle on the pivot at r 15.32, which would have been the same
+       vocabulary as the hours and seconds rims. It does not fit either: its top
+       is inside the date frame's rect and its bottom is 0.77 INSIDE the
+       small-seconds rim. The indicator only occupies 98deg around its pivot and
+       its two neighbours own most of the rest, so a fan is not a stylistic
+       preference here -- it is the shape the neighbours leave available.
+     - A sharp sector with its apex ON the pivot. The two radial edges converge
+       to a point, so a constant-width blurred band piles up into a bright dart
+       exactly on the boss -- and the counterweight sticks out through the apex,
+       which is the one part of the hand a sector cannot contain.
+     - The sector offset outward by a disc (a fan with a round boss at the
+       pivot). It contains everything, but the boss and the fan meet in a waist
+       and the whole thing reads as a keyhole, with a separate little ring
+       pulling the eye to the pivot -- which is not what you read.
+     - A rounded rect around the indicator's bounding box. Reads exactly like a
+       selection rectangle drawn over the complication: the "web page with
+       hotspots on it" failure, verbatim.
+
+   .hint-index IS DELIBERATELY LEFT ON THE ARC. The two layers were put on one
+   geometry so the channels would agree, and they still do -- the index arc lies
+   wholly inside this fan, 2.2 units clear at its tightest, so they are nested
+   rather than in disagreement. They should not be made identical:
+     - the index is a HAIRLINE. A hairline fan is a wedge OUTLINE drawn on the
+       dial -- a shape the watch does not have. The other four index marks all
+       trace furniture that is really there, and the arc is the closest the
+       reserve comes to that. A drawn wedge would be the single most assertive
+       thing on the face, from the layer whose whole point is restraint.
+     - they are answering different questions. The index says which parts are
+       live, and for the reserve the live thing is its scale. The pulse says
+       which one you are on, and for that the answer has to include the hand.
+     - the index is gone after the first click; the pulse is not. Only one of
+       them has to survive being looked at. */
 
 /* ===================== CASEBACK: sapphire display back =====================
    The band carries the engraving; inside a polished retaining ring, the
