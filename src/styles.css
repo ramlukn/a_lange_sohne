@@ -1236,6 +1236,13 @@ html.no-mvt .watch-mvt { display: none; }
      edit -- if the assembly moves again, this is the number that follows it. */
   --hint-at: 4.11s;
   --hint-step: .23s;
+  /* The hairline, in USER UNITS -- see the note on stroke-width below. This is
+     only the fallback: hintHairline() in main.js overwrites it with the value
+     that lands on exactly one CSS pixel for the box the layer is currently
+     laid out at, and re-writes it whenever that box changes. .153 is the value
+     for the 654px box a 900x760 viewport gives (100 / 654), so a page that
+     never ran the script still gets a correct hairline at desktop size. */
+  --hint-hair: .153;
   /* just clear of the furniture it traces -- see --z-index-mark */
   transform: translateZ(var(--z-index-mark));
 }
@@ -1244,10 +1251,30 @@ html.no-mvt .watch-mvt { display: none; }
 .hint-mark {
   fill: none;
   stroke: url(#hintKey);  /* the 315deg key light -- see <defs> in index.html */
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;  /* a hairline at 390px as at 1440px */
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
+  /* DO NOT PUT `vector-effect: non-scaling-stroke` BACK ON THIS ELEMENT.
+     It was here, and it is incompatible with the way the mark is revealed.
+     non-scaling-stroke moves the whole stroke -- dash pattern included -- into
+     SCREEN space, and pathLength normalisation is a USER-space rule, so with
+     it on, `stroke-dasharray: 100` stops meaning "the whole path" and starts
+     meaning "100 screen px". Measured on the hours-dial mark at 900x760: the
+     path is 157.9 user units, the 100x100 viewBox renders 661px wide (scale
+     6.61), so the mark is 1043 SCREEN px -- [100 on, 100 off] repeating gives
+     about five dashes, and `stroke-dashoffset: 100` shifts that by 100px
+     instead of hiding anything. The marks were therefore faintly visible and
+     dashed from page load, four seconds before --hint-at, and stayed dashed
+     after the scribe. The five marks are 157.9 / 84.9 / 63.9 / 56.0 / 21.5
+     user units, so no single screen-px dasharray can serve them either.
+     Dashes stay in user space here, which is what pathLength="100" on every
+     shape is for: one dash exactly spans one path, whatever the path is, so
+     offset 100 hides it completely, offset 0 draws it completely, and all five
+     draw over the same .46s -- which is what makes --i * --hint-step the only
+     thing deciding the order. The hairline is held constant the other way, by
+     writing the width in user units for the layer's current size; see
+     --hint-hair above and hintHairline() in main.js. (.pulse-mark next door
+     has always sized its stroke this way, for the same reason.) */
+  stroke-width: var(--hint-hair);
+  stroke-dasharray: 100;   /* = the whole path, via pathLength="100" */
+  stroke-dashoffset: 100;  /* = hidden. The scribe walks this to 0. */
   opacity: 0;
   animation: hintScribe .46s cubic-bezier(.3,.7,.25,1)
              calc(var(--hint-at) + var(--i, 0) * var(--hint-step)) both;

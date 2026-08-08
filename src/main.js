@@ -382,6 +382,46 @@ function open(id) {
   render();
 }
 
+// ---- interaction index: the hairline -----------------------------------
+// The one number the .hint-index layer cannot work out for itself.
+//
+// The scribe draws each mark by walking stroke-dashoffset from 100 to 0 over a
+// dash that spans the whole path, and what makes "100" mean "the whole path"
+// for a circle, a rect and two arcs alike is pathLength="100" on each shape.
+// That normalisation is a USER-space rule. `vector-effect: non-scaling-stroke`
+// -- which used to hold the hairline at 1px -- moves the entire stroke, dash
+// pattern included, into SCREEN space, where pathLength does not apply at all:
+// `stroke-dasharray: 100` then means 100 screen px, which on the 1043px hours
+// rim is five repeating dashes and on the 142px reserve arc is most of one. The
+// two features cannot both be on the mark. Dashes keep user space; the hairline
+// is held here instead. Do not put non-scaling-stroke back -- see the long note
+// on .hint-mark in src/styles.css.
+//
+// The layer is a 100x100 viewBox stretched over its own box, so one user unit
+// is (box / 100) px and one CSS pixel is (100 / box) user units. One value for
+// the whole layer -- pathLength keeps doing all the per-shape work, so nudging
+// a complication's geometry still needs nothing here.
+//
+// Measured off offsetWidth, not getBoundingClientRect: the layer rides the pose
+// scale and the live pointer tilt, and a hairline that thickened as the watch
+// turned would be chasing a transform. Layout size is the stable reference --
+// which is why the numbers in the styles.css note differ by a percent (654px of
+// layout, 661px on screen once the pose scale is on it). min() of the two axes
+// because the svg is preserveAspectRatio="none": the box is square in practice,
+// and if it ever is not, the hairline stays a hairline on the tighter axis.
+function hintHairline() {
+  const box = Math.min(el.hintIndex.offsetWidth, el.hintIndex.offsetHeight);
+  if (!box) return;   // display:none behind a panel -- keep the last good value
+  el.hintIndex.style.setProperty('--hint-hair', (100 / box).toFixed(4));
+}
+hintHairline();
+// A ResizeObserver rather than a resize listener, for two reasons: the browser
+// coalesces it to one callback per frame after layout and before paint, so it
+// is self-debouncing and cannot flash a stale width; and it also fires when the
+// layer comes back from display:none, which is the one case a window resize
+// misses (the box is 0 while a panel is open, so the measurement above bails).
+new ResizeObserver(hintHairline).observe(el.hintIndex);
+
 // ---- pointer tilt ----------------------------------------------------------
 // The watch is already a real 3D object -- a 48-segment gold cylinder for a
 // case band, a bezel with ring thickness, faces half a case-depth apart inside
