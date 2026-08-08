@@ -340,6 +340,11 @@
                Move a complication and these must move with it, exactly as the
                .hint-dot percentages had to. --i is the scribe order.
                pathLength="100" lets one dash rule drive all four shape types.
+               Keep it on every shape, and note that it only works in user
+               space: the marks must NOT carry vector-effect: non-scaling-stroke
+               or the dashes go to screen px and pathLength is ignored. The
+               hairline is held by main.js instead -- see .hint-mark in
+               src/styles.css.
                The layer is decorative: it never takes a pointer event. -->
           <!-- The <svg> is wrapped in a plain div deliberately. render() hides
                this layer with `el.hintIndex.hidden = ...`, and `hidden` is an
