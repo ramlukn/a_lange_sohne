@@ -45,45 +45,41 @@ const CAPTIONS = {
 // different route -- see render().)
 const DEMO = {
   ms: 4000,
-  // Halved from the first cut, which read as a blur: the duration is fixed at
-  // four seconds, so slowing it down means turning less, not turning for
-  // longer. Every total is still a whole number of turns -- that is the
-  // invariant, not the ratios between them.
+  // The duration is fixed at four seconds, so calming a hand down means turning
+  // it less, not turning it for longer. Every total is a whole number of turns
+  // -- that is the invariant, not the ratios between them.
   //
-  // The seconds hand would need 720 turns to be honest against the minute
-  // hand; at 4 seconds that is a featureless grey disc, so it runs
-  // compressed. It has now been halved a third time: 36 -> 18 -> 9 -> 5.
+  // The ratios are a judgement about hierarchy rather than gearing. A real watch
+  // is 12:1 and 60:1; 60:1 here would be 720 turns, a featureless grey disc, so
+  // the seconds hand always runs compressed. What has to survive the compression
+  // is the ORDER -- seconds fastest, then minute, then hour -- and the gaps have
+  // to be wide enough to read. Three successive halvings of the seconds hand
+  // (36 -> 18 -> 9 -> 5) against one of the minute hand (12 -> 6) eventually
+  // turned that order over: at min 6 / sec 5 the seconds hand ran slower than
+  // the minute hand, which no watch does, and it read as broken rather than
+  // calm. The way to calm a sweep is to bring every total down together.
   //
-  // 9 does not halve cleanly. 4.5 turns is 1620deg, which parks the hand 180deg
-  // out -- pointing at 30 seconds instead of home -- and the whole reason every
-  // total here is a whole number is that spin -> 1 has to land each element on
-  // its true value with zero velocity. So the choice was 4 or 5, equidistant
-  // from 4.5. 5 wins on two counts: it is the shallower cut, so it sits closest
-  // to the minute hand's 6 and keeps the damage below as small as possible; and
-  // 5 is coprime to 1, 2 and 6, so the seconds hand never phase-locks with the
-  // hour hand, the moon or the minute hand during the sweep. 4 shares a factor
-  // with min 6 and moon 2, and the pairs would visibly march in step.
+  // Angular rate alone is the wrong yardstick, because the small-seconds subdial
+  // is not the main dial. Measured off the rendered sprites, the three tips sit
+  // at 0.48 / 1.00 / 0.69 of the minute hand's radius (seconds / minute / hour),
+  // so the seconds hand has to turn better than twice as fast as the minute hand
+  // just for its tip to MOVE as fast. Tip speed is the honest measure, and it is
+  // the one the totals below are chosen against.
   //
-  // Say the cost plainly: at 5 against min 6 the seconds hand is now SLOWER
-  // than the minute hand. On a real watch the seconds hand is the fastest thing
-  // on the dial, and inverting that reads as broken rather than calm -- the
-  // previous cut to 9 had already flattened a clean 3:1 to 1.5:1, and this one
-  // turns it over. The fix that would actually calm the sweep without inverting
-  // anything is to bring every total down together, not to pull one hand under
-  // another: { hour: 1, min: 2, sec: 4, moon: 2 } halves the seconds hand as
-  // asked and still leaves it turning twice as fast as the minute hand, and
-  // { hour: 1, min: 2, sec: 6, moon: 2 } restores the original 3:1. Both are
-  // whole turns, so either is a one-line swap.
+  // hour 1 is a floor rather than a choice: 12 hours is its whole turn, and half
+  // of that parks it six hours out instead of home. min 2 is then the smallest
+  // total that clears it -- 2.0x angular, 2.9x at the tip. sec 9 is the smallest
+  // whole total that clears the minute hand by a comparable margin at the tip:
+  // 4.5x angular, 2.2x at the tip. 6 restores the old 3:1 angular but is only
+  // 1.4x at the tip, on the muddy side of the line; 8 is still under 2x. 9 is
+  // also coprime to 1, 2 and 2, so nothing on the dial phase-locks with anything
+  // else while the sweep runs. It peaks at 4.5 turns/s and reads as a broad fan,
+  // with the leading blade still visible -- fast, but not a disc.
   //
-  // The hour hand is the one that cannot halve: 12 hours is its whole turn and
-  // half of that parks it at the far side of the dial, six hours out, instead
-  // of home. One turn is its floor, so it holds at 1 while the minute hand
-  // halves -- the demo's gearing goes 6:1 rather than the true 12:1, the same
-  // licence the seconds hand has always taken. The moon splits the difference
-  // the other way: 1.5 turns is not whole, and of the two neighbours 2 is the
-  // closer in rate (x1.33 against x1.5) and keeps the plate coasting through
-  // the tail instead of stalling in it.
-  turns: { hour: 1, min: 6, sec: 5, moon: 2 },
+  // The moon splits the difference the other way: 1.5 turns is not whole, and of
+  // the two neighbours 2 is the closer in rate (x1.33 against x1.5) and keeps
+  // the plate coasting through the tail instead of stalling in it.
+  turns: { hour: 1, min: 2, sec: 9, moon: 2 },
   dateTurns: 1,        // one whole trip through 01..31, so it wraps home
   // The reserve sweeps rather than spins, and it is the one element the demo
   // drives as an ANGLE rather than as a value: see render(), where the sweep is
@@ -572,5 +568,18 @@ function rigStop() {
   rig.anims.length = 0;
 }
 
-render();
-setInterval(render, 100);
+// The idle pump. 'mechanical' quantises the seconds hand onto a 1/6s beat, and
+// a fixed 100ms period cannot land on one: the hand still takes every 1deg step
+// and drops none, but it takes them 200, 200, then 100ms apart, which is an even
+// step drawn at an uneven interval and reads as a limp. So each frame is
+// scheduled at the next beat rather than a fixed period later, and the wait is
+// capped at the old 100ms so nothing else on the dial refreshes more slowly than
+// it used to. The demo puts rAF on top of this for its own four seconds -- see
+// demoPump() -- and this pump keeps running underneath it either way.
+const BEAT = { mechanical: 1000 / 6, quartz: 1000 }[CONFIG.secondsMotion] || 0;
+(function pump() {
+  render();
+  const now = Date.now();
+  const wait = BEAT ? BEAT - (now % BEAT) : 100;
+  setTimeout(pump, Math.max(8, Math.min(wait, 100)));
+})();
