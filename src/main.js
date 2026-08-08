@@ -21,8 +21,38 @@ const CAPTIONS = {
   resume: 'EXPERIENCE — THE POWER RESERVE',
   books: 'BOOK REVIEWS — THE MOONPHASE',
   crown: 'THE MOVEMENT — PULL THE CROWN, TURN IT OVER',
-  pusher: 'REQUEST A REVIEW — A HIDDEN PUSHER'
+  pusher: 'THE PUSHER — RUN THE WATCH THROUGH ITS PACES'
 };
+
+// ---- the demonstration sweep ----------------------------------------------
+// Pressing the 10 o'clock pusher winds every complication forward and lets it
+// coast back down onto the live reading, like a watch being wound fast on a
+// timing machine.
+//
+// Everything is expressed as an offset ADDED to the true value, driven by one
+// eased progress term, so the demo is a lens over render() rather than a second
+// writer fighting it (render() rewrites all of these unconditionally every
+// frame; anything set from a timer would be gone by the next one).
+//
+// The easing is `spin(t) = 1 - (1 - t)^2`: its derivative falls linearly from
+// 2 to 0, which is exactly a flywheel coasting to a stop under constant
+// friction. Because the totals below are all WHOLE turns and the date total is
+// a whole number of months, spin -> 1 lands every element back on its true
+// value with zero velocity, so the demo eases home instead of snapping.
+const DEMO = {
+  ms: 4000,
+  // Hour : minute is the true 12:1 -- 12 minute turns IS one hour turn, i.e.
+  // the watch is wound twelve hours forward. The seconds hand would need 720
+  // turns to match; at 4 seconds that is a featureless grey disc, so it is
+  // compressed to 3x the minute hand, which still reads as the fastest thing
+  // on the dial and resolves into a readable sweep as it slows.
+  turns: { hour: 1, min: 12, sec: 36, moon: 3 },
+  dateTurns: 2,        // whole trips through 01..31, so it wraps home
+  reserveCycles: 2.5,  // AUF <-> AB round trips, damped to nothing
+  reserveSwing: 0.85,  // enough to clamp against both end stops on the way
+  reducedMs: 1200      // reduced motion: no movement, just an acknowledgement
+};
+const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 
 const ZOOM_ORIGINS = {
   about: '31.8% 50%',
@@ -78,7 +108,8 @@ const state = {
   touched: false,
   reqOpen: false,
   reqDone: false,
-  reqType: 'watch'
+  reqType: 'watch',
+  demo: null   // { t0, reduced } while the pusher's sweep is running
 };
 
 function moonAge(now) {
@@ -102,30 +133,64 @@ function render() {
   const now = Date.now();
   const d = new Date(now);
 
+  // The demonstration, as two numbers the writes below lean on:
+  //   demoT  raw 0..1 progress, or -1 when nothing is running
+  //   spin   the eased term every offset is scaled by; 0 when nothing is
+  //          running, so the expressions collapse back to the live values.
+  // The demo expires here rather than on a timer, which means the frame that
+  // clears it is also the frame that draws the true reading.
+  let demoT = -1;
+  let spin = 0;
+  if (state.demo) {
+    const t = (now - state.demo.t0) / (state.demo.reduced ? DEMO.reducedMs : DEMO.ms);
+    if (t >= 1) state.demo = null;
+    else if (!state.demo.reduced) { demoT = t; spin = 1 - (1 - t) * (1 - t); }
+  }
+  const demoing = demoT >= 0;
+
   let sec = d.getSeconds() + d.getMilliseconds() / 1000;
   if (CONFIG.secondsMotion === 'mechanical') sec = Math.floor(sec * 6) / 6;
   else if (CONFIG.secondsMotion === 'quartz') sec = Math.floor(sec);
   const min = d.getMinutes() + sec / 60;
   const hr = (d.getHours() % 12) + min / 60;
 
-  el.hour.style.transform = `rotate(${(hr * 30).toFixed(2)}deg)`;
-  el.min.style.transform = `rotate(${(min * 6).toFixed(2)}deg)`;
-  el.sec.style.transform = `rotate(${(sec * 6).toFixed(2)}deg)`;
+  const wind = (turns) => turns * 360 * spin;   // 0 turns of offset when idle
+  el.hour.style.transform = `rotate(${(hr * 30 + wind(DEMO.turns.hour)).toFixed(2)}deg)`;
+  el.min.style.transform = `rotate(${(min * 6 + wind(DEMO.turns.min)).toFixed(2)}deg)`;
+  el.sec.style.transform = `rotate(${(sec * 6 + wind(DEMO.turns.sec)).toFixed(2)}deg)`;
 
-  const date = d.getDate();
+  // The date runs whole months forward, so the wrap lands on today again. The
+  // eased rate is already under one day per second past t~0.9, so the true date
+  // is showing well before the demo clears -- no jump on the last frame.
+  let date = d.getDate();
+  if (demoing) date = ((date - 1 + Math.round(spin * DEMO.dateTurns * 31)) % 31) + 1;
   el.dateTens.textContent = Math.floor(date / 10);
   el.dateOnes.textContent = date % 10;
 
   // The starfield is engraved on the lunar wheel itself, so sky and moon share one rotation.
   const age = moonAge(now);
-  const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90).toFixed(2);
+  const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90 + wind(DEMO.turns.moon)).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
 
+  // The reserve swings instead of spinning: a sine damped by (1 - t)^2, which
+  // is zero in both value and slope at the end, so it also coasts onto the true
+  // reading. The swing overshoots the 0..1 scale on purpose -- the clamp is the
+  // hand sitting against AUF and AB for a beat, the way a real one would.
+  let reserve = state.reserve;
+  if (demoing) {
+    const damp = (1 - demoT) * (1 - demoT);
+    const swing = Math.sin(2 * Math.PI * DEMO.reserveCycles * demoT) * damp * DEMO.reserveSwing;
+    reserve = Math.min(1, Math.max(0, state.reserve + swing));
+  }
+  // .reserve-hand carries a .6s transition for the scroll-driven wind, which
+  // would smear a per-frame sweep into a lagging blur. Suppressed for the demo
+  // and restored on the settling frame, where the value is already true.
+  el.reserveHand.style.transition = demoing ? 'none' : '';
   // 0deg points at 12 for every hand. The scale sprite's end stops measure out
   // at 40.7deg (AUF, full) and 138.9deg (AB, empty) about the arc's own centre
   // -- see tools/build-dial-art.py -- so the pointer covers all 98.2deg of it.
-  el.reserveHand.style.transform = `rotate(${(138.9 - state.reserve * 98.2).toFixed(1)}deg)`;
-  el.reserveBar.style.width = `${Math.round(state.reserve * 100)}%`;
+  el.reserveHand.style.transform = `rotate(${(138.9 - reserve * 98.2).toFixed(1)}deg)`;
+  el.reserveBar.style.width = `${Math.round(reserve * 100)}%`;
 
   const curIdx = Math.floor(now / 4000) % CURRENTLY.length;
   const cur = CURRENTLY[curIdx];
@@ -134,7 +199,13 @@ function render() {
   el.curSub.textContent = cur.sub;
   el.curDots.forEach((dot, i) => dot.classList.toggle('is-on', i === curIdx));
 
-  el.caption.textContent = state.hover
+  // The demo outranks hover: the cursor is still on the pusher that started it,
+  // and under reduced motion this line is the only feedback the press gets.
+  el.caption.textContent = state.demo
+    ? (state.demo.reduced
+        ? 'DEMONSTRATION SKIPPED — REDUCED MOTION'
+        : 'DEMONSTRATION — ALL FUNCTIONS IN MOTION')
+    : state.hover
     ? CAPTIONS[state.hover]
     : (state.active || state.reqOpen)
       ? ''
@@ -190,15 +261,40 @@ $('crown').addEventListener('click', () => {
   state.flipped = !state.flipped;
   state.touched = true;
   state.active = null;
+  // Turning the watch over takes the dial out of view, so the sweep is
+  // abandoned rather than left to finish behind the caseback. Cancelling drops
+  // every offset to zero, which the next frame draws as the true reading -- and
+  // the face it happens on is the one you cannot see.
+  state.demo = null;
   render();
 });
 $('crown').addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
 $('crown').addEventListener('mouseleave', () => { state.hover = null; render(); });
 
+// render() is normally pumped by a 100ms interval, which is far too coarse for
+// a spinning seconds hand. The demo borrows requestAnimationFrame for its own
+// duration and hands the dial back when it is done -- one pump at a time, and
+// the interval keeps running underneath either way.
+let demoPumping = false;
+function demoPump() {
+  if (!state.demo) { demoPumping = false; render(); return; }
+  render();
+  requestAnimationFrame(demoPump);
+}
+
 $('corrector').addEventListener('click', () => {
-  state.reqOpen = true;
   state.touched = true;
-  state.reqDone = false;
+  // Re-entrancy: a press during the sweep is ignored. Restarting would rewind
+  // the offsets to zero mid-flight and snap every hand backwards; ignoring is
+  // the one option with no discontinuity, and it cannot stack.
+  if (state.demo) return;
+  const reduced = REDUCED_MOTION.matches;
+  state.demo = { t0: Date.now(), reduced };
+  // Reduced motion gets no spin at all -- four seconds of whirling hands is
+  // precisely the thing the setting asks us not to do. The demo state still
+  // exists, purely so the caption can acknowledge the press, and the 100ms
+  // interval is enough to expire it.
+  if (!reduced && !demoPumping) { demoPumping = true; requestAnimationFrame(demoPump); }
   render();
 });
 $('corrector').addEventListener('mouseenter', () => { state.hover = 'pusher'; render(); });
@@ -211,6 +307,10 @@ document.querySelectorAll('[data-close-req]').forEach((node) =>
   node.addEventListener('click', () => { state.reqOpen = false; render(); })
 );
 
+// NOTE: the review-request layer (#reqLayer / #reqForm / #reqDone and the
+// handlers below) is currently UNREACHABLE. The pusher used to open it and now
+// runs the demonstration sweep instead, and nothing else sets state.reqOpen.
+// Left intact and working, pending a decision about where it should live.
 el.reqWatch.addEventListener('click', () => { state.reqType = 'watch'; render(); });
 el.reqBook.addEventListener('click', () => { state.reqType = 'book'; render(); });
 el.reqForm.addEventListener('submit', (e) => {

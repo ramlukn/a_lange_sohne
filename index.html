@@ -115,17 +115,36 @@
         </div>
 
         <!-- crown + pusher (visible both sides) -->
-        <!-- Both are rendered art (tools/build-dial-art.py). The divs are the hit
-             targets; the sprites inside them are inert. -->
+        <!-- The crown is rendered art (tools/build-dial-art.py); the div is only
+             the hit target and the sprite inside it is inert. The corrector is
+             drawn inline, so its cap is the element. -->
         <div class="crown" id="crown" title="The movement — flip the watch">
           <img class="sprite-art crown-art" src="/assets/dial/crown.webp" alt="" decoding="async">
         </div>
-        <div class="corrector" id="corrector" title="Request a review — date correction pusher">
-          <!-- the cap is a case fitting, so it needs one copy on each side of the
-               case: at its rendered radius it is inside the case outline, and a
-               single copy between the two faces would be occluded from both. -->
-          <div class="corrector-plane corrector-plane-front"><img class="corrector-cap" src="/assets/dial/corrector.webp" alt="" decoding="async"></div>
-          <div class="corrector-plane corrector-plane-back"><img class="corrector-cap" src="/assets/dial/corrector.webp" alt="" decoding="async"></div>
+        <div class="corrector" id="corrector" title="Run the watch through its paces">
+          <!-- flush bowed corrector cap: seated into the case with no visible stand-off.
+               The cap is a fitting in the band, so it gets one copy on each side of the
+               case. Left on the band plane alone it would sit behind whichever face is
+               toward the camera -- and hit testing follows the same 3D order as painting,
+               so it would be unclickable, not merely hidden. Both copies share the one
+               gradient below; ids are document-scoped, so the second svg resolves it. -->
+          <div class="corrector-plane corrector-plane-front">
+            <svg viewBox="0 -4 100 16" preserveAspectRatio="none" class="corrector-cap">
+              <defs>
+                <linearGradient id="langeCorrectorGold" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#f2d9ad"></stop><stop offset=".16" stop-color="#edca9a"></stop><stop offset=".47" stop-color="#b98855"></stop><stop offset=".78" stop-color="#8e5e38"></stop><stop offset="1" stop-color="#4a2e1b"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#633d1f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
+              <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+            </svg>
+          </div>
+          <div class="corrector-plane corrector-plane-back">
+            <svg viewBox="0 -4 100 16" preserveAspectRatio="none" class="corrector-cap">
+              <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#633d1f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
+              <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+            </svg>
+          </div>
         </div>
 
         <!-- ============ FRONT FACE ============ -->

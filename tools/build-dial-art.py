@@ -23,15 +23,12 @@ features sit: the date frame's two panes (so the digits can be drawn into them)
 and the power-reserve scale's arc centre, radius and angular extent (so the
 pointer pivots on the arc's centre and sweeps its full span).
 
-The two case fittings are measured against the case rather than the dial:
-
-  * The crown is drawn side-on with its stem to the left, so the length that
-    disappears into the case band is part of the art. We find the step where
-    the stem swells into the tube collar and treat that column as the case
-    edge, which makes the CSS `right` offset simply the crown's protrusion.
-  * The 10 o'clock corrector arrives as a full-face 1254px overlay with a few
-    hundred inked pixels in it. We keep the overlay's own coordinates (they
-    are the placement) but ship only the ink, cropped to its alpha bbox.
+The crown is measured against the case rather than the dial: it is drawn side-on
+with its stem to the left, so the length that disappears into the case band is
+part of the art. We find the step where the stem swells into the tube collar and
+treat that column as the case edge, which makes the CSS `right` offset simply
+the crown's protrusion. (The 10 o'clock corrector used to be rendered here too;
+it went back to an inline SVG cap in the markup and no longer needs art.)
 
     python3 tools/build-dial-art.py
 """
@@ -89,13 +86,6 @@ CROWN_PROTRUSION_FACE = 3.30
 # Take the low end, so the tube collar keeps a sliver showing at every size and
 # the stem's flat cut end stays buried at all of them.
 CROWN_SEAT_FACE = 0.50
-
-PUSHER_SRC = "ten-oclock-pusher-overlay-1254.png"
-# The overlay canvas is coincident with the face, so its ink bbox already is the
-# placement. The hit box is grown around that ink to stay comfortably clickable,
-# but no further: the hours/minutes dial's own target is a 25.55% circle about
-# (31.64%, 50.05%), and 6 x 10 keeps the box's near corner 0.7% clear of it.
-PUSHER_HIT_FACE = (6.0, 10.0)
 
 QUALITY = 88
 
@@ -431,31 +421,6 @@ def main():
         f"    CSS box          {box_w:.3f}% x {box_h:.3f}% of the face\n"
         f"    offsets          right -{right:.2f}%  "
         f"top {50 - (axis - y0) * k:.3f}%  (axis on the 50% line)"
-    )
-
-    print("\n10 o'clock corrector:")
-    im = Image.open(SRC / PUSHER_SRC).convert("RGBA")
-    fw, fh = im.size
-    x0, y0, x1, y1 = ink_bbox(im)
-    crop = im.crop((x0, y0, x1, y1))
-    # Native resolution already: the overlay is a face-sized render, so the ink
-    # is as many pixels as the art ever had. Resizing could only invent detail.
-    save(crop, OUT / "corrector.webp", x1 - x0)
-
-    # The canvas is coincident with the face, so pixels are face percent / fw.
-    left, top = x0 / fw * 100, y0 / fh * 100
-    w, h = (x1 - x0) / fw * 100, (y1 - y0) / fh * 100
-    hw, hh = PUSHER_HIT_FACE
-    hl, ht = left + w / 2 - hw / 2, top + h / 2 - hh / 2
-    print(
-        f"    overlay canvas   {fw}x{fh} (= the face box)\n"
-        f"    ink bbox         {x0},{y0} .. {x1},{y1}  ({x1 - x0}x{y1 - y0}px, "
-        f"aspect {(x1 - x0) / (y1 - y0):.4f})\n"
-        f"    on the face      left {left:.3f}%  top {top:.3f}%  w {w:.3f}%  h {h:.3f}%"
-        f"  centre ({left + w / 2:.3f}%, {top + h / 2:.3f}%)\n"
-        f"    hit box          left {hl:.3f}%  top {ht:.3f}%  w {hw:.2f}%  h {hh:.2f}%\n"
-        f"    sprite in it     left {(left - hl) / hw * 100:.3f}%  top {(top - ht) / hh * 100:.3f}%"
-        f"  w {w / hw * 100:.3f}%  h {h / hh * 100:.3f}%"
     )
 
 
