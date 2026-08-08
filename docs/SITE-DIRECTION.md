@@ -1,5 +1,8 @@
 # Site direction — from watch toy to personal website
 
+> **`docs/PLAN.md` is the short summary of this document — read that first; this
+> is the long-form reasoning behind it.**
+
 A design plan, not an implementation. Nothing in `index.html`, `src/styles.css`,
 `src/main.js` or `tools/**` has been touched by this document.
 
