@@ -74,46 +74,55 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 
-/* ---- movement: calibre NR.1 assembling ---- */
-@keyframes mvPlateIn { from { opacity: 0; transform: scale(1.09); } to { opacity: 1; transform: scale(1); } }
-/* parts descend onto the plate: larger and transparent while still "above" it,
-   a touch of overshoot as they seat on their arbors */
+/* ---- movement: calibre NR.1 assembling ----
+   Six rendered layers arriving on a common frame. Every one of these is
+   transform / opacity / filter only, and none of them rotates a layer about the
+   movement's centre: these are flat images, so turning one would carry every
+   wheel on it around the same axis at the same rate. The assembly is the shot.
+
+   --fs  the scale a layer starts at, i.e. how far "above" the plate it is
+   --fx/--fy  the offset it travels in from, in % of its own box
+   --fb  how blurred it is while it is still off-plane
+   --sd  how far the part finally stands off the plate, as a shadow offset. The
+         shadow is thrown long and soft while the part is in the air and pulls
+         in tight as it lands, which is the depth cue doing the real work here.
+         It has to live inside the keyframes: an animated `filter` replaces the
+         property outright, so a static drop-shadow next to it would never
+         paint. Every keyframe therefore carries the same two-function list, in
+         the same order, so the filter interpolates cleanly. */
+@keyframes mvPlateIn {
+  0%   { opacity: 0; transform: scale(1.055); filter: blur(2.4px); }
+  70%  { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+/* A part descending onto the plate: bigger, softer and transparent while it is
+   still off-plane, then a shallow overshoot as it takes up on its seat. */
 @keyframes mvDrop {
-  0%   { opacity: 0; transform: scale(1.3); }
-  58%  { opacity: 1; }
-  80%  { transform: scale(.984); }
-  100% { opacity: 1; transform: scale(1); }
+  0%   { opacity: 0;
+         transform: translate(var(--fx, 0%), var(--fy, 0%)) scale(var(--fs, 1.16));
+         filter: blur(var(--fb, 2.6px)) drop-shadow(0 calc(var(--sd, .34vmin) * 2.8) calc(var(--sd, .34vmin) * 3.6) rgba(0,0,0,.5)); }
+  56%  { opacity: 1; }
+  80%  { transform: translate(0, 0) scale(.9955);
+         filter: blur(0) drop-shadow(0 calc(var(--sd, .34vmin) * .8) calc(var(--sd, .34vmin) * 1.5) rgba(0,0,0,.52)); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1);
+         filter: blur(0) drop-shadow(0 var(--sd, .34vmin) calc(var(--sd, .34vmin) * 1.8) rgba(0,0,0,.48)); }
 }
-@keyframes mvSeat {
-  0%   { opacity: 0; transform: scale(1.52) rotate(-4deg); }
-  54%  { opacity: 1; }
-  82%  { transform: scale(.99) rotate(.55deg); }
-  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+/* The ring does not descend, it closes: a rim is pressed on from outside and
+   turned down onto its seat, so it comes in barely larger and barely off true. */
+@keyframes mvRingIn {
+  0%   { opacity: 0; transform: scale(1.052) rotate(-1.6deg);
+         filter: blur(1.8px) drop-shadow(0 .7vmin 1.1vmin rgba(0,0,0,.46)); }
+  60%  { opacity: 1; }
+  84%  { transform: scale(.9975) rotate(.14deg);
+         filter: blur(0) drop-shadow(0 .2vmin .45vmin rgba(0,0,0,.5)); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg);
+         filter: blur(0) drop-shadow(0 .24vmin .55vmin rgba(0,0,0,.48)); }
 }
-@keyframes mvLetOff { to { transform: rotate(var(--lo, 0deg)); } }
-@keyframes mvRun { to { transform: rotate(var(--rn, 0deg)); } }
-/* simple-harmonic swing, ~+-148 degrees of amplitude */
-@keyframes mvBalance {
-  0%   { transform: rotate(0deg);    animation-timing-function: cubic-bezier(0,.52,.48,1); }
-  25%  { transform: rotate(148deg);  animation-timing-function: cubic-bezier(.52,0,1,.48); }
-  50%  { transform: rotate(0deg);    animation-timing-function: cubic-bezier(0,.52,.48,1); }
-  75%  { transform: rotate(-148deg); animation-timing-function: cubic-bezier(.52,0,1,.48); }
-  100% { transform: rotate(0deg); }
-}
-/* the hairspring breathes in quadrature with the rim */
-@keyframes mvHair {
-  0%   { transform: rotate(0deg) scale(1); }
-  25%  { transform: rotate(15deg) scale(1.06); }
-  50%  { transform: rotate(0deg) scale(1); }
-  75%  { transform: rotate(-15deg) scale(.94); }
-  100% { transform: rotate(0deg) scale(1); }
-}
-/* locked, then flicked across — the unlocking lands on the balance's crossings,
-   which is where the escape wheel's steps() jumps fall */
-@keyframes mvPallet {
-  0%, 44%  { transform: rotate(-7deg); }
-  50%, 94% { transform: rotate(7deg); }
-  100%     { transform: rotate(-7deg); }
+/* The finished stack taking up in the case, once the ring has closed it. One
+   settle on the whole layer -- no part moves relative to any other. */
+@keyframes mvSettle {
+  from { transform: scale(1.0055); }
+  to   { transform: scale(1); }
 }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
 /* One pass of the scribe: a live part's own principal line draws itself on,
@@ -127,6 +136,25 @@ a:hover { color: var(--gold-line-hover); }
   to   { stroke-dashoffset: 0; opacity: .55; }
 }
 
+/* ---- startup gate ----
+   The intro's opening act is the only part of it that needs loaded art, and it
+   is also the first to play. Rather than let a time-based act run over sprites
+   that have not decoded, the head script holds the whole sequence paused until
+   they have, then releases it; see the comment on that script in index.html for
+   the deadline and the fallback. Pausing rather than re-timing means every
+   delay downstream stays exactly as authored -- the clock simply starts later. */
+html.mvt-hold .stage,
+html.mvt-hold .stage *,
+html.mvt-hold .stage *::before,
+html.mvt-hold .stage *::after { animation-play-state: paused; }
+/* ...except the title card's own progress bar, which is what the user is
+   looking at while we wait, and which would read as hung if it froze. */
+html.mvt-hold .loader-fill { animation-play-state: running; }
+
+/* The sprites missed the deadline: drop the act rather than play it over
+   nothing. Nothing downstream depended on the movement having been there. */
+html.no-mvt .watch-mvt { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -135,6 +163,11 @@ a:hover { color: var(--gold-line-hover); }
     transition-duration: .01ms !important;
   }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
+  /* The movement is an assembly sequence and nothing else -- it is not part of
+     the finished watch, so with the sequence gone there is nothing to show. The
+     <picture> wrappers make this the cheap path too: none of the art is even
+     fetched. */
+  .watch-mvt { display: none !important; }
 }
 
 /* ===================== STAGE ===================== */
@@ -180,54 +213,81 @@ a:hover { color: var(--gold-line-hover); }
 .loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill .62s cubic-bezier(.4,0,.2,1) both; }
 
 /* ===================== MOVEMENT =====================
-   Calibre NR.1 assembles itself as the watch's opening act. The layer is
-   painted over the case discs and under the dial plate, so the case closes as a
-   ring *around* a running movement and the dial then seats straight onto it.
+   Calibre NR.1 assembles itself as the watch's opening act, out of six rendered
+   layers. The layer is painted over the case discs and under the dial plate, so
+   the case closes as a ring *around* a movement that is already seated and the
+   dial then drops straight onto it.
 
-   The plate is r=93 in a 200-unit box, so a 1.77% inset puts its rim exactly on
-   the dial well's (inset 5.15%) -- the handoff is 1:1, no jump in diameter.
+   Geometry is measured, not guessed -- tools/build-movement-art.py prints every
+   number here and asserts on each build that the six layers still stack into the
+   supplied reference composite exactly. The box is placed off the perimeter
+   ring, whose outer edge is the movement's rim: the ring's box lands on the dial
+   well (inset 5.15%) dead on, so the handoff to the case is 1:1 with no jump in
+   diameter. The box is 0.56 percentage points taller than it is wide because the
+   frame is the union of all six layers and the mainplate reaches a few px below
+   the ring, the way a real mainplate is wider than its chapter ring.
 
-   Everything below is transform/opacity only, and every animation is finite:
-   the last one ends at 2.97s and mvGone drops the layer at 3.00s.
+   Nothing here rotates a wheel. These are flat images: spinning the gear-train
+   layer would carry all five wheels around the same axis in the same direction
+   at the same rate, which is not what a going train does. The arrival is the
+   animation, and after the ring closes the only motion is the whole stack
+   settling as one.
+
+   Everything is transform / opacity / filter and every animation is finite: the
+   last ends at 2.34s and mvGone drops the layer at 3.00s.
 
    Schedule, in seconds relative to --mv0 (add .80s for time from page load):
-     .00 mainplate      .10 barrel        .16 centre wheel   .22 third wheel
-     .28 escape wheel   .30-.64 let-off (the unheld train runs down)
-     .36 centre cock    .40 train bridge  .44 barrel bridge
-     .50 pallet fork (arrests the train)  .56 pallet cock
-     .60-.69 chatons    .64 balance + hairspring   .72 balance cock
-     .84 the escapement catches: 8 beats, and the whole train steps with it. */
+     .00 foundation plate -- the ground, fading up under the title card
+     .20 gear train        the wheels descend onto their arbors
+     .36 balance + escapement, in from its own corner rather than from above
+     .52 bridge set        comes down over the train and holds it
+     .72 screws and jewels the small stuff, quick and tight, onto the bridges
+     .86 perimeter ring    closes the stack -- and at 1.26 (2.06s from load) the
+                           case finishes seating around it, which is the handoff
+    1.18-1.54 the assembled stack settles into the case
+   The dial plate lands at 2.24s from load and covers all of it. */
 .watch-mvt {
   position: absolute;
-  inset: 1.77%;
+  left: 5.15%;
+  top: 5.07%;
+  width: 89.7%;
+  height: 90.261%;
   pointer-events: none;
   --mv0: .80s;
-  animation: mvGone 0s linear 3s forwards;
+  animation:
+    mvSettle .36s cubic-bezier(.24,.9,.3,1) calc(var(--mv0) + 1.18s) both,
+    mvGone 0s linear 3s forwards;
 }
-.mv { display: block; width: 100%; height: 100%; }
-/* classic SVG transform semantics for the static geometry; the animated
-   groups override transform-origin inline with their own pivot */
-.mv * { transform-box: view-box; transform-origin: 0 0; }
+/* Each sprite is cropped to its own ink and carries its measured box inline, so
+   a layer scales about its own centre: the balance seats on the balance and the
+   ring closes about the rim, rather than everything pivoting on the middle of
+   the movement. The boxes are a hair off the sprites' own aspect (the frame is
+   squashed 2.7% in y to put the rim exactly on the round well), so they fill. */
+.mv-layer {
+  position: absolute;
+  display: block;
+  object-fit: fill;
+  animation: mvDrop .30s cubic-bezier(.2,.86,.28,1) calc(var(--mv0) + var(--d, 0s)) both;
+}
 
-.mv-plate { animation: mvPlateIn .26s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
-.mv-drop  { animation: mvDrop .2s cubic-bezier(.18,.86,.28,1) calc(var(--mv0) + var(--d,0s)) both; }
-.mv-seat  { animation: mvSeat .24s cubic-bezier(.2,.92,.26,1) calc(var(--mv0) + var(--d,0s)) both; }
+/* The plate is the ground: it does not descend onto anything, it just comes up
+   out of the dark under the tail of the title card. No shadow -- nothing is
+   below it to catch one. */
+.mv-plate { animation: mvPlateIn .34s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
 
-/* Let-off: the train, not yet held by the escapement, runs down. Identical
-   duration/delay/easing on all four arbors, and the angles are in the exact
-   tooth ratios (44/22, 36/12, 21/7), so every mesh holds for the whole sweep. */
-.mv-spin { animation: mvLetOff .34s cubic-bezier(.5,0,.3,1) calc(var(--mv0) + .30s) both; }
-
-/* Running: 21600 A/h. The balance beats 6x a second, the escape wheel is
-   released one tooth per beat, and the whole train steps with it -- one shared
-   1.3333s window of steps(8), i.e. a 1/6s tick, with each arbor's --rn set to
-   its own share of the rotation. The escape wheel's -205.714deg is exactly
-   8 x 360/14, one tooth per tick, and the rest of the train is divided down
-   from it through 21/7, 36/12 and 44/22, so no mesh slips. */
-.mv-run { animation: mvRun 1.3333s steps(8) calc(var(--mv0) + .84s) both; }
-.mv-beat-bal    { animation: mvBalance .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
-.mv-beat-hair   { animation: mvHair    .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
-.mv-beat-pallet { animation: mvPallet  .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
+/* The rest descend, each from the side it lives on, each throwing a shadow onto
+   what is under it until it lands. Bigger --fs and --fb = further off-plane at
+   the start; --sd is how proud of the plate the part finally stands, so the
+   wheels (thickest) get the deepest shadow and the flush screws the shallowest. */
+.mv-train   { --d: .20s; --fs: 1.14; --fx: 0%;     --fy: -2.2%; --fb: 2.8px; --sd: .40vmin; }
+.mv-balance { --d: .36s; --fs: 1.20; --fx: 3.4%;   --fy: 2.6%;  --fb: 2.4px; --sd: .34vmin; }
+.mv-bridges { --d: .52s; --fs: 1.11; --fx: -1.4%;  --fy: -1.8%; --fb: 2.2px; --sd: .30vmin; }
+/* Screws and jewels are tiny and go in fast -- a shorter, snappier drop from
+   higher up, and they land nearly flush, so barely any shadow at all. */
+.mv-jewels  { --d: .72s; --fs: 1.26; --fx: 0%;     --fy: -1.2%; --fb: 2px;   --sd: .15vmin;
+              animation-duration: .24s; }
+/* The ring is pressed on from outside rather than dropped from above. */
+.mv-ring    { animation: mvRingIn .32s cubic-bezier(.2,.88,.26,1) calc(var(--mv0) + .86s) both; }
 
 /* ===================== WATCH SHELL ===================== */
 .watch-stage { position: relative; width: 86vmin; height: 86vmin; perspective: 2400px; --case-depth: 6vmin; }
