@@ -384,6 +384,10 @@ a:hover { color: var(--gold-line-hover); }
   width: 3.88%;
   height: 6.25%;
   cursor: pointer;
+  /* Nothing is painted on this box -- the crown is the sprite inside it -- so
+     the radius exists only to round the focus ring, which follows border-radius
+     and would otherwise draw a hard rectangle round a fluted barrel. */
+  border-radius: .6vmin;
   animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
   --fx: 2vmin;
 }
@@ -732,8 +736,8 @@ a:hover { color: var(--gold-line-hover); }
      .sec-pivot     (seconds-hand sprite; its box centre IS the rotation axis)
      .moon          (two invariants -- see the comment above that rule)
    plus, outside this file:
-     ZOOM_ORIGINS.currently  = the subdial centre       (src/main.js)
-     ZOOM_ORIGINS.books      = the .moon box centre     (src/main.js)
+     SECTIONS research.origin = the subdial centre      (src/main.js)
+     SECTIONS books.origin    = the .moon box centre    (src/main.js)
      two .hint-mark shapes -- the seconds circle and the
        moon aperture path -- in .hint-index            (index.html)
    Move the subdial and all five must follow by the same (dx, dy).
@@ -867,6 +871,113 @@ a:hover { color: var(--gold-line-hover); }
   transform: translateZ(var(--z-wash));
 }
 
+/* ===================== THE HIT TARGETS ARE BUTTONS =====================
+   Seven things on this watch are pressable -- five complications, the crown and
+   the 10 o'clock corrector -- and until now every one of them was a bare <div>.
+   `grep -c 'tabindex\|role='` on index.html returned 1: nothing on the site
+   could be reached by keyboard at all.
+
+   They are <button type="button"> now rather than divs wearing role="button".
+   The platform then supplies the tab stop, Enter, Space, the announced role and
+   the :focus-visible heuristic -- four things that otherwise have to be written
+   by hand and kept correct. The only cost is the UA's own button styling, which
+   this rule takes back off. Nothing here changes a box: every part's position
+   and size stay exactly where their own rules put them.
+
+   Two of these declarations are load-bearing rather than hygiene:
+
+     box-sizing  a UA button is border-box with 1px of border and 1px 6px of
+                 padding. The layout rules above size these boxes in percentages
+                 of the face with no border, so content-box + a border would
+                 have grown every hit target by 2px in each axis. border-box
+                 with the border and padding zeroed reproduces the div exactly.
+     overflow    a grouping property, and grouping properties force
+                 `transform-style: preserve-3d` back to flat -- the bug THE
+                 FLATTENING / BACKFACE PROBLEM records for `filter`. #corrector
+                 and #reserve and #dateWindow are all preserve-3d, and the
+                 corrector in particular has its two caps pushed to +/- half the
+                 case depth; flatten it and both collapse onto the band plane,
+                 where the front face paints over them and they stop being
+                 clickable at all. `overflow: visible` is stated, not assumed.
+
+   The remaining risk is hit testing, which inside .face-front follows the
+   height ladder rather than the DOM, so a swapped element is only safe if it
+   still answers a real click at its own centre. Verified by driving Chrome's
+   input path at all seven parts, not elementFromPoint -- see the note at the
+   top of .watch-stage. */
+.part-hit {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===================== WHERE THE KEYBOARD IS =====================
+   A focus ring on a watch dial is the same trap the hover states already walked
+   out of: draw a browser outline round the small seconds and the dial becomes a
+   web page with hotspots on it. But focus has to be unmistakable, and unlike
+   hover it has no cursor next to it to corroborate what it says.
+
+   So it is two marks, the same two hover uses, plus one that only focus gets:
+
+     the part lights   main.js writes state.hover on focus as well as on
+                       mouseenter, so the pulse mark and the part's own
+                       brightness lift arrive exactly as they do under the
+                       pointer, and the caption names the part.
+     the caption       likewise -- the section's word, in the same place a
+                       hover prints it.
+     a gold hairline   this rule. One CSS pixel of #f0c9a1, which is the middle
+                       stop of the 315deg key light the index marks are lit by
+                       (#hintKey in index.html), held a little off the part so
+                       it reads as a line of light beside the metal rather than
+                       as a border drawn on it. `outline` and not `box-shadow`
+                       because outline follows border-radius, so it is a circle
+                       on the hours dial and on the small seconds, and a
+                       rounded rectangle on the date -- the part's own shape,
+                       which is the whole idiom of the interaction index.
+
+   :focus-visible, not :focus, so a mouse press never leaves a ring behind. */
+.part-hit:focus { outline: none; }
+.part-hit:focus-visible {
+  outline: 1px solid #f0c9a1;
+  outline-offset: .55vmin;
+}
+/* The hours dial's hit box is a transparent wash that lives at opacity 0 until
+   hover (see THE LIVE PARTS' HOVER). An outline is painted THROUGH the
+   element's opacity, so at 0 the ring would not exist -- the box has to come up
+   to full for it, which also lights the wash, which is exactly the hover
+   treatment. One declaration, both marks. */
+.about-hit:focus-visible { opacity: 1; }
+/* The same light hover gives, for the parts that get it off a sprite. Outside
+   the (hover: hover) block on purpose: a keyboard on a touch device is the case
+   that block exists to exclude, and it is precisely the one that needs this. */
+.date-window:focus-visible .date-frame .sprite-art,
+.reserve:focus-visible .reserve-scale,
+.seconds-dial:focus-visible .dial-art { filter: brightness(1.16) saturate(1.04); }
+.moon:focus-visible { filter: brightness(1.14) saturate(1.04); }
+.crown:focus-visible { filter: brightness(1.2); }
+/* The corrector is the one part that cannot take the ring. Its own box sits on
+   the case band at z 0, behind both faces, which is why the cap is duplicated
+   onto a plane on each side; an outline on the element would be painted on that
+   buried plane and never seen. It goes on the cap instead -- the same brightness
+   the pointer gets, plus a gold bloom in the key's own colour, riding the
+   drop-shadow the cap already carries. On the cap and not on .corrector for the
+   reason the hover lift is: a filter on the parent flattens its 3D context. */
+.corrector:focus-visible { outline: none; }
+.corrector:focus-visible .corrector-cap {
+  filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52))
+          brightness(1.22)
+          drop-shadow(0 0 .5vmin rgba(240,201,161,.95));
+}
+
 /* ===================== THE LIVE PARTS' HOVER =====================
    These five used to speak two languages. .about-hit, .date-window and
    .seconds-dial drew a `box-shadow: 0 0 0 .25vmin` ring AROUND themselves -- a
@@ -989,8 +1100,8 @@ a:hover { color: var(--gold-line-hover); }
 
    Every shape carries pathLength="100", so one dash rule drives a circle, a
    rect and two paths alike and stays correct if any geometry is nudged.
-   Decorative only: the layer never takes a pointer event -- the hit targets
-   are the .about-hit / .date-window / .reserve / .seconds-dial / .moon divs. */
+   Decorative only: the layer never takes a pointer event -- the hit targets are
+   the .about-hit / .date-window / .reserve / .seconds-dial / .moon buttons. */
 .hint-index {
   position: absolute;
   inset: 0;
@@ -1448,13 +1559,13 @@ a:hover { color: var(--gold-line-hover); }
    the front face at all; .watch-flip is the nearest element that contains all
    seven, so one attribute still IS the whole state. */
 @media (hover: hover) {
-  .watch-flip[data-hover="about"]     .pulse-mark[data-part="about"],
-  .watch-flip[data-hover="featured"]  .pulse-mark[data-part="featured"],
-  .watch-flip[data-hover="resume"]    .pulse-mark[data-part="resume"],
-  .watch-flip[data-hover="currently"] .pulse-mark[data-part="currently"],
-  .watch-flip[data-hover="books"]     .pulse-mark[data-part="books"],
-  .watch-flip[data-hover="crown"]     .pulse-mark[data-part="crown"],
-  .watch-flip[data-hover="pusher"]    .pulse-mark[data-part="pusher"] {
+  .watch-flip[data-hover="about"]    .pulse-mark[data-part="about"],
+  .watch-flip[data-hover="projects"] .pulse-mark[data-part="projects"],
+  .watch-flip[data-hover="resume"]   .pulse-mark[data-part="resume"],
+  .watch-flip[data-hover="research"] .pulse-mark[data-part="research"],
+  .watch-flip[data-hover="books"]    .pulse-mark[data-part="books"],
+  .watch-flip[data-hover="crown"]    .pulse-mark[data-part="crown"],
+  .watch-flip[data-hover="pusher"]   .pulse-mark[data-part="pusher"] {
     /* The state ... */
     opacity: var(--hold);
     /* ... and the one pass of light that arrives at it. `both` so it holds its
@@ -1471,13 +1582,13 @@ a:hover { color: var(--gold-line-hover); }
    this is the same highlight with the arrival taken out of it. */
 @media (prefers-reduced-motion: reduce) {
   @media (hover: hover) {
-    .watch-flip[data-hover="about"]     .pulse-mark[data-part="about"],
-    .watch-flip[data-hover="featured"]  .pulse-mark[data-part="featured"],
-    .watch-flip[data-hover="resume"]    .pulse-mark[data-part="resume"],
-    .watch-flip[data-hover="currently"] .pulse-mark[data-part="currently"],
-    .watch-flip[data-hover="books"]     .pulse-mark[data-part="books"],
-    .watch-flip[data-hover="crown"]     .pulse-mark[data-part="crown"],
-    .watch-flip[data-hover="pusher"]    .pulse-mark[data-part="pusher"] {
+    .watch-flip[data-hover="about"]    .pulse-mark[data-part="about"],
+    .watch-flip[data-hover="projects"] .pulse-mark[data-part="projects"],
+    .watch-flip[data-hover="resume"]   .pulse-mark[data-part="resume"],
+    .watch-flip[data-hover="research"] .pulse-mark[data-part="research"],
+    .watch-flip[data-hover="books"]    .pulse-mark[data-part="books"],
+    .watch-flip[data-hover="crown"]    .pulse-mark[data-part="crown"],
+    .watch-flip[data-hover="pusher"]   .pulse-mark[data-part="pusher"] {
       animation: none !important;
     }
   }
@@ -1800,14 +1911,25 @@ a:hover { color: var(--gold-line-hover); }
   animation: cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;
 }
 .card[hidden] { display: none; }
-.card-narrow { width: min(560px, 92vw); overflow: visible; max-height: none; }
-.card-center { text-align: center; }
+/* An open panel takes focus so the keyboard carries on inside it rather than
+   from the top of the document; tabindex="-1" in the markup is what allows it.
+   No ring: the card is 600px of dark plate and a hairline round all of it says
+   nothing useful, and the reader's eye is on the title either way. */
+.card:focus { outline: none; }
 .card-column { display: flex; flex-direction: column; padding: 48px 52px 32px; overflow: hidden; }
 
+/* A real <button>, so Esc is not the only way out for a keyboard. Same reset as
+   .part-hit; the gold hairline is drawn round the words themselves. */
 .card-close {
   position: absolute;
   top: 18px;
   right: 22px;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 12px;
@@ -1815,6 +1937,12 @@ a:hover { color: var(--gold-line-hover); }
   color: var(--muted);
 }
 .card-close:hover { color: var(--gold-line); }
+.card-close:focus { outline: none; }
+.card-close:focus-visible {
+  color: var(--gold-line-hover);
+  outline: 1px solid #f0c9a1;
+  outline-offset: 5px;
+}
 .card-eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -1885,12 +2013,6 @@ a:hover { color: var(--gold-line-hover); }
 .feature-desc { font-size: 13.5px; line-height: 1.6; color: var(--body); }
 .feature-date { font-family: var(--font-mono); font-size: 11px; color: var(--gold-line); letter-spacing: .15em; }
 
-.cur-value { font-family: var(--font-display); font-size: 26px; color: var(--gold-line-hover); margin-bottom: 10px; }
-.cur-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--muted); margin-bottom: 34px; }
-.cur-dots { display: flex; gap: 10px; justify-content: center; }
-.cur-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold-line); opacity: .22; transition: opacity .4s; }
-.cur-dot.is-on { opacity: 1; }
-
 .reserve-meter { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 .meter-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; color: var(--muted); }
 .meter-label-on { color: var(--gold-line); }
@@ -1906,13 +2028,6 @@ a:hover { color: var(--gold-line-hover); }
 .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .book { border: 1px solid rgba(217,162,107,.18); border-radius: 5px; padding: 22px; transition: border-color .25s; }
 .book:hover { border-color: rgba(217,162,107,.5); }
-.book-phase { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.book-phase span { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .25em; color: var(--muted); }
-.phase-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #e0b662; }
-.phase-new { background: #0a1230; }
-.phase-first { background: linear-gradient(90deg, #e0b662 50%, #0a1230 50%); }
-.phase-full { background: #e0b662; border-color: #e0b662; }
-.phase-last { background: linear-gradient(90deg, #0a1230 50%, #e0b662 50%); }
 .book-title { font-family: var(--font-display); font-size: 18px; color: #eef0f5; margin-bottom: 4px; }
 .book-author { font-size: 12.5px; color: var(--gold-line); margin-bottom: 10px; }
 .book-desc { font-size: 13px; line-height: 1.6; color: var(--body); }

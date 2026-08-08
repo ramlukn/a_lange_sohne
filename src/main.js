@@ -7,19 +7,53 @@ const CONFIG = {
 const SYNODIC_DAYS = 29.530588853;
 const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
 
+// The rotating status line. It is NOT a section: its whole content was one line
+// and that line reads continuously in the caption, so the panel it used to open
+// gave back nothing you were not already reading. The array stays; the panel is
+// gone, and the small seconds now open Research.
 const CURRENTLY = [
-  { label: 'READING', title: 'Reading', value: 'Lorem Ipsum: A History', sub: 'P. 142 OF 320' },
-  { label: 'WEARING', title: 'Wearing', value: 'Dolor Sit Ref. 38.5', sub: 'ON GREY SUEDE' },
-  { label: 'BUILDING', title: 'Building', value: 'Consectetur Engine', sub: 'V0.4 — IN PROGRESS' },
-  { label: 'RESEARCHING', title: 'Researching', value: 'Adipiscing Methods', sub: 'DRAFT DUE AUGUST' }
+  { label: 'READING', value: 'Lorem Ipsum: A History' },
+  { label: 'WEARING', value: 'Dolor Sit Ref. 38.5' },
+  { label: 'BUILDING', value: 'Consectetur Engine' },
+  { label: 'RESEARCHING', value: 'Adipiscing Methods' }
 ];
 
+// ---- THE SECTIONS ----------------------------------------------------------
+// One row per section, and every place that has to agree about a section reads
+// it from here: the caption, the zoom origin, the panel, the click binding, the
+// accessible name and the hint bar are all derived below. A section's identity
+// used to live in four objects plus the markup plus a hard-coded sentence;
+// renaming one meant six edits and there was no way to be sure you had found
+// them all. Adding, renaming or dropping a section is now one row.
+//
+//   key     what state.active / state.hover carry, and what the pulse mark's
+//           data-part says in index.html
+//   label   the word the section is called -- caption, panel title, and the
+//           rail's link text when Phase 2 builds it
+//   part    the watch part it hangs off, as the caption prints it (no article:
+//           "THE " is added where it is used, so the hint bar can drop it)
+//   hit     the element id of the thing you click on the watch
+//   panel   the id of the <section> it opens
+//   origin  transform-origin for the 'zoom' transition style
+//
+// The order is the rail's order, top to bottom (docs/PLAN.md: About, Resume,
+// Projects, Research, Books, then Contact on the caseback). It is deliberately
+// NOT the interaction index's scribe order -- nobody can hold that comparison
+// across four seconds -- and it is not DOM order either.
+const SECTIONS = [
+  { key: 'about',    label: 'About',    part: 'MAIN DIAL',     hit: 'aboutHit',    panel: 'panel-about',    origin: '31.8% 50%' },
+  { key: 'resume',   label: 'Resume',   part: 'POWER RESERVE', hit: 'reserve',     panel: 'panel-resume',   origin: '65.5% 47.5%' },
+  { key: 'projects', label: 'Projects', part: 'OUTSIZE DATE',  hit: 'dateWindow',  panel: 'panel-projects', origin: '63.75% 26.05%' },
+  { key: 'research', label: 'Research', part: 'SMALL SECONDS', hit: 'secondsDial', panel: 'panel-research', origin: '64.5% 75.115%' },
+  { key: 'books',    label: 'Books',    part: 'MOONPHASE',     hit: 'moon',        panel: 'panel-books',    origin: '64.5% 67.535%' }
+];
+const SECTION = new Map(SECTIONS.map((s) => [s.key, s]));
+
+// The caption, derived. The crown and the pusher are the two hoverable things
+// that are not sections -- the crown turns the watch over, the pusher runs the
+// demonstration -- so they are the only captions still written out by hand.
 const CAPTIONS = {
-  about: 'ABOUT — THE HEART OF THE MATTER',
-  featured: 'FEATURED — THE OUTSIZE DATE',
-  currently: 'CURRENTLY — THE SMALL SECONDS',
-  resume: 'EXPERIENCE — THE POWER RESERVE',
-  books: 'BOOK REVIEWS — THE MOONPHASE',
+  ...Object.fromEntries(SECTIONS.map((s) => [s.key, `${s.label.toUpperCase()} — THE ${s.part}`])),
   crown: 'THE MOVEMENT — PULL THE CROWN, TURN IT OVER',
   pusher: 'THE PUSHER — RUN THE WATCH THROUGH ITS PACES'
 };
@@ -91,14 +125,6 @@ const DEMO = {
 };
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 
-const ZOOM_ORIGINS = {
-  about: '31.8% 50%',
-  featured: '63.75% 26.05%',
-  currently: '64.5% 75.115%',
-  resume: '65.5% 47.5%',
-  books: '64.5% 67.535%'
-};
-
 const $ = (id) => document.getElementById(id);
 
 const el = {
@@ -118,19 +144,16 @@ const el = {
   hintIndex: $('hintIndex'),
   hintBar: $('hintBar'),
   overlay: $('overlay'),
-  curTitle: $('curTitle'),
-  curValue: $('curValue'),
-  curSub: $('curSub'),
-  curDots: document.querySelectorAll('.cur-dot')
+  crown: $('crown')
 };
 
-const panels = {
-  about: $('panel-about'),
-  featured: $('panel-featured'),
-  currently: $('panel-currently'),
-  resume: $('panel-resume'),
-  books: $('panel-books')
-};
+const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
+
+// The hint bar names the live parts, and the live parts ARE the sections, so
+// the sentence is assembled rather than typed. (Phase 2 replaces the whole
+// element with the six-link rail, from this same list.)
+el.hintBar.textContent =
+  `${SECTIONS.map((s) => s.part).join(' · ')} — CLICK TO EXPLORE  ·  CROWN TO FLIP`;
 
 // Where the reserve hand sits at rest: the first notch above AB, measured off
 // the scale sprite rather than guessed. Alpha-scanning reserve-scale.webp's
@@ -183,7 +206,10 @@ const state = {
   flipped: false,
   reserve: RESERVE_REST,
   touched: false,
-  demo: null   // { t0, reduced } while the pusher's sweep is running
+  demo: null,  // { t0, reduced } while the pusher's sweep is running
+  // The element a panel was opened from, so closing can hand focus back to it
+  // rather than dropping it on <body> and starting the next Tab from the top.
+  returnTo: null
 };
 
 function moonAge(now) {
@@ -195,7 +221,8 @@ function moonAge(now) {
 function watchPose() {
   if (!state.active) return { transform: 'none', filter: 'none', origin: '50% 50%' };
   if (CONFIG.transitionStyle === 'zoom') {
-    return { transform: 'scale(1.55)', filter: 'blur(6px) brightness(.5)', origin: ZOOM_ORIGINS[state.active] || '50% 50%' };
+    const section = SECTION.get(state.active);
+    return { transform: 'scale(1.55)', filter: 'blur(6px) brightness(.5)', origin: (section && section.origin) || '50% 50%' };
   }
   if (CONFIG.transitionStyle === 'panel') {
     return { transform: 'translateX(-28vw) scale(.72)', filter: 'brightness(.62) saturate(.82)', origin: '50% 50%' };
@@ -307,12 +334,9 @@ function render() {
   const reservePct = (RESERVE_AB - reserveAngle) / RESERVE_SCALE;
   el.reserveBar.style.width = `${Math.round(Math.min(1, Math.max(0, reservePct)) * 100)}%`;
 
-  const curIdx = Math.floor(now / 4000) % CURRENTLY.length;
-  const cur = CURRENTLY[curIdx];
-  el.curTitle.textContent = cur.title;
-  el.curValue.textContent = cur.value;
-  el.curSub.textContent = cur.sub;
-  el.curDots.forEach((dot, i) => dot.classList.toggle('is-on', i === curIdx));
+  // The status line, on its own four-second clock. The caption below is its only
+  // reader now that the panel it also fed has gone.
+  const cur = CURRENTLY[Math.floor(now / 4000) % CURRENTLY.length];
 
   // The demo outranks hover: the cursor is still on the pusher that started it,
   // and under reduced motion this line is the only feedback the press gets.
@@ -341,7 +365,7 @@ function render() {
 
   el.overlay.hidden = !state.active;
   el.overlay.dataset.justify = CONFIG.transitionStyle === 'panel' ? 'flex-end' : 'center';
-  for (const [id, node] of Object.entries(panels)) node.hidden = state.active !== id;
+  for (const [key, node] of panels) node.hidden = state.active !== key;
 
   // The interaction index recedes the moment the watch has been understood:
   // any click sets state.touched, and the scribed marks go with it.
@@ -382,10 +406,44 @@ function render() {
   if (el.flip.dataset.hover !== lit) el.flip.dataset.hover = lit;
 }
 
-function open(id) {
+// Opening and closing are the only two places focus moves on its own, and they
+// are a pair: open() remembers what it was opened from and puts focus on the
+// panel, close() puts it back. Nothing is trapped -- Tab still walks out of the
+// card and on through the page -- but the keyboard never has to start again
+// from the top of the document, which is what "lost focus" actually feels like.
+function open(id, from) {
   state.active = id;
   state.touched = true;
   state.hover = null;
+  state.returnTo = from || null;
+  render();
+  const panel = panels.get(id);
+  // After render(), because the panel is [hidden] until then and a hidden
+  // element cannot take focus. tabindex="-1" on .card is what makes this legal.
+  if (panel) panel.focus();
+}
+
+function close() {
+  if (!state.active) return;
+  state.active = null;
+  const back = state.returnTo;
+  state.returnTo = null;
+  render();
+  if (back && back.isConnected) back.focus();
+}
+
+// Turning the watch over. Extracted from the crown's click handler because
+// Escape is now a second way in: it returns from the caseback exactly as it
+// returns from a panel.
+function flipTo(flipped) {
+  state.flipped = flipped;
+  state.touched = true;
+  state.active = null;
+  // Turning the watch over takes the dial out of view, so the sweep is
+  // abandoned rather than left to finish behind the caseback. Cancelling drops
+  // every offset to zero, which the next frame draws as the true reading -- and
+  // the face it happens on is the one you cannot see.
+  state.demo = null;
   render();
 }
 
@@ -429,9 +487,25 @@ hintHairline();
 // misses (the box is 0 while a panel is open, so the measurement above bails).
 new ResizeObserver(hintHairline).observe(el.hintIndex);
 
-function bind(node, id) {
-  node.addEventListener('click', () => open(id));
+// One section, one hit target, wired from its row. The element is a real
+// <button>, so Enter and Space, the tab stop and the button role all come from
+// the platform rather than from a role="button" plus a hand-rolled key handler.
+// The accessible name comes off the row too -- "Projects, the outsize date" --
+// so it says both what opens and which part of the watch you are on, and it
+// cannot drift from the caption printed for the same hover.
+function bind(section) {
+  const id = section.key;
+  const node = $(section.hit);
+  node.setAttribute('aria-label', `${section.label} — the ${section.part.toLowerCase()}`);
+  node.addEventListener('click', () => open(id, node));
   node.addEventListener('mouseenter', () => { state.hover = id; render(); });
+  // Focus is the keyboard's pointer, so it lights the part and prints the same
+  // caption a hover does. The focus ring in styles.css says WHERE the keyboard
+  // is; this says which part that is, in the watch's own language.
+  node.addEventListener('focus', () => { state.hover = id; render(); });
+  node.addEventListener('blur', () => {
+    if (state.hover === id) { state.hover = null; render(); }
+  });
   // Only clear what this node actually owns. The five hit boxes are unrelated
   // siblings rather than a nest, and two of them overlap -- .moon's box sits
   // over .seconds-dial's -- so a crossing is a leave and an enter on two
@@ -446,11 +520,7 @@ function bind(node, id) {
   });
 }
 
-bind($('aboutHit'), 'about');
-bind($('dateWindow'), 'featured');
-bind($('secondsDial'), 'currently');
-bind($('reserve'), 'resume');
-bind($('moon'), 'books');
+SECTIONS.forEach(bind);
 
 // The two ways a pointer can stop being on a part without that part ever
 // hearing about it. Both used to cost 780ms of stale glow, which nobody would
@@ -473,21 +543,15 @@ window.addEventListener('blur', () => {
   if (state.hover) { state.hover = null; render(); }
 });
 
-$('crown').addEventListener('click', () => {
-  state.flipped = !state.flipped;
-  state.touched = true;
-  state.active = null;
-  // Turning the watch over takes the dial out of view, so the sweep is
-  // abandoned rather than left to finish behind the caseback. Cancelling drops
-  // every offset to zero, which the next frame draws as the true reading -- and
-  // the face it happens on is the one you cannot see.
-  state.demo = null;
-  render();
-});
-$('crown').addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
+el.crown.addEventListener('click', () => flipTo(!state.flipped));
+el.crown.addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
+el.crown.addEventListener('focus', () => { state.hover = 'crown'; render(); });
 // Same guard as bind()'s: the crown and the pusher own state.hover too, and a
 // leave of theirs arriving after a part's enter would blank the part.
-$('crown').addEventListener('mouseleave', () => {
+el.crown.addEventListener('mouseleave', () => {
+  if (state.hover === 'crown') { state.hover = null; render(); }
+});
+el.crown.addEventListener('blur', () => {
   if (state.hover === 'crown') { state.hover = null; render(); }
 });
 
@@ -518,12 +582,16 @@ $('corrector').addEventListener('click', () => {
   render();
 });
 $('corrector').addEventListener('mouseenter', () => { state.hover = 'pusher'; render(); });
+$('corrector').addEventListener('focus', () => { state.hover = 'pusher'; render(); });
 $('corrector').addEventListener('mouseleave', () => {
+  if (state.hover === 'pusher') { state.hover = null; render(); }
+});
+$('corrector').addEventListener('blur', () => {
   if (state.hover === 'pusher') { state.hover = null; render(); }
 });
 
 document.querySelectorAll('[data-close]').forEach((node) =>
-  node.addEventListener('click', () => { state.active = null; render(); })
+  node.addEventListener('click', close)
 );
 
 $('resumeScroll').addEventListener('scroll', (e) => {
@@ -540,11 +608,17 @@ $('resumeScroll').addEventListener('scroll', (e) => {
   }
 });
 
+// Escape is "go back one", and there are two things to go back from. A panel
+// and the caseback are mutually exclusive -- flipping closes any open panel,
+// and the parts that open panels are on the front face -- so the order below is
+// a formality rather than a precedence rule, but the panel is checked first
+// because it is the nearer of the two.
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    state.active = null;
-    render();
-  }
+  if (e.key !== 'Escape') return;
+  if (state.active) { close(); return; }
+  // Returning from the caseback puts focus on the crown: it is the control that
+  // turned the watch over, so it is where the keyboard was, or should have been.
+  if (state.flipped) { flipTo(false); el.crown.focus(); }
 });
 
 // ---- living caseback rig ---------------------------------------------------

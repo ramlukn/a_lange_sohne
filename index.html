@@ -168,7 +168,8 @@
         <!-- The crown is rendered art (tools/build-dial-art.py); the div is only
              the hit target and the sprite inside it is inert. The corrector is
              drawn inline, so its cap is the element. -->
-        <div class="crown" id="crown" title="The movement — flip the watch">
+        <button type="button" class="crown part-hit" id="crown"
+                aria-label="Turn the watch over to the movement">
           <img class="sprite-art crown-art" src="/assets/dial/crown.webp" alt="" decoding="async">
           <!-- The crown's own silhouette, lit. See FITTING MARKS in styles.css
                for why the viewBox is a window onto the face's user space rather
@@ -179,8 +180,9 @@
             <path class="pulse-mark" data-part="crown"
                   d="M101.212 46.870H102.900A0.89 0.89 0 0 1 103.790 47.760V52.230A0.89 0.89 0 0 1 102.900 53.120H101.212A0.18 0.18 0 0 1 101.032 52.940V47.050A0.18 0.18 0 0 1 101.212 46.870Z"/>
           </svg>
-        </div>
-        <div class="corrector" id="corrector" title="Run the watch through its paces">
+        </button>
+        <button type="button" class="corrector part-hit" id="corrector"
+                aria-label="Run the watch through its paces">
           <!-- flush bowed corrector cap: seated into the case with no visible stand-off.
                The cap is a fitting in the band, so it gets one copy on each side of the
                case. Left on the band plane alone it would sit behind whichever face is
@@ -223,7 +225,7 @@
                     d="M3.913 27.250Q5.235 23.623 7.715 20.665Q8.019 20.341 8.676 20.621Q9.246 21.050 9.188 21.515Q6.709 24.474 5.386 28.100Q5.013 28.383 4.356 28.103Q3.785 27.674 3.913 27.250Z"/>
             </svg>
           </div>
-        </div>
+        </button>
 
         <!-- ============ FRONT FACE ============ -->
         <div class="face face-front" id="faceFront">
@@ -255,6 +257,14 @@
             </div>
           </div>
 
+          <!-- hours-dial hit zone.
+               It sits here, straight after the dial it covers, rather than down
+               by the crystal where it used to: tab order is DOM order, and the
+               main dial has to be the first section a keyboard reaches. Paint
+               order is unaffected -- inside a preserve-3d face, height decides,
+               and --z-wash is this element's alone. -->
+          <button type="button" class="about-hit part-hit" id="aboutHit"></button>
+
           <!-- name (where the maker's mark would sit) -->
           <div class="maker-name">NIKHIL RAMLUKAN</div>
           <div class="maker-calibre">CALIBRE NR.1</div>
@@ -271,31 +281,31 @@
 
           <!-- ============ OUTSIZE DATE ============ -->
           <!-- rose-gold twin frame is rendered art; the numerals are drawn into its panes -->
-          <div class="date-window" id="dateWindow">
+          <button type="button" class="date-window part-hit" id="dateWindow">
             <div class="date-frame"><img class="sprite-art" src="/assets/dial/date-window.webp" alt="" decoding="async"></div>
             <div class="date-digit date-tens" id="dateTens">3</div>
             <div class="date-digit date-ones" id="dateOnes">1</div>
             <!-- the wall of the aperture, casting onto the discs below it -->
             <div class="date-pane date-pane-tens" aria-hidden="true"></div>
             <div class="date-pane date-pane-ones" aria-hidden="true"></div>
-          </div>
+          </button>
 
           <!-- ============ POWER RESERVE (AUF / AB) ============ -->
           <!-- AUF/AB, arc and ticks are baked into the scale sprite -->
-          <div class="reserve" id="reserve">
+          <button type="button" class="reserve part-hit" id="reserve">
             <div class="reserve-scale"><img class="sprite-art" src="/assets/dial/reserve-scale.webp" alt="" decoding="async"></div>
             <div class="reserve-hand" id="reserveHand">
               <img class="sprite-art" src="/assets/dial/reserve-hand.webp" alt="" decoding="async">
             </div>
-          </div>
+          </button>
 
           <!-- ============ SMALL SECONDS + MOONPHASE ============ -->
           <div class="dial-group">
-            <div class="seconds-dial" id="secondsDial">
+            <button type="button" class="seconds-dial part-hit" id="secondsDial">
               <img class="dial-art" src="/assets/dial/seconds-dial.webp" alt="" decoding="async">
-            </div>
+            </button>
             <!-- Lange moon phase: vector aperture over the engraved lunar wheel sprite -->
-            <div class="moon" id="moon" title="Book reviews — moon phase">
+            <button type="button" class="moon part-hit" id="moon">
               <svg viewBox="0 0 100 50" preserveAspectRatio="none" shape-rendering="geometricPrecision" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;">
                 <defs>
                   <clipPath id="langeMoonAperture"><path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z"></path></clipPath>
@@ -310,15 +320,12 @@
                 </g>
                 <path d="M3 47 A48 48 0 0 1 97 47 C80 35 64 37 50 47 C36 37 20 35 3 47 Z" fill="none" stroke="rgba(225,183,137,.74)" stroke-width=".5" vector-effect="non-scaling-stroke"></path>
               </svg>
-            </div>
+            </button>
             <!-- seconds hand -->
             <div class="sec-pivot" id="secHand">
               <img class="sprite-art" src="/assets/dial/hand-seconds.webp" alt="" decoding="async">
             </div>
           </div>
-
-          <!-- hours-dial hit zone -->
-          <div class="about-hit" id="aboutHit"></div>
 
           <!-- ============ SAPPHIRE CRYSTAL ============ -->
           <div class="crystal">
@@ -409,9 +416,9 @@
                  crown's and corrector's marks reference both from their own
                  <svg>s. See THE KEY LIGHT at the top of this file. -->
             <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
-            <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
+            <rect   class="pulse-mark" data-part="projects"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
             <path   class="pulse-mark" data-part="resume"    d="M61.830 47.572L76.830 34.803A15.320 15.320 0 0 1 76.919 60.235Z"/>
-            <circle class="pulse-mark" data-part="currently" cx="64.498" cy="75.112" r="13.599"/>
+            <circle class="pulse-mark" data-part="research"  cx="64.498" cy="75.112" r="13.599"/>
             <path   class="pulse-mark" data-part="books"     d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
           </svg>
           </div>
@@ -491,16 +498,19 @@
 
   <!-- caption -->
   <div class="caption" id="caption"></div>
-  <div class="hint-bar" id="hintBar">DIAL · DATE · SECONDS · RESERVE · MOON — CLICK TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;CROWN TO FLIP</div>
+  <!-- Written from SECTIONS by main.js: the parts it names ARE the sections, so
+       the words belong to that list and not to this file. (Phase 2 turns this
+       element into the six-link rail; same element, same source.) -->
+  <div class="hint-bar" id="hintBar"></div>
 
   <!-- ===================== SECTIONS ===================== -->
   <div class="overlay" id="overlay" hidden>
     <div class="overlay-scrim" data-close></div>
 
-    <section class="card" id="panel-about" hidden>
-      <div class="card-close" data-close>ESC ✕</div>
+    <section class="card" id="panel-about" tabindex="-1" aria-labelledby="title-about" hidden>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
       <div class="card-eyebrow">HOURS &amp; MINUTES — THE CENTER</div>
-      <h1 class="card-title">About Me</h1>
+      <h1 class="card-title" id="title-about">About Me</h1>
       <div class="about-grid">
         <div class="portrait" role="img" aria-label="Portrait placeholder"><span>Your photo</span></div>
         <div class="about-copy">
@@ -513,10 +523,10 @@
       </div>
     </section>
 
-    <section class="card" id="panel-featured" hidden>
-      <div class="card-close" data-close>ESC ✕</div>
+    <section class="card" id="panel-projects" tabindex="-1" aria-labelledby="title-projects" hidden>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
       <div class="card-eyebrow">THE OUTSIZE DATE — WHAT'S NEWEST</div>
-      <h1 class="card-title">Featured</h1>
+      <h1 class="card-title" id="title-projects">Projects</h1>
       <div class="feature-list">
         <div class="feature-row">
           <div class="feature-num">01</div>
@@ -533,21 +543,22 @@
       </div>
     </section>
 
-    <section class="card card-narrow card-center" id="panel-currently" hidden>
-      <div class="card-close" data-close>ESC ✕</div>
-      <div class="card-eyebrow">THE SMALL SECONDS — ALWAYS IN MOTION</div>
-      <h1 class="card-title">Currently <span id="curTitle"></span></h1>
-      <div class="cur-value" id="curValue"></div>
-      <div class="cur-sub" id="curSub"></div>
-      <div class="cur-dots">
-        <div class="cur-dot"></div><div class="cur-dot"></div><div class="cur-dot"></div><div class="cur-dot"></div>
+    <!-- Research took the small seconds' binding off the old "Currently" panel,
+         which is deleted: its whole content was the one line the caption already
+         reads continuously. The CURRENTLY array stays and still feeds it. -->
+    <section class="card" id="panel-research" tabindex="-1" aria-labelledby="title-research" hidden>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <div class="card-eyebrow">THE SMALL SECONDS</div>
+      <h1 class="card-title" id="title-research">Research</h1>
+      <div class="about-copy">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, urna at gravida luctus, sapien ligula fermentum nisl.</p>
       </div>
     </section>
 
-    <section class="card card-column" id="panel-resume" hidden>
-      <div class="card-close" data-close>ESC ✕</div>
+    <section class="card card-column" id="panel-resume" tabindex="-1" aria-labelledby="title-resume" hidden>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
       <div class="card-eyebrow">THE POWER RESERVE — WOUND OVER TIME</div>
-      <h1 class="card-title card-title-tight">Experience</h1>
+      <h1 class="card-title card-title-tight" id="title-resume">Resume</h1>
       <div class="reserve-meter">
         <span class="meter-label">AB</span>
         <div class="meter-track"><div class="meter-fill" id="reserveBar"></div></div>
@@ -565,31 +576,30 @@
       </div>
     </section>
 
-    <section class="card" id="panel-books" hidden>
-      <div class="card-close" data-close>ESC ✕</div>
+    <section class="card" id="panel-books" tabindex="-1" aria-labelledby="title-books" hidden>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
       <div class="card-eyebrow">THE MOONPHASE — REFLECTIVE &amp; TIMELESS</div>
-      <h1 class="card-title">Book Reviews</h1>
+      <h1 class="card-title" id="title-books">Books</h1>
+      <!-- The per-book moon-phase badges (NEW MOON · PHILOSOPHY and the rest)
+           are gone. A phase drawn beside a book meant nothing about the book:
+           decoration wearing the costume of data. -->
       <div class="book-grid">
         <div class="book">
-          <div class="book-phase"><div class="phase-dot phase-new"></div><span>NEW MOON · PHILOSOPHY</span></div>
           <div class="book-title">Lorem Ipsum Meditations</div>
           <div class="book-author">Auctor Nominis</div>
           <div class="book-desc">Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae.</div>
         </div>
         <div class="book">
-          <div class="book-phase"><div class="phase-dot phase-first"></div><span>FIRST QUARTER · FICTION</span></div>
           <div class="book-title">The Dolor of Sit</div>
           <div class="book-author">Scriptor Alius</div>
           <div class="book-desc">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium.</div>
         </div>
         <div class="book">
-          <div class="book-phase"><div class="phase-dot phase-full"></div><span>FULL MOON · HISTORY</span></div>
           <div class="book-title">Amet: A History</div>
           <div class="book-author">Historicus Quidam</div>
           <div class="book-desc">Et harum quidem rerum facilis est et expedita distinctio, nam libero tempore.</div>
         </div>
         <div class="book">
-          <div class="book-phase"><div class="phase-dot phase-last"></div><span>LAST QUARTER · SCIENCE</span></div>
           <div class="book-title">Consectetur Principia</div>
           <div class="book-author">Physicus Ignotus</div>
           <div class="book-desc">Cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime.</div>
