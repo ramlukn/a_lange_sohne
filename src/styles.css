@@ -502,7 +502,20 @@ a:hover { color: var(--gold-line-hover); }
   transition: transform .6s cubic-bezier(.34,1.3,.4,1);
   pointer-events: none;
 }
-.reserve-hand .sprite-art { filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52)); }
+/* The pointer is 2% shorter than the render. It has to be trimmed on the art,
+   NOT on the .reserve-hand box: that box is square and turns about its own
+   centre, so shrinking its width/height would drag the centre -- which IS the
+   scale arc's centre -- off the arc, and the pointer would swing on the wrong
+   axis. Scaling the sprite inside a box left exactly as measured keeps the
+   pivot untouched, and leaves the rotate() on the wrapper free for main.js.
+   The sprite is a needle drawn pointing straight up with its boss on the box
+   centre, so its own axis is Y: scale(1, .98) takes 2% off the length (and off
+   the counterweight, keeping the hand self-similar) without thinning it. */
+.reserve-hand .sprite-art {
+  transform: scale(1, .98);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52));
+}
 
 /* ===================== SMALL SECONDS + MOON =====================
    The whole group is keyed to one centre: 59.4% / 78.6% of the face.
