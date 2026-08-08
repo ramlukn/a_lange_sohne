@@ -155,6 +155,23 @@ html.mvt-hold .loader-fill { animation-play-state: running; }
    nothing. Nothing downstream depended on the movement having been there. */
 html.no-mvt .watch-mvt { display: none; }
 
+/* One breath of light across a part's own silhouette, fired by hover. See the
+   HOVER PULSE block below for why it thins rather than expands: the width
+   collapses about a stationary centreline, so the glow tightens ONTO the edge
+   it is lighting instead of sailing off it. */
+@keyframes hoverBloom {
+  /* Asymmetric on purpose: 170ms up, 610ms down. A symmetric flash reads as a
+     blink -- a notification -- where a fast rise into a long decay reads as
+     light arriving on metal and leaving it. The timing functions are per
+     keyframe rather than on the animation, so the rise can be eased out and
+     the decay eased in-out independently; one easing across the whole thing
+     put the entire fall inside the first 200ms. */
+  0%   { opacity: 0;          stroke-width: 3.4px; animation-timing-function: cubic-bezier(.25,.85,.4,1); }
+  22%  { opacity: var(--pk);  stroke-width: 3.1px; animation-timing-function: cubic-bezier(.4,0,.5,1); }
+  100% { opacity: 0;          stroke-width: 1.0px; }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -837,6 +854,115 @@ html.no-mvt .watch-mvt { display: none; }
   opacity: 0;
   animation: hintScribe .46s cubic-bezier(.3,.7,.25,1)
              calc(var(--hint-at) + var(--i, 0) * var(--hint-step)) both;
+}
+
+/* ===================== HOVER PULSE =====================
+   "You are on this one." One breath of the key light over the hovered part,
+   fired by pointer entry and finished in 780ms. Not the old .hint-dots: those
+   looped forever with nothing causing them, which is the thing the design bible
+   forbids ("no ambient floating, glow, or ornamental looping"). This one has a
+   cause -- the pointer -- and it explains a state, so it is the permitted case.
+
+   THREE CHANNELS, NOT TWO. The face already says two things and this adds a
+   third; they must not speak the same language:
+     line   -- .hint-index: WHICH parts are live. Scribed once, resting hairline,
+               gone after the first click.
+     light  -- brightness(1.16) on the part's own sprite: WHICH one you are on.
+               Sustained for as long as the pointer is there.
+     bloom  -- this layer: THE MOMENT you arrived on it. Transient, one shot.
+   So this pulse deliberately does NOT draw a line. It is a wide, blurred band
+   of the same #hintKey ramp -- light, not linework -- which is why it can sit
+   on the same geometry as a .hint-mark without the two colliding. It layers on
+   the brightness lift rather than replacing it: brightness is the state, the
+   bloom is the edge of the state.
+
+   WHY IT THINS INSTEAD OF EXPANDING. The pulsing rings prototyped earlier
+   failed because scaling a silhouette unregisters it from the edge it traces --
+   at 1.06x it is no longer the part's rim, it is a halo hovering over the dial,
+   the exact "web page with hotspots on it" read. Here the geometry never moves.
+   The band is stationary and stroke-width collapses 3.1 -> 1.1 about its own
+   centreline, so the light gathers INTO the edge instead of leaving it. Same
+   perceived pulse, no detachment, and nothing to mistake for a UI ring.
+
+   Everything is in face-percent user units and scales with the watch, so the
+   lit band is ~4% of the face wide at peak: about 34px on a 900px viewport and
+   ~11px at 390px. The .hint-dots it descends from were 5.3px and 2.7px.
+
+   SYMMETRIC PLACEMENT, PROTOTYPED AND REJECTED (43a3efd has it behind a
+   data-mode switch if you want to look at it again). The alternative was five
+   identical r4.5 discs at 72deg intervals on a ring concentric with the case,
+   each given to the part whose own bearing from (50,50) is nearest -- calm,
+   even, a deliberate counterpoint to an asymmetric dial. It does not work, and
+   the reason is the watch itself. Radius 38.5 is the only radius available at
+   all: the plate ends at 44.85 and the complications reach out to ~33, so
+   anything tighter drops a marker inside the hours dial or the small seconds.
+   And five evenly spaced bearings cannot be matched to five parts that are all
+   crowded into the right-hand third of the face -- the date, reserve, small
+   seconds and moon sit between 30deg and 150deg, so two of them have to be
+   given markers on the empty left side. Hovering the moonphase at bottom-RIGHT
+   lights a disc at bottom-LEFT. Worse, a bloom that is not sitting on any of
+   the dial's own linework has nothing to amplify: on bare plate the same light
+   that reads as a rim catching a highlight reads as a smudge under the
+   crystal. Symmetry here is not restraint, it is a second layout competing
+   with the Lange 1's.
+
+   Guarded by (hover: hover). Touch gets no pulse -- it has no pointer to enter
+   with -- and keeps what it already had: the .hint-index, which persists there
+   until the first tap. Reduced motion drops the animation and substitutes a
+   static lit band for as long as the part is hovered, so it degrades to a
+   legible highlight rather than to nothing.
+   Decorative: never takes a pointer event. */
+.hover-pulse {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.hover-pulse svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pulse-mark {
+  fill: none;
+  stroke: url(#hintKey);   /* the same 315deg key as the index -- one light */
+  stroke-width: 1.9;       /* user units = % of the face, so it scales */
+  stroke-linecap: round;
+  filter: url(#pulseSoft); /* wide + blurred = light, not a line */
+  opacity: 0;
+  /* Peak brightness. It is per part and not a constant because the band has a
+     constant WIDTH, so the area of dial it covers goes with the part's
+     perimeter -- and perceived weight goes with area. The four small marks
+     (date frame 66 units of outline, reserve arc 22, seconds rim 85, moon
+     aperture ~60) all sit right at .55. The hours-dial rim is 159 units, twice
+     the seconds rim, and at .55 it stops reading as that rim catching light
+     and starts reading as a ring drawn around a hotspot -- the exact failure
+     that killed the earlier pulsing-ring prototype. Halving it puts the same
+     amount of light on the dial as the others. */
+  --pk: .55;
+}
+.pulse-mark[data-part="about"] { --pk: .3; }
+@media (hover: hover) {
+  .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
+  .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
+  .hover-pulse[data-hover="resume"]    .pulse-mark[data-part="resume"],
+  .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
+  .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
+    animation: hoverBloom .78s linear both;  /* shaping is per keyframe */
+  }
+}
+/* The global reduced-motion rule collapses every duration to .01ms, which would
+   land this on its `to` frame -- opacity 0, i.e. nothing. Hover still needs an
+   answer, so the animation is dropped outright and replaced by a steady band
+   held for as long as the pointer is on the part. */
+@media (prefers-reduced-motion: reduce) {
+  @media (hover: hover) {
+    .hover-pulse[data-hover="about"]     .pulse-mark[data-part="about"],
+    .hover-pulse[data-hover="featured"]  .pulse-mark[data-part="featured"],
+    .hover-pulse[data-hover="resume"]    .pulse-mark[data-part="resume"],
+    .hover-pulse[data-hover="currently"] .pulse-mark[data-part="currently"],
+    .hover-pulse[data-hover="books"]     .pulse-mark[data-part="books"] {
+      animation: none !important;
+      opacity: .4;
+      stroke-width: 1.6;
+    }
+  }
 }
 
 /* ===================== CASEBACK: sapphire display back =====================
