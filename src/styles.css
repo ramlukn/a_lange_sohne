@@ -511,10 +511,18 @@ html[data-direct] .hint-index { --hint-at: 0s; }
   user-select: none;
 }
 
+/* The printing sits in the wedge at 12, and its two tightest neighbours set the
+   tops below. Above: the dial plate is inset 5.15%, so its edge is the circle
+   r 44.85 about (50,50) -- over the ends of the name's ink (x 31.88 / 68.11)
+   that arc is at 8.97%. Below: the date frame's top-left corner, 20.28% at
+   x >= 53.50, which the calibre's right end reaches. The block is centred
+   between those two: 3.03% of clear face above the name's cap line and 3.03%
+   below the calibre's baseline. The pair's own gap opens from 4.75 to 5.00
+   because the calibre grew -- its leading belongs to it, so it scales with it. */
 .maker-name {
   position: absolute;
   left: 21.5%;
-  top: 10.7%;
+  top: 11.2%;
   width: 57%;
   text-align: center;
   font-family: var(--font-display);
@@ -528,11 +536,14 @@ html[data-direct] .hint-index { --hint-at: 0s; }
 .maker-calibre {
   position: absolute;
   left: 28%;
-  top: 15.45%;
+  top: 16.2%;
   width: 44%;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: .82vmin;
+  /* .82vmin put a 4.4px cap height on the dial -- a light mono at that size
+     greys out on the blue. Sized instead for a 5px cap at the 760-tall
+     reference viewport: 5 / .709 cap ratio = 7.05px = .93vmin. */
+  font-size: .93vmin;
   letter-spacing: .32em;
   color: #c7d0dc;
   animation: partIn .62s ease 2.42s both;
