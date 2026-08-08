@@ -147,79 +147,78 @@ a:hover { color: var(--gold-line-hover); }
 .face-back { transform: rotateY(180deg) translateZ(calc(var(--case-depth) / 2)); opacity: 0; }
 
 /* ===================== CROWN + CORRECTOR ===================== */
+/* Both fittings are rendered art now (tools/build-dial-art.py prints these
+   numbers). The div is only the hit target; the sprite inside it is inert. */
+
+/* The crown sprite is cropped to its own ink: a stem, a tube collar, the fluted
+   barrel and the domed end cap, 435x701 source px. The seam where the stem
+   swells into the collar is parked on the case band, so `right` is just how far
+   the crown stands proud of it (3.30%) plus the 0.50% the band's plane projects
+   past the crown's own (the face is 3vmin nearer the 2400px perspective origin).
+   `top` puts the stem's axis -- 50.07% down the crop -- on the 50% line. */
 .crown {
   position: absolute;
-  right: -3.2%;
-  top: 47.2%;
-  width: 4.6%;
-  height: 5.6%;
+  right: -3.8%;
+  top: 46.87%;
+  width: 3.88%;
+  height: 6.25%;
   cursor: pointer;
-  border-radius: 14% 40% 40% 14%;
-  /* fluted crown after the caseback render: asymmetric prism ribs (sharp lit
-     crest, soft dark valley), cylindrical falloff toward top and bottom, and
-     a specular hotspot where the 315-degree light lands */
-  background:
-    radial-gradient(ellipse 64% 46% at 38% 36%, rgba(255,248,228,.6), rgba(255,248,228,0) 72%),
-    linear-gradient(180deg, rgba(38,17,7,.66) 0 4%, rgba(0,0,0,0) 20% 76%, rgba(38,17,7,.7) 95%),
-    linear-gradient(90deg, rgba(44,20,8,.5) 0 4%, rgba(0,0,0,0) 15% 84%, rgba(58,26,10,.38) 98%),
-    repeating-linear-gradient(180deg,
-      #45220e 0 1.4%, #8a5028 4.2%, #e8b578 6.2%, #fff0cd 7.2%, #e8b578 8.2%, #8a5028 10.6%, #45220e 13% 14.28%),
-    linear-gradient(180deg, #d59a68, #9a5a2c);
-  box-shadow:
-    0 .4vmin 1vmin rgba(0,0,0,.55),
-    .18vmin .3vmin .5vmin rgba(0,0,0,.4);
   animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
   --fx: 2vmin;
 }
-/* the neck seating the crown against the case band */
-.crown::before {
-  content: '';
-  position: absolute;
-  left: -16%;
-  top: 24%;
-  width: 30%;
-  height: 52%;
-  border-radius: 24%;
-  background: linear-gradient(180deg, #e8bd8d, #8a4d26 55%, #4f2812);
-  box-shadow: .1vmin .16vmin .3vmin rgba(0,0,0,.5);
-}
-/* chamfered outer end cap: a smooth polished ring closing the flutes */
-.crown::after {
-  content: '';
-  position: absolute;
-  right: -2%;
-  top: 4%;
-  width: 24%;
-  height: 92%;
-  border-radius: 26% 58% 58% 26%;
-  background:
-    linear-gradient(180deg, rgba(38,17,7,.55) 0 6%, rgba(0,0,0,0) 26% 72%, rgba(38,17,7,.6) 94%),
-    linear-gradient(90deg, #b5764a, #eec89a 34%, #a2603a 78%, #5c2f15);
-  box-shadow: inset .08vmin 0 .18vmin rgba(255,240,214,.5);
-}
+.crown-art { filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)); }
 .crown:hover { filter: brightness(1.2); }
 
+/* The corrector arrived as a 1254px full-face overlay, so its ink bbox is its
+   placement: left 9.091% top 23.445%, 1.754% x 6.380% of the face. The hit box
+   is that ink grown to 6% x 10% about its centre (9.968%, 26.635%) -- as large
+   as it can be without its near corner reaching into #aboutHit, whose circle is
+   r 25.55% about (31.64%, 50.05%). */
 .corrector {
   position: absolute;
-  left: 1.7%;
-  top: 15%;
-  width: 9%;
-  height: 18%;
+  left: 6.97%;
+  top: 21.64%;
+  width: 6%;
+  height: 10%;
   cursor: pointer;
-  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
+  transform-style: preserve-3d;
   --fx: -2vmin;
   z-index: 3;
 }
-.corrector:hover { filter: brightness(1.09); }
+/* The cap's ink sits at 0.90-0.96 of the case radius, i.e. inside the case
+   outline, so unlike the crown it never clears the silhouette: one copy on the
+   band plane would be hidden by whichever face is toward the camera. So it gets
+   a plane on each side of the case, which is also what the part is -- a fitting
+   in the band, reachable from either side of the watch.
+   The z lives on these wrappers and not on .corrector or on the caps because a
+   filling transform animation (componentSeat) makes Chrome flatten the element
+   it runs on, which would collapse both planes back onto the band -- which is
+   why the seat animation moved down to the caps.
+   The planes are also what catches the clicks: hit testing follows the same 3D
+   order as painting, so a target left on the band plane is not merely hidden
+   behind the case, it is unreachable. With a plane in front of each face the
+   pusher answers the mouse from whichever side is toward you, and the event
+   bubbles to #corrector either way. */
+.corrector-plane { position: absolute; inset: 0; }
+.corrector-plane-front { transform: translateZ(calc(var(--case-depth) / 2 + .05vmin)); }
+.corrector-plane-back  { transform: translateZ(calc(var(--case-depth) / -2 - .05vmin)); }
+/* flush bowed corrector cap: seated into the case with no visible stand-off */
 .corrector-cap {
   position: absolute;
-  left: 2%;
-  top: 42%;
-  width: 96%;
-  height: 18%;
-  transform: rotate(-60deg);
-  overflow: visible;
+  left: 35.38%;
+  top: 18.10%;
+  width: 29.24%;
+  height: 63.80%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
   filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52));
+  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
+}
+/* the hover brightness rides on the caps rather than on .corrector, for the
+   same reason: a filter on the parent would flatten its 3D context too. */
+.corrector:hover .corrector-cap {
+  filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52)) brightness(1.09);
 }
 
 /* ===================== HOURS & MINUTES ===================== */

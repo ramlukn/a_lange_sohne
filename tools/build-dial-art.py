@@ -18,10 +18,20 @@ that rotate all get measured and re-cropped rather than shipped as rendered.
     bulges into a circle), then crop a square centred on it so the sprite's
     centre IS the axis and CSS can just say `transform-origin: 50% 50%`.
 
-The two static new sprites get measured too, because the markup has to know
-where their features sit: the date frame's two panes (so the digits can be
-drawn into them) and the power-reserve scale's arc centre, radius and angular
-extent (so the pointer pivots on the arc's centre and sweeps its full span).
+The static sprites get measured too, because the markup has to know where their
+features sit: the date frame's two panes (so the digits can be drawn into them)
+and the power-reserve scale's arc centre, radius and angular extent (so the
+pointer pivots on the arc's centre and sweeps its full span).
+
+The two case fittings are measured against the case rather than the dial:
+
+  * The crown is drawn side-on with its stem to the left, so the length that
+    disappears into the case band is part of the art. We find the step where
+    the stem swells into the tube collar and treat that column as the case
+    edge, which makes the CSS `right` offset simply the crown's protrusion.
+  * The 10 o'clock corrector arrives as a full-face 1254px overlay with a few
+    hundred inked pixels in it. We keep the overlay's own coordinates (they
+    are the placement) but ship only the ink, cropped to its alpha bbox.
 
     python3 tools/build-dial-art.py
 """
@@ -65,6 +75,27 @@ DATE_FACE_WIDTH = 20.5  # % of the face the frame is drawn at
 RESERVE_SRC = "power-reserve-display-sprite.png"
 RESERVE_WIDTH = 240
 RESERVE_ARC_SPAN_FACE = 21.5  # % of the face the drawn arc spans vertically
+
+CROWN_SRC = "crown-sprite.png"
+CROWN_WIDTH = 300
+# The design decision for the crown is how far it stands proud of the case at
+# 3 o'clock; the CSS-drawn crown it replaces reached 3.29%, so hold that and let
+# the sprite's own proportions settle the rest.
+CROWN_PROTRUSION_FACE = 3.30
+# The crown sits in .watch-flip at z = 0 while the case face is pushed forward
+# by --case-depth / 2 = 3vmin under a 2400px perspective, so the band projects
+# slightly wider than the crown's own plane and hides a little extra art:
+# 3vmin/2400px works out at 0.48% of the face at 760px vmin, ~0.9% at 1400px.
+# Take the low end, so the tube collar keeps a sliver showing at every size and
+# the stem's flat cut end stays buried at all of them.
+CROWN_SEAT_FACE = 0.50
+
+PUSHER_SRC = "ten-oclock-pusher-overlay-1254.png"
+# The overlay canvas is coincident with the face, so its ink bbox already is the
+# placement. The hit box is grown around that ink to stay comfortably clickable,
+# but no further: the hours/minutes dial's own target is a 25.55% circle about
+# (31.64%, 50.05%), and 6 x 10 keeps the box's near corner 0.7% clear of it.
+PUSHER_HIT_FACE = (6.0, 10.0)
 
 QUALITY = 88
 
@@ -240,6 +271,44 @@ def date_panes(im):
     return frame, panes
 
 
+def ink_bbox(im, thresh=0):
+    """Tight (x0, y0, x1, y1) around everything that is not fully transparent."""
+    ys, xs = np.nonzero(np.array(im)[..., 3] > thresh)
+    return xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+
+
+def crown_geometry(im):
+    """Return (bbox, axis_y, seam_x) for the side-on crown.
+
+    Left to right the render is: a thin stem, a stepped tube collar, the fluted
+    barrel, then the domed end cap. Only the stem belongs inside the case, so
+    the seam we butt against the band is the first column where the silhouette
+    swells past the stem's plateau -- found from the column-extent profile,
+    which is flat over the stem and steps up at the collar.
+
+    The axis is the stem's centreline: that is the line the crown turns about
+    and the height the hole in the case band would be bored at.
+    """
+    alpha = np.array(im)[..., 3]
+    mask = alpha > 0
+    x0, y0, x1, y1 = ink_bbox(im)
+
+    extent = np.zeros(mask.shape[1])
+    centre = np.zeros(mask.shape[1])
+    for x in range(x0, x1):
+        ys = np.nonzero(mask[:, x])[0]
+        extent[x] = ys.max() - ys.min() + 1
+        centre[x] = (ys.min() + ys.max() + 1) / 2
+
+    stem = extent[x0]
+    seam = next(
+        (x for x in range(x0, x1) if extent[x] > stem * 1.15),
+        x0,
+    )
+    axis = centre[x0:seam].mean()
+    return (x0, y0, x1, y1), axis, seam
+
+
 def save(im, path, width):
     if im.width != width:
         im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
@@ -338,6 +407,55 @@ def main():
         f"  -> sweep {a_bottom - a_top:.2f}deg\n"
         f"    main.js pointer  rotate({a_bottom:.1f} - reserve * {a_bottom - a_top:.1f})deg\n"
         f"    CSS box          {sw * k:.3f}% x {sh * k:.3f}% of the face"
+    )
+
+    print("\ncrown:")
+    im = Image.open(SRC / CROWN_SRC).convert("RGBA")
+    (x0, y0, x1, y1), axis, seam = crown_geometry(im)
+    crop = im.crop((x0, y0, x1, y1))
+    save(crop, OUT / "crown.webp", CROWN_WIDTH)
+    cw, ch = crop.size
+
+    # One scale again: the art right of the seam has to measure
+    # CROWN_PROTRUSION_FACE, and every other number follows from it.
+    k = CROWN_PROTRUSION_FACE / (x1 - seam)
+    box_w, box_h = cw * k, ch * k
+    # The seam is parked on the band's apparent edge, which the seat allowance
+    # puts CROWN_SEAT_FACE outside the nominal face box.
+    right = CROWN_PROTRUSION_FACE + CROWN_SEAT_FACE
+    print(
+        f"    ink bbox         {x0},{y0} .. {x1},{y1}  ({cw}x{ch}px, aspect {cw / ch:.4f})\n"
+        f"    stem axis        y {axis:.1f}px  ({(axis - y0) / ch * 100:.2f}% down the crop)\n"
+        f"    case seam        x {seam}px  -> stem {(seam - x0) * k:.3f}% buried,"
+        f" {CROWN_PROTRUSION_FACE:.2f}% of crown proud of the band\n"
+        f"    CSS box          {box_w:.3f}% x {box_h:.3f}% of the face\n"
+        f"    offsets          right -{right:.2f}%  "
+        f"top {50 - (axis - y0) * k:.3f}%  (axis on the 50% line)"
+    )
+
+    print("\n10 o'clock corrector:")
+    im = Image.open(SRC / PUSHER_SRC).convert("RGBA")
+    fw, fh = im.size
+    x0, y0, x1, y1 = ink_bbox(im)
+    crop = im.crop((x0, y0, x1, y1))
+    # Native resolution already: the overlay is a face-sized render, so the ink
+    # is as many pixels as the art ever had. Resizing could only invent detail.
+    save(crop, OUT / "corrector.webp", x1 - x0)
+
+    # The canvas is coincident with the face, so pixels are face percent / fw.
+    left, top = x0 / fw * 100, y0 / fh * 100
+    w, h = (x1 - x0) / fw * 100, (y1 - y0) / fh * 100
+    hw, hh = PUSHER_HIT_FACE
+    hl, ht = left + w / 2 - hw / 2, top + h / 2 - hh / 2
+    print(
+        f"    overlay canvas   {fw}x{fh} (= the face box)\n"
+        f"    ink bbox         {x0},{y0} .. {x1},{y1}  ({x1 - x0}x{y1 - y0}px, "
+        f"aspect {(x1 - x0) / (y1 - y0):.4f})\n"
+        f"    on the face      left {left:.3f}%  top {top:.3f}%  w {w:.3f}%  h {h:.3f}%"
+        f"  centre ({left + w / 2:.3f}%, {top + h / 2:.3f}%)\n"
+        f"    hit box          left {hl:.3f}%  top {ht:.3f}%  w {hw:.2f}%  h {hh:.2f}%\n"
+        f"    sprite in it     left {(left - hl) / hw * 100:.3f}%  top {(top - ht) / hh * 100:.3f}%"
+        f"  w {w / hw * 100:.3f}%  h {h / hh * 100:.3f}%"
     )
 
 

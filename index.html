@@ -82,24 +82,24 @@
         </div>
 
         <!-- crown + pusher (visible both sides) -->
-        <div class="crown" id="crown" title="The movement — flip the watch"></div>
+        <!-- Both are rendered art (tools/build-dial-art.py). The divs are the hit
+             targets; the sprites inside them are inert. -->
+        <div class="crown" id="crown" title="The movement — flip the watch">
+          <img class="sprite-art crown-art" src="/assets/dial/crown.webp" alt="" decoding="async">
+        </div>
         <div class="corrector" id="corrector" title="Request a review — date correction pusher">
-          <!-- flush bowed corrector cap: seated into the case with no visible stand-off -->
-          <svg viewBox="0 -4 100 16" preserveAspectRatio="none" class="corrector-cap">
-            <defs>
-              <linearGradient id="langeCorrectorGold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#f2d9ad"></stop><stop offset=".16" stop-color="#edca9a"></stop><stop offset=".47" stop-color="#b98855"></stop><stop offset=".78" stop-color="#8e5e38"></stop><stop offset="1" stop-color="#4a2e1b"></stop>
-              </linearGradient>
-            </defs>
-            <path d="M6 1.8 Q50 -1.5 94 1.8 Q99 2.3 100 5.8 Q99 9.3 94 10.2 Q50 6.9 6 10.2 Q1 9.3 0 5.8 Q1 2.3 6 1.8Z" fill="url(#langeCorrectorGold)" stroke="#633d1f" stroke-width="1.1" vector-effect="non-scaling-stroke"></path>
-            <path d="M8 2.4 Q50 -.35 92 2.4" fill="none" stroke="rgba(255,248,235,.66)" stroke-width="1" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
-          </svg>
+          <!-- the cap is a case fitting, so it needs one copy on each side of the
+               case: at its rendered radius it is inside the case outline, and a
+               single copy between the two faces would be occluded from both. -->
+          <div class="corrector-plane corrector-plane-front"><img class="corrector-cap" src="/assets/dial/corrector.webp" alt="" decoding="async"></div>
+          <div class="corrector-plane corrector-plane-back"><img class="corrector-cap" src="/assets/dial/corrector.webp" alt="" decoding="async"></div>
         </div>
 
         <!-- ============ FRONT FACE ============ -->
         <div class="face face-front" id="faceFront">
           <!-- ============ CASE ============ -->
-          <div style="position:absolute;inset:-1.5%;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease .9s both;"></div>
+          <!-- pointer-events:none so the cast shadow, which spills past the case, does not swallow clicks on the crown -->
+          <div style="position:absolute;inset:-1.5%;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease .9s both;"></div>
           <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c1a0d 0deg,#7d4d29 22deg,#fff5dd 44deg,#d9b27f 62deg,#a97545 88deg,#4a2e1b 108deg,#b98855 130deg,#f2d9ad 156deg,#d5ab77 178deg,#7d5531 200deg,#2e1d0f 214deg,#8a5e37 238deg,#e9cc9f 262deg,#c59867 284deg,#744c2d 306deg,#3a2515 330deg,#a87146 348deg,#2c1a0d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:caseSeat .8s cubic-bezier(.22,1,.36,1) 1.02s both;--fs:1.24;--fr:-2.5deg;"></div>
           <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;animation:fadeIn .4s ease 1.22s both;"></div>
           <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);animation:fadeIn .4s ease 1.22s both;"></div>
