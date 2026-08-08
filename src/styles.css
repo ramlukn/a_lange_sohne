@@ -505,7 +505,17 @@ a:hover { color: var(--gold-line-hover); }
 .reserve-hand .sprite-art { filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52)); }
 
 /* ===================== SMALL SECONDS + MOON =====================
-   The whole group is keyed to one centre: 59.4% / 78.6% of the face.
+   The whole group is keyed to one centre: 64.5% / 75.115% of the face.
+   That centre is the 5 o'clock ray of the face: from (50,50), R = 29.0% at
+   theta = 150deg clockwise from 12, i.e. 50 + 29*(sin150, -cos150). It used
+   to be (59.4, 78.6) -- R 30.11 at theta 161.8deg, i.e. past 5 o'clock and
+   pressed out toward the rim. R = 29 is the point on that ray where the two
+   hard clearances balance: the gap to the hours dial (centre 31.8/50, r 25.3)
+   and the margin to the dial plate edge (r 44.85) are both ~2.3% of the face.
+   Solving |C(R) - (31.8,50)| - 38.9 = 31.25 - R gives R = 28.96; 29 is that,
+   rounded. Pulling in further trades hours-dial gap for plate margin and
+   pushes the subdial's hit box up under .reserve (62..88 x 34..60), which it
+   now clears by 1.52%.
    Everything below is derived from it and must translate rigidly with it:
      .seconds-dial  (this rule; centre = left + width/2, top + height/2)
      .sec-pivot     (seconds-hand sprite; its box centre IS the rotation axis)
@@ -519,8 +529,8 @@ a:hover { color: var(--gold-line-hover); }
    rebuilt from sprites, and no longer exists.) */
 .seconds-dial {
   position: absolute;
-  left: 45.8%;
-  top: 65%;
+  left: 50.9%;
+  top: 61.515%;
   width: 27.2%;
   height: 27.2%;
   border-radius: 50%;
@@ -532,11 +542,11 @@ a:hover { color: var(--gold-line-hover); }
 /* Sized so the aperture's outer arc sits flush inside the seconds track.
    Two invariants, both load-bearing:
 
-   1. left = 59.4 - width/2, so the box stays on the subdial axis (59.4%).
-   2. top is set so the ARC's centre lands on the subdial centre (78.6%).
+   1. left = 64.5 - width/2, so the box stays on the subdial axis (64.5%).
+   2. top is set so the ARC's centre lands on the subdial centre (75.115%).
       The arc "A48 48" has its centre at v=56.74677 in the 0 0 100 50 viewBox,
-      so arc-centre-y = top + (56.74677/50) * height. Solving for 78.6 gives
-      65.05. That concentricity is what makes the fit even the whole way
+      so arc-centre-y = top + (56.74677/50) * height. Solving for 75.115 gives
+      61.565. That concentricity is what makes the fit even the whole way
       round; it was already true to 0.02% before this resize, and holding it
       is worth more than holding the wheel pivot's old 1.45% offset (see
       below), since both are the same one degree of freedom.
@@ -569,20 +579,20 @@ a:hover { color: var(--gold-line-hover); }
    only to show the scaling argument.) */
 .moon {
   position: absolute;
-  left: 47.3%;
-  top: 65.05%;
+  left: 52.4%;
+  top: 61.565%;
   width: 24.2%;
   height: 11.94%;
   cursor: pointer;
 }
 .moon:hover { filter: brightness(1.08); }
 
-/* Square sprite centred on (59.40%, 78.60%) -- the small-seconds axis, which is
+/* Square sprite centred on (64.50%, 75.115%) -- the small-seconds axis, which is
    the centre of .seconds-dial above. Keep the two in step if that dial moves. */
 .sec-pivot {
   position: absolute;
-  left: 47.723%;
-  top: 66.923%;
+  left: 52.823%;
+  top: 63.438%;
   width: 23.354%;
   height: 23.354%;
   transform-origin: 50% 50%;
