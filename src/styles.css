@@ -312,14 +312,32 @@ a:hover { color: var(--gold-line-hover); }
 .date-frame { position: absolute; inset: 0; filter: drop-shadow(0 .3vmin .85vmin rgba(0,0,0,.62)); }
 .date-window:hover { box-shadow: 0 0 0 .25vmin rgba(240,200,150,.55); }
 
-/* Depth, not flat type. The fill is a vertical tone ramp clipped to the glyph
-   -- a lit crest where the lacquer catches the light, a dense core, and warm
-   bounce off the cream pane at the foot. The relief around it is done with
-   chained drop-shadow() rather than text-shadow, because `background-clip:
-   text` paints in the background layer, *below* text shadows: an opaque
-   text-shadow silhouette would simply cover the ramp up. drop-shadow() always
-   composites behind the finished glyph, so the pale meniscus above, the lip
-   below-right and the contact shadow on the pane all stay at the edges. */
+/* Georgia, as the date read before the sprite rebuild -- old-style figures, so
+   0/1/2 sit at x-height while 3/4/5/7/9 hang below and 6/8 climb. That uneven
+   rhythm IS the look; do not "fix" it with a lining face.
+
+   Size is carried over by optical proportion rather than by number. Georgia at
+   5.65vmin put a 23.17px figure body in a 75.88px pane -- 30.5% of the pane
+   height. The sprite's cream pane is 69.65px at the same viewport, so the same
+   30.5% wants 5.65 x (69.65 / 75.88) = 5.19vmin. (Marcellus's 7.4vmin is not
+   transferable: its lining figures stand at 57% of the pane.) Both panes shrank
+   by the same ~0.918 in width and height, so the flex centring and the
+   line-height:1 baseline land at the same fractions of the pane as before --
+   baseline at 69.7% down, which is what let the descending figures hang.
+
+   The depth stays, dialled back. The fill is a vertical tone ramp clipped to
+   the glyph -- a lit crest where the lacquer catches the light, a dense core,
+   and bounce off the cream pane at the foot -- but pulled to a cool near-black
+   around the old #111318 rather than the warm brown the Marcellus cut used,
+   and the relief offsets are scaled ~0.7 to match the smaller, heavier,
+   slab-ier Georgia strokes; at full strength they silted up the counters.
+
+   The relief is chained drop-shadow() rather than text-shadow, because
+   `background-clip: text` paints in the background layer, *below* text
+   shadows: an opaque text-shadow silhouette would simply cover the ramp up and
+   the numerals would go flat. drop-shadow() always composites behind the
+   finished glyph, so the pale meniscus above, the lip below-right and the
+   contact shadow on the pane all stay at the edges. */
 .date-digit {
   position: absolute;
   top: 7.96%;
@@ -328,19 +346,19 @@ a:hover { color: var(--gold-line-hover); }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-size: 7.4vmin;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 5.19vmin;
   line-height: 1;
-  color: #161009;
-  background-image: linear-gradient(177deg, #5b452c 0%, #241a11 17%, #100c07 46%, #0d0906 68%, #2b2015 90%, #503b26 100%);
+  color: #111318;
+  background-image: linear-gradient(178deg, #2b2e37 0%, #17191f 20%, #0e1116 52%, #0d1015 72%, #191c24 90%, #2f3341 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   filter:
-    drop-shadow(0 -.06vmin .03vmin rgba(255,252,245,.85))
-    drop-shadow(.06vmin .1vmin .05vmin rgba(92,69,45,.55))
-    drop-shadow(.14vmin .26vmin .4vmin rgba(70,51,31,.4))
-    drop-shadow(0 .5vmin 1vmin rgba(56,41,25,.22));
+    drop-shadow(0 -.04vmin .02vmin rgba(255,252,245,.62))
+    drop-shadow(.04vmin .07vmin .04vmin rgba(86,68,48,.5))
+    drop-shadow(.1vmin .18vmin .28vmin rgba(64,50,32,.36))
+    drop-shadow(0 .34vmin .7vmin rgba(52,40,26,.2));
   pointer-events: none;
 }
 .date-tens { left: 4.13%; }
