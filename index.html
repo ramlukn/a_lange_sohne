@@ -9,15 +9,15 @@
 <title>Nikhil Ramlukan — Calibre NR.1</title>
 
 <!-- Startup gate. The intro is time-based, and its opening act is the only part
-     that needs loaded art: six sprites, ~163 KB, first wanted 0.80s in. If they
-     have not arrived by then the act plays over nothing and the user just sees
-     a gap where the movement should be.
+     that needs loaded art: one sprite, ~66 KB, wanted 0.80s in. If it has not
+     arrived by then the act plays over nothing and the user just sees a gap
+     where the movement should be.
 
-     So the whole sequence is held paused until they have. The wait happens
+     So the whole sequence is held paused until it has. The wait happens
      behind the title card, which is already on screen and already says
      "ASSEMBLING MOVEMENT" — it is the loading affordance this needs, so there is
-     no new UI. Released the moment all six have loaded; on a warm or local load
-     that is well under 200ms and nobody sees a hold at all.
+     no new UI. Released the moment the sprite has loaded; on a warm or local
+     load that is well under 200ms and nobody sees a hold at all.
 
      Past a 1.2s deadline we stop waiting and drop the movement act instead
      (.no-mvt), because making someone stare at a title card is worse than
@@ -31,6 +31,9 @@
      background tab, or a hidden preview pane) it simply never settles and every
      load would fall through to the deadline. `load` always settles, and by the
      time the act is cued a decoded 544px WebP is a millisecond of work.
+     Nothing here may depend on a frame happening either: rAF does not fire in a
+     tab that is not being painted, so deferring the release to one -- after the
+     deadline has been cleared -- would strand the page held forever.
 
      This lives inline and self-contained rather than in main.js: the hold has
      to be in effect before the first frame, and a gate that could strand the
@@ -38,7 +41,7 @@
      backstop — nothing here can leave the page paused.
 
      Reduced motion never holds: that path display:none's the movement outright,
-     and the <picture> wrappers below keep it from being fetched at all. -->
+     and the <picture> wrapper below keeps it from being fetched at all. -->
 <script>
 (function () {
   var root = document.documentElement;
@@ -56,25 +59,16 @@
   var deadline = setTimeout(function () { release(false); }, 1200);
 
   addEventListener('DOMContentLoaded', function () {
-    var layers = document.querySelectorAll('.mv-layer');
-    if (!layers.length) { clearTimeout(deadline); return release(false); }
+    var art = document.querySelector('.mv-art');
+    if (!art) { clearTimeout(deadline); return release(false); }
 
-    // Released straight from the last load event, with no requestAnimationFrame
-    // in between: rAF does not fire in a tab that is not being painted, so
-    // deferring to one after the deadline has been cleared would strand the
-    // page held forever. Nothing in this gate may depend on a frame happening.
-    var pending = layers.length, ok = true;
-    function settle(good) {
-      if (!good) ok = false;
-      if (--pending) return;
+    function settle(ready) {
       clearTimeout(deadline);
-      release(ok);
+      release(ready);
     }
-    Array.prototype.forEach.call(layers, function (img) {
-      if (img.complete) return settle(img.naturalWidth > 0);
-      img.addEventListener('load', function () { settle(true); }, { once: true });
-      img.addEventListener('error', function () { settle(false); }, { once: true });
-    });
+    if (art.complete) return settle(art.naturalWidth > 0);
+    art.addEventListener('load', function () { settle(true); }, { once: true });
+    art.addEventListener('error', function () { settle(false); }, { once: true });
   });
 })();
 </script>
@@ -200,31 +194,25 @@
           <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a2e1b,#b98855 40%,#f2d9ad 52%,#9b6b3f 76%,#2c1a0d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 2.06s both;--fs:1.09;"></div>
 
           <!-- ============ MOVEMENT ============ -->
-          <!-- Calibre NR.1 assembling itself out of six rendered layers, in
-               three beats. Painted over the case discs and under the dial plate,
-               so the case closes around a movement that is already finished and
-               the dial then drops straight over it. The movement is drawn at
-               0.80 of the dial well, so the case's own flange shows as an
-               annulus around it; see the MOVEMENT block of src/styles.css.
+          <!-- Calibre NR.1, finished, arriving as one piece. Painted over the
+               case discs and under the dial plate, so the case closes around a
+               movement that is already there and the dial then drops straight
+               over it. The movement is drawn at 0.80 of the dial well, so the
+               case's own flange shows as an annulus around it; see the MOVEMENT
+               block of src/styles.css, which is also where the timing lives.
 
-               The six sprites are exactly registered on one source frame, so
-               each is just an <img> in its own measured box inside .watch-mvt --
-               no layer needs aligning by hand, and stacking them in file order
-               reproduces the supplied reference composite byte for byte
-               (tools/build-movement-art.py asserts that on every build and
-               prints every number below). Timing lives in the .watch-mvt / mv*
-               block of src/styles.css.
+               One sprite, cropped to exactly the frame .watch-mvt describes, so
+               it fills its parent and carries no measured box of its own. It is
+               the six masters in tools/assets-src/movement/ flattened;
+               build-movement-art.py asserts on every build that they still
+               stack into the supplied reference composite byte for byte, and
+               prints the geometry above.
 
-               These are flat images: nothing here can turn, because rotating a
-               layer would spin every wheel on it the same way at the same rate.
-               The assembly IS the animation. -->
+               It is a flat image: nothing here can turn, because rotating it
+               would spin every wheel on it the same way at the same rate. The
+               arrival IS the animation. -->
           <div class="watch-mvt" aria-hidden="true">
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-plate" style="left:0.275%;top:0%;width:99.541%;height:100%" src="/assets/movement/foundation-plate.webp" alt="" decoding="async" fetchpriority="high"></picture>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-train" style="left:12.489%;top:6.394%;width:77.778%;height:81.083%" src="/assets/movement/gear-train.webp" alt="" decoding="async" fetchpriority="high"></picture>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-balance" style="left:39.853%;top:53.464%;width:56.749%;height:31.350%" src="/assets/movement/balance-escapement.webp" alt="" decoding="async"></picture>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-bridges" style="left:9.734%;top:10.835%;width:84.573%;height:75.933%" src="/assets/movement/bridge-set.webp" alt="" decoding="async"></picture>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-jewels" style="left:10.101%;top:11.989%;width:81.359%;height:71.758%" src="/assets/movement/screws-and-jewels.webp" alt="" decoding="async"></picture>
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-layer mv-ring" style="left:0%;top:0.089%;width:100%;height:99.378%" src="/assets/movement/perimeter-ring.webp" alt="" decoding="async"></picture>
+            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-art" src="/assets/movement/calibre.webp" alt="" decoding="async" fetchpriority="high"></picture>
           </div>
 
           <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);animation:fadeIn .45s ease 2.24s both;"></div>

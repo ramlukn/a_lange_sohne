@@ -85,70 +85,65 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 
-/* ---- movement: calibre NR.1 assembling ----
-   Six rendered layers arriving on a common frame in three beats. Every one of
-   these is transform / opacity / filter only, and none of them rotates a layer
-   about the movement's centre: these are flat images, so turning one would carry
-   every wheel on it around the same axis at the same rate. The assembly is the
-   shot.
+/* ---- movement: calibre NR.1 arriving ----
+   One finished calibre resolving out of the dark. Transform / opacity / filter
+   only, and it does not rotate: this is a flat image, so turning it would carry
+   every wheel on it around the same axis at the same rate.
 
-   --fs  the scale a layer starts at, i.e. how far "above" the plate it is
-   --fx/--fy  the offset it travels in from, in % of its own box
-   --fb  how blurred it is while it is still off-plane
-   --sd  how far the part finally stands off the plate, as a shadow offset. The
-         shadow is thrown long and soft while the part is in the air and pulls
-         in tight as it lands, which is the depth cue doing the real work here.
-         It has to live inside the keyframes: an animated `filter` replaces the
-         property outright, so a static drop-shadow next to it would never
-         paint. Every keyframe therefore carries the same two-function list, in
-         the same order, so the filter interpolates cleanly.
+   It arrives onto nothing -- the case discs do not seat until 1.68s and the
+   movement is at rest by 1.56s -- so it cannot descend onto a surface, and does
+   not pretend to. It comes up out of the dark the way the mainplate used to:
+   magnified, defocused and transparent while it is still off-plane, condensing
+   into a solid object and taking up with a shallow overshoot at the end. That
+   overshoot IS the settle; there is no second one, because there is no moment
+   any more where a last part lands and the whole stack then takes up.
 
-   The movement is drawn at 0.80 of the dial well (see .watch-mvt), so every
-   length in here that is NOT relative to a layer's own box was scaled by 0.80
-   with it: the blurs (px) and the standoff shadows (vmin). --fx/--fy are % of
-   the layer's own box and --fs is a ratio, so both are already scale-free. A
-   part 20% smaller standing off the plate by the old .40vmin would have read as
-   half again as proud of it. */
-@keyframes mvPlateIn {
-  0%   { opacity: 0; transform: scale(1.055); filter: blur(1.92px); }
-  70%  { opacity: 1; }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
-}
-/* A part descending onto the plate: bigger, softer and transparent while it is
-   still off-plane, then a shallow overshoot as it takes up on its seat. */
-@keyframes mvDrop {
-  0%   { opacity: 0;
-         transform: translate(var(--fx, 0%), var(--fy, 0%)) scale(var(--fs, 1.16));
-         filter: blur(var(--fb, 2.08px)) drop-shadow(0 calc(var(--sd, .27vmin) * 2.8) calc(var(--sd, .27vmin) * 3.6) rgba(0,0,0,.5)); }
-  56%  { opacity: 1; }
-  80%  { transform: translate(0, 0) scale(.9955);
-         filter: blur(0) drop-shadow(0 calc(var(--sd, .27vmin) * .8) calc(var(--sd, .27vmin) * 1.5) rgba(0,0,0,.52)); }
-  100% { opacity: 1; transform: translate(0, 0) scale(1);
-         filter: blur(0) drop-shadow(0 var(--sd, .27vmin) calc(var(--sd, .27vmin) * 1.8) rgba(0,0,0,.48)); }
-}
-/* The ring does not descend, it closes: a rim is pressed on from outside and
-   turned down onto its seat, so it comes in barely larger and barely off true.
-   Its resting shadow is the one that changed job when the movement went to 0.80
-   of the well. It used to land on the seam where the rim met the case and was
-   mostly spent there; now it falls squarely on the flange the smaller movement
-   leaves exposed, and it is the whole reason that flange reads as a floor the
-   movement is sitting on rather than as a gap around it. Scaled 0.80 like every
-   other standoff -- it does more work at the same strength because it is finally
-   landing on something. */
-@keyframes mvRingIn {
-  0%   { opacity: 0; transform: scale(1.052) rotate(-1.6deg);
-         filter: blur(1.44px) drop-shadow(0 .56vmin .88vmin rgba(0,0,0,.46)); }
-  60%  { opacity: 1; }
-  84%  { transform: scale(.9975) rotate(.14deg);
+   The DROP-SHADOW is the one thing here that has to survive verbatim. Its
+   resting value falls on the case's polished flange -- the annulus the 0.80
+   scale leaves exposed, see .watch-mvt -- and it is the whole reason that
+   flange reads as a floor the movement is sitting on rather than as a gap
+   around it. It is thrown long and soft while the movement is in the air and
+   pulls in tight as it lands, and it has to live inside the keyframes: an
+   animated `filter` replaces the property outright, so a static drop-shadow
+   next to it would never paint. Every keyframe therefore carries the same
+   two-function list, in the same order, so the filter interpolates cleanly.
+   The `both` fill then holds the resting shadow after the animation ends, which
+   is what has it still there when the flange arrives at 2.06s.
+
+   HOW FAR OFF-PLANE IT STARTS is not chosen: 1.14 and 2.24px are the figures
+   the gear train and the balance descended from in the assembly -- the beat
+   with the most weight in it -- so the movement now arrives from the height its
+   own mechanism used to. A perspective magnification and a defocus blur both
+   depend on height off the plane and not on how big the thing is, which is what
+   makes carrying them over from a part to the whole legitimate. It also has to
+   be about that big: the easing below is heavily front-loaded, so a smaller
+   delta would be over inside 200ms and the rest of the window would be a hold.
+
+   Every length in here that is not a ratio was scaled by 0.80 with the
+   movement: the blur (px) and the standoff shadow (vmin). A movement 20%
+   smaller standing off the flange by the old figures would have read as half
+   again as proud of it.
+
+   The easing is the house arrival curve, cubic-bezier(.22,1,.36,1), which is
+   also caseSeat's and dialSeat's. The three big objects -- movement, case, dial
+   -- now arrive one after another as whole things, so they should arrive the
+   same way; that they do is the strongest argument for it. It applies per
+   keyframe interval, not across the whole animation, so the 84% overshoot gets
+   its own eased .12s recovery rather than being flattened by the long ease-out
+   that carries the scale in.
+
+   Being that front-loaded, the travel is spent in the first ~250ms and the rest
+   of the .76s is refinement you can barely see. That is not slack: it is what
+   hands a movement that has completely stopped to the case, and it is why the
+   duration is quoted as a window rather than as a length of motion. */
+@keyframes mvArrive {
+  0%   { opacity: 0; transform: scale(1.14);
+         filter: blur(2.24px) drop-shadow(0 .62vmin .96vmin rgba(0,0,0,.46)); }
+  58%  { opacity: 1; }
+  84%  { transform: scale(.9972);
          filter: blur(0) drop-shadow(0 .16vmin .36vmin rgba(0,0,0,.5)); }
-  100% { opacity: 1; transform: scale(1) rotate(0deg);
+  100% { opacity: 1; transform: scale(1);
          filter: blur(0) drop-shadow(0 .19vmin .44vmin rgba(0,0,0,.48)); }
-}
-/* The finished stack taking up in the case, once the ring has closed it. One
-   settle on the whole layer -- no part moves relative to any other. */
-@keyframes mvSettle {
-  from { transform: scale(1.0055); }
-  to   { transform: scale(1); }
 }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
 /* One pass of the scribe: a live part's own principal line draws itself on,
@@ -164,9 +159,9 @@ a:hover { color: var(--gold-line-hover); }
 
 /* ---- startup gate ----
    The intro's opening act is the only part of it that needs loaded art, and it
-   is also the first to play. Rather than let a time-based act run over sprites
-   that have not decoded, the head script holds the whole sequence paused until
-   they have, then releases it; see the comment on that script in index.html for
+   is also the first to play. Rather than let a time-based act run over a sprite
+   that has not decoded, the head script holds the whole sequence paused until
+   it has, then releases it; see the comment on that script in index.html for
    the deadline and the fallback. Pausing rather than re-timing means every
    delay downstream stays exactly as authored -- the clock simply starts later. */
 html.mvt-hold .stage,
@@ -177,7 +172,7 @@ html.mvt-hold .stage *::after { animation-play-state: paused; }
    looking at while we wait, and which would read as hung if it froze. */
 html.mvt-hold .loader-fill { animation-play-state: running; }
 
-/* The sprites missed the deadline: drop the act rather than play it over
+/* The sprite missed the deadline: drop the act rather than play it over
    nothing. Nothing downstream depended on the movement having been there. */
 html.no-mvt .watch-mvt { display: none; }
 
@@ -206,9 +201,9 @@ html.no-mvt .watch-mvt { display: none; }
     transition-duration: .01ms !important;
   }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
-  /* The movement is an assembly sequence and nothing else -- it is not part of
-     the finished watch, so with the sequence gone there is nothing to show. The
-     <picture> wrappers make this the cheap path too: none of the art is even
+  /* The movement is an arrival and nothing else -- it is not part of the
+     finished watch, so with the motion gone there is nothing to show. The
+     <picture> wrapper makes this the cheap path too: the art is not even
      fetched. */
   .watch-mvt { display: none !important; }
 }
@@ -256,92 +251,95 @@ html.no-mvt .watch-mvt { display: none; }
 .loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill .62s cubic-bezier(.4,0,.2,1) both; }
 
 /* ===================== MOVEMENT =====================
-   Calibre NR.1 assembles itself as the watch's opening act, out of six rendered
-   layers in three beats. The layer is painted over the case discs and under the
-   dial plate, so the case closes *around* a movement that is already finished
-   and the dial then drops straight over it.
+   Calibre NR.1 arrives finished, as the watch's opening act: one image, one
+   gesture. The layer is painted over the case discs and under the dial plate,
+   so the case closes *around* a movement that is already there and the dial
+   then drops straight over it.
+
+   WHAT THIS REPLACED, so nobody re-derives it by accident. The movement used to
+   assemble itself out of six registered sprites in three beats -- the mainplate
+   coming up out of the dark, the train and balance descending onto it, then the
+   bridges, screws and rim closing it up -- with a settle on the finished stack.
+   Every part of that is gone, on request: the finished movement is what is
+   wanted, not the making of it. The six masters are still in
+   tools/assets-src/movement/ and the layered version is recoverable from git;
+   what ships is their flattened sum.
 
    Geometry is measured, not guessed -- tools/build-movement-art.py prints every
-   number here and asserts on each build that the six layers still stack into the
-   supplied reference composite exactly. The box is placed off the perimeter
-   ring, whose outer edge is the movement's rim.
+   number here and asserts on each build that the six masters still stack into
+   the supplied reference composite exactly, which is also what the shipped
+   sprite is made from. The box is placed off the perimeter ring, whose outer
+   edge is the movement's rim, so flattening changed none of it.
 
    SIZE. The movement is drawn at 0.80 of the dial well's diameter
    (MOVEMENT_SCALE in the build script): the well is inset 5.15%, i.e. 89.70% of
    the face, and the rim spans 71.76% of it, concentric. That is a deliberate
    break with what was here before, where the rim landed on the well to within
    0.02px and the case appeared to close flush around the movement. It no longer
-   does, and it is not meant to: the movement is now an object sitting inside the
-   case opening rather than the thing that fills it, the way a calibre is smaller
-   than the case it is fitted into.
+   does, and it is not meant to: the movement is an object sitting inside the
+   case opening rather than the thing that fills it, the way a calibre is
+   smaller than the case it is fitted into.
 
-   That leaves an 8.97%-of-the-face annulus (10% of the well radius) between the
+   That leaves an 8.97%-of-the-face annulus (20% of the well radius) between the
    rim and the well, and it is a surface, not a gap. What shows through it is the
    innermost case disc -- polished gold, inset 3.55% -- so it reads as the case's
-   own flange, and the rim's resting drop-shadow (mvRingIn, above) falls on it
-   and gives the movement a floor to sit on. Nothing new was drawn for it. The
-   dial plate still covers the whole well at inset 5.15%, so the handoff at 2.24s
-   is unchanged; it now arrives over flange as well as movement, which is exactly
-   what a dial does.
+   own flange, and the movement's resting drop-shadow (mvArrive, above) falls on
+   it and gives the movement a floor to sit on. Nothing new was drawn for it.
+   The dial plate still covers the whole well at inset 5.15%, so the handoff at
+   2.24s is unchanged; it arrives over flange as well as movement, which is
+   exactly what a dial does.
 
-   The box is 0.45 percentage points taller than it is wide because the frame is
-   the union of all six layers and the mainplate reaches a few px below the ring,
-   the way a real mainplate is wider than its chapter ring.
+   SHAPE. The box is 0.45 percentage points taller than it is wide because the
+   sprite's ink is the union of all six masters and the mainplate reaches a few
+   px below the ring, the way a real mainplate is wider than its chapter ring.
 
-   Nothing here rotates a wheel. These are flat images: spinning the gear-train
-   layer would carry all five wheels around the same axis in the same direction
-   at the same rate, which is not what a going train does. The arrival is the
-   animation, and after the ring closes the only motion is the whole stack
-   settling as one.
+   The sprite's own pixels are 1089x1126, i.e. 1.03398 tall, and the box is
+   71.760% x 72.209% of the face, i.e. 1.00626 tall. So `object-fit: fill` is
+   deliberate here, not lazy: it scales the sprite's y by 0.97319. That corrects
+   the art rather than distorting it. The perimeter ring is rendered 1089x1119 --
+   2.755% taller than wide -- and the disc it has to be is a true circle; the
+   squash is that same correction re-expressed against the frame's aspect
+   instead of the ring's, and it lands the rim at 71.760% x 71.760% of the face.
+   Round by construction, at any scale. It is a pure aspect ratio, so it survived
+   the 0.80 rescale untouched and would survive another. Re-derive it, do not
+   copy it, if the art is ever re-exported: the property that has to hold is
+   that the RING comes out circular, not that the number stays 0.97319.
 
-   SCHEDULE, in seconds relative to --mv0 (add .80s for time from page load).
-   Three beats, evenly spaced .266s apart, each arrival .37s in flight:
-     .000 foundation plate  the ground appears; it does not descend
-     .266 gear train + balance and escapement -- the mechanism is laid on, the
-          train straight down, the balance in from its own corner. One onset,
-          one landing, two layers; see below.
-     .532 bridge set + screws and jewels + perimeter ring -- the movement is
-          closed up. One onset, one landing, three layers; see below.
-     .902-1.298 the assembled stack settles into the case, starting the instant
-          the ring lands, as one -- no part moves relative to any other.
+   Nothing here rotates. This is a flat image: turning it would carry all five
+   wheels around the same axis in the same direction at the same rate, which is
+   not what a going train does. The arrival is the animation, and it is the only
+   one.
 
-   WHY THREE AND NOT TWO. A beat here is a change of KIND, not a change of part,
-   and the act contains exactly three kinds of event:
-     something appears out of nothing -- the plate. No travel, no shadow, and
-       its own keyframes (mvPlateIn), because there is nothing under it to
-       descend onto and nothing for a shadow to fall on;
-     things descend onto it -- train and balance (mvDrop), each from the side it
-       lives on, each throwing a shadow on the plate until it lands;
-     things close over them -- bridges, screws and jewels, rim.
-   Two beats -- parts, then closed -- would have to fold the plate in with the
-   descenders, and the plate cannot descend. It would need either a shadow
-   falling on nothing or to be visibly doing something else at the group's
-   shared onset, which is precisely the coincidence-of-timings that merging is
-   supposed to avoid. The plate is the floor the other two beats are about, so
-   it keeps a beat of its own; the other two each say one thing.
+   SCHEDULE, in seconds from page load:
+     .800 the calibre begins to resolve out of the dark, pinned to the title
+          card dissolving (.62s-1.07s)
+     1.560 it is at rest, and the case begins to close around it
+     3.000 mvGone drops the layer, long after the dial has covered it
 
-   WHAT THE MERGE BOUGHT, AND WHERE IT WENT. Dropping an onset frees .176s, and
-   it was NOT given back to the intro, because this act is not on the intro's
-   critical path. The case starts seating at 1.56s -- half a second before the
-   act ends -- and everything after it (dial 2.24s, hands 3.14s, crown 3.38s,
-   the interaction index at 4.11s) is anchored to the case, not to the movement.
-   An act that finished at 1.92s would shorten nothing a visitor sits through;
-   it would only leave a finished movement holding still for longer. Shortening
-   the intro means moving that whole downstream chain, which is a different
-   edit. So the act keeps its footprint and spends the time on itself: every
-   arrival is 12% longer in flight (.33 -> .37s, and the plate's fade-up
-   .374 -> .42s, the same stretch), and the onsets are evenly spaced instead of
-   the .220/.176/.176 the six-beat version left behind. Even spacing is the
-   shape an assembly has once each beat carries the same weight; the .266 is not
-   chosen but solved for, being what is left of the fixed .000-to-.902 window
-   after the .37s flight: 2 x .266 + .37 = .902.
+   THE DURATION IS SOLVED FOR, NOT CHOSEN. It is what fills the window between
+   the two fixed events either side of it: the act starts when the title card
+   goes (.80s) and the case's cast shadow starts at 1.56s. .76s. The old act ran
+   to 2.098s and so overlapped the case by half a second -- the movement was
+   still assembling while the case was already closing on it, which was a
+   compromise the three-beat version could not avoid without moving everything
+   downstream. One arrival does not need the room, so the two acts are now
+   sequential: the calibre is fitted, then the case closes around it, then the
+   dial drops on. Three whole objects, three arrivals, in order.
 
-   The end is unmoved, so nothing downstream had to move: the ring still lands
-   at .902 and the settle still ends at 1.298 (2.098s from load). The case still
-   starts seating at 1.56s and finishes at 2.06s, and the dial plate still lands
-   at 2.24s -- 0.14s after the movement has completely stopped, so nothing is
-   still arriving when the dial comes down over it. mvGone drops the layer at
-   3.00s, long after the dial has covered it. */
+   WHERE THE REST OF THE TIME WENT: into the gesture. A single arrival at a
+   layer's old .37s would have been over before it registered, and this one is
+   carrying the whole act, so it gets .76s -- twice the flight any individual
+   part had. What it did NOT do is shorten the intro. This act is not on the
+   intro's critical path: everything after it (case 1.56s, dial 2.24s, hands
+   3.14s, crown 3.38s, the interaction index at 4.11s) is anchored to the case,
+   not to the movement, so finishing earlier shortens nothing a visitor sits
+   through. If the whole intro should be shorter now -- and there is a case for
+   it, since the movement no longer needs 1.3s to say what it says -- that means
+   pulling the case forward and the whole chain with it, roughly a half-second
+   off every delay from 1.56s on. That is a different edit and it is not made
+   here. What IS bought is that the movement now stands finished and still for
+   .68s before the dial covers it, instead of the .14s the assembly left, so the
+   thing the act is about is actually looked at. */
 .watch-mvt {
   position: absolute;
   left: 14.12%;
@@ -349,117 +347,25 @@ html.no-mvt .watch-mvt { display: none; }
   width: 71.76%;
   height: 72.209%;
   pointer-events: none;
-  --mv0: .80s;
-  /* --mv0 is when the act starts, not how long it takes: it is pinned to the
-     title card dissolving (.62s-1.07s), so the stretch does not touch it.
-     The settle begins where the ring lands, .532 + .370. */
-  animation:
-    mvSettle .396s cubic-bezier(.24,.9,.3,1) calc(var(--mv0) + .902s) both,
-    mvGone 0s linear 3s forwards;
+  animation: mvGone 0s linear 3s forwards;
 }
-/* Each sprite is cropped to its own ink and carries its measured box inline, so
-   a layer scales about its own centre: the balance seats on the balance and the
-   ring closes about the rim, rather than everything pivoting on the middle of
-   the movement.
-
-   The boxes are a hair off the sprites' own aspect -- the frame is squashed 2.7%
-   in y -- so object-fit: fill is deliberate here, not lazy. This corrects the
-   art rather than distorting it: the supplied perimeter ring measures 1088 wide
-   by 1118 tall, i.e. it was rendered 2.76% taller than wide, and the disc it has
-   to be is a true circle. The squash is a pure aspect ratio, so it survives the
-   0.80 rescale untouched: the ring's box is 100% x 99.378% of a frame that is
-   71.760% x 72.209% of the face, which is 71.760% both ways. Round by
-   construction, at any scale. Re-measure if the art is ever re-exported.
-
-   Every one of these % boxes is a fraction of the frame, so none of them moved
-   when the frame did -- the 0.80 lives entirely in .watch-mvt's own box. */
-.mv-layer {
+/* The sprite is cropped to exactly the frame's ink, so it fills the box and
+   needs no measured position of its own -- the geometry above is the whole of
+   it. The arrival is on the image and not on .watch-mvt because it animates
+   `filter`, and .watch-mvt sits in .face-front's preserve-3d context alongside
+   the case discs and the dial plate, which settle their paint order by DOM
+   order alone; a filter on it would flatten it out of that context. Keeping the
+   filter one level down is the same arrangement the layered build had, and the
+   one the paint order was verified under. */
+.mv-art {
   position: absolute;
+  inset: 0;
   display: block;
+  width: 100%;
+  height: 100%;
   object-fit: fill;
-  animation: mvDrop .37s cubic-bezier(.2,.86,.28,1) calc(var(--mv0) + var(--d, 0s)) both;
+  animation: mvArrive .76s cubic-bezier(.22,1,.36,1) .8s both;
 }
-
-/* ---- beat one: the ground ----
-   The plate is the ground: it does not descend onto anything, it just comes up
-   out of the dark under the tail of the title card. No shadow -- nothing is
-   below it to catch one. Its .42s is the drop's .37s carrying the same 1.133
-   ratio it has always had to it: a fade-up with no travel needs longer to read
-   than an arrival does. */
-.mv-plate { animation: mvPlateIn .42s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
-
-/* Everything after the plate descends, each layer from the side it lives on,
-   each throwing a shadow onto what is under it until it lands. Bigger --fs and
-   --fb = further off-plane at the start; --sd is how proud of the plate the part
-   finally stands, so the wheels (thickest) get the deepest shadow and the flush
-   screws the shallowest. Both beats below read the same four variables. */
-
-/* ---- beat two: the mechanism ----
-   The balance used to hold a beat of its own on the grounds that it is the part
-   that makes a watch a watch. That is a claim about what a balance DOES, and
-   this act cannot show it doing anything -- nothing here rotates, by design.
-   What was left of the claim on screen was one more part landing .176s after
-   the last one, which is the same beat-about-nothing the screws were guilty of.
-   And they were never two things mechanically either: the escape wheel is the
-   last wheel of the going train, and a train and its escapement are fitted
-   together. Arriving with the train it drives is where the balance belongs.
-
-   One gesture, on the same terms as beat three below: they share --d, so onset,
-   duration and easing all come from the one .mv-layer rule. They also share the
-   height they start from, which is the merge doing structural work rather than
-   deleting a delay -- if they arrive as one subassembly they are on one plane,
-   and --fs (a perspective magnification) and --fb (a defocus blur) both depend
-   on height off the plate and not on how big the part is, exactly as the screws
-   note below argues. Those are the train's numbers, the train being the plane
-   the escapement seats in.
-
-   What stays each layer's own is what is not about the gesture: --fx/--fy, the
-   side each comes in from -- the train straight down onto its arbors, the
-   balance in from its own corner -- and --sd, how proud each finally stands. */
-.mv-train,
-.mv-balance { --d: .266s; --fs: 1.14; --fb: 2.24px; }
-.mv-train   { --fx: 0%;   --fy: -2.2%; --sd: .32vmin; }
-.mv-balance { --fx: 3.4%; --fy: 2.6%;  --sd: .27vmin; }
-
-/* ---- beat three: the movement is closed up ----
-   The bridge set, the screws and jewels that fasten it, and the perimeter rim
-   used to be three consecutive beats. They are one now.
-
-   The screws were always the weakest beat in the act -- a scatter of specks
-   appearing 0.20s after the bridges they hold down, which is a beat about
-   nothing. And the rim lost its reason to stand alone when the movement went to
-   0.80 of the well: its whole claim to a beat of its own was that it was the
-   handoff, the frame the case then closed onto exactly. It is not that any more.
-   It is just the movement's outer edge, so it belongs to the same idea as the
-   bridges -- the movement being shut.
-
-   What is kept separate is what carries on its own, and after the second merge
-   that is three things and only three: the plate is the ground, beat two is the
-   mechanism going on, and this beat is the movement being shut.
-
-   Three layers read as one gesture rather than a coincidence because they cannot
-   do otherwise: they share --d, and the ring overrides only animation-name, so
-   duration, easing and onset all come from the one .mv-layer rule above. One
-   onset, one landing. The rim still travels its own way -- pressed in from
-   outside with a slight turn, not dropped -- and that is the point: a cap coming
-   down and a rim closing in, arriving together, is what closing something looks
-   like. */
-.mv-bridges,
-.mv-jewels,
-.mv-ring    { --d: .532s; }
-
-.mv-bridges { --fs: 1.11; --fx: -1.4%;   --fy: -1.8%;   --fb: 1.76px; --sd: .24vmin; }
-/* Screws travelling down inside their own bridges: same journey, so the numbers
-   are the bridges' numbers converted into this layer's units, not chosen.
-   --fs is a perspective magnification, which for a given height off the plate is
-   independent of how big the thing is -- so the same height is the same 1.11.
-   --fx/--fy are % of each layer's own box, so the same travel is the bridges'
-   figure scaled by the ratio of the two boxes: 1.4 x 84.573/81.359 = 1.455 and
-   1.8 x 75.933/71.758 = 1.905. Same --fb, being the same distance off-plane.
-   Only --sd stays theirs: they travel with the bridges but they land flush into
-   them, which is a fact about screws and not about the gesture. */
-.mv-jewels  { --fs: 1.11; --fx: -1.455%; --fy: -1.905%; --fb: 1.76px; --sd: .12vmin; }
-.mv-ring    { animation-name: mvRingIn; }
 
 /* ===================== WATCH SHELL =====================
    THE DEPTH BUDGET
@@ -626,7 +532,7 @@ html.no-mvt .watch-mvt { display: none; }
       (.hint-index keeps `both`, and must: its `to` state is NOT its base
       style -- the mark would un-draw itself.)
 
-   .watch-mvt is exempt, and deliberately: the movement-assembly layer is
+   .watch-mvt is exempt, and deliberately: the movement layer is
    display:none by 3.00s and the crown does not seat until 3.38s, so it can
    never be on screen during a flip and needs nothing from this rule. Leaving
    it out means the depth work touches that layer's rendering in no way at all.

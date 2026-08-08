@@ -1,44 +1,54 @@
 #!/usr/bin/env python3
-"""Build the assembling-movement sprites from the six rendered layers.
+"""Build the finished-movement sprite from the six rendered layers.
 
 Source PNGs live in tools/assets-src/movement/, output WebP in
 public/assets/movement/. Same contract as build-dial-art.py: lossless art stays
 out of the bundle, the site only ever ships the downscaled WebP, and this script
 prints the numbers styles.css needs rather than anyone eyeballing them.
 
-The six layers are rendered on one common 1254x1254 frame and are exactly
-registered -- compositing 01..06 in order reproduces the supplied
-stacked-preview-transparent.png byte for byte, which check_registration()
-re-verifies on every build. So the only positioning question is where the shared
-frame goes; everything after that is bookkeeping.
+The site ships ONE image: the finished calibre, all six layers flattened. The
+six sources are still the masters and are still all read here, for two reasons
+that outlive the layered build --
 
-  * The FRAME is the union of all six ink boxes: 1089x1126 at (82, 62). Cropping
-    to it throws away a transparent border that is 25% of the source area.
-  * The frame is placed by the PERIMETER RING, because the ring is the movement's
-    visible outer edge -- it is what decides how big the movement reads. The
-    ring's outer edge is an axis-aligned ellipse to within 2px of 1089 (0.2%), so
-    mapping its box onto a circle concentric with the dial well -- squashing the
-    frame 2.7% in y -- makes the movement's rim a true circle by construction.
-    That 2.7% anisotropy is invisible on the interior art.
+  * the composite is made by stacking them, and check_registration() asserts the
+    result equals the supplied stacked-preview-transparent.png exactly. That is
+    a real check: it catches a re-export that shifted or resized a single layer,
+    which a flattened sprite would otherwise hide until someone looked at it.
+  * the PERIMETER RING is what places the frame, and it can only be measured
+    while it is still its own image.
+
+Geometry, none of which changed when the layers were flattened:
+
+  * The FRAME is the union of all six ink boxes: 1089x1126 at (82, 62), which
+    is also the composite's own ink box. Cropping to it throws away a
+    transparent border that is 25% of the source area.
+  * The frame is placed by the PERIMETER RING, because the ring is the
+    movement's visible outer edge -- it is what decides how big the movement
+    reads. The ring's outer edge is an axis-aligned ellipse to within 2px of
+    1089 (0.2%), so mapping its box onto a circle concentric with the dial well
+    makes the movement's rim a true circle by construction.
     MOVEMENT_SCALE then says how big that circle is as a fraction of the well.
     It used to be 1.0, i.e. the rim landed on the well and the case appeared to
     close flush around the movement; it is 0.80 now, so the movement sits inside
     the opening with the case's flange showing around it. The squash is a pure
     aspect ratio and so is unaffected either way -- round at any scale.
-    The foundation plate reaches 6px past the ring at the bottom (a real mainplate
-    is wider than its chapter ring), which is why the frame is the union and not
-    just the ring: keeping it means the box is a hair taller than it is wide.
-  * Each layer is then cropped to its OWN ink box inside that frame and gets its
-    own % box printed. That halves the payload versus six full-frame sprites, and
-    it means each layer scales about its own centre -- so the balance seats on
-    the balance and the ring closes about the rim, instead of every part
-    pivoting on the middle of the movement.
+    The foundation plate reaches 6px past the ring at the bottom (a real
+    mainplate is wider than its chapter ring), which is why the frame is the
+    union and not just the ring: keeping it means the box is a hair taller than
+    it is wide.
+  * The Y-SQUASH follows from those two boxes and is printed below. The ring is
+    rendered 1089x1119, i.e. 2.755% taller than wide, and has to end up round;
+    so the frame's box is 71.760% x 72.209% of the face while the sprite's own
+    pixels are 1089x1126. Drawing the one into the other with object-fit: fill
+    scales y by 0.97319 -- a 2.681% squash on the sprite, which is the same
+    correction as the ring's 2.755% expressed against the frame's aspect rather
+    than the ring's. Both numbers describe one fact: the art was rendered tall.
+    Re-derive rather than copy if the art is ever re-exported; the property that
+    has to hold is that the RING comes out circular.
 
 Payload is the real constraint here: this loads during startup, before the user
-can do anything, and it replaces ~9 KB of inline SVG. So the sprites are sized
-off what the movement is actually drawn at rather than the source's 1254, and
-quality is set per layer by how much scrutiny each one gets -- the plate spends
-the whole act being covered up, the jewels are the thing you look at.
+can do anything. So the sprite is sized off what the movement is actually drawn
+at rather than the source's 1254.
 
     python3 tools/build-movement-art.py
 """
@@ -52,18 +62,21 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "tools" / "assets-src" / "movement"
 OUT = ROOT / "public" / "assets" / "movement"
 
-# In assembly order, which is also paint order.
+# Paint order. These are the masters; the site ships their flattened sum.
 LAYERS = [
-    ("foundation-plate", "01_foundation-plate.png"),
-    ("gear-train", "02_gear-train.png"),
-    ("balance-escapement", "03_balance-escapement.png"),
-    ("bridge-set", "04_bridge-set.png"),
-    ("screws-and-jewels", "05_screws-and-jewels.png"),
-    ("perimeter-ring", "06_perimeter-ring.png"),
+    "01_foundation-plate.png",
+    "02_gear-train.png",
+    "03_balance-escapement.png",
+    "04_bridge-set.png",
+    "05_screws-and-jewels.png",
+    "06_perimeter-ring.png",
 ]
 
 # The layer whose outer edge is the movement's rim, and so places the frame.
 RIM_LAYER = "06_perimeter-ring.png"
+
+# The one file the site loads.
+SPRITE = "calibre.webp"
 
 # The dial well the movement sits in: the front face's `inset: 5.15%` disc.
 WELL_INSET = 5.15
@@ -75,44 +88,39 @@ WELL_INSET = 5.15
 # case's own flange around it -- which is the intended reading here.
 #
 # Nothing else in this file depends on it, and in particular the y-squash does
-# not: that corrects the art (the ring is rendered 2.76% taller than wide) and is
-# a pure aspect ratio, so the rim is a true circle at any scale. The gap the
-# scale opens up is (1 - scale) / 2 of the well diameter, in radius.
+# not: that corrects the art and is a pure aspect ratio, so the rim is a true
+# circle at any scale. The gap the scale opens up is (1 - scale) / 2 of the well
+# diameter, in radius.
 MOVEMENT_SCALE = 0.80
 
-# Width, in px, that the whole frame is rendered at. The movement is drawn at
-# 89.7% of an 86vmin face = 77.1vmin, so this is ~1.15x on a 900px-vmin laptop
-# and ~0.68x on a 1440p desktop. Deliberately far below the 2x the permanent
-# dial art gets: the movement is on screen for 2.2s, moving and under blur for
-# most of it, and then display:none'd forever. Every KB here is spent during
-# startup, before the user can do anything, which is the worst place to spend it.
-# Measured against the reference composite downsampled to display size, 640 and
-# 720 are indistinguishable and the residual is dominated by the resample rather
-# than by compression; 680 is the middle, and costs 243 KB against 320 for the
-# obvious 720/high-quality build.
+# Width, in px, that the frame is rendered at. The movement is drawn at 89.7% of
+# an 86vmin face = 77.1vmin, so this is about 1x the CSS-pixel rendering on a
+# 900px-vmin laptop and 0.68x on a 1440p desktop. Deliberately far below the 2x
+# the permanent dial art gets: the movement is on screen for under two seconds,
+# in flight and under blur for the first third of that, and then display:none'd
+# forever. Every KB here is spent during startup, before the user can do
+# anything, which is the worst place to spend it.
 #
 # That 680 was chosen against the movement's on-screen size, so it tracks
 # MOVEMENT_SCALE: drawing the movement smaller without re-exporting would just
 # ship pixels the compositor throws away. The same sampling ratio at 0.80 scale
-# is 544px.
+# is 544px. Measured against the reference downsampled to display size, the
+# resample floor at 544 is 3.99 RMS and 608 buys 1.2 RMS for 19 KB -- not worth
+# it for an image the user sees still for two thirds of a second.
 FRAME_WIDTH_AT_FULL_SIZE = 680
 FRAME_WIDTH = round(FRAME_WIDTH_AT_FULL_SIZE * MOVEMENT_SCALE)
 
-# Per layer: (quality, alpha_quality). Set by how hard each layer is looked at
-# and by what the alpha channel is doing. The plate is a grain field that
-# everything else covers up, and its alpha is one plain disc, so it takes the
-# deepest cut on both. The gear train is the expensive one -- a lace of fine
-# teeth, i.e. almost all edge -- but it is also never still. The jewels and the
-# balance are small, cheap, and the only parts with saturated colour in them, so
-# they keep their quality.
-QUALITY = {
-    "foundation-plate": (66, 70),
-    "gear-train": (70, 74),
-    "balance-escapement": (80, 88),
-    "bridge-set": (72, 78),
-    "screws-and-jewels": (82, 88),
-    "perimeter-ring": (74, 80),
-}
+# One image now, so one quality, and it is a compromise the layered build did not
+# have to make: the mainplate's grain field and the jewels are in the same
+# picture and can no longer be priced separately. Set from the jewels and the
+# balance, which are the only saturated colour in it and the parts actually
+# looked at, then walked down to the knee of the rate curve -- 80 costs 66 KB,
+# and 84 buys 0.43 RMS for another 9.
+#
+# ALPHA is nearly free either way and so is not cut: the alpha channel is one
+# disc, and everything from 55 to 100 lands within 0.01 RMS of each other. 72 is
+# where the rim's antialiased edge stops degrading for a cost of 0.2 KB.
+QUALITY, ALPHA_QUALITY = 80, 72
 
 
 def ink_bbox(im):
@@ -121,8 +129,8 @@ def ink_bbox(im):
     return xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
 
 
-def check_registration(sources):
-    """Assert the layers still stack into the supplied reference composite.
+def build_composite(sources):
+    """Stack the layers, and assert the result is the supplied reference.
 
     The reference ships next to the sources; if it is not there we can still
     check the weaker property that matters most -- that every layer is on the
@@ -133,14 +141,15 @@ def check_registration(sources):
     if len(sizes) != 1:
         raise SystemExit(f"layers are not on a common canvas: {sizes}")
 
+    comp = Image.new("RGBA", next(iter(sizes)), (0, 0, 0, 0))
+    for fname in LAYERS:
+        comp = Image.alpha_composite(comp, sources[fname])
+
     ref_path = SRC / "stacked-preview-transparent.png"
     if not ref_path.exists():
-        print(f"  no {ref_path.name} to check against; canvas {sizes.pop()} shared")
-        return
+        print(f"  no {ref_path.name} to check against; canvas {comp.size} shared")
+        return comp
 
-    comp = Image.new("RGBA", next(iter(sizes)), (0, 0, 0, 0))
-    for _, fname in LAYERS:
-        comp = Image.alpha_composite(comp, sources[fname])
     diff = np.abs(
         np.array(comp).astype(int)
         - np.array(Image.open(ref_path).convert("RGBA")).astype(int)
@@ -151,80 +160,74 @@ def check_registration(sources):
             f"(max channel error {diff.max()}) -- registration has drifted"
         )
     print(f"  01..06 composite == {ref_path.name}, exactly. registration holds.")
+    return comp
 
 
 def main():
-    sources = {
-        fname: Image.open(SRC / fname).convert("RGBA") for _, fname in LAYERS
-    }
+    sources = {fname: Image.open(SRC / fname).convert("RGBA") for fname in LAYERS}
 
     print("registration:")
-    check_registration(sources)
+    comp = build_composite(sources)
 
-    boxes = {fname: ink_bbox(im) for fname, im in sources.items()}
-
-    # The frame: union of every layer's ink.
-    fx0 = min(b[0] for b in boxes.values())
-    fy0 = min(b[1] for b in boxes.values())
-    fx1 = max(b[2] for b in boxes.values())
-    fy1 = max(b[3] for b in boxes.values())
+    # The frame: the composite's ink, i.e. the union of every layer's.
+    fx0, fy0, fx1, fy1 = ink_bbox(comp)
     fw, fh = fx1 - fx0, fy1 - fy0
 
     # Place the frame from the rim. The ring's box has to land on the well, so
     # one source px is well/ring_w wide and well/ring_h tall, and the frame's
     # own size and offset follow from that.
-    rx0, ry0, rx1, ry1 = boxes[RIM_LAYER]
+    rx0, ry0, rx1, ry1 = ink_bbox(sources[RIM_LAYER])
+    rw, rh = rx1 - rx0, ry1 - ry0
     well = 100 - 2 * WELL_INSET  # % of the face the dial well spans
     rim = well * MOVEMENT_SCALE  # ... and the % the movement's own rim spans
-    kx = rim / (rx1 - rx0)  # % of the face per source px, horizontally
-    ky = rim / (ry1 - ry0)  # ... and vertically
+    kx = rim / rw  # % of the face per source px, horizontally
+    ky = rim / rh  # ... and vertically
 
     # The rim is concentric with the well, so its inset is whatever centres it.
     # (At MOVEMENT_SCALE == 1 this is WELL_INSET exactly.)
     rim_inset = (100 - rim) / 2
-    frame_left = rim_inset - (rx0 - fx0) * kx
-    frame_top = rim_inset - (ry0 - fy0) * ky
+    box_w, box_h = fw * kx, fh * ky
     print(
-        f"\nframe (union of all six):\n"
-        f"    source box       {fx0},{fy0} .. {fx1},{fy1}  ({fw}x{fh}px)\n"
+        f"\nframe (the composite's own ink box):\n"
+        f"    source box       {fx0},{fy0} .. {fx1},{fy1}  ({fw}x{fh}px, "
+        f"{fh / fw:.5f} tall)\n"
         f"    rim box          {rx0},{ry0} .. {rx1},{ry1}  "
-        f"({rx1 - rx0}x{ry1 - ry0}px, {(rx1 - rx0) / (ry1 - ry0):.4f} aspect)\n"
+        f"({rw}x{rh}px, {rh / rw:.5f} tall)\n"
         f"    dial well        inset {WELL_INSET}% -> {well:.2f}% of the face\n"
         f"    movement rim     scale {MOVEMENT_SCALE:.2f} -> {rim:.2f}% of the face, "
         f"inset {rim_inset:.3f}%\n"
         f"    ring/well gap    {(well - rim) / 2:.3f}% of the face in radius "
-        f"({(well - rim) / 2 / 89.7 * 100:.1f}% of the well radius)\n"
-        f"    y-squash         {(rx1 - rx0) / (ry1 - ry0):.4f}  "
-        f"(rim ellipse -> true circle, at any scale)\n"
-        f"  .watch-mvt         left {frame_left:.3f}%  top {frame_top:.3f}%  "
-        f"width {fw * kx:.3f}%  height {fh * ky:.3f}%  of the face"
+        f"({(well - rim) / 2 / well * 200:.1f}% of the well radius)\n"
+        f"    rim as drawn     {rw * kx:.3f}% x {rh * ky:.3f}% of the face "
+        f"-- circular by construction\n"
+        f"    y-squash         box is {box_h / box_w:.5f} tall, sprite is "
+        f"{fh / fw:.5f}: object-fit: fill scales y by "
+        f"{(box_h / box_w) / (fh / fw):.5f}\n"
+        f"  .watch-mvt         left {rim_inset - (rx0 - fx0) * kx:.3f}%  "
+        f"top {rim_inset - (ry0 - fy0) * ky:.3f}%  "
+        f"width {box_w:.3f}%  height {box_h:.3f}%  of the face"
     )
 
-    print("\nlayers (boxes are % of .watch-mvt, sprites are `inset` in them):")
-    total = 0
+    crop = comp.crop((fx0, fy0, fx1, fy1))
+    w = FRAME_WIDTH
+    h = round(fh * FRAME_WIDTH / fw)
+    crop = crop.resize((w, h), Image.LANCZOS)
+
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, fname in LAYERS:
-        x0, y0, x1, y1 = boxes[fname]
-        crop = sources[fname].crop((x0, y0, x1, y1))
+    path = OUT / SPRITE
+    crop.save(path, "WEBP", quality=QUALITY, alpha_quality=ALPHA_QUALITY, method=6)
+    print(
+        f"\nsprite (fills .watch-mvt exactly, so it needs no box of its own):\n"
+        f"  {SPRITE:19s} {w}x{h}  q{QUALITY}/a{ALPHA_QUALITY}  "
+        f"{path.stat().st_size / 1024:.1f} KB"
+    )
 
-        w = round(crop.width * FRAME_WIDTH / fw)
-        h = round(crop.height * FRAME_WIDTH / fw)
-        crop = crop.resize((w, h), Image.LANCZOS)
-
-        q, aq = QUALITY[name]
-        path = OUT / f"{name}.webp"
-        crop.save(path, "WEBP", quality=q, alpha_quality=aq, method=6)
-        size = path.stat().st_size
-        total += size
-
-        # Positions are % of the frame box, so the markup needs no arithmetic.
+    stale = sorted(p for p in OUT.glob("*.webp") if p.name != SPRITE)
+    if stale:
         print(
-            f"  {name:19s} {w:>4}x{h:<4} q{q}/a{aq}  {size / 1024:5.1f} KB\n"
-            f"    {'':17s} left {(x0 - fx0) / fw * 100:7.3f}%  top {(y0 - fy0) / fh * 100:7.3f}%"
-            f"  width {(x1 - x0) / fw * 100:7.3f}%  height {(y1 - y0) / fh * 100:7.3f}%"
+            "\n  stale sprites from the layered build still in "
+            f"{OUT.relative_to(ROOT)}: {', '.join(p.name for p in stale)}"
         )
-
-    print(f"\n  total shipped      {total / 1024:.0f} KB across {len(LAYERS)} sprites")
 
 
 if __name__ == "__main__":
