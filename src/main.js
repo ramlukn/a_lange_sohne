@@ -1123,6 +1123,16 @@ const trackPointer = (e) => { pointerAt = { x: e.clientX, y: e.clientY }; };
 function goLive() {
   removeEventListener('pointermove', trackPointer);
   el.flip.inert = false;
+  // The rail is the same bug through the other door. Its words are laid out and
+  // hit-testable from the first frame while railIn holds them at opacity 0, so
+  // before the gate an invisible word can be hovered, focused, tabbed to and
+  // clicked -- and hovering one writes state.hover, which fires the reciprocal
+  // highlight into a watch that is not built yet. One rule on one element does
+  // it, because the rail arrives as a single animation on .rail rather than as
+  // five staggered ones. Released here rather than on its own clock: --rail-at
+  // IS --hint-at, so there is one moment, and tying it to one timer keeps it
+  // that way if either is ever retimed.
+  el.rail.inert = false;
   // The pointer may have rested on a part for the whole intro, and a subtree
   // that stops being inert generates no boundary event of its own -- so the
   // part under the cursor would stay dark until the visitor happened to move.
@@ -1142,6 +1152,7 @@ const gate = el.flip.getAnimations().find((a) => a.animationName === 'partsLive'
 if (!gate) goLive();
 else {
   el.flip.inert = true;
+  el.rail.inert = true;
   addEventListener('pointermove', trackPointer, { passive: true });
   gate.finished.then(goLive, goLive);   // a cancelled clock opens the gate too
 }
