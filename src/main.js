@@ -30,10 +30,11 @@ const CAPTIONS = {
 // timing machine.
 //
 // Everything is expressed as a departure FROM the true value that returns to
-// nothing -- an added offset for the rotating parts, a blend toward a full-scale
-// sweep for the reserve -- so the demo is a lens over render() rather than a
-// second writer fighting it (render() rewrites all of these unconditionally
-// every frame; anything set from a timer would be gone by the next one).
+// nothing -- an added offset for the rotating parts, a blend toward an
+// off-the-ends sweep for the reserve -- so the demo is a lens over render()
+// rather than a second writer fighting it (render() rewrites all of these
+// unconditionally every frame; anything set from a timer would be gone by the
+// next one).
 //
 // The easing is `spin(t) = 1 - (1 - t)^2`: its derivative falls linearly from
 // 2 to 0, which is exactly a flywheel coasting to a stop under constant
@@ -51,12 +52,28 @@ const DEMO = {
   //
   // The seconds hand would need 720 turns to be honest against the minute
   // hand; at 4 seconds that is a featureless grey disc, so it runs
-  // compressed. It has now been halved a second time, to 9 -- still whole, so
-  // the landing is still exact, but the compression against the minute hand
-  // is down to 1.5x (9:6, from 18:6, from 36:12). That is the shallowest
-  // gearing the pair has run at: the two hands now turn at visibly similar
-  // rates, and the seconds hand reads less like the fastest thing on the dial
-  // than like a second minute hand.
+  // compressed. It has now been halved a third time: 36 -> 18 -> 9 -> 5.
+  //
+  // 9 does not halve cleanly. 4.5 turns is 1620deg, which parks the hand 180deg
+  // out -- pointing at 30 seconds instead of home -- and the whole reason every
+  // total here is a whole number is that spin -> 1 has to land each element on
+  // its true value with zero velocity. So the choice was 4 or 5, equidistant
+  // from 4.5. 5 wins on two counts: it is the shallower cut, so it sits closest
+  // to the minute hand's 6 and keeps the damage below as small as possible; and
+  // 5 is coprime to 1, 2 and 6, so the seconds hand never phase-locks with the
+  // hour hand, the moon or the minute hand during the sweep. 4 shares a factor
+  // with min 6 and moon 2, and the pairs would visibly march in step.
+  //
+  // Say the cost plainly: at 5 against min 6 the seconds hand is now SLOWER
+  // than the minute hand. On a real watch the seconds hand is the fastest thing
+  // on the dial, and inverting that reads as broken rather than calm -- the
+  // previous cut to 9 had already flattened a clean 3:1 to 1.5:1, and this one
+  // turns it over. The fix that would actually calm the sweep without inverting
+  // anything is to bring every total down together, not to pull one hand under
+  // another: { hour: 1, min: 2, sec: 4, moon: 2 } halves the seconds hand as
+  // asked and still leaves it turning twice as fast as the minute hand, and
+  // { hour: 1, min: 2, sec: 6, moon: 2 } restores the original 3:1. Both are
+  // whole turns, so either is a one-line swap.
   //
   // The hour hand is the one that cannot halve: 12 hours is its whole turn and
   // half of that parks it at the far side of the dial, six hours out, instead
@@ -66,14 +83,14 @@ const DEMO = {
   // the other way: 1.5 turns is not whole, and of the two neighbours 2 is the
   // closer in rate (x1.33 against x1.5) and keeps the plate coasting through
   // the tail instead of stalling in it.
-  turns: { hour: 1, min: 6, sec: 9, moon: 2 },
+  turns: { hour: 1, min: 6, sec: 5, moon: 2 },
   dateTurns: 1,        // one whole trip through 01..31, so it wraps home
-  // The reserve sweeps rather than spins, and it is measured in the scale's
-  // own units: see render(), where 1.0 of reach is exactly AUF-to-AB whatever
-  // the true reading happens to be.
-  reserveCycles: 3,    // whole AUF <-> AB round trips, ~0.67s per traverse
+  // The reserve sweeps rather than spins, and it is the one element the demo
+  // drives as an ANGLE rather than as a value: see render(), where the sweep is
+  // deliberately wider than the printed scale.
+  reserveSweepDeg: 160, // total travel, vs the printed scale's 98.2deg
+  reserveCycles: 3,    // whole end-to-end round trips, ~0.67s per traverse
   reserveHold: 0.85,   // fraction of the demo held at full end-to-end travel
-  reserveOver: 1.06,   // aims 6% past each stop, so it beats against AUF and AB
   reducedMs: 1200      // reduced motion: no movement, just an acknowledgement
 };
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
@@ -135,6 +152,34 @@ const panels = {
 // stop. So the first notch above AB is unambiguously the 127.84deg tick, and
 // inverting the pointer mapping below gives (138.9 - 127.843) / 98.2.
 const RESERVE_REST = 0.1126;
+
+// The printed scale, unchanged. 0deg points at 12 for every hand; the scale
+// sprite's end stops measure out at 40.7deg (AUF, full) and 138.9deg (AB,
+// empty) about the arc's own centre -- see tools/build-dial-art.py -- so the
+// printed scale is exactly 98.2deg wide. reserveDeg() is the pointer mapping
+// every non-demo reading goes through, and it is the definition of "on scale".
+const RESERVE_AUF = 40.7;
+const RESERVE_AB = 138.9;
+const RESERVE_SCALE = 98.2;
+const reserveDeg = (r) => RESERVE_AB - r * RESERVE_SCALE;
+
+// The demo's arc is wider than the printed one, on purpose: the hand is meant
+// to visibly run past both ends rather than pile up against them. 160 - 98.2
+// leaves 61.8deg of overshoot, and it is split evenly, 30.9deg beyond each end.
+//
+// Centred rather than biased, for a reason that is mechanical and not just
+// tidy. The sweep below is a cosine, so the hand is at its fastest crossing the
+// middle of its travel and decelerates into both extremes. Centring puts the
+// printed scale in the middle of that travel: the hand rips across the part
+// that is legible and dwells at the two points where it is off the scale, which
+// is exactly where the overshoot needs to be visible to read as deliberate.
+// Biasing the split would move the printed scale off the cosine's centre, so
+// one extreme would dwell and the other would be clipped through at speed, and
+// the two ends of the oscillation would no longer look like the same gesture --
+// unequal extremes read as a calibration fault rather than as a flourish.
+const RESERVE_OVER = (DEMO.reserveSweepDeg - RESERVE_SCALE) / 2;  // 30.9 each end
+const RESERVE_DEG_HI = RESERVE_AB + RESERVE_OVER;    // 169.8, past AB
+const RESERVE_DEG_LO = RESERVE_AUF - RESERVE_OVER;   // 9.8, past AUF
 
 const state = {
   active: null,
@@ -205,45 +250,57 @@ function render() {
   const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90 + wind(DEMO.turns.moon)).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
 
-  // The reserve sweeps instead of spinning, and it sweeps the whole scale.
+  // The reserve sweeps instead of spinning, and it now sweeps WIDER than the
+  // scale -- 160deg against the printed 98.2, running 30.9deg off each end.
   //
-  // `sweep` is a cosine expressed in the scale's own units -- 0 is AB, 1 is
-  // AUF, and it is phased to start at the true reading, so the press does not
-  // jump the hand before it moves it. `reach` is how much of the gap between
-  // the sweep and the true reading is actually let through: 1 gives the full
-  // AUF-to-AB travel whatever the true reading is (which a fixed +/- amplitude
-  // could not, since 0.72 is nearly three times as far from AUF as from AB),
-  // and 0 pins the hand on the truth.
+  // That is why the demo drives an angle here rather than a `reserve` value.
+  // The value is normalised to the printed scale and is clamped to [0,1], and
+  // that clamp is precisely the thing that used to pin the hand to the stops
+  // for a beat; nothing expressed in those units can go off-scale by
+  // construction. So the demo works in its own coordinate `v`, 0 at the far
+  // side of AB and 1 at the far side of AUF, and only the printed reading is
+  // converted into it. `reserveOver` retires with the clamp: with no stop to
+  // beat against, the overshoot is the cosine's own turnaround.
+  //
+  // `sweep` is that cosine, phased to start exactly at the true reading so the
+  // press does not jump the hand before it moves it. `reach` is how much of the
+  // gap between the sweep and the truth is let through: 1 gives the full 160deg
+  // whatever the true reading is (which a fixed +/- amplitude could not, since
+  // the rest position is nearly nine times as far from AUF as from AB), and 0
+  // pins the hand on the truth.
   //
   // Damping the amplitude from the first frame is what used to guarantee the
   // clean landing, and it is also why the hand never got near AB: by the second
   // swing there was nothing left. So reach is HELD at full travel instead, and
   // released only over the last 15% on a smoothstep, whose slope is zero at
   // both ends -- no kink where the release begins, and zero value AND zero
-  // slope at t = 1, so the hand still coasts onto the true reading rather than
-  // snapping to it. The trade is that the settle is compressed into ~600ms and
-  // is a return rather than a decay: the hand comes off AB once, smoothly,
-  // instead of shrinking through several ever-smaller swings.
-  //
-  // Aiming a few per cent past each stop is deliberate: the clamp is the hand
-  // sitting against AUF and AB for a beat, the way a real one would.
-  let reserve = state.reserve;
+  // slope at t = 1. Both halves of the settle survive the move into angle
+  // space: at reach = 0 the expression collapses to v0 exactly, which converts
+  // back to reserveDeg(state.reserve) exactly, and the smoothstep's zero slope
+  // still lands it there with zero velocity. The hand coasts home rather than
+  // snapping, onto the same notch it left.
+  const reserveTrue = Math.min(1, Math.max(0, state.reserve));
+  let reserveAngle = reserveDeg(reserveTrue);
   if (demoing) {
     const u = Math.min(1, Math.max(0, (demoT - DEMO.reserveHold) / (1 - DEMO.reserveHold)));
-    const reach = DEMO.reserveOver * (1 - u * u * (3 - 2 * u));
-    const phase = Math.acos(1 - 2 * Math.min(1, Math.max(0, state.reserve)));
+    const reach = 1 - u * u * (3 - 2 * u);
+    const span = RESERVE_DEG_HI - RESERVE_DEG_LO;          // the 160deg travel
+    const v0 = (RESERVE_DEG_HI - reserveAngle) / span;      // truth, in demo units
+    const phase = Math.acos(1 - 2 * v0);
     const sweep = 0.5 - 0.5 * Math.cos(2 * Math.PI * DEMO.reserveCycles * demoT + phase);
-    reserve = Math.min(1, Math.max(0, state.reserve + reach * (sweep - state.reserve)));
+    reserveAngle = RESERVE_DEG_HI - (v0 + reach * (sweep - v0)) * span;
   }
   // .reserve-hand carries a .6s transition for the scroll-driven wind, which
   // would smear a per-frame sweep into a lagging blur. Suppressed for the demo
   // and restored on the settling frame, where the value is already true.
   el.reserveHand.style.transition = demoing ? 'none' : '';
-  // 0deg points at 12 for every hand. The scale sprite's end stops measure out
-  // at 40.7deg (AUF, full) and 138.9deg (AB, empty) about the arc's own centre
-  // -- see tools/build-dial-art.py -- so the pointer covers all 98.2deg of it.
-  el.reserveHand.style.transform = `rotate(${(138.9 - reserve * 98.2).toFixed(1)}deg)`;
-  el.reserveBar.style.width = `${Math.round(reserve * 100)}%`;
+  el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg)`;
+  // The bar reads the printed scale, not the hand's travel, so it stays an
+  // honest percentage while the hand is off the end of the dial: past AUF it
+  // reads 100 and past AB it reads 0, rather than going over or under. Off the
+  // demo this is the identity -- reserveDeg() inverted is state.reserve.
+  const reservePct = (RESERVE_AB - reserveAngle) / RESERVE_SCALE;
+  el.reserveBar.style.width = `${Math.round(Math.min(1, Math.max(0, reservePct)) * 100)}%`;
 
   const curIdx = Math.floor(now / 4000) % CURRENTLY.length;
   const cur = CURRENTLY[curIdx];
