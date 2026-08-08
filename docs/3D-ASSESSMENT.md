@@ -4,9 +4,13 @@
 > `docs/SITE-DIRECTION.md` §8, which phases the pointer tilt and closes four of
 > the six open questions in §8 below (tilt vs. the "no ambient motion" rule: yes,
 > pointer-driven only; tilt behind an open panel: off; touch: nothing, no
-> `deviceorientation`; the three.js lab: delete — it no longer even runs, since
-> `three` is in `package.json` but not installed and `npx vite` fails its
-> dependency scan on it). Only the clamp angle is still open. The research and
+> `deviceorientation`; the three.js lab: delete, on the merits below). Note a
+> correction: that section briefly claimed the lab no longer runs because `three`
+> was missing from `node_modules`. That was one machine's install state, not the
+> project's — `three` is still in `package.json`, and where it is installed the
+> lab serves fine. Delete it because it is worse than the sprite caseback it
+> duplicates, not because it looks broken. Only the clamp angle is still open.
+> The research and
 > measurements below stand as taken; read §8 there rather than §8 here.
 
 > "Look into making the watch 3d ish. Will it look good. Is it possible?"
