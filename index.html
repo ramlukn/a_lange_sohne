@@ -364,6 +364,39 @@
             <path   class="hint-mark" style="--i:4" pathLength="100" d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
           </svg>
           </div>
+
+          <!-- ============ HOVER PULSE ============
+               One breath of the key light over the part the pointer just
+               entered. main.js writes data-hover here from state.hover; the
+               attribute changing is what arms and re-arms the one-shot. See
+               the HOVER PULSE block in styles.css for the reasoning.
+
+               The shapes are the .hint-index shapes, deliberately: the same
+               rim, frame, arc and aperture, so the bloom lands on the linework
+               that is actually live. Move a complication and BOTH sets of
+               geometry follow it. -->
+          <div class="hover-pulse" id="hoverPulse" data-hover="">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none"
+               aria-hidden="true" focusable="false">
+            <defs>
+              <!-- userSpaceOnUse over the whole face: the marks range from a
+                   3.6-unit-wide arc bbox to a 50-unit circle, and a bbox-
+                   relative filter region would clip the blur off the thin one
+                   while wasting a huge region on the fat one. -->
+              <filter id="pulseSoft" filterUnits="userSpaceOnUse"
+                      x="0" y="0" width="100" height="100"
+                      color-interpolation-filters="sRGB">
+                <feGaussianBlur stdDeviation="1.15"/>
+              </filter>
+            </defs>
+
+            <circle class="pulse-mark" data-part="about"     cx="31.797" cy="49.999" r="25.299"/>
+            <rect   class="pulse-mark" data-part="featured"  x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
+            <path   class="pulse-mark" data-part="resume"    d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
+            <circle class="pulse-mark" data-part="currently" cx="64.498" cy="75.112" r="13.599"/>
+            <path   class="pulse-mark" data-part="books"     d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
+          </svg>
+          </div>
         </div>
 
         <!-- ============ CASEBACK: sapphire display back ============ -->
