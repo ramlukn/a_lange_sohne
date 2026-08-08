@@ -164,10 +164,12 @@ This is the largest change of emphasis in this draft.
 Three deletions are already in flight or recommended, and each one is a real
 improvement rather than a chore:
 
-- **The review-request form** — you have decided to remove it. Its markup
-  (`#reqLayer`), its CSS, its four state fields and its five handlers should go
-  with it. It had already lost its trigger; the previous draft spent half a page
-  finding it a new home. Deleting it is better than any of those homes.
+- **The review-request form** — removed, and already done (commit `52f5b14`).
+  Its markup (`#reqLayer`), CSS, four state fields and five handlers went with
+  it, plus `.card-title-sm`, which it was the only user of. It had already lost
+  its trigger; an earlier draft spent half a page finding it a new home.
+  Deleting it was better than any of those homes. It landed as its own commit,
+  so `git revert 52f5b14` brings it back if "for now" ever expires.
 - **The three.js lab** — see §7. It no longer even runs.
 - **The session intro-skip** — you have decided to remove it. §7 shows how to
   keep the useful half of what it built.
@@ -232,8 +234,8 @@ are marked **[fixed]** so this section can be trusted as current.
 Inside: `.loader`, then `.watch-stage` (`86vmin × 86vmin`, `perspective: 2400px`),
 then `.caption` (`height:5vmin`), then `.hint-bar` (absolutely positioned,
 `bottom:2.6vmin`, `font-size:1.05vmin`), then the `.overlay` panel layer
-(`position:fixed; z-index:40`) and the `.req-layer` modal (`z-index:60`, being
-deleted).
+(`position:fixed; z-index:40`). The `.req-layer` modal used to sit above that at
+`z-index:60`; it has since been deleted, so 40 is now the top of the stack.
 
 ### The state machine
 
@@ -1091,10 +1093,12 @@ that changes what the site is. Effort excludes writing.
   outright correctness bug** and it is cheap now and expensive later.
 - Fix the stuck-hover case while you are in `bind()`.
 - Escape also clears `state.flipped`.
-- **Deletions:** the review-request form (`#reqLayer`, its CSS, `state.reqOpen` /
-  `reqDone` / `reqType`, five handlers); the three.js lab and the retired SVG
-  movement generators; the `sessionStorage` intro-skip — **keeping** its CSS
-  delay-collapse rules for §7.2.
+- **Deletions — two of three already landed.** The review-request form is gone
+  (`52f5b14`) and the `sessionStorage` intro-skip is gone (`175f476`). Note the
+  intro-skip removal took its CSS delay-collapse rules with it, so §7.2's plan to
+  repoint them at deep links now means re-adding those rules rather than
+  retargeting surviving ones — a small extra step, not a blocker. Still to do:
+  the three.js lab and the retired SVG movement generators.
 - Update `HANDOFF.md:33` to record why three.js is out.
 
 *Risk: low. All mechanical. The deletions are the bulk of the diff and they only
