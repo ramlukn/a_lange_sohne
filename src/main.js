@@ -50,8 +50,13 @@ const DEMO = {
   // invariant, not the ratios between them.
   //
   // The seconds hand would need 720 turns to be honest against the minute
-  // hand; at 4 seconds that is a featureless grey disc, so it stays
-  // compressed to 3x the minute hand (18:6, as it was 36:12).
+  // hand; at 4 seconds that is a featureless grey disc, so it runs
+  // compressed. It has now been halved a second time, to 9 -- still whole, so
+  // the landing is still exact, but the compression against the minute hand
+  // is down to 1.5x (9:6, from 18:6, from 36:12). That is the shallowest
+  // gearing the pair has run at: the two hands now turn at visibly similar
+  // rates, and the seconds hand reads less like the fastest thing on the dial
+  // than like a second minute hand.
   //
   // The hour hand is the one that cannot halve: 12 hours is its whole turn and
   // half of that parks it at the far side of the dial, six hours out, instead
@@ -61,12 +66,12 @@ const DEMO = {
   // the other way: 1.5 turns is not whole, and of the two neighbours 2 is the
   // closer in rate (x1.33 against x1.5) and keeps the plate coasting through
   // the tail instead of stalling in it.
-  turns: { hour: 1, min: 6, sec: 18, moon: 2 },
+  turns: { hour: 1, min: 6, sec: 9, moon: 2 },
   dateTurns: 1,        // one whole trip through 01..31, so it wraps home
   // The reserve sweeps rather than spins, and it is measured in the scale's
   // own units: see render(), where 1.0 of reach is exactly AUF-to-AB whatever
   // the true reading happens to be.
-  reserveCycles: 2,    // whole AUF <-> AB round trips, ~1s per traverse
+  reserveCycles: 3,    // whole AUF <-> AB round trips, ~0.67s per traverse
   reserveHold: 0.85,   // fraction of the demo held at full end-to-end travel
   reserveOver: 1.06,   // aims 6% past each stop, so it beats against AUF and AB
   reducedMs: 1200      // reduced motion: no movement, just an acknowledgement
@@ -119,11 +124,28 @@ const panels = {
   books: $('panel-books')
 };
 
+// Where the reserve hand sits at rest: the first notch above AB, measured off
+// the scale sprite rather than guessed. Alpha-scanning reserve-scale.webp's
+// largest connected component about the arc centre that tools/build-dial-art.py
+// fits (R = 13.673% of the face, one sprite-width left of the sprite box) finds
+// the tick ink straddling the arc line at radius 13.15..14.38% -- comfortably
+// inside the AUF/AB legends, which start at 16.2% -- in eleven clusters:
+//
+//   40.33 (AUF stop) 49.58 59.04 68.95 78.79 88.74 98.55 108.23 118.03
+//   127.84 139.36 (AB stop)
+//
+// The nine interior ticks are ~9.8deg apart; the AB stop is 11.5deg below the
+// lowest of them, with no ink of any opacity in between, because the arc's last
+// segment is drawn as a dark low-power zone running from that tick down to the
+// stop. So the first notch above AB is unambiguously the 127.84deg tick, and
+// inverting the pointer mapping below gives (138.9 - 127.843) / 98.2.
+const RESERVE_REST = 0.1126;
+
 const state = {
   active: null,
   hover: null,
   flipped: false,
-  reserve: 0.72,
+  reserve: RESERVE_REST,
   touched: false,
   reqOpen: false,
   reqDone: false,
@@ -364,7 +386,12 @@ $('resumeScroll').addEventListener('scroll', (e) => {
   const node = e.currentTarget;
   const max = node.scrollHeight - node.clientHeight;
   if (max > 0) {
-    state.reserve = Math.min(1, 0.15 + 0.85 * (node.scrollTop / max));
+    // Anchored on RESERVE_REST rather than on a floor of its own: an unscrolled
+    // timeline is the resting state, so the bottom of this ramp has to be the
+    // same notch the hand starts on, or the first scroll event would jump the
+    // hand off it and scrolling back to the top would never return it. The top
+    // of the ramp stays AUF, which is what the last entry ("Fully wound.") says.
+    state.reserve = Math.min(1, RESERVE_REST + (1 - RESERVE_REST) * (node.scrollTop / max));
     render();
   }
 });
