@@ -120,6 +120,7 @@ const el = {
   reserveBar: $('reserveBar'),
   caption: $('caption'),
   hintIndex: $('hintIndex'),
+  hoverPulse: $('hoverPulse'),
   hintBar: $('hintBar'),
   overlay: $('overlay'),
   curTitle: $('curTitle'),
@@ -342,6 +343,17 @@ function render() {
   // any click sets state.touched, and the scribed marks go with it.
   el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
   el.hintBar.hidden = !(CONFIG.showHints && !state.active);
+
+  // The hover pulse is armed by the attribute CHANGING: the CSS rule that
+  // carries the animation only matches while data-hover names the part, so
+  // going '' -> 'books' starts one pass and 'books' -> '' ends it. render() is
+  // also pumped on a 100ms interval, so the value is only written when it
+  // actually differs -- rewriting the same string would be a restyle per tick,
+  // and any future :hover-adjacent rule would flicker on it.
+  // Crown and pusher also set state.hover; they have no mark here, so they
+  // simply clear it. Nothing pulses behind an open panel or the caseback.
+  const lit = (state.active || state.flipped) ? '' : (state.hover || '');
+  if (el.hoverPulse.dataset.hover !== lit) el.hoverPulse.dataset.hover = lit;
 }
 
 function open(id) {
