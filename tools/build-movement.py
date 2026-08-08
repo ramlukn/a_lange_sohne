@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Build the loading-screen movement and splice it into index.html.
+"""Build the movement that opens the watch's assembly and splice it into index.html.
 
-    python3 tools/build-loader-movement.py
+    python3 tools/build-movement.py
 
 Draws Calibre NR.1 - mainplate, going train, bridges and escapement - as one
 inline SVG in a 200x200 viewBox, and writes it between the <div class=
-"loader-mvt"> tags of index.html. No external assets and no requests: the
-loader has to paint before anything else loads.
+"watch-mvt"> tags of index.html. No external assets and no requests: this is
+the first thing on screen after the title card, so it has to paint before
+anything else loads.
 
 The train is single-module (m = 1.5). Every mesh is wheel<->pinion with a
 matched module, a centre distance of exactly r1 + r2, and a phase that drops a
@@ -14,6 +15,14 @@ tooth of one gear into a gap of the other, so the teeth stay properly engaged
 at every frame. Tooth counts (44/22, 36/12, 21/7) were chosen so the rotation
 ratios are small integers and so the wheel-on-wheel overlap that any real plan
 view has stays shallow enough to read as depth rather than as a clash.
+
+Both rotations are derived here rather than written by hand, because a mesh
+that slips is the one thing that makes the whole shot read as fake:
+    let-off  the train is not yet held, so it runs down. Anchored on the
+             barrel; each arbor gets its ratio share, alternating sign.
+    run      the escapement is in beat at 21600 A/h. Anchored on the escape
+             wheel at exactly one tooth per beat, and divided back down the
+             train from there.
 
 Animation classes consumed by src/styles.css:
     .mv-plate  the mainplate fading in
@@ -24,6 +33,8 @@ Animation classes consumed by src/styles.css:
     .mv-beat-* balance / hairspring / pallet fork, 21600 A/h
 Animated groups carry their pivot as an inline transform-origin in viewBox
 units, so nesting .mv-drop > .mv-spin > .mv-run about the same point works.
+--d is relative to the start of the movement stage; src/styles.css offsets the
+whole schedule by --mv0.
 """
 
 import math
@@ -33,6 +44,18 @@ import re
 M = 1.5                      # module (user units)
 CX = CY = 100.0
 R_PLATE = 93.0
+
+TICKS = 8                    # beats in the .mv-run window (steps(8) over 1.3333s)
+LETOFF_BARREL = 30.0         # degrees the barrel gives up as the train runs down
+
+# When the part lands, in seconds from the start of the movement stage. Reading
+# order is the kinematic chain: barrel, going train, bridges over them, then the
+# escapement and the regulating organ last - which is how a movement is actually
+# assembled, and it is also the order that builds tension toward the balance.
+DLY = dict(barrel=0.10, centre=0.16, third=0.22, escape=0.28,
+         centre_cock=0.36, train_bridge=0.40, barrel_bridge=0.44,
+         pallet=0.50, pallet_cock=0.56, balance=0.64, bal_cock=0.72,
+         chaton0=0.60, chaton_step=0.03)
 
 
 def fm(v):
@@ -198,6 +221,40 @@ PH = dict(
     E=8.0,
 )
 
+# --------------------------------------------------- ratio-exact arbor angles
+# Each mesh reverses direction and scales by driver teeth / driven teeth. Walk
+# the chain from whichever end is being anchored and every mesh holds by
+# construction; there is no place left to fat-finger a number.
+CHAIN = (('B', 'Cp'), ('C', 'Dp'), ('D', 'Ep'))     # driver wheel -> driven pinion
+ARBORS = ('B', 'C', 'D', 'E')
+
+
+def chain_from_barrel(a):
+    """Angles for all four arbors given the barrel's."""
+    out = [a]
+    for drv, dvn in CHAIN:
+        out.append(-out[-1] * TEETH[drv] / TEETH[dvn])
+    return dict(zip(ARBORS, out))
+
+
+def chain_from_escape(a):
+    """Angles for all four arbors given the escape wheel's."""
+    out = [a]
+    for drv, dvn in reversed(CHAIN):
+        out.append(-out[-1] * TEETH[dvn] / TEETH[drv])
+    return dict(zip(reversed(ARBORS), out))
+
+
+# The train runs down unrestrained: anchored on the barrel, which gives up 30deg.
+LO = chain_from_barrel(LETOFF_BARREL)
+# Running: the escapement releases exactly one escape-wheel tooth per beat, and
+# the rest of the train is divided back down from that.
+RN = chain_from_escape(-TICKS * 360.0 / TEETH['E'])
+
+
+def deg(v):
+    return f"{v:.3f}".rstrip('0').rstrip('.') + "deg"
+
 
 def g(cls=None, style=None, extra="", children=""):
     a = ""
@@ -300,17 +357,17 @@ barrel_inner = (
               for a in (30, 150, 270))
     + '<circle r="4.6" fill="url(#mvGold)"/><rect x="-2.5" y="-2.5" width="5" height="5" fill="#2b211a" transform="rotate(22)"/>'
 )
-A(g("mv-drop", origin(B, 0.12), children=shadow_ring(B, RP['B'] + M) + g(
-    "mv-spin", origin(B) + ";--lo:30deg", children=g(
-        "mv-run", origin(B) + ";--rn:32.143deg", children=(
+A(g("mv-drop", origin(B, DLY['barrel']), children=shadow_ring(B, RP['B'] + M) + g(
+    "mv-spin", origin(B) + ";--lo:" + deg(LO['B']), children=g(
+        "mv-run", origin(B) + ";--rn:" + deg(RN['B']), children=(
             f'<g transform="translate({fm(B[0])},{fm(B[1])})">'
             f'<path d="{gear_ring(TEETH["B"], RP["B"], PH["B"], RP["B"] - M * 1.25)}" fill="url(#mvGold)" fill-rule="evenodd"/>'
             + barrel_inner + '</g>')))))
 
 # --------------------------------------------------------------- centre wheel
-A(g("mv-drop", origin(C, 0.21), children=shadow_ring(C, RP['C'] + M) + g(
-    "mv-spin", origin(C) + ";--lo:-60deg", children=g(
-        "mv-run", origin(C) + ";--rn:-64.286deg", children=(
+A(g("mv-drop", origin(C, DLY['centre']), children=shadow_ring(C, RP['C'] + M) + g(
+    "mv-spin", origin(C) + ";--lo:" + deg(LO['C']), children=g(
+        "mv-run", origin(C) + ";--rn:" + deg(RN['C']), children=(
             f'<g transform="translate({fm(C[0])},{fm(C[1])})">'
             # centre-wheel (gold) teeth + rim + crossings
             f'<path d="{gear_ring(TEETH["C"], RP["C"], PH["C"], RP["C"] - M * 3.2)}" fill="url(#mvGold)" fill-rule="evenodd"/>'
@@ -322,9 +379,9 @@ A(g("mv-drop", origin(C, 0.21), children=shadow_ring(C, RP['C'] + M) + g(
             + hub(4.2) + '</g>')))))
 
 # ---------------------------------------------------------------- third wheel
-A(g("mv-drop", origin(D, 0.29), children=shadow_ring(D, RP['D'] + M) + g(
-    "mv-spin", origin(D) + ";--lo:180deg", children=g(
-        "mv-run", origin(D) + ";--rn:150deg", children=(
+A(g("mv-drop", origin(D, DLY['third']), children=shadow_ring(D, RP['D'] + M) + g(
+    "mv-spin", origin(D) + ";--lo:" + deg(LO['D']), children=g(
+        "mv-run", origin(D) + ";--rn:" + deg(RN['D']), children=(
             f'<g transform="translate({fm(D[0])},{fm(D[1])})">'
             f'<path d="{gear_ring(TEETH["D"], RP["D"], PH["D"], RP["D"] - M * 3.0)}" fill="url(#mvGold)" fill-rule="evenodd"/>'
             f'<path d="{crossings(4, RP["D"] - M * 2.9, 4.4, 2.8)}" fill="url(#mvGold2)"/>'
@@ -333,9 +390,9 @@ A(g("mv-drop", origin(D, 0.29), children=shadow_ring(D, RP['D'] + M) + g(
             + hub(3) + '</g>')))))
 
 # --------------------------------------------------------------- escape wheel
-A(g("mv-drop", origin(E, 0.36), children=shadow_ring(E, 12) + g(
-    "mv-spin", origin(E) + ";--lo:-540deg", children=g(
-        "mv-run", origin(E) + ";--rn:-385.714deg", children=(
+A(g("mv-drop", origin(E, DLY['escape']), children=shadow_ring(E, 12) + g(
+    "mv-spin", origin(E) + ";--lo:" + deg(LO['E']), children=g(
+        "mv-run", origin(E) + ";--rn:" + deg(RN['E']), children=(
             f'<g transform="translate({fm(E[0])},{fm(E[1])})">'
             f'<path d="{escape_teeth(TEETH["E"], 12, 8.3, PH["E"])}" fill="url(#mvSteel)"/>'
             f'<circle r="8.3" fill="rgba(22,17,13,.72)"/>'
@@ -396,9 +453,9 @@ TRAIN_BRIDGE = [(D[0], D[1], 6.6), (E[0], E[1], 5.8), (162.0, 148.0, 4.2)]
 PALLET_COCK = [(PA[0], PA[1], 4.7), (151.0, 165.0, 3.4)]
 BAL_COCK = [(BAL[0], BAL[1], 7.8), (56.0, 157.0, 4.9)]
 
-A(g("mv-seat", origin((C[0] + 10, C[1] - 14), 0.44), children=bridge(CENTRE_COCK)))
-A(g("mv-seat", origin((D[0] + 8, D[1] + 12), 0.48), children=bridge(TRAIN_BRIDGE, bow=(-5.0, 0.0))))
-A(g("mv-seat", origin((B[0], B[1]), 0.52), children=bridge(BARREL_BRIDGE)))
+A(g("mv-seat", origin((C[0] + 10, C[1] - 14), DLY['centre_cock']), children=bridge(CENTRE_COCK)))
+A(g("mv-seat", origin((D[0] + 8, D[1] + 12), DLY['train_bridge']), children=bridge(TRAIN_BRIDGE, bow=(-5.0, 0.0))))
+A(g("mv-seat", origin((B[0], B[1]), DLY['barrel_bridge']), children=bridge(BARREL_BRIDGE)))
 
 # ---------------------------------------------------------------- pallet fork
 pal_ang = math.degrees(math.atan2(E[1] - PA[1], E[0] - PA[0]))       # toward escape
@@ -422,13 +479,13 @@ f_b1 = P(0, 0, 4.6, fork_ang - 30)
 f_b2 = P(0, 0, 4.6, fork_ang + 30)
 fork = ('<path d="M' + pt(f_b1) + 'L' + pt(h1) + 'L' + pt(notch) + 'L' + pt(h2) + 'L' + pt(f_b2) +
         'Z" fill="url(#mvSteel)"/>')
-A(g("mv-drop", origin(PA, 0.62), children=g(
+A(g("mv-drop", origin(PA, DLY['pallet']), children=g(
     "mv-beat mv-beat-pallet", origin(PA), children=(
         f'<g transform="translate({fm(PA[0])},{fm(PA[1])})">'
         + fork + "".join(arm)
         + '<circle r="4.6" fill="url(#mvSteel)"/><circle r="1.5" fill="#171310"/></g>'))))
 
-A(g("mv-seat", origin(PA, 0.70), children=(
+A(g("mv-seat", origin(PA, DLY['pallet_cock']), children=(
     bridge(PALLET_COCK) + chaton(PA, 2.7))))
 
 # -------------------------------------------------------------- balance wheel
@@ -445,7 +502,7 @@ balance = (
     + "".join(rim)
     + '<circle r="3.4" fill="url(#mvGold2)"/>')
 
-A(g("mv-drop", origin(BAL, 0.86), children=(
+A(g("mv-drop", origin(BAL, DLY['balance']), children=(
     g("mv-beat mv-beat-hair", origin(BAL), children=(
         f'<g transform="translate({fm(BAL[0])},{fm(BAL[1])})">'
         f'<path d="{spiral(3.9, 13.4, 4.4, 200)}" fill="none" stroke="#6d8fc4" stroke-width=".72" stroke-linecap="round" opacity=".92"/>'
@@ -456,7 +513,7 @@ A(g("mv-drop", origin(BAL, 0.86), children=(
 # balance cock, swan-neck regulator, endstone
 sn_a = P(BAL[0], BAL[1], 15.5, 118)
 sn_b = P(BAL[0], BAL[1], 15.5, 196)
-A(g("mv-seat", origin(BAL, 0.94), children=(
+A(g("mv-seat", origin(BAL, DLY['bal_cock']), children=(
     bridge(BAL_COCK)
     + f'<path d="M{pt(sn_a)}Q{pt(P(BAL[0], BAL[1], 20.5, 157))} {pt(sn_b)}" fill="none" stroke="url(#mvSteel)" stroke-width="1.15" stroke-linecap="round"/>'
     + chaton(BAL, 3.5)
@@ -464,7 +521,7 @@ A(g("mv-seat", origin(BAL, 0.94), children=(
 
 # ------------------------------------------------------------------- chatons
 for i, (p, r) in enumerate([(C, 3.1), (D, 2.9), (E, 2.6), (B, 3.0)]):
-    A(g("mv-drop", origin(p, round(0.76 + i * 0.04, 3)), children=chaton(p, r)))
+    A(g("mv-drop", origin(p, round(DLY['chaton0'] + i * DLY['chaton_step'], 3)), children=chaton(p, r)))
 
 svg = ('<svg class="mv" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" '
        'aria-hidden="true" focusable="false">' + "".join(out) + '</svg>')
@@ -472,8 +529,8 @@ svg = ('<svg class="mv" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 page = os.path.join(ROOT, 'index.html')
 html = open(page).read()
-m = re.search(r'(<div class="loader-mvt">)<svg class="mv".*?</svg>(</div>)', html, re.S)
+m = re.search(r'(<div class="watch-mvt"[^>]*>)<svg class="mv".*?</svg>(</div>)', html, re.S)
 if not m:
-    raise SystemExit('index.html: <div class="loader-mvt"> block not found')
+    raise SystemExit('index.html: <div class="watch-mvt"> block not found')
 open(page, 'w').write(html[:m.start()] + m.group(1) + svg + m.group(2) + html[m.end():])
 print(f'index.html updated ({len(svg)} chars of SVG)')

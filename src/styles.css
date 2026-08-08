@@ -26,13 +26,17 @@ a:hover { color: var(--gold-line-hover); }
 
 /* ===================== ANIMATIONS ===================== */
 @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-/* Pulls the finished loader out of the render tree. visibility:hidden stops it
-   painting but leaves its animations ticking, and the movement's escapement run
-   outlasts the fade by ~1.8s -- landing squarely on the watch's own assembly,
-   the most contended moment on the page. A zero-duration animation is used
-   rather than a display:none keyframe on fadeOut itself: discrete properties
-   flip mid-interval, which would cut the fade short. */
+/* Pulls a finished intro layer out of the render tree. visibility:hidden (and,
+   for the movement, being covered by an opaque dial) stops the pixels but
+   leaves the element composited and its animations ticking -- and both of these
+   are full-size layers stacked over the watch through the busiest part of
+   startup. display:none drops the subtree outright.
+   A separate zero-duration animation is used rather than a display:none
+   keyframe inside fadeOut: discrete properties flip at the midpoint of their
+   interval, which would cut the fade short. Each one is delayed to land exactly
+   when the layer stops being visible. */
 @keyframes loaderGone { to { display: none; } }
+@keyframes mvGone { to { display: none; } }
 @keyframes fadeIn { from { opacity: 0; } }
 @keyframes lineFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes caseSeat {
@@ -70,8 +74,7 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 
-/* ---- loader: calibre NR.1 assembling ---- */
-@keyframes cueOut { 0% { opacity: 0; } 20% { opacity: 1; } 78% { opacity: 1; } 100% { opacity: 0; } }
+/* ---- movement: calibre NR.1 assembling ---- */
 @keyframes mvPlateIn { from { opacity: 0; transform: scale(1.09); } to { opacity: 1; transform: scale(1); } }
 /* parts descend onto the plate: larger and transparent while still "above" it,
    a touch of overshoot as they seat on their arbors */
@@ -112,7 +115,6 @@ a:hover { color: var(--gold-line-hover); }
   50%, 94% { transform: rotate(7deg); }
   100%     { transform: rotate(-7deg); }
 }
-@keyframes mvHandoff { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.44); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
 @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(217,162,107,.4); } 100% { box-shadow: 0 0 0 12px rgba(217,162,107,0); } }
 
@@ -125,6 +127,19 @@ a:hover { color: var(--gold-line-hover); }
   }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
 }
+
+/* Second visit in the same session (flag set by the inline script in <head>).
+   Zeroing the delays -- and only the delays -- fires every seat animation at
+   once, so the watch blooms into place in about a second instead of building
+   over four. Durations and iteration counts are left alone, which is what keeps
+   the hint dots pulsing and the caseback sheen on its own schedule; both are
+   excluded from the reset because their delays are stagger, not sequence.
+   The movement act is dropped rather than accelerated: at zero delay its
+   thirteen parts land in one flash under a dial that is arriving at the same
+   moment, which reads as a glitch. */
+html[data-intro-seen] .loader,
+html[data-intro-seen] .watch-mvt { display: none !important; }
+html[data-intro-seen] .stage *:not(.hint-dot):not(.cb-rig-sheen) { animation-delay: 0s !important; }
 
 /* ===================== STAGE ===================== */
 .stage {
@@ -147,81 +162,76 @@ a:hover { color: var(--gold-line-hover); }
 }
 
 /* ===================== LOADER =====================
-   Calibre NR.1 assembles itself while the watch builds behind the backdrop.
-   Master schedule (seconds from page load):
-     .00 mainplate     .12 barrel       .21 centre wheel   .29 third wheel
-     .36 escape wheel  .44 centre cock  .48 train bridge   .52 barrel bridge
-     .46-.80 let-off (the unrestrained train runs down; ratio-exact)
-     .62 pallet fork (arrests the train at .80)   .70 pallet cock
-     .76-.95 chatons   .86 balance + hairspring   .94 balance cock
-    1.18 the escapement catches: balance, pallet and the whole train start
-    1.26-1.66 backdrop clears (the case is already seating behind it)
-    1.30-1.90 the movement grows to dial diameter and dissolves into the watch
-    1.90 loader is hidden outright.
-   Everything animated here is transform/opacity only. */
+   A plain title card. It is opaque for 0.62s, then dissolves over 0.45s while
+   the movement's mainplate is already fading up underneath it. */
 .loader {
   position: fixed;
   inset: 0;
   z-index: 100;
+  background: #05060b;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.7vmin;
+  gap: 2.4vmin;
   pointer-events: none;
-  /* fade ends at 1.90s; loaderGone drops the subtree the instant it does */
-  animation: fadeOut .34s ease 1.56s forwards, loaderGone 0s linear 1.9s forwards;
+  /* the fade ends at 1.07s; loaderGone drops the subtree the instant it does */
+  animation: fadeOut .45s ease .62s forwards, loaderGone 0s linear 1.07s forwards;
 }
-/* the opaque ground lives on a pseudo-element so it can clear on its own
-   schedule while the movement stays on top of the emerging watch */
-.loader::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #05060b;
-  animation: fadeOut .4s ease 1.26s forwards;
-}
-.loader-name { font-family: var(--font-display); font-size: 3.4vmin; letter-spacing: .55em; text-indent: .55em; color: #e8e2d6; animation: fadeIn .5s ease .04s both; }
-.loader-sub { display: grid; font-family: var(--font-mono); font-size: 1.25vmin; letter-spacing: .35em; color: #9a8367; text-align: center; }
-.loader-sub span { grid-area: 1 / 1; }
-.loader-sub span:nth-child(1) { animation: cueOut .62s linear .04s both; }
-.loader-sub span:nth-child(2) { animation: cueOut .62s linear .58s both; }
-.loader-sub span:nth-child(3) { animation: fadeIn .3s linear 1.14s both; }
+.loader-name { font-family: var(--font-display); font-size: 3.4vmin; letter-spacing: .55em; text-indent: .55em; color: #e8e2d6; }
+.loader-sub { font-family: var(--font-mono); font-size: 1.25vmin; letter-spacing: .35em; color: #9a8367; }
 .loader-track { width: 26vmin; height: 1px; background: rgba(217,162,107,.2); overflow: hidden; }
-.loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill 1.6s cubic-bezier(.3,0,.2,1) both; }
+.loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill .62s cubic-bezier(.4,0,.2,1) both; }
 
-/* ---- the movement itself ---- */
-.loader-mvt {
-  position: relative;
-  width: 52vmin;
-  height: 52vmin;
-  /* grows to ~75vmin, the diameter of the dial plate that seats behind it */
-  animation: mvHandoff .6s cubic-bezier(.34,0,.22,1) 1.3s both;
+/* ===================== MOVEMENT =====================
+   Calibre NR.1 assembles itself as the watch's opening act. The layer is
+   painted over the case discs and under the dial plate, so the case closes as a
+   ring *around* a running movement and the dial then seats straight onto it.
+
+   The plate is r=93 in a 200-unit box, so a 1.77% inset puts its rim exactly on
+   the dial well's (inset 5.15%) -- the handoff is 1:1, no jump in diameter.
+
+   Everything below is transform/opacity only, and every animation is finite:
+   the last one ends at 2.97s and mvGone drops the layer at 3.00s.
+
+   Schedule, in seconds relative to --mv0 (add .80s for time from page load):
+     .00 mainplate      .10 barrel        .16 centre wheel   .22 third wheel
+     .28 escape wheel   .30-.64 let-off (the unheld train runs down)
+     .36 centre cock    .40 train bridge  .44 barrel bridge
+     .50 pallet fork (arrests the train)  .56 pallet cock
+     .60-.69 chatons    .64 balance + hairspring   .72 balance cock
+     .84 the escapement catches: 8 beats, and the whole train steps with it. */
+.watch-mvt {
+  position: absolute;
+  inset: 1.77%;
+  pointer-events: none;
+  --mv0: .80s;
+  animation: mvGone 0s linear 3s forwards;
 }
 .mv { display: block; width: 100%; height: 100%; }
 /* classic SVG transform semantics for the static geometry; the animated
    groups override transform-origin inline with their own pivot */
 .mv * { transform-box: view-box; transform-origin: 0 0; }
 
-.mv-plate { animation: mvPlateIn .26s cubic-bezier(.22,1,.36,1) both; }
-.mv-drop  { animation: mvDrop .2s cubic-bezier(.18,.86,.28,1) var(--d,0s) both; }
-.mv-seat  { animation: mvSeat .24s cubic-bezier(.2,.92,.26,1) var(--d,0s) both; }
+.mv-plate { animation: mvPlateIn .26s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
+.mv-drop  { animation: mvDrop .2s cubic-bezier(.18,.86,.28,1) calc(var(--mv0) + var(--d,0s)) both; }
+.mv-seat  { animation: mvSeat .24s cubic-bezier(.2,.92,.26,1) calc(var(--mv0) + var(--d,0s)) both; }
 
 /* Let-off: the train, not yet held by the escapement, runs down. Identical
    duration/delay/easing on all four arbors, and the angles are in the exact
    tooth ratios (44/22, 36/12, 21/7), so every mesh holds for the whole sweep. */
-.mv-spin { animation: mvLetOff .34s cubic-bezier(.5,0,.3,1) .46s both; }
+.mv-spin { animation: mvLetOff .34s cubic-bezier(.5,0,.3,1) calc(var(--mv0) + .30s) both; }
 
 /* Running: 21600 A/h. The balance beats 6x a second, the escape wheel is
-   released one tooth per beat, and the whole train steps with it — one shared
-   2.5s window of steps(15), i.e. a 1/6s tick, with each arbor's --rn set to
-   its own share of the rotation (44/22, 36/12, 21/7). The escape wheel's
-   -385.714deg is exactly 15 x 360/14, one tooth per tick.
-   Everything is finite so no animation is left ticking behind a dead loader. */
-.mv-run { animation: mvRun 2.5s steps(15) 1.18s both; }
-.mv-beat-bal    { animation: mvBalance .3333s linear 1.18s 4 backwards; }
-.mv-beat-hair   { animation: mvHair    .3333s linear 1.18s 4 backwards; }
-.mv-beat-pallet { animation: mvPallet  .3333s linear 1.18s 4 backwards; }
+   released one tooth per beat, and the whole train steps with it -- one shared
+   1.3333s window of steps(8), i.e. a 1/6s tick, with each arbor's --rn set to
+   its own share of the rotation. The escape wheel's -205.714deg is exactly
+   8 x 360/14, one tooth per tick, and the rest of the train is divided down
+   from it through 21/7, 36/12 and 44/22, so no mesh slips. */
+.mv-run { animation: mvRun 1.3333s steps(8) calc(var(--mv0) + .84s) both; }
+.mv-beat-bal    { animation: mvBalance .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
+.mv-beat-hair   { animation: mvHair    .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
+.mv-beat-pallet { animation: mvPallet  .3333s linear calc(var(--mv0) + .84s) 4 backwards; }
 
 /* ===================== WATCH SHELL ===================== */
 .watch-stage { position: relative; width: 86vmin; height: 86vmin; perspective: 2400px; --case-depth: 6vmin; }
@@ -281,7 +291,7 @@ a:hover { color: var(--gold-line-hover); }
   width: 3.88%;
   height: 6.25%;
   cursor: pointer;
-  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
+  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 3.38s both;
   --fx: 2vmin;
 }
 .crown-art { filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)); }
@@ -326,7 +336,7 @@ a:hover { color: var(--gold-line-hover); }
   transform: rotate(-60deg);
   overflow: visible;
   filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52));
-  animation: correctorSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
+  animation: correctorSeat .55s cubic-bezier(.22,1,.36,1) 3.38s both;
 }
 /* the hover brightness rides on the caps for the same reason: a filter on the
    parent would flatten its 3D context too. */
@@ -372,7 +382,7 @@ a:hover { color: var(--gold-line-hover); }
   letter-spacing: .22em;
   color: var(--ivory);
   text-shadow: 0 .1vmin .24vmin rgba(0,0,0,.78);
-  animation: partIn .62s ease 2.34s both;
+  animation: partIn .62s ease 3s both;
   --fy: -14px;
 }
 .maker-calibre {
@@ -385,7 +395,7 @@ a:hover { color: var(--gold-line-hover); }
   font-size: .82vmin;
   letter-spacing: .32em;
   color: #c7d0dc;
-  animation: partIn .62s ease 2.42s both;
+  animation: partIn .62s ease 3.08s both;
   --fy: -10px;
 }
 
@@ -394,7 +404,7 @@ a:hover { color: var(--gold-line-hover); }
    the JS rotation and the windUp intro turn about `50% 50%`. The numbers below
    are printed by tools/build-dial-art.py; rebuild it if the art changes.
    Hours + minutes turn about (31.80%, 50.00%), the centre of the hours dial. */
-.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s both; pointer-events: none; }
+.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 3.08s both; pointer-events: none; }
 .hand-pivot { position: absolute; transform-origin: 50% 50%; }
 .hand-pivot .sprite-art {
   transform-origin: 50% 50%;
@@ -402,8 +412,8 @@ a:hover { color: var(--gold-line-hover); }
 }
 .hand-hour { left: 14.720%; top: 32.920%; width: 34.159%; height: 34.159%; }
 .hand-min  { left:  9.680%; top: 27.880%; width: 44.240%; height: 44.240%; }
-.hand-hour .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.48s both; }
-.hand-min  .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.57s both; }
+.hand-hour .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 3.14s both; }
+.hand-min  .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 3.23s both; }
 
 /* ===================== OUTSIZE DATE =====================
    The rose-gold twin frame and its two cream panes are one rendered sprite;
@@ -417,7 +427,7 @@ a:hover { color: var(--gold-line-hover); }
   height: 12.367%;
   cursor: pointer;
   border-radius: .4vmin;
-  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.04s both;
+  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.7s both;
   --fy: -38px;
   --fs: .96;
 }
@@ -489,7 +499,7 @@ a:hover { color: var(--gold-line-hover); }
   width: 26%;
   height: 26%;
   cursor: pointer;
-  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.27s both;
+  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.93s both;
   --fx: 38px;
   --fs: .96;
 }
@@ -618,7 +628,7 @@ a:hover { color: var(--gold-line-hover); }
 .sec-pivot .sprite-art {
   transform-origin: 50% 50%;
   filter: drop-shadow(-.06vmin .12vmin .3vmin rgba(0,0,0,.5));
-  animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 2.62s both;
+  animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 3.28s both;
 }
 
 /* The small-seconds + moon group is a full-face `inset:0` wrapper, so it was
@@ -645,9 +655,9 @@ a:hover { color: var(--gold-line-hover); }
   border-radius: 50%;
   pointer-events: none;
   overflow: hidden;
-  animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s both;
+  animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 3.44s both;
 }
-.hint-dots { position: absolute; inset: 0; pointer-events: none; animation: fadeIn .5s ease 3.45s both; }
+.hint-dots { position: absolute; inset: 0; pointer-events: none; animation: fadeIn .5s ease 4.11s both; }
 .hint-dots[hidden] { display: none; }
 .hint-dot {
   position: absolute;
@@ -845,7 +855,7 @@ a:hover { color: var(--gold-line-hover); }
   letter-spacing: .3em;
   color: #b9a184;
   text-align: center;
-  animation: fadeIn .8s ease 3.05s both;
+  animation: fadeIn .8s ease 3.71s both;
   transition: opacity .4s;
 }
 .hint-bar {
@@ -858,7 +868,7 @@ a:hover { color: var(--gold-line-hover); }
   font-size: 1.05vmin;
   letter-spacing: .24em;
   color: #5b6172;
-  animation: fadeIn .8s ease 3.35s both;
+  animation: fadeIn .8s ease 4.01s both;
 }
 .hint-bar[hidden] { display: none; }
 
