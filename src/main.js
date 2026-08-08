@@ -106,7 +106,9 @@ const ZOOM_ORIGINS = {
 const $ = (id) => document.getElementById(id);
 
 const el = {
+  stage: document.querySelector('.watch-stage'),
   pose: $('watchPose'),
+  tilt: $('watchTilt'),
   flip: $('watchFlip'),
   front: $('faceFront'),
   back: $('faceBack'),
@@ -188,7 +190,11 @@ const state = {
   flipped: false,
   reserve: RESERVE_REST,
   touched: false,
-  demo: null   // { t0, reduced } while the pusher's sweep is running
+  demo: null,  // { t0, reduced } while the pusher's sweep is running
+  // Where each hand is pointing, in degrees, as of the last render(). The tilt
+  // loop needs these to rotate the cast-shadow correction into each hand's own
+  // frame -- see handShadows(). render() is the only writer.
+  ang: { hour: 0, min: 0, sec: 0, res: RESERVE_AB }
 };
 
 function moonAge(now) {
@@ -233,10 +239,19 @@ function render() {
   const min = d.getMinutes() + sec / 60;
   const hr = (d.getHours() % 12) + min / 60;
 
+  // The translateZ rides on the same declaration as the rotate because it has
+  // to: this line rewrites `transform` wholesale ten times a second, so a
+  // resting height left in the stylesheet would be thrown away on the first
+  // tick. The heights themselves stay in CSS -- see THE DEPTH BUDGET in
+  // src/styles.css -- so this is the only place that knows there IS a height,
+  // not what it is.
   const wind = (turns) => turns * 360 * spin;   // 0 turns of offset when idle
-  el.hour.style.transform = `rotate(${(hr * 30 + wind(DEMO.turns.hour)).toFixed(2)}deg)`;
-  el.min.style.transform = `rotate(${(min * 6 + wind(DEMO.turns.min)).toFixed(2)}deg)`;
-  el.sec.style.transform = `rotate(${(sec * 6 + wind(DEMO.turns.sec)).toFixed(2)}deg)`;
+  state.ang.hour = hr * 30 + wind(DEMO.turns.hour);
+  state.ang.min = min * 6 + wind(DEMO.turns.min);
+  state.ang.sec = sec * 6 + wind(DEMO.turns.sec);
+  el.hour.style.transform = `rotate(${state.ang.hour.toFixed(2)}deg) translateZ(var(--z-hand-hour))`;
+  el.min.style.transform = `rotate(${state.ang.min.toFixed(2)}deg) translateZ(var(--z-hand-min))`;
+  el.sec.style.transform = `rotate(${state.ang.sec.toFixed(2)}deg) translateZ(var(--z-hand-sec))`;
 
   // The date runs whole months forward, so the wrap lands on today again. The
   // eased rate is already under one day per second past t~0.9, so the true date
@@ -295,7 +310,8 @@ function render() {
   // would smear a per-frame sweep into a lagging blur. Suppressed for the demo
   // and restored on the settling frame, where the value is already true.
   el.reserveHand.style.transition = demoing ? 'none' : '';
-  el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg)`;
+  state.ang.res = reserveAngle;
+  el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg) translateZ(var(--z-hand-res))`;
   // The bar reads the printed scale, not the hand's travel, so it stays an
   // honest percentage while the hand is off the end of the dial: past AUF it
   // reads 100 and past AB it reads 0, rather than going over or under. Off the
@@ -360,8 +376,153 @@ function open(id) {
   state.active = id;
   state.touched = true;
   state.hover = null;
+  // With a panel open the watch is context rather than the subject, and it has
+  // just been posed left at 0.72 scale -- a tilt on top of that reads as drift.
+  tiltNeutral();
   render();
 }
+
+// ---- pointer tilt ----------------------------------------------------------
+// The watch is already a real 3D object -- a 48-segment gold cylinder for a
+// case band, a bezel with ring thickness, faces half a case-depth apart inside
+// perspective: 2400px. What it never had was a reason to turn, so nobody saw
+// any of it: the only thing that ever rotated it was the 1.15s flip.
+//
+// This turns it toward the pointer, and everything about the geometry -- the
+// clamp, the damping, the settle threshold -- is derived rather than dialled
+// in. The clamp lives in CSS (--tilt-max) because it is the one number here
+// whose limit is aesthetic: see THE DEPTH BUDGET in src/styles.css.
+//
+// It writes to #watchTilt and nothing else does. render() owns .watch-pose and
+// .watch-flip and keeps its 10Hz interval; a tilt at 10Hz would judder, and a
+// tilt sharing either of those layers would inherit a ~1s transition.
+const D2R = Math.PI / 180;
+const readVar = (name) => parseFloat(getComputedStyle(el.stage).getPropertyValue(name)) || 0;
+const TILT_MAX = readVar('--tilt-max') || 8;
+
+// Damping. The tilt is a hover-class response -- it answers the same cursor the
+// hover light answers -- so it settles on the same clock: the .28s of the
+// `transition: filter .28s` in THE LIVE PARTS' HOVER. An exponential ease
+// reaching 95% in 0.28s has tau = 0.28 / 3 = 0.093s. Computing the per-frame
+// coefficient from the real dt keeps that true at 60Hz, 120Hz or a dropped
+// frame, which a fixed `+= (target - current) * 0.06` does not.
+const TILT_TAU = 0.093;
+
+// Only a real pointer gets this. Touch has none -- a drag-to-turn gesture would
+// collide with scrolling and deviceorientation costs an iOS permission prompt
+// for a decorative effect, so touch gets a static watch and the flip, which is
+// the interaction it already had. Reduced motion gets nothing, live: the query
+// is re-read on every event rather than latched at load.
+const TILT_POINTER = matchMedia('(hover: hover) and (pointer: fine)');
+const tiltLive = () => TILT_POINTER.matches && !REDUCED_MOTION.matches;
+
+const tilt = {
+  ax: 0, ay: 0,      // current, degrees
+  tx: 0, ty: 0,      // target, degrees
+  raf: 0, last: 0,
+  cx: 0, cy: 0, half: 1,
+  // Settled means "the next step would move the case rim less than half a
+  // pixel", which is the point at which continuing to run a rAF loop is
+  // spending frames on nothing. The rim is at the stage's own half-width, so
+  // eps = atan(0.5px / R) and it re-derives itself whenever the stage resizes.
+  eps: .09
+};
+
+function tiltMeasure() {
+  const r = el.stage.getBoundingClientRect();
+  tilt.cx = r.left + r.width / 2;
+  tilt.cy = r.top + r.height / 2;
+  // Normalised against half the viewport's SHORTER side -- the same unit the
+  // watch is sized in (86vmin), so the pointer at the case rim is at 0.86 of
+  // full tilt and the last 14% is out in the field around it.
+  tilt.half = Math.min(innerWidth, innerHeight) / 2 || 1;
+  tilt.eps = Math.atan2(.5, Math.max(1, r.width / 2)) / D2R;
+}
+tiltMeasure();
+addEventListener('resize', tiltMeasure);
+
+// Each hand's drop-shadow, held still on the dial while the hand parallaxes
+// over it. A shadow belongs to the light: the 315deg key does not move when the
+// viewer does, so the shadow must not either -- but the filter that draws it
+// rides on the sprite, which moves by h*sin(tilt). Subtracting exactly that
+// back out is what opens and closes the gap between hand and shadow as the
+// watch turns, and it is the cue that reads as "these are above the dial".
+//
+// The correction is a screen-space vector, and the filter is applied inside the
+// pivot's own rotate(phi), so it is rotated into the hand's frame first:
+// v_local = R(-phi) * (-dx, -dy), with CSS's y-down, clockwise-positive basis.
+// The heights come from the same CSS variables the transforms use, so there is
+// one definition of how high each hand sits.
+const HANDS = [
+  [el.hour, 'hour', readVar('--z-hand-hour')],
+  [el.min, 'min', readVar('--z-hand-min')],
+  [el.sec, 'sec', readVar('--z-hand-sec')],
+  [el.reserveHand, 'res', readVar('--z-hand-res')]
+];
+
+function handShadows(ay, ax) {
+  const ux = Math.sin(ay * D2R);    // screen shift per vmin of height
+  const uy = -Math.sin(ax * D2R);
+  for (const [node, key, h] of HANDS) {
+    if (!ay && !ax) {
+      node.style.removeProperty('--shx');
+      node.style.removeProperty('--shy');
+      continue;
+    }
+    const p = state.ang[key] * D2R, c = Math.cos(p), s = Math.sin(p);
+    const dx = h * ux, dy = h * uy;
+    node.style.setProperty('--shx', `${(-dx * c - dy * s).toFixed(3)}vmin`);
+    node.style.setProperty('--shy', `${(dx * s - dy * c).toFixed(3)}vmin`);
+  }
+}
+
+function tiltApply() {
+  el.tilt.style.transform = (tilt.ay || tilt.ax)
+    ? `rotateY(${tilt.ay.toFixed(3)}deg) rotateX(${tilt.ax.toFixed(3)}deg)`
+    : '';
+  handShadows(tilt.ay, tilt.ax);
+}
+
+// The loop exists only while there is distance left to cover. It is started by
+// a change of target and it stops itself on arrival, so an idle page runs no
+// animation frames at all -- tilt.raf is 0 and stays 0 until the pointer moves.
+function tiltStep(now) {
+  const dt = tilt.last ? Math.min(.05, (now - tilt.last) / 1000) : 1 / 60;
+  tilt.last = now;
+  const k = 1 - Math.exp(-dt / TILT_TAU);
+  tilt.ay += (tilt.ty - tilt.ay) * k;
+  tilt.ax += (tilt.tx - tilt.ax) * k;
+  const done = Math.abs(tilt.ty - tilt.ay) < tilt.eps && Math.abs(tilt.tx - tilt.ax) < tilt.eps;
+  if (done) { tilt.ay = tilt.ty; tilt.ax = tilt.tx; }
+  tiltApply();
+  if (done) { tilt.raf = 0; tilt.last = 0; }
+  else tilt.raf = requestAnimationFrame(tiltStep);
+}
+
+function tiltTo(ty, tx) {
+  if (ty === tilt.ty && tx === tilt.tx) return;
+  tilt.ty = ty;
+  tilt.tx = tx;
+  if (!tilt.raf) { tilt.last = 0; tilt.raf = requestAnimationFrame(tiltStep); }
+}
+function tiltNeutral() { tiltTo(0, 0); }
+
+addEventListener('pointermove', (e) => {
+  if (e.pointerType === 'touch' || !tiltLive() || state.active) return tiltNeutral();
+  const nx = Math.max(-1, Math.min(1, (e.clientX - tilt.cx) / tilt.half));
+  const ny = Math.max(-1, Math.min(1, (e.clientY - tilt.cy) / tilt.half));
+  // The watch turns to face the pointer: cursor right, the right edge swings
+  // back; cursor low, the bottom swings back. The band that comes into view is
+  // the far one, which is the whole point of doing this.
+  tiltTo(nx * TILT_MAX, -ny * TILT_MAX);
+}, { passive: true });
+
+// Neutral the moment the pointer is no longer over the document, or the window
+// stops being the one in front. relatedTarget === null is the pointer crossing
+// the window boundary rather than moving between two elements inside it.
+addEventListener('pointerout', (e) => { if (!e.relatedTarget) tiltNeutral(); });
+addEventListener('blur', tiltNeutral);
+REDUCED_MOTION.addEventListener('change', () => { if (REDUCED_MOTION.matches) tiltNeutral(); });
 
 function bind(node, id) {
   node.addEventListener('click', () => open(id));
