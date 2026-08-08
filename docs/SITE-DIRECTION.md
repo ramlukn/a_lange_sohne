@@ -767,10 +767,11 @@ the 8-week rule existed to manage, which is a better outcome than managing it.
 | Book moon-phase labels dropped | `.book-phase` markup and rule. |
 
 **Untouched by all of the above:** every `ZOOM_ORIGINS` coordinate, the five
-`.hint-mark` shapes, the `--i:` scribe order, the hit-target geometry, and the
-`.cb-rig` block. No part moves; only what it opens changes. Do the key renames
-inside Phase 0's `SECTIONS` list so each name is edited once rather than four
-times.
+`.hint-mark` shapes, the hit-target geometry, and the `.cb-rig` block. No part
+moves; only what it opens changes. Do the key renames inside Phase 0's
+`SECTIONS` list so each name is edited once rather than four times. (This list
+used to name a `--i:` scribe order too. There is no scribe order any more — the
+five marks are drawn at once — so there is nothing left there to leave alone.)
 
 **On the exact fit.** Six sections against five dial parts plus the crown is
 arithmetic, not design, and the risk is that a perfect fit hides the ceiling.

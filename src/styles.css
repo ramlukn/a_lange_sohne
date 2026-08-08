@@ -18,9 +18,9 @@
   --font-ui: Archivo, sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
-  /* THE INTRO'S LAST BEAT. These three used to live on .hint-index, which owned
-     them alone; the rail now waits on the same clock, and a custom property is
-     only readable down the tree, so they moved up here rather than being copied.
+  /* THE INTRO'S LAST BEAT. These used to live on .hint-index, which owned them
+     alone; the rail now waits on the same clock, and a custom property is only
+     readable down the tree, so they moved up here rather than being copied.
      Retiming the index is still a one-number edit -- and it now retimes the rail
      with it, which is the point: the rail is defined as "after the index has
      finished", not as a second constant that happens to be later today.
@@ -31,16 +31,27 @@
                     went to 4.11s while a movement-assembly act ran in front of
                     the build and pushed the crystal out; that act was removed
                     and this followed it back.
-       --hint-step  the gap between one mark and the next.
-       --hint-draw  how long one mark takes to draw.
+       --hint-draw  how long the index takes to draw.
 
-     Five marks, so the last one starts at --hint-at + 4 * --hint-step and the
-     layer is finished --hint-draw after that: 3.45 + .92 + .46 = 4.83s. That
-     sum is --rail-at below, and nothing in the rail is written as a number. */
+     THE MARKS ARE NOT STAGGERED. There was a third knob here, --hint-step: .23s,
+     and the five marks went on one at a time in a fixed order over .92s. They
+     now all start at --hint-at and finish together. The order was never earned
+     -- the five parts are peers, no one of them is the way in to the other four
+     -- so scribing them in sequence asserted a reading order the dial does not
+     have, and left the last part waiting most of a second to be declared live.
+     The index is one statement about the watch, so it is made in one instant.
+     (What lets five paths of 157.9 / 84.9 / 63.9 / 56.0 / 21.5 user units land
+     on the same frame is pathLength="100" on every shape -- see .hint-mark.)
+
+     So the layer is finished --hint-draw after --hint-at: 3.45 + .46 = 3.91s.
+     That sum is --rail-at below, and nothing in the rail is written as a number.
+     The rail therefore arrives .92s earlier than it used to. That is not a
+     retiming of the rail: it is the same rule, "start when the index has
+     finished", applied to an index that finishes sooner. There is no longer a
+     stagger to wait out, so there is nothing left to wait for. */
   --hint-at: 3.45s;
-  --hint-step: .23s;
   --hint-draw: .46s;
-  --rail-at: calc(var(--hint-at) + 4 * var(--hint-step) + var(--hint-draw));
+  --rail-at: calc(var(--hint-at) + var(--hint-draw));
 }
 
 html, body { margin: 0; padding: 0; background: #05070c; }
@@ -107,15 +118,32 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
-/* One pass of the scribe: a live part's own principal line draws itself on,
-   then settles to a resting hairline. See the INTERACTION INDEX block below.
-   Duration is zeroed by the reduced-motion rule underneath, and `both` fill
-   then lands every mark on the `to` state -- drawn, at rest -- so the
-   affordance degrades to a static engraving rather than disappearing. */
+/* One pass of the scribe: a live part's own principal line draws itself on.
+   See the INTERACTION INDEX block below. Duration is zeroed by the
+   reduced-motion rule underneath, and `both` fill then lands every mark on the
+   `to` state -- fully drawn -- so the affordance degrades to a static engraving
+   rather than disappearing.
+
+   IT IS A REVEAL AND NOTHING ELSE. There was an opacity track in here too:
+   .92 held to 72% and then falling to .55, so a mark landed bright and settled.
+   That earned its keep only while the marks were staggered -- it was what told
+   you WHICH mark was being drawn, against the ones already at rest -- and when
+   all five are drawn at once there is no such distinction left to draw. What
+   remained was five marks brightening the dial together and then dimming
+   together, and that is measurably a flash: at 900x760, diffed against the same
+   frame with the layer hidden, the index reached 693k of brightening at 3.74s
+   and fell back to 426k by 3.86s. A peak 1.63x the resting value, shed over
+   170ms, is precisely the "highlight that dims afterwards" the HOVER PULSE
+   block calls the reported bug and killed hoverBloom over. So .55 stopped being
+   the end of an animation and became what it always was -- the resting
+   hairline, declared on .hint-mark -- and this keyframe walks the dash and
+   leaves the light alone. The curve is monotonic now: it rises to the resting
+   value and stops there. Do not put an opacity track back to "give the scribe
+   some life"; any value above .55 in here is a flash again, on all five at once.
+*/
 @keyframes hintScribe {
-  from { stroke-dashoffset: 100; opacity: .92; }
-  72%  { opacity: .92; }
-  to   { stroke-dashoffset: 0; opacity: .55; }
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
 }
 
 /* THERE IS NO hoverBloom KEYFRAME ANY MORE, and its removal is the whole of the
@@ -156,17 +184,26 @@ a:hover { color: var(--gold-line-hover); }
    The loader is the one thing dropped outright. It is a title card, and a title
    card for a page the visitor is already several rooms into is just a delay.
 
-   THE TWO EXCLUSIONS. `.hint-mark` and `.cb-rig-sheen` are the two sequences
-   whose delay is not an intro delay but their own internal timing: the index's
-   five marks are staggered by `--i * --hint-step`, and zeroing that would draw
-   all five simultaneously instead of scribing them in order. So the stagger is
-   left intact and the WAIT in front of it is retired the way it was designed to
-   be -- by the one knob, --hint-at, which .hint-index publishes for exactly this
-   (the caseback sheen's .5s hangs off .is-flipped and was never part of the
-   intro at all, so it keeps its delay untouched). */
+   THE ONE EXCLUSION. `.cb-rig-sheen`'s .5s is not an intro delay at all: it
+   hangs off .is-flipped and runs every time the caseback is turned over, whether
+   that happens eight seconds in or eight minutes in. Zeroing it would take the
+   front off a gesture this rule has no business reaching.
+
+   THERE USED TO BE A SECOND EXCLUSION, `.hint-mark`, and its removal is the
+   whole of the change here. The mark's delay was `--hint-at + --i * --hint-step`
+   -- a wait AND a stagger welded into one number -- so zeroing it collapsed the
+   stagger too and drew all five marks in one flash. The mark was therefore held
+   out of this rule, and the wait alone was retired through --hint-at, which
+   .hint-index published as `--hint-at: 0s` for exactly that purpose. The stagger
+   is gone now: every mark starts at --hint-at, so its delay is the intro wait
+   and nothing else, which is precisely what this rule exists to zero. The
+   exclusion and the --hint-at override it needed both came out together -- they
+   were one workaround in two pieces, and there is no longer anything to work
+   around. Simultaneity is now the design here and not the failure mode, so the
+   deep-link path and the full intro reach the same arrangement by the same
+   route, which is the first time they have. */
 html[data-direct] .loader { display: none !important; }
-html[data-direct] .stage *:not(.hint-mark):not(.cb-rig-sheen) { animation-delay: 0s !important; }
-html[data-direct] .hint-index { --hint-at: 0s; }
+html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; }
 
 /* ===================== STAGE ===================== */
 .stage {
@@ -1153,9 +1190,9 @@ html[data-direct] .hint-index { --hint-at: 0s; }
   height: 100%;
   pointer-events: none;
   overflow: visible;
-  /* --hint-at / --hint-step / --hint-draw drive the scribe below and live in
-     :root -- see THE INTRO'S LAST BEAT there. They moved up because the rail
-     starts when this layer finishes and had to be able to read them. */
+  /* --hint-at and --hint-draw drive the scribe below and live in :root -- see
+     THE INTRO'S LAST BEAT there. They moved up because the rail starts when this
+     layer finishes and had to be able to read them. */
   /* The hairline, in USER UNITS -- see the note on stroke-width below. This is
      only the fallback: hintHairline() in main.js overwrites it with the value
      that lands on exactly one CSS pixel for the box the layer is currently
@@ -1191,17 +1228,32 @@ html[data-direct] .hint-index { --hint-at: 0s; }
      Dashes stay in user space here, which is what pathLength="100" on every
      shape is for: one dash exactly spans one path, whatever the path is, so
      offset 100 hides it completely, offset 0 draws it completely, and all five
-     draw over the same --hint-draw -- which is what makes --i * --hint-step the only
-     thing deciding the order. The hairline is held constant the other way, by
-     writing the width in user units for the layer's current size; see
-     --hint-hair above and hintHairline() in main.js. (.pulse-mark next door
-     has always sized its stroke this way, for the same reason.) */
+     progress in step -- which is what lets the five be scribed AT ONCE. Give
+     five paths of 157.9 / 84.9 / 63.9 / 56.0 / 21.5 user units one duration in
+     screen space and the short ones would be finished while the hours-dial rim
+     was still a third drawn; normalised, they start together, they are the same
+     fraction of themselves at every frame, and they close together. The
+     hairline is held constant the other way, by writing the width in user units
+     for the layer's current size; see --hint-hair above and hintHairline() in
+     main.js. (.pulse-mark next door has always sized its stroke this way, for
+     the same reason.) */
   stroke-width: var(--hint-hair);
   stroke-dasharray: 100;   /* = the whole path, via pathLength="100" */
   stroke-dashoffset: 100;  /* = hidden. The scribe walks this to 0. */
-  opacity: 0;
+  /* THE RESTING HAIRLINE, declared. It used to be the last keyframe of
+     hintScribe, with the base value here at 0; the dash alone decides whether a
+     mark is painted, so the 0 was never what hid anything, and .55 was never
+     really an animation's destination -- it is the level the index sits at for
+     as long as it is on screen. See hintScribe for why the brighter value that
+     used to precede it had to go. */
+  opacity: .55;
+  /* One delay for all five, not a per-mark one: the marks carried a `--i` and
+     started at --hint-at + --i * --hint-step. See THE MARKS ARE NOT STAGGERED
+     in :root for why the order went, and THE ONE EXCLUSION above for what its
+     going let us delete. `--i` came off the shapes in index.html with it, since
+     nothing reads it here any more -- the rail sets its own, from main.js. */
   animation: hintScribe var(--hint-draw) cubic-bezier(.3,.7,.25,1)
-             calc(var(--hint-at) + var(--i, 0) * var(--hint-step)) both;
+             var(--hint-at) both;
 }
 
 /* ===================== HOVER PULSE =====================

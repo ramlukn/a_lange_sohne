@@ -382,13 +382,20 @@
                                 y = 61.563 + v*0.238787), so the A48 arc
                                 becomes rx 11.615 / ry 11.462
                Move a complication and these must move with it, exactly as the
-               .hint-dot percentages had to. --i is the scribe order.
-               pathLength="100" lets one dash rule drive all four shape types.
-               Keep it on every shape, and note that it only works in user
-               space: the marks must NOT carry vector-effect: non-scaling-stroke
-               or the dashes go to screen px and pathLength is ignored. The
-               hairline is held by main.js instead -- see .hint-mark in
-               src/styles.css.
+               .hint-dot percentages had to. The order they are written in is
+               only the reading order of the list above: every mark starts at
+               --hint-at and they draw together, so nothing keys off position
+               any more. They each used to carry a `style="--i:n"` giving their
+               place in a .23s stagger; that is gone rather than left inert --
+               see THE MARKS ARE NOT STAGGERED in src/styles.css.
+               pathLength="100" lets one dash rule drive all four shape types,
+               and it is what makes drawing them at once possible at all: it is
+               why four shapes of four different lengths are the same fraction
+               of themselves on every frame. Keep it on every shape, and note
+               that it only works in user space: the marks must NOT carry
+               vector-effect: non-scaling-stroke or the dashes go to screen px
+               and pathLength is ignored. The hairline is held by main.js
+               instead -- see .hint-mark in src/styles.css.
                The layer is decorative: it never takes a pointer event. -->
           <!-- The <svg> is wrapped in a plain div deliberately. render() hides
                this layer with `el.hintIndex.hidden = ...`, and `hidden` is an
@@ -403,11 +410,11 @@
                  because render() hides this whole layer from the first click
                  onward, that took the hover highlight's paint server down with
                  it -- permanently. See THE KEY LIGHT at the top of this file. -->
-            <circle class="hint-mark" style="--i:0" pathLength="100" cx="31.797" cy="49.999" r="25.299"/>
-            <rect   class="hint-mark" style="--i:1" pathLength="100" x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
-            <path   class="hint-mark" style="--i:2" pathLength="100" d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
-            <circle class="hint-mark" style="--i:3" pathLength="100" cx="64.498" cy="75.112" r="13.599"/>
-            <path   class="hint-mark" style="--i:4" pathLength="100" d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
+            <circle class="hint-mark" pathLength="100" cx="31.797" cy="49.999" r="25.299"/>
+            <rect   class="hint-mark" pathLength="100" x="53.5" y="20.299" width="20.5" height="12.367" rx=".8"/>
+            <path   class="hint-mark" pathLength="100" d="M76.514 38.034A12.55 12.55 0 0 1 76.58 57.005"/>
+            <circle class="hint-mark" pathLength="100" cx="64.498" cy="75.112" r="13.599"/>
+            <path   class="hint-mark" pathLength="100" d="M53.124 72.786A11.615 11.462 0 0 1 75.87 72.786C71.756 69.921 67.885 70.399 64.497 72.786C61.109 70.399 57.238 69.921 53.124 72.786Z"/>
           </svg>
           </div>
 
