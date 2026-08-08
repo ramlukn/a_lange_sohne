@@ -26,6 +26,13 @@ a:hover { color: var(--gold-line-hover); }
 
 /* ===================== ANIMATIONS ===================== */
 @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+/* Pulls the finished loader out of the render tree. visibility:hidden stops it
+   painting but leaves its animations ticking, and the movement's escapement run
+   outlasts the fade by ~1.8s -- landing squarely on the watch's own assembly,
+   the most contended moment on the page. A zero-duration animation is used
+   rather than a display:none keyframe on fadeOut itself: discrete properties
+   flip mid-interval, which would cut the fade short. */
+@keyframes loaderGone { to { display: none; } }
 @keyframes fadeIn { from { opacity: 0; } }
 @keyframes lineFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes caseSeat {
@@ -154,7 +161,8 @@ a:hover { color: var(--gold-line-hover); }
   justify-content: center;
   gap: 1.7vmin;
   pointer-events: none;
-  animation: fadeOut .34s ease 1.56s forwards;
+  /* fade ends at 1.90s; loaderGone drops the subtree the instant it does */
+  animation: fadeOut .34s ease 1.56s forwards, loaderGone 0s linear 1.9s forwards;
 }
 /* the opaque ground lives on a pseudo-element so it can clear on its own
    schedule while the movement stays on top of the emerging watch */
