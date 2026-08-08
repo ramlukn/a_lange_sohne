@@ -86,7 +86,7 @@ a:hover { color: var(--gold-line-hover); }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 
 /* ---- movement: calibre NR.1 assembling ----
-   Six rendered layers arriving on a common frame in four beats. Every one of
+   Six rendered layers arriving on a common frame in three beats. Every one of
    these is transform / opacity / filter only, and none of them rotates a layer
    about the movement's centre: these are flat images, so turning one would carry
    every wheel on it around the same axis at the same rate. The assembly is the
@@ -257,7 +257,7 @@ html.no-mvt .watch-mvt { display: none; }
 
 /* ===================== MOVEMENT =====================
    Calibre NR.1 assembles itself as the watch's opening act, out of six rendered
-   layers in four beats. The layer is painted over the case discs and under the
+   layers in three beats. The layer is painted over the case discs and under the
    dial plate, so the case closes *around* a movement that is already finished
    and the dial then drops straight over it.
 
@@ -295,22 +295,53 @@ html.no-mvt .watch-mvt { display: none; }
    settling as one.
 
    SCHEDULE, in seconds relative to --mv0 (add .80s for time from page load).
-   Four beats, each 10% slower than the act used to run:
-     .000 foundation plate  the ground, fading up under the title card
-     .220 gear train        the wheels descend onto their arbors
-     .396 balance + escapement, in from its own corner rather than from above
-     .572 bridge set + screws and jewels + perimeter ring -- the movement is
+   Three beats, evenly spaced .266s apart, each arrival .37s in flight:
+     .000 foundation plate  the ground appears; it does not descend
+     .266 gear train + balance and escapement -- the mechanism is laid on, the
+          train straight down, the balance in from its own corner. One onset,
+          one landing, two layers; see below.
+     .532 bridge set + screws and jewels + perimeter ring -- the movement is
           closed up. One onset, one landing, three layers; see below.
      .902-1.298 the assembled stack settles into the case, starting the instant
           the ring lands, as one -- no part moves relative to any other.
 
-   The stretch and the merge pull in opposite directions and the merge wins: two
-   onsets removed buy back more than 10% longer beats cost, so the last motion
-   now ends at 2.098s where it used to end at 2.34s. Nothing downstream had to
-   move. The case still starts seating at 1.56s and finishes at 2.06s, and the
-   dial plate still lands at 2.24s -- 0.14s after the movement has completely
-   stopped, so nothing is still arriving when the dial comes down over it.
-   mvGone drops the layer at 3.00s, long after the dial has covered it. */
+   WHY THREE AND NOT TWO. A beat here is a change of KIND, not a change of part,
+   and the act contains exactly three kinds of event:
+     something appears out of nothing -- the plate. No travel, no shadow, and
+       its own keyframes (mvPlateIn), because there is nothing under it to
+       descend onto and nothing for a shadow to fall on;
+     things descend onto it -- train and balance (mvDrop), each from the side it
+       lives on, each throwing a shadow on the plate until it lands;
+     things close over them -- bridges, screws and jewels, rim.
+   Two beats -- parts, then closed -- would have to fold the plate in with the
+   descenders, and the plate cannot descend. It would need either a shadow
+   falling on nothing or to be visibly doing something else at the group's
+   shared onset, which is precisely the coincidence-of-timings that merging is
+   supposed to avoid. The plate is the floor the other two beats are about, so
+   it keeps a beat of its own; the other two each say one thing.
+
+   WHAT THE MERGE BOUGHT, AND WHERE IT WENT. Dropping an onset frees .176s, and
+   it was NOT given back to the intro, because this act is not on the intro's
+   critical path. The case starts seating at 1.56s -- half a second before the
+   act ends -- and everything after it (dial 2.24s, hands 3.14s, crown 3.38s,
+   the interaction index at 4.11s) is anchored to the case, not to the movement.
+   An act that finished at 1.92s would shorten nothing a visitor sits through;
+   it would only leave a finished movement holding still for longer. Shortening
+   the intro means moving that whole downstream chain, which is a different
+   edit. So the act keeps its footprint and spends the time on itself: every
+   arrival is 12% longer in flight (.33 -> .37s, and the plate's fade-up
+   .374 -> .42s, the same stretch), and the onsets are evenly spaced instead of
+   the .220/.176/.176 the six-beat version left behind. Even spacing is the
+   shape an assembly has once each beat carries the same weight; the .266 is not
+   chosen but solved for, being what is left of the fixed .000-to-.902 window
+   after the .37s flight: 2 x .266 + .37 = .902.
+
+   The end is unmoved, so nothing downstream had to move: the ring still lands
+   at .902 and the settle still ends at 1.298 (2.098s from load). The case still
+   starts seating at 1.56s and finishes at 2.06s, and the dial plate still lands
+   at 2.24s -- 0.14s after the movement has completely stopped, so nothing is
+   still arriving when the dial comes down over it. mvGone drops the layer at
+   3.00s, long after the dial has covered it. */
 .watch-mvt {
   position: absolute;
   left: 14.12%;
@@ -320,8 +351,8 @@ html.no-mvt .watch-mvt { display: none; }
   pointer-events: none;
   --mv0: .80s;
   /* --mv0 is when the act starts, not how long it takes: it is pinned to the
-     title card dissolving (.62s-1.07s), so the 10% stretch does not touch it.
-     The settle begins where the ring lands, .572 + .330. */
+     title card dissolving (.62s-1.07s), so the stretch does not touch it.
+     The settle begins where the ring lands, .532 + .370. */
   animation:
     mvSettle .396s cubic-bezier(.24,.9,.3,1) calc(var(--mv0) + .902s) both,
     mvGone 0s linear 3s forwards;
@@ -346,22 +377,51 @@ html.no-mvt .watch-mvt { display: none; }
   position: absolute;
   display: block;
   object-fit: fill;
-  animation: mvDrop .33s cubic-bezier(.2,.86,.28,1) calc(var(--mv0) + var(--d, 0s)) both;
+  animation: mvDrop .37s cubic-bezier(.2,.86,.28,1) calc(var(--mv0) + var(--d, 0s)) both;
 }
 
-/* The plate is the ground: it does not descend onto anything, it just comes up
+/* ---- beat one: the ground ----
+   The plate is the ground: it does not descend onto anything, it just comes up
    out of the dark under the tail of the title card. No shadow -- nothing is
-   below it to catch one. */
-.mv-plate { animation: mvPlateIn .374s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
+   below it to catch one. Its .42s is the drop's .37s carrying the same 1.133
+   ratio it has always had to it: a fade-up with no travel needs longer to read
+   than an arrival does. */
+.mv-plate { animation: mvPlateIn .42s cubic-bezier(.22,1,.36,1) var(--mv0) both; }
 
-/* The rest descend, each from the side it lives on, each throwing a shadow onto
-   what is under it until it lands. Bigger --fs and --fb = further off-plane at
-   the start; --sd is how proud of the plate the part finally stands, so the
-   wheels (thickest) get the deepest shadow and the flush screws the shallowest. */
-.mv-train   { --d: .220s; --fs: 1.14; --fx: 0%;      --fy: -2.2%;   --fb: 2.24px; --sd: .32vmin; }
-.mv-balance { --d: .396s; --fs: 1.20; --fx: 3.4%;    --fy: 2.6%;    --fb: 1.92px; --sd: .27vmin; }
+/* Everything after the plate descends, each layer from the side it lives on,
+   each throwing a shadow onto what is under it until it lands. Bigger --fs and
+   --fb = further off-plane at the start; --sd is how proud of the plate the part
+   finally stands, so the wheels (thickest) get the deepest shadow and the flush
+   screws the shallowest. Both beats below read the same four variables. */
 
-/* ---- beat four: the movement is closed up ----
+/* ---- beat two: the mechanism ----
+   The balance used to hold a beat of its own on the grounds that it is the part
+   that makes a watch a watch. That is a claim about what a balance DOES, and
+   this act cannot show it doing anything -- nothing here rotates, by design.
+   What was left of the claim on screen was one more part landing .176s after
+   the last one, which is the same beat-about-nothing the screws were guilty of.
+   And they were never two things mechanically either: the escape wheel is the
+   last wheel of the going train, and a train and its escapement are fitted
+   together. Arriving with the train it drives is where the balance belongs.
+
+   One gesture, on the same terms as beat three below: they share --d, so onset,
+   duration and easing all come from the one .mv-layer rule. They also share the
+   height they start from, which is the merge doing structural work rather than
+   deleting a delay -- if they arrive as one subassembly they are on one plane,
+   and --fs (a perspective magnification) and --fb (a defocus blur) both depend
+   on height off the plate and not on how big the part is, exactly as the screws
+   note below argues. Those are the train's numbers, the train being the plane
+   the escapement seats in.
+
+   What stays each layer's own is what is not about the gesture: --fx/--fy, the
+   side each comes in from -- the train straight down onto its arbors, the
+   balance in from its own corner -- and --sd, how proud each finally stands. */
+.mv-train,
+.mv-balance { --d: .266s; --fs: 1.14; --fb: 2.24px; }
+.mv-train   { --fx: 0%;   --fy: -2.2%; --sd: .32vmin; }
+.mv-balance { --fx: 3.4%; --fy: 2.6%;  --sd: .27vmin; }
+
+/* ---- beat three: the movement is closed up ----
    The bridge set, the screws and jewels that fasten it, and the perimeter rim
    used to be three consecutive beats. They are one now.
 
@@ -373,8 +433,9 @@ html.no-mvt .watch-mvt { display: none; }
    It is just the movement's outer edge, so it belongs to the same idea as the
    bridges -- the movement being shut.
 
-   What is kept separate is what carries on its own: the plate is the ground, the
-   train is the mechanism, the balance is the part that makes it a watch.
+   What is kept separate is what carries on its own, and after the second merge
+   that is three things and only three: the plate is the ground, beat two is the
+   mechanism going on, and this beat is the movement being shut.
 
    Three layers read as one gesture rather than a coincidence because they cannot
    do otherwise: they share --d, and the ring overrides only animation-name, so
@@ -385,7 +446,7 @@ html.no-mvt .watch-mvt { display: none; }
    like. */
 .mv-bridges,
 .mv-jewels,
-.mv-ring    { --d: .572s; }
+.mv-ring    { --d: .532s; }
 
 .mv-bridges { --fs: 1.11; --fx: -1.4%;   --fy: -1.8%;   --fb: 1.76px; --sd: .24vmin; }
 /* Screws travelling down inside their own bridges: same journey, so the numbers
