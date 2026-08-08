@@ -8,6 +8,34 @@
 <meta name="description" content="Nikhil Ramlukan — an interactive personal portfolio inspired by the precision and asymmetry of the Lange 1.">
 <title>Nikhil Ramlukan — Calibre NR.1</title>
 
+<!-- ===================== ARRIVING MID-SITE =====================
+     Somebody opening a shared #/resume link must not sit through 4.1 seconds of
+     the watch assembling itself first. This one line decides that, and the three
+     rules it switches on live under ARRIVING MID-SITE in src/styles.css.
+
+     IT HAS TO BE HERE, AND IT HAS TO BE A CLASSIC INLINE SCRIPT. The decision
+     has to be made before the first paint: /src/main.js is type="module" and
+     therefore deferred, so by the time it runs the loader is on screen and every
+     seat animation has already started on its own delay. An inline script blocks
+     the parser, which is precisely the guarantee needed.
+
+     IT KEYS OFF THE ADDRESS, NOT OFF MEMORY. There used to be a sessionStorage
+     intro-skip here; it was deliberately removed, because the site gives the
+     same experience every time (docs/PLAN.md, "Already decided"). Nothing is
+     read or written here -- the test is the address the visitor arrived on, so a
+     visitor who arrives at the bare site gets the full intro on their first
+     visit, their second, and their hundredth. There is no state to leak.
+
+     `#/` plus something, rather than a list of the real section keys: the keys
+     live in SECTIONS in main.js and this must not become a second copy of them.
+     The cost is that #/nonsense also skips the intro before main.js corrects the
+     address to the bare watch. That is the right way round -- the alternative is
+     tearing the attribute back off mid-assembly, which would restart every delay
+     and re-assemble the watch in front of someone who has already seen it. -->
+<script>
+  if (/^#\/.+/.test(location.hash)) document.documentElement.dataset.direct = '';
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -512,7 +540,7 @@
     <div class="overlay-scrim" data-close></div>
 
     <section class="card" id="panel-about" tabindex="-1" aria-labelledby="title-about" hidden>
-      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">HOURS &amp; MINUTES — THE CENTER</div>
       <h1 class="card-title" id="title-about">About Me</h1>
       <div class="about-grid">
@@ -528,7 +556,7 @@
     </section>
 
     <section class="card" id="panel-projects" tabindex="-1" aria-labelledby="title-projects" hidden>
-      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE OUTSIZE DATE — WHAT'S NEWEST</div>
       <h1 class="card-title" id="title-projects">Projects</h1>
       <div class="feature-list">
@@ -551,7 +579,7 @@
          which is deleted: its whole content was the one line the caption already
          reads continuously. The CURRENTLY array stays and still feeds it. -->
     <section class="card" id="panel-research" tabindex="-1" aria-labelledby="title-research" hidden>
-      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE SMALL SECONDS</div>
       <h1 class="card-title" id="title-research">Research</h1>
       <div class="about-copy">
@@ -560,7 +588,7 @@
     </section>
 
     <section class="card card-column" id="panel-resume" tabindex="-1" aria-labelledby="title-resume" hidden>
-      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE POWER RESERVE — WOUND OVER TIME</div>
       <h1 class="card-title card-title-tight" id="title-resume">Resume</h1>
       <div class="reserve-meter">
@@ -581,7 +609,7 @@
     </section>
 
     <section class="card" id="panel-books" tabindex="-1" aria-labelledby="title-books" hidden>
-      <button type="button" class="card-close" data-close aria-label="Close (Esc)">ESC ✕</button>
+      <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE MOONPHASE — REFLECTIVE &amp; TIMELESS</div>
       <h1 class="card-title" id="title-books">Books</h1>
       <!-- The per-book moon-phase badges (NEW MOON · PHILOSOPHY and the rest)

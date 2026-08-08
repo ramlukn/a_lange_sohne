@@ -125,6 +125,74 @@ const DEMO = {
 };
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 
+// THE WIDTH AT WHICH THE WATCH STOPS FITTING BESIDE THE PANEL.
+// The 'panel' pose slides the watch left by 28vw and the card is hard against
+// the right margin, so what is left of the watch is (viewport - card)/2 - 28vw
+// plus 43vmin of half-diameter. That is comfortable at 1440 and is a ~30px
+// sliver at 900 -- the "the watch stays visible beside the panel" promise breaks
+// somewhere around 1400px, and below ~1200 the watch is simply behind the card.
+//
+// 1199 is THE RAIL's breakpoint, taken rather than chosen: it is where the
+// navigation stops being a column on the right and becomes a row along the
+// bottom, which is the same event seen from the other side -- below it there is
+// no right-hand column for the card to sit beside and nothing on the right for
+// the watch to be pushed away from. Two breakpoints 19px apart would only have
+// made a sliver of viewport where the two halves of one layout disagreed.
+//
+// Below it the watch moves UP instead of sideways and the card drops to the
+// bottom of the screen -- the same two elements, stacked rather than side by
+// side, which is the honest degradation. The number is stated here AND in
+// styles.css (twice: THE RAIL and NARROW SCREENS) because the pose is written by
+// render() as an inline style ten times a second and a stylesheet cannot reach
+// it. Keep the three together.
+const NARROW = matchMedia('(max-width: 1199px)');
+// GAP_VH is the air left between the bottom of the watch and the top of the
+// card, at each end of the band. Small, because the band is the scarce thing.
+const GAP_VH = 1.6;
+// The stacked pose, measured rather than picked. A fixed "up 20vh and scale to
+// .54" was tried first and it is wrong at both ends of the range for the same
+// reason: the watch is 86vmin and the band above the card is a fraction of vh,
+// so how much of the band the watch fills depends entirely on the aspect ratio.
+// The same numbers that fit a 390x844 phone put the watch 76px behind the card
+// at 1180x800 (where 86vmin is 86% of the height rather than 40% of it), and
+// pushing the lift far enough to clear that clipped the top off the phone.
+//
+// So the scale is whatever makes the watch fill the band, capped at the .72 the
+// desktop pose uses -- a stacked watch is never LARGER than the one beside a
+// panel -- and the lift is whatever puts the scaled box in the middle of that
+// band. Both fall out of one layout read.
+//
+// Read once per resize and cached, not per frame: render() runs ten times a
+// second and getBoundingClientRect() forces layout. The box it measures is
+// .watch-stage, which is untransformed (the pose rides the child) and does not
+// move when a panel opens (the overlay is position: fixed), so it is stable
+// between resizes.
+let narrowPose = null;
+function measureNarrowPose() {
+  if (!NARROW.matches) { narrowPose = null; return; }
+  // How tall the card is, taken FROM the stylesheet rather than restated here:
+  // --sheet-vh is declared in the narrow block next to the rule that uses it, so
+  // the card's height and the watch's room above it cannot drift apart.
+  const sheet = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sheet-vh')) || 0;
+  // And how far off the bottom the card sits, taken from the overlay's own
+  // padding rather than restated. That padding is THE RAIL's: below 1200px the
+  // links become a row along the bottom and the overlay makes room for them, so
+  // this reads the rail's clearance without knowing that is what it is. It
+  // resolves on a display:none element because it is an absolute length.
+  const below = parseFloat(getComputedStyle(el.overlay).paddingBottom) || 0;
+  const box = el.pose.parentElement.getBoundingClientRect();   // .watch-stage
+  if (!box.height) return;
+  const gap = (innerHeight * GAP_VH) / 100;
+  const band = innerHeight - below - (innerHeight * sheet) / 100 - 2 * gap;
+  const scale = Math.max(.24, Math.min(.72, band / box.height));
+  const dy = (gap + (box.height * scale) / 2) - (box.top + box.height / 2);
+  narrowPose = `translateY(${dy.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+}
+// The pump would pick the breakpoint up within 100ms anyway; the listeners are
+// so that a window drag reposes on the same frame the layout does.
+NARROW.addEventListener('change', () => { measureNarrowPose(); render(); });
+addEventListener('resize', () => { measureNarrowPose(); render(); });
+
 const $ = (id) => document.getElementById(id);
 
 const el = {
@@ -292,6 +360,12 @@ function watchPose() {
     return { transform: 'scale(1.55)', filter: 'blur(6px) brightness(.5)', origin: (section && section.origin) || '50% 50%' };
   }
   if (CONFIG.transitionStyle === 'panel') {
+    // Narrow: up and smaller instead of left and smaller, into the band above
+    // the card. The dimming is unchanged -- the watch reads exactly the
+    // same, it is just somewhere else. See measureNarrowPose() for the numbers.
+    if (NARROW.matches && narrowPose) {
+      return { transform: narrowPose, filter: 'brightness(.62) saturate(.82)', origin: '50% 50%' };
+    }
     return { transform: 'translateX(-28vw) scale(.72)', filter: 'brightness(.62) saturate(.82)', origin: '50% 50%' };
   }
   return { transform: 'scale(.5)', filter: 'blur(6px) brightness(.3)', origin: '50% 50%' };
@@ -501,56 +575,173 @@ function render() {
   if (el.flip.dataset.hover !== lit) el.flip.dataset.hover = lit;
 }
 
-// Opening and closing are the only two places focus moves on its own, and they
-// are a pair: open() remembers what it was opened from and puts focus on the
-// panel, close() puts it back. Nothing is trapped -- Tab still walks out of the
-// card and on through the page -- but the keyboard never has to start again
-// from the top of the document, which is what "lost focus" actually feels like.
-function open(id, from) {
-  state.active = id;
-  state.touched = true;
+// Showing and hiding are the only two places focus moves on its own, and they
+// are a pair: showSection() remembers what it was opened from and puts focus on
+// the panel, hideSection() puts it back. Nothing is trapped -- Tab still walks
+// out of the card and on through the page -- but the keyboard never has to start
+// again from the top of the document, which is what "lost focus" actually feels
+// like.
+//
+// These two move STATE ONLY. They know nothing about the address bar, and
+// nothing outside the routing block below calls them: every control that
+// navigates goes through goToSection() / leaveSection(), which is what keeps the
+// address and the panel from ever disagreeing. They also do not set
+// state.touched -- arriving on a link is not operating the watch; see
+// goToSection().
+function showSection(key, from) {
+  state.active = key;
   state.hover = null;
-  state.returnTo = from || null;
+  // THE FLIP, from Phase 2's goToSection(). It lives down here rather than up in
+  // the intent function because it is an invariant of the state and not of the
+  // click: every section is on the FRONT of the watch, so a panel must never
+  // open over the back of one. The rail stays up while the watch is turned over,
+  // so a section can be asked for from the caseback -- and so can Back, Forward
+  // and a pasted address, which are the paths that do not pass through
+  // goToSection() at all.
+  if (state.flipped) state.flipped = false;
+  // Falling back to the section's own hit target rather than to null: Back and
+  // Forward open panels with no originating element, and a keyboard that leaves
+  // one of those has to land somewhere better than the top of the document. The
+  // part that owns the section is the honest answer, and it is the same place a
+  // click would have come from.
+  state.returnTo = from || $(SECTION.get(key).hit);
   render();
-  const panel = panels.get(id);
+  const panel = panels.get(key);
   // After render(), because the panel is [hidden] until then and a hidden
   // element cannot take focus. tabindex="-1" on .card is what makes this legal.
-  if (panel) panel.focus();
+  if (panel) panel.focus({ preventScroll: true });
 }
 
-// One door into a section, for all of the ways in. open() is the mechanism --
-// it moves focus and remembers where from -- and this is the intent: "show me
-// this section, whatever the watch is currently doing". The watch's own hit
-// targets, the rail and (Phase 3) an address in the bar all come through here,
-// so a rule that has to hold for every one of them is written once.
-//
-// The one such rule today is the flip. The rail stays up while the watch is
-// turned over, so a section can be asked for from the caseback -- and every
-// section lives on the front of the watch, so the panel would otherwise open
-// over the back of a watch you had just navigated away from.
-function goToSection(key, from) {
-  if (!SECTION.has(key)) return;
-  railCue(null);   // whether this call is the cue's own or something that beat it
-  if (state.flipped) state.flipped = false;
-  open(key, from || null);
-}
-
-function close() {
+// keepFocus is for the one caller that has somewhere better to put it: flipping
+// the watch over closes any open panel, and handing focus back to a dial part
+// that is now facing away from you would be worse than leaving it alone.
+function hideSection(keepFocus) {
   if (!state.active) return;
   state.active = null;
   const back = state.returnTo;
   state.returnTo = null;
   render();
-  if (back && back.isConnected) back.focus();
+  if (!keepFocus && back && back.isConnected) back.focus();
 }
+
+// ---- ADDRESSES -------------------------------------------------------------
+// One address per section, laid over the state that was already there.
+// `#/about` opens About; no hash, `#/`, or a hash naming nothing is the bare
+// watch. Keyed on SECTIONS, so a new row gets an address for free and a route
+// can never name a section that does not exist.
+//
+// The `#` is never sent to the server, so nothing about the build or the hosting
+// changes -- this is still one hand-authored index.html. What it buys is the
+// three things a single address cannot: a link you can send someone that opens
+// your CV, a Back button that closes a panel instead of leaving the site (which
+// matters most on a phone, where there is no Escape key), and a reload that
+// lands where you were.
+//
+// WHICH TRANSITIONS ARE HISTORY, decided one at a time:
+//
+//   opening a section        pushState      the one thing a visitor does that
+//                                           they might want to undo, link to or
+//                                           come back to
+//   closing one, when the    history.back() the entry we pushed is RETIRED
+//   entry underneath is                     rather than buried under a second
+//   the bare watch                          one, so the history stays as short
+//                                           as the visit actually was
+//   closing one, any other   pushState      a second section underneath (Back
+//   time                                    there would re-open the panel you
+//                                           just closed) or a deep-link arrival
+//                                           (Back there leaves the site)
+//   a hash naming nothing    replaceState   the dead address is corrected in
+//                                           place, so Back still leads back out
+//                                           the way the visitor came
+//   render()                 nothing        it runs ten times a second
+//
+// THE TWO DIRECTIONS CANNOT FIGHT. Exactly one function moves state.active in
+// response to the address -- applyRoute() -- and it returns early when the two
+// already agree, so a hashchange that names the open section is a no-op rather
+// than a re-open. Exactly one function writes an address in response to a
+// control -- goToSection() -- and it returns early for the section that is
+// already open. And pushState fires no event at all, so a click never
+// round-trips through the address bar and back into the state.
+const HOME_URL = location.pathname + location.search;
+const urlFor = (key) => (key ? `#/${key}` : HOME_URL);
+
+// The address bar's half of SECTIONS. Anything that is not `#/` plus a key we
+// know is the bare watch: a typo is not an error page.
+function routeKey() {
+  const m = /^#\/([\w-]+)$/.exec(location.hash);
+  return m && SECTION.has(m[1]) ? m[1] : null;
+}
+
+// THE ONE DOOR IN, and Phase 2's function with an address bolted to the front of
+// it. Every control that navigates calls this rather than opening a panel itself
+// -- the five watch parts, the rail's five links, the keyboard -- so there is no
+// way to change the section without changing the address. `from` is the element
+// focus should return to when the panel closes.
+function goToSection(key, from) {
+  if (!SECTION.has(key) || state.active === key) return;
+  railCue(null);   // whether this call is the cue's own or something that beat it
+  // Set HERE and not in showSection(), because this is what state.touched
+  // actually means: the visitor has operated the watch. Following a link into a
+  // section, or walking Back through one, is not operating it -- and if it
+  // counted, someone arriving on a shared #/resume link would close the panel to
+  // a watch with the interaction index already spent, which is the one thing
+  // telling them anything on it is clickable.
+  state.touched = true;
+  history.pushState({ key, from: state.active }, '', urlFor(key));
+  applyRoute(from);
+}
+
+// Closing. history.state.from is the key of the entry underneath this one, and
+// `null` means the bare watch -- the one case where the entry we pushed can be
+// retired with a plain Back instead of being buried under a second one. Anything
+// else gets a pushed home entry: a second section underneath, or a deep-link
+// arrival, which carries no history.state at all because we never created it.
+function leaveSection(keepFocus) {
+  if (!state.active) return;
+  const leaving = state.active;
+  const undo = !!history.state && history.state.from === null;
+  // The panel goes now rather than on the popstate a task later. history.back()
+  // is asynchronous, and Escape has to feel like a key, not like a request.
+  hideSection(keepFocus);
+  if (undo) history.back();   // applyRoute() then finds nothing left to do
+  else history.pushState({ key: null, from: leaving }, '', urlFor(null));
+}
+
+function applyRoute(from) {
+  const key = routeKey();
+  // A hash that names nothing is corrected in place rather than pushed away: the
+  // visitor typed or was sent a dead address, and replacing it means Back still
+  // leads back out the way they came instead of to a URL that never worked.
+  if (!key && location.hash) history.replaceState(history.state, '', urlFor(null));
+  if (key === state.active) return;   // the address and the state already agree
+  if (key) showSection(key, from);
+  else hideSection();
+}
+
+// Both events, because they cover different halves and applyRoute() is
+// idempotent, so overlap costs nothing. popstate is the only one fired when two
+// adjacent entries share a hash (which the replaceState above can produce);
+// hashchange is the only one fired when someone edits the hash in the address
+// bar, which is a fresh navigation rather than a traversal. Neither is fired by
+// pushState, which is what keeps goToSection() from feeding itself.
+addEventListener('popstate', () => applyRoute());
+addEventListener('hashchange', () => applyRoute());
 
 // Turning the watch over. Extracted from the crown's click handler because
 // Escape is now a second way in: it returns from the caseback exactly as it
 // returns from a panel.
 function flipTo(flipped) {
+  // Any open panel closes THROUGH the router, so the address stops naming a
+  // section that is no longer on screen. Focus is deliberately left where it is:
+  // the crown is what turned the watch over (by click, by Escape, or later by
+  // the rail's CONTACT), and handing focus back to a dial part now facing away
+  // from the viewer is worse than leaving it on the control that was used.
+  // ...and onto the crown, which is where it should have been and is the only
+  // way back to the dial. Without this the closing panel drops focus on <body>,
+  // because the element that had it has just been hidden.
+  if (state.active) { leaveSection(true); el.crown.focus({ preventScroll: true }); }
   state.flipped = flipped;
   state.touched = true;
-  state.active = null;
   // Turning the watch over takes the dial out of view, so the sweep is
   // abandoned rather than left to finish behind the caseback. Cancelling drops
   // every offset to zero, which the next frame draws as the true reading -- and
@@ -592,6 +783,9 @@ function hintHairline() {
   el.hintIndex.style.setProperty('--hint-hair', (100 / box).toFixed(4));
 }
 hintHairline();
+// Same shape, and for the same reason: one layout read at startup, cached until
+// something changes the layout. See measureNarrowPose() up in the pose section.
+measureNarrowPose();
 // A ResizeObserver rather than a resize listener, for two reasons: the browser
 // coalesces it to one callback per frame after layout and before paint, so it
 // is self-debouncing and cannot flash a stale width; and it also fires when the
@@ -667,8 +861,16 @@ for (const [key, node] of railLinks) {
     if (state.hover === key) { state.hover = null; render(); }
   });
   node.addEventListener('click', (e) => {
-    // Phase 3 owns the address bar. Until it lands the href is there for what a
-    // real link gives you off the primary click; the navigation itself is this.
+    // The href is a real address now, so a MODIFIED click is let through: it is
+    // asking the browser for a new tab, a new window or a saved link, and this
+    // handler has no business answering that. Swallowing it was correct while
+    // the address did nothing.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    // A plain click is ours, and it does NOT fall through to the href. Letting
+    // the browser do the navigation would work -- hashchange would open the
+    // panel -- but the entry it creates carries no history.state, and that is
+    // what tells leaveSection() whether the bare watch is underneath. Same
+    // address either way; this one knows how it got there.
     e.preventDefault();
     // A touch device has no hover, so a tap would open the panel with the watch
     // never having answered -- and the one thing a phone visitor has to learn is
@@ -755,8 +957,11 @@ $('corrector').addEventListener('blur', () => {
   if (state.hover === 'pusher') { state.hover = null; render(); }
 });
 
+// The card's close control and the scrim behind it. Through the router, so
+// closing writes the address exactly as Back does -- there is one way out of a
+// section and three things that can ask for it.
 document.querySelectorAll('[data-close]').forEach((node) =>
-  node.addEventListener('click', close)
+  node.addEventListener('click', () => leaveSection())
 );
 
 $('resumeScroll').addEventListener('scroll', (e) => {
@@ -778,9 +983,14 @@ $('resumeScroll').addEventListener('scroll', (e) => {
 // and the parts that open panels are on the front face -- so the order below is
 // a formality rather than a precedence rule, but the panel is checked first
 // because it is the nearer of the two.
+//
+// Escape still means CLOSE, not "walk the history". It lands on the bare watch
+// even when a second section is underneath in the history -- leaveSection()
+// pushes home in that case rather than backing into the previous panel, because
+// a key that closes a card by opening a different one is not a close.
 window.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (state.active) { close(); return; }
+  if (state.active) { leaveSection(); return; }
   // Returning from the caseback puts focus on the crown: it is the control that
   // turned the watch over, so it is where the keyboard was, or should have been.
   if (state.flipped) { flipTo(false); el.crown.focus(); }
@@ -874,6 +1084,18 @@ function rigStop() {
 // capped at the old 100ms so nothing else on the dial refreshes more slowly than
 // it used to. The demo puts rAF on top of this for its own four seconds -- see
 // demoPump() -- and this pump keeps running underneath it either way.
+// The address the visitor actually arrived on, applied once before the first
+// pump: a reload lands where you were, and a shared link opens what it names.
+// No history entry is created here -- the entry we are standing on is the one
+// the browser made -- which is also what makes Back from a deep link go back to
+// wherever the link was clicked, rather than nowhere.
+//
+// The matching intro skip is NOT here. It has to be decided before the first
+// paint, or the loader is already on screen and the assembly already running, so
+// it is six lines of inline script in <head> and three CSS rules; see ARRIVING
+// MID-SITE in src/styles.css.
+applyRoute();
+
 const BEAT = { mechanical: 1000 / 6, quartz: 1000 }[CONFIG.secondsMotion] || 0;
 (function pump() {
   render();

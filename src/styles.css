@@ -139,6 +139,35 @@ a:hover { color: var(--gold-line-hover); }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
 }
 
+/* ===================== ARRIVING MID-SITE =====================
+   Someone who follows a link to #/resume must not watch the watch build itself
+   for four seconds first. `data-direct` is set on <html> before the first paint
+   by the six lines of inline script at the top of index.html -- see the long
+   note there for why it is inline, and why it keys off the address rather than
+   off any memory of a previous visit.
+
+   The mechanism is the reduced-motion rule's, not a second one: collapse the
+   DELAYS and leave the durations alone. Every part still seats, lands and
+   settles exactly as designed; they simply all do it at once instead of over
+   4.1s, so the watch resolves in about a second rather than being snapped into
+   existence. Nothing here knows what the intro's timings are, which is why
+   retiming the intro still needs no edit in this block.
+
+   The loader is the one thing dropped outright. It is a title card, and a title
+   card for a page the visitor is already several rooms into is just a delay.
+
+   THE TWO EXCLUSIONS. `.hint-mark` and `.cb-rig-sheen` are the two sequences
+   whose delay is not an intro delay but their own internal timing: the index's
+   five marks are staggered by `--i * --hint-step`, and zeroing that would draw
+   all five simultaneously instead of scribing them in order. So the stagger is
+   left intact and the WAIT in front of it is retired the way it was designed to
+   be -- by the one knob, --hint-at, which .hint-index publishes for exactly this
+   (the caseback sheen's .5s hangs off .is-flipped and was never part of the
+   intro at all, so it keeps its delay untouched). */
+html[data-direct] .loader { display: none !important; }
+html[data-direct] .stage *:not(.hint-mark):not(.cb-rig-sheen) { animation-delay: 0s !important; }
+html[data-direct] .hint-index { --hint-at: 0s; }
+
 /* ===================== STAGE ===================== */
 .stage {
   min-height: 100vh;
@@ -2295,3 +2324,183 @@ a:hover { color: var(--gold-line-hover); }
 .book-title { font-family: var(--font-display); font-size: 18px; color: #eef0f5; margin-bottom: 4px; }
 .book-author { font-size: 12.5px; color: var(--gold-line); margin-bottom: 10px; }
 .book-desc { font-size: 13px; line-height: 1.6; color: var(--body); }
+
+/* ===================== NARROW SCREENS =====================
+   The site's first layout rules. Everything above this line was written for one
+   viewport, and the only media query in the file was prefers-reduced-motion.
+
+   THIS IS THE MINIMUM THAT MAKES A PHONE USABLE, NOT A RESPONSIVE PASS. Three
+   things, in the order they matter: the card has to be readable and dismissable
+   without a keyboard, the watch must not end up behind it, and the type has to
+   clear a legibility floor. What is deliberately NOT here is listed at the
+   bottom of this block.
+
+   Two tiers, and one of them is about the watch rather than about phones:
+
+     max-width: 1199px   the panel stops sitting BESIDE the watch and drops to
+                         the bottom of the screen, with the watch above it. This
+                         is a desktop bug as much as a phone one -- at 900px the
+                         side-by-side pose left a ~30px sliver of watch behind
+                         the card, which is not "the watch stays visible" by any
+                         reading.
+     max-width: 760px    the phone: card padding, one column, tighter type.
+
+   1199 IS THE RAIL'S BREAKPOINT, ON PURPOSE. THE RAIL says it is where the
+   navigation stops being a right-hand column and becomes a row along the bottom,
+   which is the same event from the other side: below it there is no column on
+   the right for the card to sit beside, and no room on the right for the watch
+   to be pushed away from. Two breakpoints 19px apart would only have made a
+   sliver of viewport where the two halves disagreed. If it moves, it moves in
+   three places -- THE RAIL, here, and NARROW in main.js, which needs it because
+   the pose is an inline style written ten times a second and no stylesheet can
+   reach it. */
+
+/* ---- the panel drops to the bottom ---- */
+@media (max-width: 1199px) {
+  /* How much of the viewport the card takes, declared as a bare number so main.js
+     can read it. It is NOT restated there: measureNarrowPose() fits the watch
+     into whatever is left over, so the card's height and the watch's room above
+     it are one number rather than two that can drift apart. */
+  :root { --sheet-vh: 60; }
+
+  /* Bottom-anchored. justify-content is written by render() as data-justify, so
+     it is overridden at equal specificity rather than with !important -- a card
+     at the bottom of the screen is centred whatever the transition style says.
+     THE PADDING IS DELIBERATELY NOT TOUCHED: THE RAIL's own rule at this same
+     breakpoint sets the bottom padding to clear the row of links, and that is
+     exactly the clearance this layout needs. Two rules for one gap would be one
+     too many, and measureNarrowPose() reads the resulting padding rather than
+     assuming a number for it. */
+  .overlay { align-items: flex-end; }
+  .overlay[data-justify] { justify-content: center; }
+
+  .card {
+    /* The rest of this stylesheet is content-box, which is fine for a card sized
+       by its contents and wrong for one sized against the viewport: `60vh` on a
+       content box is 60vh PLUS 50px of padding, and the overflow is exactly what
+       ended up over the watch. This card is measured to its edges. */
+    box-sizing: border-box;
+    max-height: calc(var(--sheet-vh) * 1vh);
+  }
+  /* The resume timeline is inside a height-capped card now, so its own 44vh cap
+     fights the flex box it lives in and strands empty space under it. */
+  .timeline-scroll { max-height: none; }
+}
+
+/* ---- the phone ---- */
+@media (max-width: 760px) {
+  /* 52px of side padding on a card that has been shrunk to 351px leaves a 245px
+     column, and .book-grid's `minmax(260px, 1fr)` does not fit in 245 -- which is
+     the horizontal overflow the Books panel shows on a 390px phone. 22px gives
+     the column 305px, and the single-column grid below removes the 260px floor
+     as well; both halves of that were needed. */
+  .card { padding: 26px 22px 24px; }
+  .card-title { font-size: 26px; margin-bottom: 20px; }
+  .card-eyebrow { font-size: 10px; letter-spacing: .3em; margin-bottom: 12px; }
+
+  /* The copy's 260px minimum plus the portrait's 150px and 32px of gap is
+     442px, against a 302px content box on a 390px phone -- so they were already
+     wrapping, into a stub and a full-width paragraph with a 32px trench between
+     them. Wrapping is the right layout; it just needs the gap of a stack rather
+     than the gap of a row, and a paragraph that may be narrower than 260px.
+     The portrait keeps its size: it is a circle, and a full-width one is an
+     ellipse with a photo squashed into it. */
+  .about-grid { gap: 20px; }
+  .about-copy { min-width: 0; }
+
+  .book-grid { grid-template-columns: 1fr; }
+  .feature-row { gap: 14px; }
+  .timeline { padding-left: 20px; gap: 22px; }
+}
+
+/* ---- legibility floors ----
+   Every piece of chrome type on this site is sized in vmin, which is right for
+   type that belongs to the watch and wrong at the bottom of the scale: on a
+   390x844 phone vmin is 3.9px, so the caption computes to 5.3px, the bar under
+   it to 4.1px and the caseback hallmark to 3.8px. Those are not small, they are
+   unreadable.
+
+   The rail is not in this list, and does not need to be: it was already sized in
+   px rather than vmin -- 11px, derived from the character count of its longest
+   label -- so it is the one piece of chrome type that was legible on a phone
+   before this block existed.
+
+   Keyed on max-height as well as max-width, because vmin follows the SHORTER
+   axis: a phone turned sideways is 844px wide and would miss a width-only rule
+   while its type stayed at 5px. The desktop sizes are untouched -- at 1440x900
+   these compute to 12.2px and 8.8px and neither query matches. */
+@media (max-width: 760px), (max-height: 640px) {
+  /* A fixed 5vmin height and one line was a desktop assumption. The caption is
+     the longest string on the page now that THE RAIL moved "CROWN TO FLIP" into
+     it, and the tracking is what makes it long, so the tracking is what gives.
+     min-height rather than height so it can take the second line it will need,
+     and a floor so the layout does not jump when the line count changes. */
+  .caption {
+    height: auto;
+    min-height: 4.6em;
+    padding: 0 6vw;
+    font-size: 10px;
+    letter-spacing: .16em;
+    line-height: 1.5;
+  }
+  /* The one engraving that survives a phone -- which is the point
+     docs/SITE-DIRECTION.md 6.6 makes: the flip is universal, the engraving is a
+     desktop refinement. 3.8px is not small, it is unreadable; 7px is the floor.
+
+     IT HAS TO MOVE UP TO GO BIGGER, because the surface it is engraved on is
+     round. At 390x844 the band is 337px across and the mark sits 10.7px off the
+     bottom, where the metal is only 141.6px wide -- and 22 characters at 7px
+     with .2em of tracking are 146.3px of ink, so it ran off the case into the
+     background at both ends. Raising it to 5.4% puts it where the chord is
+     169px, which is 11px of metal clear on each side, and still 12px below the
+     sapphire's lower edge. Both numbers measured, not guessed. */
+  .cb-hallmark { font-size: 7px; letter-spacing: .2em; bottom: 5.4%; }
+}
+
+/* THE ONE WAY OUT HAS TO BE A THING YOU CAN HIT, AND IT MUST NOT NAME A KEY THE
+   DEVICE DOES NOT HAVE. Both are keyed on the input rather than on the width,
+   because that is what is actually being asked -- a narrow desktop window still
+   has a keyboard and a mouse, and a 1024px tablet does not.
+
+   The label loses its ESC; the button keeps it in its accessible name, which is
+   read by keyboard and screen-reader users, who by definition have the key.
+   14px of padding round a 13px glyph is a 44x45 target, against the 15x48 strip
+   of text it was. This is the only VISIBLE exit on a phone -- there is no Escape
+   key, and the scrim behind the card is the watch, which opens sections rather
+   than closing them -- so it is the one control on the site that has to be
+   unmissable. The phone's Back button closes it too, now that the addresses are
+   in, but nobody discovers a Back button by looking at a card. */
+@media (hover: none), (pointer: coarse) {
+  .card-close-key { display: none; }
+  /* min-width because the label is now one glyph: 14px of padding round a bare
+     multiplication sign is 45px tall and only 38 wide, and the target has to
+     clear 44 on both axes, not just the one the text happens to fill. */
+  .card-close { top: 4px; right: 4px; padding: 14px; min-width: 44px; font-size: 13px; text-align: center; }
+}
+
+/* ---- deliberately left for later ----
+   Measured at 390x844 and 844x390 with real Chrome; nothing below is broken, and
+   none of it is a media query.
+
+   - THE DEAD SPACE ROUND THE RESTING WATCH ON A PHONE. 226px above and 283px
+     below the 335px dial with nothing open. docs/SITE-DIRECTION.md 10 raises it
+     as "either the watch grows or the space earns its keep", and both of those
+     are design decisions rather than layout fixes -- the watch is 86vmin
+     everywhere and growing it on one axis means deciding what a phone's watch is.
+   - LANDSCAPE PHONES. At 844x390 the layout holds -- nothing is clipped and
+     nothing overlaps, because the pose is measured rather than assumed -- but
+     60vh of a 390px viewport is a 234px card, which shows about one and a half
+     resume entries before it scrolls, and the watch shrinks to 80px. Usable,
+     unlovely. The fix is a landscape-specific --sheet-vh, which is one line, but
+     it wants a judgement about which of the two is worth more at that size.
+   - THE HOVER PULSE NEVER FIRES ON A PHONE: it is walled inside
+     @media (hover: hover) for a good reason of its own. THE TOUCH CUE covers the
+     rail's taps, so the gap left is a tap on the WATCH, which opens its section
+     with no light. A touch vocabulary for the marks is a design question and
+     belongs to whoever owns HOVER PULSE.
+   - THE CARD'S TYPE SCALE below 760px is padding and one column, not a scale.
+     34px titles and 15px body survive a phone; they were not re-set for it.
+   - PER-SECTION <title>, DESCRIPTION AND PREVIEW IMAGE. Hash links cannot buy
+     those -- there is one HTML document -- and docs/SITE-DIRECTION.md 7.1 is
+     explicit that real addresses are a later phase, to be paid for only when a
+     single piece of writing deserves its own preview card. */
