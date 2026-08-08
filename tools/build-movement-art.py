@@ -15,12 +15,16 @@ frame goes; everything after that is bookkeeping.
   * The FRAME is the union of all six ink boxes: 1089x1126 at (82, 62). Cropping
     to it throws away a transparent border that is 25% of the source area.
   * The frame is placed by the PERIMETER RING, because the ring is the movement's
-    visible outer edge and the act's whole point is that it hands off to the case
-    seating around it. The ring's outer edge is an axis-aligned ellipse to within
-    2px of 1089 (0.2%), so mapping its box onto the round dial well -- squashing
-    the frame 2.7% in y -- lands the movement's rim exactly on the well's rim.
-    That 2.7% anisotropy is invisible on the interior art and it buys an outer
-    boundary that is a true circle, concentric with the well, by construction.
+    visible outer edge -- it is what decides how big the movement reads. The
+    ring's outer edge is an axis-aligned ellipse to within 2px of 1089 (0.2%), so
+    mapping its box onto a circle concentric with the dial well -- squashing the
+    frame 2.7% in y -- makes the movement's rim a true circle by construction.
+    That 2.7% anisotropy is invisible on the interior art.
+    MOVEMENT_SCALE then says how big that circle is as a fraction of the well.
+    It used to be 1.0, i.e. the rim landed on the well and the case appeared to
+    close flush around the movement; it is 0.80 now, so the movement sits inside
+    the opening with the case's flange showing around it. The squash is a pure
+    aspect ratio and so is unaffected either way -- round at any scale.
     The foundation plate reaches 6px past the ring at the bottom (a real mainplate
     is wider than its chapter ring), which is why the frame is the union and not
     just the ring: keeping it means the box is a hair taller than it is wide.
@@ -61,10 +65,20 @@ LAYERS = [
 # The layer whose outer edge is the movement's rim, and so places the frame.
 RIM_LAYER = "06_perimeter-ring.png"
 
-# The dial well the movement has to fill: the front face's `inset: 5.15%` disc.
-# The movement's rim lands on it exactly, so the case seats around a movement
-# that is already the right size and the dial drops straight on.
+# The dial well the movement sits in: the front face's `inset: 5.15%` disc.
 WELL_INSET = 5.15
+
+# Movement rim diameter as a fraction of the well's. At 1.0 the rim lands on the
+# well to within a rounding error and the case appears to close flush around the
+# movement. Below that the movement stops being the thing that fills the opening
+# and becomes a distinct object sitting inside it, with a visible annulus of the
+# case's own flange around it -- which is the intended reading here.
+#
+# Nothing else in this file depends on it, and in particular the y-squash does
+# not: that corrects the art (the ring is rendered 2.76% taller than wide) and is
+# a pure aspect ratio, so the rim is a true circle at any scale. The gap the
+# scale opens up is (1 - scale) / 2 of the well diameter, in radius.
+MOVEMENT_SCALE = 0.80
 
 # Width, in px, that the whole frame is rendered at. The movement is drawn at
 # 89.7% of an 86vmin face = 77.1vmin, so this is ~1.15x on a 900px-vmin laptop
@@ -76,7 +90,13 @@ WELL_INSET = 5.15
 # 720 are indistinguishable and the residual is dominated by the resample rather
 # than by compression; 680 is the middle, and costs 243 KB against 320 for the
 # obvious 720/high-quality build.
-FRAME_WIDTH = 680
+#
+# That 680 was chosen against the movement's on-screen size, so it tracks
+# MOVEMENT_SCALE: drawing the movement smaller without re-exporting would just
+# ship pixels the compositor throws away. The same sampling ratio at 0.80 scale
+# is 544px.
+FRAME_WIDTH_AT_FULL_SIZE = 680
+FRAME_WIDTH = round(FRAME_WIDTH_AT_FULL_SIZE * MOVEMENT_SCALE)
 
 # Per layer: (quality, alpha_quality). Set by how hard each layer is looked at
 # and by what the alpha channel is doing. The plate is a grain field that
@@ -155,19 +175,27 @@ def main():
     # own size and offset follow from that.
     rx0, ry0, rx1, ry1 = boxes[RIM_LAYER]
     well = 100 - 2 * WELL_INSET  # % of the face the dial well spans
-    kx = well / (rx1 - rx0)  # % of the face per source px, horizontally
-    ky = well / (ry1 - ry0)  # ... and vertically
+    rim = well * MOVEMENT_SCALE  # ... and the % the movement's own rim spans
+    kx = rim / (rx1 - rx0)  # % of the face per source px, horizontally
+    ky = rim / (ry1 - ry0)  # ... and vertically
 
-    frame_left = WELL_INSET - (rx0 - fx0) * kx
-    frame_top = WELL_INSET - (ry0 - fy0) * ky
+    # The rim is concentric with the well, so its inset is whatever centres it.
+    # (At MOVEMENT_SCALE == 1 this is WELL_INSET exactly.)
+    rim_inset = (100 - rim) / 2
+    frame_left = rim_inset - (rx0 - fx0) * kx
+    frame_top = rim_inset - (ry0 - fy0) * ky
     print(
         f"\nframe (union of all six):\n"
         f"    source box       {fx0},{fy0} .. {fx1},{fy1}  ({fw}x{fh}px)\n"
         f"    rim box          {rx0},{ry0} .. {rx1},{ry1}  "
         f"({rx1 - rx0}x{ry1 - ry0}px, {(rx1 - rx0) / (ry1 - ry0):.4f} aspect)\n"
         f"    dial well        inset {WELL_INSET}% -> {well:.2f}% of the face\n"
+        f"    movement rim     scale {MOVEMENT_SCALE:.2f} -> {rim:.2f}% of the face, "
+        f"inset {rim_inset:.3f}%\n"
+        f"    ring/well gap    {(well - rim) / 2:.3f}% of the face in radius "
+        f"({(well - rim) / 2 / 89.7 * 100:.1f}% of the well radius)\n"
         f"    y-squash         {(rx1 - rx0) / (ry1 - ry0):.4f}  "
-        f"(rim ellipse -> true circle on the well)\n"
+        f"(rim ellipse -> true circle, at any scale)\n"
         f"  .watch-mvt         left {frame_left:.3f}%  top {frame_top:.3f}%  "
         f"width {fw * kx:.3f}%  height {fh * ky:.3f}%  of the face"
     )
