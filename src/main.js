@@ -37,9 +37,11 @@ const CURRENTLY = [
 //   origin  transform-origin for the 'zoom' transition style
 //
 // The order is the rail's order, top to bottom (docs/PLAN.md: About, Resume,
-// Projects, Research, Books, then Contact on the caseback). It is deliberately
-// NOT the interaction index's scribe order -- nobody can hold that comparison
-// across four seconds -- and it is not DOM order either.
+// Projects, Research, Books, then Contact on the caseback). It is not DOM order,
+// and it is no longer in any tension with the interaction index's scribe order:
+// the index has no scribe order any more -- all five marks are drawn on one
+// frame -- and neither does the rail. This list orders the words on the page.
+// It does not order anything in time.
 const SECTIONS = [
   { key: 'about',    label: 'About',    part: 'MAIN DIAL',     hit: 'aboutHit',    panel: 'panel-about',    origin: '31.8% 50%' },
   { key: 'resume',   label: 'Resume',   part: 'POWER RESERVE', hit: 'reserve',     panel: 'panel-resume',   origin: '65.5% 47.5%' },
@@ -224,10 +226,16 @@ const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 // parts said the same thing in prose and could not be clicked. Its mode line,
 // "CROWN TO FLIP", moved into the caption; the part names moved into the words.
 //
-// The reveal order is this list's order and NOT the interaction index's scribe
-// order. Matching them was considered and is cleverness with no audience: the
-// index finishes four seconds before the first word arrives, and nobody can
-// hold an ordering across that gap to notice it agreeing.
+// THERE IS NO REVEAL ORDER, so this list's order is only its reading order.
+// Each link used to carry `a.style.setProperty('--i', i)` and the stylesheet
+// delayed its arrival by --i * 90ms, which was a queue: five words going on one
+// after another. It is gone, and the property with it -- nothing reads --i now,
+// in this file or in index.html. The rail arrives on the same frame the
+// interaction index is scribed (--rail-at is --hint-at), the index draws its
+// five marks at one instant, and the two layers are naming the SAME five parts.
+// A queue in one of them and not the other would have been the two halves of
+// one statement disagreeing about whether the five are peers. See THE INTRO'S
+// LAST BEAT and the arrival note on .rail in src/styles.css.
 //
 // THE SIXTH ITEM IS ABSENT, AND THAT IS A DECISION.
 // The rail was specified as six -- Contact is the sixth -- but Contact was to
@@ -239,7 +247,7 @@ const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 // printed next to it. So it is not here. When Contact has a destination it is
 // one more row in SECTIONS above, and nothing in this block changes.
 const railLinks = new Map();
-el.rail.append(...SECTIONS.map((s, i) => {
+el.rail.append(...SECTIONS.map((s) => {
   const a = document.createElement('a');
   a.className = 'rail-link';
   // A real href, so the link behaves like one -- middle-click, copy link
@@ -249,7 +257,6 @@ el.rail.append(...SECTIONS.map((s, i) => {
   // a no-op rather than a scroll even if it ever got through.
   a.href = `#/${s.key}`;
   a.dataset.key = s.key;
-  a.style.setProperty('--i', i);   // this word's place in the reveal queue
   a.textContent = s.label;
   railLinks.set(s.key, a);
   return a;

@@ -19,11 +19,11 @@
   --font-mono: 'IBM Plex Mono', monospace;
 
   /* THE INTRO'S LAST BEAT. These used to live on .hint-index, which owned them
-     alone; the rail now waits on the same clock, and a custom property is only
+     alone; the rail now starts on the same clock, and a custom property is only
      readable down the tree, so they moved up here rather than being copied.
-     Retiming the index is still a one-number edit -- and it now retimes the rail
-     with it, which is the point: the rail is defined as "after the index has
-     finished", not as a second constant that happens to be later today.
+     Retiming the index is still a one-number edit -- and it retimes the rail
+     with it, which is the point: the rail is defined against the index, not as
+     a second constant that happens to agree with it today.
 
        --hint-at    when the index is scribed, after assembly. 3.45s is the wait
                     the old .hint-dots layer used, and the crystal seats at
@@ -43,15 +43,27 @@
      (What lets five paths of 157.9 / 84.9 / 63.9 / 56.0 / 21.5 user units land
      on the same frame is pathLength="100" on every shape -- see .hint-mark.)
 
-     So the layer is finished --hint-draw after --hint-at: 3.45 + .46 = 3.91s.
-     That sum is --rail-at below, and nothing in the rail is written as a number.
-     The rail therefore arrives .92s earlier than it used to. That is not a
-     retiming of the rail: it is the same rule, "start when the index has
-     finished", applied to an index that finishes sooner. There is no longer a
-     stagger to wait out, so there is nothing left to wait for. */
+     AND THE RAIL IS THE SAME STATEMENT, SO IT ARRIVES ON THE SAME FRAME.
+     --rail-at was `--hint-at + --hint-draw`: the rail waited for the index to
+     finish and came up .46s behind it. That reading of the two layers was
+     wrong. They are not two beats -- they are one fact told twice, once on the
+     watch and once in words: THESE FIVE PARTS ARE LIVE. The index says which
+     five by scribing them; the rail says which five by naming them. A fact
+     stated in two places should be stated at one instant, and staging them
+     turned a single declaration into a sequence with no argument for its order,
+     which is the exact objection that collapsed the marks' own stagger above.
+     So --rail-at IS --hint-at, and it is written as that property and not as
+     3.45s: the rule is "with the index", and retiming the index still carries
+     the rail with it.
+
+     The two layers also LAND together without being made to. The index draws
+     for --hint-draw (.46s) and the rail fades up over .5s, so the whole last
+     beat opens and closes inside 40ms of itself. That is a coincidence of two
+     durations chosen separately for their own eases, and it is left as one --
+     tying .5s to --hint-draw would claim a derivation that was not made. */
   --hint-at: 3.45s;
   --hint-draw: .46s;
-  --rail-at: calc(var(--hint-at) + var(--hint-draw));
+  --rail-at: var(--hint-at);
 }
 
 html, body { margin: 0; padding: 0; background: #05070c; }
@@ -1228,8 +1240,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   pointer-events: none;
   overflow: visible;
   /* --hint-at and --hint-draw drive the scribe below and live in :root -- see
-     THE INTRO'S LAST BEAT there. They moved up because the rail starts when this
-     layer finishes and had to be able to read them. */
+     THE INTRO'S LAST BEAT there. They moved up because the rail starts on the
+     same frame this layer does and had to be able to read them. */
   /* The hairline, in USER UNITS -- see the note on stroke-width below. This is
      only the fallback: hintHairline() in main.js overwrites it with the value
      that lands on exactly one CSS pixel for the box the layer is currently
@@ -1287,8 +1299,9 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   /* One delay for all five, not a per-mark one: the marks carried a `--i` and
      started at --hint-at + --i * --hint-step. See THE MARKS ARE NOT STAGGERED
      in :root for why the order went, and THE ONE EXCLUSION above for what its
-     going let us delete. `--i` came off the shapes in index.html with it, since
-     nothing reads it here any more -- the rail sets its own, from main.js. */
+     going let us delete. `--i` came off the shapes in index.html with it, and
+     the rail has since dropped its own for the same reason, so nothing on the
+     page carries a queue position any more. */
   animation: hintScribe var(--hint-draw) cubic-bezier(.3,.7,.25,1)
              var(--hint-at) both;
 }
@@ -2081,15 +2094,28 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    y 134.4 at the top and x 38.2 at the left.
 
    AND IT DOES NOT CLEAR EVERYWHERE. A real limit, not a rounding error.
-   Clearance from each word's INK to that arc, with a panel open, measured:
+   Clearance from the nearest PAINTED GLYPH to that arc, with a panel open,
+   measured in real Chrome at 18px (the value before the type grew from 16px in
+   brackets, measured the same way on the same run):
 
-     1920x1080   +65      1440x900    +4      1280x800   -14
-     1366x768     +0.5    1201x800   -25      1200x900   -26
+     1920x1080  +68.0 [+71.2]   1440x900  +9.4 [+10.6]   1366x768  +2.9 [+6.4]
+     1280x800    -9.4  [-8.2]   1200x900 -19.2 [-19.6]
 
-   BOOKS is the binding item at every width -- last down the column, and the one
-   the arc reaches first. The rail clears from about 1366px up and fouls the
-   bezel below it, and no choice of size fixes that: the rail as it was, 96 x 151
-   at 11px, is also negative at 1200x900 moved to this corner. A column of five
+   PAINTED GLYPH and not the font box: every label is uppercase, so the font's
+   descender space below the baseline is empty and measuring to it overstates
+   the block by about .28em. Both columns above are measured the same way, so
+   the comparison is honest even where it disagrees with the older figures in
+   this file, which were taken to the font box and read 3-5px tighter.
+
+   BOOKS is the binding item at most widths -- last down the column, and the one
+   the arc reaches first -- and RESEARCH takes over where the arc comes in
+   steeply from the right (1366, 1920). The rail clears from 1366px up and fouls
+   the bezel below it. THAT BOUNDARY DID NOT MOVE WHEN THE TYPE GREW: 18px costs
+   1-3.5px of clearance and 1366 still clears, which is the whole reason the
+   column was allowed to get bigger at all and the reason the row height was
+   re-derived downward to pay for it (see THE SCALE'S DIVISION IS THE ROW).
+   No choice of size fixes the widths below it: the rail as it was, 96 x 151 at
+   11px, is also negative at 1200x900 moved to this corner. A column of five
    items simply does not fit beside the posed case around 1200-1280px wide. What
    lands there is the tail of RESEARCH and BOOKS over the dimmed bezel, and it
    stays legible because the rail paints above the overlay and the posed case is
@@ -2098,31 +2124,69 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    that a collision. The right-hand rail had no such case to answer; this one
    does, and it is bounded, measured and written down rather than found later.
 
-   118px IS DERIVED, NOT CHOSEN. IBM Plex Mono advances 0.6em; at 16px that is
-   9.60px, and the tracking below adds 2.64px, so one character advances 12.24px.
-   PROJECTS and RESEARCH are the longest labels at 8 characters -- 97.92px of
-   advance, and 95.28px of ink once the link reclaims the trailing tracking
-   column. The marker channel is 22px. 95.28 + 22 = 117.28 -> 118.
+   A BIGGER RAIL COSTS CLEARANCE, SO IT HAD TO BUY IT BACK. The type went 16 ->
+   18px, which is the whole of "make it bigger" and the only change in this
+   block that costs anything. Every px of column height costs .77px of clearance
+   at 1440 and every px of word width costs .62px, so the height is the
+   expensive axis -- and 16px at the old 2 * size pitch made a 152px column,
+   while 18px at that pitch would have made 170 and put 1440 well under water.
+   The pitch was re-derived instead (below), the column came out at 150, and the
+   two changes very nearly cancel. 20px was tried on paper and does not survive
+   any pitch that leaves the words room to breathe; 17px is comfortable but is a
+   6% change nobody would see.
 
-   .165em IS THE SAME LETTER GAP IT ALWAYS WAS. The rail was 11px at .24em,
-   which is 2.64px between characters. At 16px, .165em is 2.64px between
-   characters. The type is 45% bigger and the letters sit exactly as far apart:
-   tracking compensates for size, so it has to fall as the size rises, and
-   holding the gap in px is what keeps a word a word instead of eight letters in
-   a row. Set the size first and re-derive both numbers; do not nudge either.
+   128.88px IS DERIVED, NOT CHOSEN, and it is now derived IN THE STYLESHEET
+   rather than in this paragraph -- see the `width:` calc below. IBM Plex Mono
+   advances 0.6em, which at 18px is 10.80px, and the letter gap adds 2.64px, so
+   one character advances 13.44px. PROJECTS and RESEARCH are the longest labels
+   at 8 characters -- 107.52px of advance, and 104.88px of ink once the link
+   reclaims the trailing tracking column. The channel is 24px.
+   104.88 + 24 = 128.88.
+
+   THE LETTER GAP IS A PIXEL, NOT AN EM. The rail was 11px at .24em and then
+   16px at .165em, and both of those are 2.64px between characters: the gap has
+   been held constant through two size changes while the em value chased it.
+   Holding it is right -- tracking compensates for size, so it must fall as the
+   size rises, and a constant gap is what keeps a word a word instead of eight
+   letters in a row -- but writing it as an em was writing the wrong number down.
+   At 18px the em value would be .1467em, which is a quotient, not a decision.
+   So it is 2.64px, stated once on .rail, and the bottom row's .24em override
+   went with it: three declarations of one constant became one.
    The px stay fixed rather than vmin for the old reason -- a rail whose ink is
    measured in characters cannot have a width that floats.
 
-   THE CHANNEL IS THE POINTER PLUS ITS CLEARANCE. 16px of pointer, its length
+   THE CHANNEL IS THE POINTER PLUS ITS CLEARANCE. 18px of pointer, its length
    set to the type size so the mark is as long as the words are tall, and 6px
-   before the ink starts. 16 + 6 = 22.
+   of lead before the ink starts. 18 + 6 = 24.
 
-   THE GRADUATIONS ARE SPACED AT TWO TYPE SIZES. A scale wants an even division,
-   and the one the type gives is 2 * 16 = 32px from mark to mark. A link's box is
-   the 16px line plus 4px of padding either side, which is 24, so the gap between
-   them is 32 - 24 = 8 and the column comes to 5 * 24 + 4 * 8 = 152. The gap is
-   the remainder of the pitch, not a spacing that was chosen: change the size and
-   the pitch, the gap and the height all follow.
+   THE SCALE'S DIVISION IS THE ROW. It used to be two type sizes -- 32px at 16px
+   type -- with the row 24px and an 8px gap left over. That put the division and
+   the row in tension: the gap was a remainder, and at 18px the same rule gives a
+   34px pitch and a 170px column, which the arc above cannot afford. The rule now
+   runs the other way. A row is the type's line with the SAME 6px of lead the
+   channel holds, above and below: 6 + 18 + 6 = 30. The rows abut -- gap: 0 --
+   so the division IS the row, the column is 5 * 30 = 150, and the lead is one
+   number doing the same job on both axes instead of two numbers agreeing by
+   arithmetic. It also means the five hit targets tile the column continuously,
+   with no dead band between one word and the next.
+
+   THE INK MOVED UP ONE TIER. The resting words were #5b6172, which is the
+   colour .reserve-hint uses and is 1.87:1 on this background -- a hint's
+   contrast, on the site's navigation. They are now #737b8d, 4.68:1, which
+   clears AA for body text at a size well above it. It stops one step short of
+   --muted (#8b93a6, 6.5:1, what the card's own mono labels use) and the stop is
+   the point: --muted's luminance is .290 against --gold-line's .303, so a rail
+   resting at --muted would make "active" a hue change at equal brightness, and
+   the one thing this site says in every layer is that the live thing is the
+   BRIGHTER thing. At #737b8d the gold is a 1.55x lift and still reads as one.
+
+   THE WORDS CARRY MORE WEIGHT. 400 -> 500. index.html already loads IBM Plex
+   Mono at wght@400;500, so this is a real cut and not a synthesised smear, and
+   500 in Plex Mono is a medium that firms the stems without touching the
+   advance -- the width derivation above is unaffected, which is why weight was
+   the first place "more defined" was spent. The weight does NOT change with
+   state: light is this site's only vocabulary for "this one" (see THE TOUCH CUE)
+   and a second channel saying the same thing would be a second vocabulary.
 
    THE CARD STOPS PAYING RENT. .overlay's right padding used to carry an extra
    120px so the card cleared a right-hand rail. There is no right-hand rail, so
@@ -2132,22 +2196,31 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    for an accounting reason.
 
    FOUR MOTIONS, AND NO OTHERS.
-     arrival   the words fade up top to bottom, 90ms apart, over 4px of settle,
-               starting when the interaction index has finished scribing --
-               --rail-at in :root, which is that sum and not a second constant.
-     scale     five graduations, one per item, printed in the channel in the
-               label's own ink at half weight. They do not light, travel or
-               answer the pointer: a printed scale does not. They are what makes
-               the travel legible -- the mark crosses from graduation to
-               graduation instead of through empty space -- and they are why the
-               channel is a scale and not a margin.
+     arrival   the WHOLE BLOCK fades up over 4px of settle, on the same frame
+               the interaction index begins to scribe -- --rail-at in :root,
+               which is --hint-at and not a second constant. It used to be five
+               arrivals 90ms apart; see the note on the animation below for why
+               a queue could not survive the two layers being simultaneous.
+     scale     a datum hairline down the channel with five graduations struck
+               off it, one per item, in the label's own ink one step back. They
+               do not light, travel or answer the pointer: a printed scale does
+               not. They are what makes the travel legible -- the mark crosses
+               from graduation to graduation instead of through empty space --
+               and they are why the channel is a scale and not a margin.
      position  a gold hairline in the channel, level with the open section,
                which TRAVELS to the next one in 200ms at twice a graduation's
                length, so it reads as the one moving mark against five fixed
                ones. The gesture the reserve hand already makes against AUF/AB.
                Never a pill, a fill or a box.
      reciprocal the word lights when the pointer is on it OR on its part.
-   Nothing here loops, drifts or breathes. */
+   Nothing here loops, drifts or breathes.
+
+   AND NO PANEL, BOX OR SHADOW EITHER. The block is bigger and firmer than it
+   was, and every px of that is type size, type weight, ink contrast and one
+   1px rule. Nothing was added behind the words: no plate, no blur, no border
+   on more than one side, no underline that slides. The rail has to read as
+   printing on the same instrument the watch is, and printing has no substrate
+   of its own. */
 .rail {
   position: absolute;
   /* over .overlay's 40. The rail stays up with a panel open, so you can go
@@ -2160,17 +2233,96 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   top: 5vmin;
   left: 5vmin;
   box-sizing: border-box;
-  width: 118px;
-  padding-left: 22px;   /* the marker channel; the words start at its inner edge */
+
+  /* THE FOUR NUMBERS, AND EVERYTHING ELSE IS ARITHMETIC ON THEM. They are
+     declared here rather than spelled out down the block because the block used
+     to state its derivations in prose and its results in px, which meant six
+     numbers that agreed only as long as someone re-did the sums. Now the sums
+     are in the stylesheet: change --rail-size and the width, the channel, the
+     row height, the pointer and the graduation all follow, in both layouts.
+       --rail-size   the type. See A BIGGER RAIL COSTS CLEARANCE above.
+       --rail-track  the letter gap, in px, because px is what it has always
+                     really been -- see THE LETTER GAP IS A PIXEL, NOT AN EM.
+       --rail-lead   the clearance the scale holds around a row, in BOTH axes.
+       --rail-ink    the resting ink, as CHANNELS rather than a hex, because
+                     three things are printed in it at three strengths -- the
+                     words at 1, the graduations at .7, the datum at .3 -- and
+                     a hex would have meant writing #737b8d once and
+                     rgba(115,123,141,...) twice more, which is the same colour
+                     asserted in three places. See THE INK MOVED UP ONE TIER. */
+  --rail-size: 18px;
+  --rail-track: 2.64px;
+  --rail-lead: 6px;
+  --rail-ink: 115 123 141;   /* #737b8d */
+
+  font-family: var(--font-mono);
+  font-size: var(--rail-size);
+  /* 500, and the 500 that is actually loaded -- index.html asks Google Fonts
+     for IBM Plex Mono at wght@400;500, so this is a cut and not a synthesised
+     smear. See THE WORDS CARRY MORE WEIGHT above. */
+  font-weight: 500;
+  letter-spacing: var(--rail-track);
+
+  /* THE CHANNEL: the pointer's own length, which is 1em, plus the lead before
+     the ink starts. 18 + 6 = 24. */
+  padding-left: calc(1em + var(--rail-lead));
+  /* THE WIDTH, as the sum it is: eight characters of advance, the seven letter
+     gaps between them, and the channel. 8ch is the monospace advance measured
+     by the font rather than asserted at 0.6em, so a font that failed to load
+     cannot leave the box the wrong size for the type inside it.
+     8 * 10.8 + 7 * 2.64 + 18 + 6 = 128.88. */
+  width: calc(8ch + 7 * var(--rail-track) + 1em + var(--rail-lead));
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 16px;
-  letter-spacing: .165em;
+  /* THE ROWS ABUT. There is no gap because the division IS the row -- see THE
+     SCALE'S DIVISION IS THE ROW above. It also means the five hit targets tile
+     the column with no dead band between them. */
+  gap: 0;
+
+  /* ONE ARRIVAL, FOR THE WHOLE BLOCK. This used to be five animations on the
+     five links, 90ms apart. It is one animation on the rail because the rail
+     arrives WITH the index now (--rail-at in :root) and the index is scribed
+     all at once: five words revealing in sequence beside five marks drawn on
+     one frame is the same layer disagreeing with itself about whether the five
+     are peers. They are. So the block -- rule, graduations and words -- fades
+     up as the one object it is, and `--i` is gone from main.js with the
+     stagger that was its only reader.
+     `backwards`, not `both`: the last keyframe IS the base style, and a filling
+     transform would leave the rail a containing block forever. Same rule the
+     seat animations follow -- see THE FLATTENING / BACKFACE PROBLEM. */
+  animation: railIn .5s cubic-bezier(.22,1,.36,1) var(--rail-at) backwards;
 }
 .rail[hidden] { display: none; }
+
+/* THE DATUM. A hairline down the left of the channel, the full height of the
+   block, which the graduations stand off. It is the one piece of furniture
+   added here that is not a word or a mark, and it earns its place twice: it is
+   what a printed scale actually has -- ticks are struck FROM a line, not left
+   floating in space -- and it gives a five-item column sitting alone in an
+   empty corner an edge to be aligned to. It is the faintest thing in the block
+   on purpose: the ladder runs datum, graduations, words, pointer, and the datum
+   is the only one of the four you are not meant to read.
+
+   IT RUNS THE BLOCK, NOT MARK TO MARK, and the overhang is not slack. The
+   graduations sit at the centre of their rows, so a rule spanning the block
+   passes the outer two by exactly half a division -- 15px at each end -- which
+   is the room a scale leaves for the mark it does not have yet. Ending it on
+   the first and last graduation would make the block's edge depend on how many
+   sections there are; top: 0 / bottom: 0 makes it depend on the block.
+
+   It is not a border, a box or a panel. It has one side. */
+.rail::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgb(var(--rail-ink) / .3);
+  pointer-events: none;
+}
 
 /* The paint comes from [data-state], which main.js writes from state.hover and
    state.active -- NOT from :hover. It has to: the same word must light when the
@@ -2181,48 +2333,53 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   display: block;
   /* the graduation below is placed against this box, out in the channel */
   position: relative;
-  color: #5b6172;
+  color: rgb(var(--rail-ink));
   text-decoration: none;
   text-transform: uppercase;
   /* letter-spacing lays its tracking after the LAST character too, so an
-     8-character label advances 97.92px where its ink is 95.28. Reclaiming that
-     trailing column is what keeps the longest label inside the 96px the width
-     was derived for, and in the bottom row it is what makes the gaps between
-     words the gaps they are set to. */
-  margin-right: -.165em;
-  padding: 4px 0;
+     8-character label advances 107.52px where its ink is 104.88. Reclaiming
+     that trailing column is what keeps the longest label inside the width the
+     sum above derives, and in the bottom row it is what makes the gaps between
+     words the gaps they are set to. One rule for both layouts now that the
+     tracking is a pixel: the row used to restate this as -.24em. */
+  margin-right: calc(-1 * var(--rail-track));
+  /* the lead, above and below: this is what makes the row 1em + 2 * 6 = 30px
+     and, with gap:0, the scale's division */
+  padding: var(--rail-lead) 0;
   line-height: 1;
   white-space: nowrap;
   transition: color .28s ease;
-  /* `backwards`, not `both`: the last keyframe IS the base style, and a filling
-     transform would leave every link a containing block forever. Same rule the
-     seat animations follow -- see THE FLATTENING / BACKFACE PROBLEM. */
-  animation: railIn .5s cubic-bezier(.22,1,.36,1)
-             calc(var(--rail-at) + var(--i, 0) * 90ms) backwards;
 }
 /* The graduation this item sits at. It rides on the link rather than on five
    more elements in main.js, so a section cannot exist without its mark and the
    mark cannot land anywhere but the middle of the word it belongs to -- the
    same centre placeRailMarker() writes into --my, arrived at from the other
-   side. left:-22px is the channel's full width measured back from the link's
-   own edge, so the graduation and the pointer start from one line.
+   side. The left offset is the channel's full width measured back from the
+   link's own edge -- the same `1em + lead` the padding is -- so the graduation
+   and the pointer both start from the datum and not from two places that
+   happen to agree.
 
-   8px is half the pointer's 16, and the colour is the label's resting ink at
-   half weight: the scale is printed in the same pass as the words it graduates,
-   one step behind them. It takes no [data-state] and no transition on purpose.
-   A printed scale does not answer the hand. */
+   .5em is half the pointer's 1em, stated as the half it is rather than as the
+   9px it currently resolves to, so the two marks keep their 2:1 whatever the
+   type does. The colour is the label's own ink at .7 -- the same --rail-ink
+   channels, not a second value that matches it -- and the scale is printed
+   in the same pass as the words it graduates, one step behind them. It takes no
+   [data-state] and no transition on purpose. A printed scale does not answer
+   the hand -- and for the same reason all five graduations are identical.
+   Giving one of them a major-division length would rank five peers, which is
+   the objection THE MARKS ARE NOT STAGGERED already made about the index. */
 .rail .rail-link::before {
   content: '';
   position: absolute;
-  left: -22px;
+  left: calc(-1em - var(--rail-lead));
   top: 50%;
   /* the same -50% the marker carries, for the same reason: `top: 50%` alone
      hangs a 1px rule half a pixel below the centre the pointer is centred on,
      and the two marks have to land on one line */
   transform: translateY(-50%);
-  width: 8px;
+  width: .5em;
   height: 1px;
-  background: rgba(91, 97, 114, .55);
+  background: rgb(var(--rail-ink) / .7);
   pointer-events: none;
 }
 .rail .rail-link[data-state='hover'] { color: var(--gold-line-hover); }
@@ -2246,9 +2403,9 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    the one that is its own axis. */
 .rail-marker {
   position: absolute;
-  left: 0;                /* flush with the graduations it points along */
+  left: 0;                /* flush with the datum the graduations stand off */
   top: 0;
-  width: 16px;            /* the type size: as long as the words are tall */
+  width: 1em;             /* the type size: as long as the words are tall */
   height: 1px;
   background: var(--gold-line);
   opacity: 0;
@@ -2274,14 +2431,23 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    that the rail rents nothing on the right.
 
    THE ROW IS ITS OWN DERIVATION, and that is why the size drops back. The
-   column fills a 118px corner; the row has to fit five words and four gaps
-   across the narrowest screen the site serves. At 390px the margins take
-   2 * 5vmin = 39 and the gaps 4 * 4vmin = 62, leaving 289px of ink for 32
-   characters. Ink comes to size * (19.2 + 27 * tracking), so .24em tracking
-   allows 12.2px and .165em allows 12.8px: 16px overruns the phone by 150px and
-   there is no tracking that saves it. 11px at .24em is what fit before and
-   still fits, with 29px to spare -- so the row keeps it, and the three
-   properties the column derived differently are put back here together. */
+   column fills a 128.88px corner; the row has to fit five words and four gaps
+   across the narrowest screen the site serves. At 390x844 the margins take
+   2 * 5vmin = 39.0 and the gaps 4 * 4vmin = 62.4, leaving 288.6px for 32
+   characters of ink. Ink is 32 * 0.6 * size + 27 * 2.64, because the letter gap
+   is the same 2.64px here as in the column and 27 is the gaps INSIDE the five
+   words: at 11px that is 211.2 + 71.3 = 282.5, which fits with 6.1px to spare,
+   and at 18px it is 345.6 + 71.3 = 416.9, which overruns the phone by 128px.
+   There is no tracking that saves 18px -- the advance alone is 345.6 -- so the
+   row keeps 11px and the column's growth stops at the breakpoint. (An older
+   note here claimed 29px of slack at 11px; it is 6.1. Measured at 390x844.)
+
+   ONE OVERRIDE, NOT THREE. The row used to restate the letter-spacing and the
+   link's negative margin as .24em, because the column stated them as .165em and
+   both were spellings of 2.64px. The constant is now written once on .rail in
+   the px it always was, so the only thing this query changes about the
+   typography is --rail-size, and the pointer, the graduation and the row height
+   follow it down on their own. */
 @media (max-width: 1199px) {
   .rail {
     top: auto;
@@ -2293,10 +2459,20 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     flex-direction: row;
     justify-content: center;
     gap: 4vmin;
-    font-size: 11px;
-    letter-spacing: .24em;
+    /* the ONE number the row has to disagree with the column about. The
+       tracking, the ink, the lead and every mark measured off them come across
+       unchanged, so this query is now the layout change it claims to be and not
+       a second copy of the block's typography: `letter-spacing: .24em` and
+       `margin-right: -.24em` were both restatements of 2.64px and are gone. */
+    --rail-size: 11px;
   }
-  .rail .rail-link { margin-right: -.24em; }
+  /* The datum does not turn with the scale, and it is the only part that does
+     not. In the column it is the left edge of a block standing alone in a
+     corner; here the block is anchored to the viewport's own bottom edge and
+     spans its full width, so the same hairline would land as a border ruled
+     across the bottom of the page -- a box, which is the one thing this rail
+     has never been. The graduations carry the scale on their own. */
+  .rail::before { display: none; }
   /* The graduation turns with the scale: out of the channel beside the word and
      down into the band under it, onto the same line the pointer travels along.
      -12px below the link's own box is where .rail's 24px of padding-bottom puts
