@@ -9,7 +9,7 @@
 <title>Nikhil Ramlukan — Calibre NR.1</title>
 
 <!-- Startup gate. The intro is time-based, and its opening act is the only part
-     that needs loaded art: six sprites, ~243 KB, first wanted 0.80s in. If they
+     that needs loaded art: six sprites, ~163 KB, first wanted 0.80s in. If they
      have not arrived by then the act plays over nothing and the user just sees
      a gap where the movement should be.
 
@@ -30,7 +30,7 @@
      to the rendering pipeline, so in a tab that is not being painted (a
      background tab, or a hidden preview pane) it simply never settles and every
      load would fall through to the deadline. `load` always settles, and by the
-     time the act is cued a decoded 680px WebP is a millisecond of work.
+     time the act is cued a decoded 544px WebP is a millisecond of work.
 
      This lives inline and self-contained rather than in main.js: the hold has
      to be in effect before the first frame, and a gate that could strand the
@@ -200,10 +200,12 @@
           <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a2e1b,#b98855 40%,#f2d9ad 52%,#9b6b3f 76%,#2c1a0d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 2.06s both;--fs:1.09;"></div>
 
           <!-- ============ MOVEMENT ============ -->
-          <!-- Calibre NR.1 assembling itself out of six rendered layers.
-               Painted over the case discs and under the dial plate, so the case
-               closes as a ring around a movement that is already seated and the
-               dial then drops straight onto it.
+          <!-- Calibre NR.1 assembling itself out of six rendered layers, in
+               four beats. Painted over the case discs and under the dial plate,
+               so the case closes around a movement that is already finished and
+               the dial then drops straight over it. The movement is drawn at
+               0.80 of the dial well, so the case's own flange shows as an
+               annulus around it; see the MOVEMENT block of src/styles.css.
 
                The six sprites are exactly registered on one source frame, so
                each is just an <img> in its own measured box inside .watch-mvt --
