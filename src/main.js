@@ -27,9 +27,9 @@ const CAPTIONS = {
 const ZOOM_ORIGINS = {
   about: '31.8% 50%',
   featured: '63.75% 26.05%',
-  currently: '60.4% 73.8%',
+  currently: '59.4% 78.6%',
   resume: '65.5% 47.5%',
-  books: '60.4% 66.22%'
+  books: '59.4% 71.02%'
 };
 
 const $ = (id) => document.getElementById(id);
