@@ -29,27 +29,46 @@ const CAPTIONS = {
 // coast back down onto the live reading, like a watch being wound fast on a
 // timing machine.
 //
-// Everything is expressed as an offset ADDED to the true value, driven by one
-// eased progress term, so the demo is a lens over render() rather than a second
-// writer fighting it (render() rewrites all of these unconditionally every
-// frame; anything set from a timer would be gone by the next one).
+// Everything is expressed as a departure FROM the true value that returns to
+// nothing -- an added offset for the rotating parts, a blend toward a full-scale
+// sweep for the reserve -- so the demo is a lens over render() rather than a
+// second writer fighting it (render() rewrites all of these unconditionally
+// every frame; anything set from a timer would be gone by the next one).
 //
 // The easing is `spin(t) = 1 - (1 - t)^2`: its derivative falls linearly from
 // 2 to 0, which is exactly a flywheel coasting to a stop under constant
 // friction. Because the totals below are all WHOLE turns and the date total is
-// a whole number of months, spin -> 1 lands every element back on its true
-// value with zero velocity, so the demo eases home instead of snapping.
+// a whole number of trips round the wheel, spin -> 1 lands every rotating
+// element back on its true value with zero velocity, so the demo eases home
+// instead of snapping. (The reserve reaches zero in both value and slope by a
+// different route -- see render().)
 const DEMO = {
   ms: 4000,
-  // Hour : minute is the true 12:1 -- 12 minute turns IS one hour turn, i.e.
-  // the watch is wound twelve hours forward. The seconds hand would need 720
-  // turns to match; at 4 seconds that is a featureless grey disc, so it is
-  // compressed to 3x the minute hand, which still reads as the fastest thing
-  // on the dial and resolves into a readable sweep as it slows.
-  turns: { hour: 1, min: 12, sec: 36, moon: 3 },
-  dateTurns: 2,        // whole trips through 01..31, so it wraps home
-  reserveCycles: 2.5,  // AUF <-> AB round trips, damped to nothing
-  reserveSwing: 0.85,  // enough to clamp against both end stops on the way
+  // Halved from the first cut, which read as a blur: the duration is fixed at
+  // four seconds, so slowing it down means turning less, not turning for
+  // longer. Every total is still a whole number of turns -- that is the
+  // invariant, not the ratios between them.
+  //
+  // The seconds hand would need 720 turns to be honest against the minute
+  // hand; at 4 seconds that is a featureless grey disc, so it stays
+  // compressed to 3x the minute hand (18:6, as it was 36:12).
+  //
+  // The hour hand is the one that cannot halve: 12 hours is its whole turn and
+  // half of that parks it at the far side of the dial, six hours out, instead
+  // of home. One turn is its floor, so it holds at 1 while the minute hand
+  // halves -- the demo's gearing goes 6:1 rather than the true 12:1, the same
+  // licence the seconds hand has always taken. The moon splits the difference
+  // the other way: 1.5 turns is not whole, and of the two neighbours 2 is the
+  // closer in rate (x1.33 against x1.5) and keeps the plate coasting through
+  // the tail instead of stalling in it.
+  turns: { hour: 1, min: 6, sec: 18, moon: 2 },
+  dateTurns: 1,        // one whole trip through 01..31, so it wraps home
+  // The reserve sweeps rather than spins, and it is measured in the scale's
+  // own units: see render(), where 1.0 of reach is exactly AUF-to-AB whatever
+  // the true reading happens to be.
+  reserveCycles: 2,    // whole AUF <-> AB round trips, ~1s per traverse
+  reserveHold: 0.85,   // fraction of the demo held at full end-to-end travel
+  reserveOver: 1.06,   // aims 6% past each stop, so it beats against AUF and AB
   reducedMs: 1200      // reduced motion: no movement, just an acknowledgement
 };
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
@@ -172,15 +191,35 @@ function render() {
   const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90 + wind(DEMO.turns.moon)).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
 
-  // The reserve swings instead of spinning: a sine damped by (1 - t)^2, which
-  // is zero in both value and slope at the end, so it also coasts onto the true
-  // reading. The swing overshoots the 0..1 scale on purpose -- the clamp is the
-  // hand sitting against AUF and AB for a beat, the way a real one would.
+  // The reserve sweeps instead of spinning, and it sweeps the whole scale.
+  //
+  // `sweep` is a cosine expressed in the scale's own units -- 0 is AB, 1 is
+  // AUF, and it is phased to start at the true reading, so the press does not
+  // jump the hand before it moves it. `reach` is how much of the gap between
+  // the sweep and the true reading is actually let through: 1 gives the full
+  // AUF-to-AB travel whatever the true reading is (which a fixed +/- amplitude
+  // could not, since 0.72 is nearly three times as far from AUF as from AB),
+  // and 0 pins the hand on the truth.
+  //
+  // Damping the amplitude from the first frame is what used to guarantee the
+  // clean landing, and it is also why the hand never got near AB: by the second
+  // swing there was nothing left. So reach is HELD at full travel instead, and
+  // released only over the last 15% on a smoothstep, whose slope is zero at
+  // both ends -- no kink where the release begins, and zero value AND zero
+  // slope at t = 1, so the hand still coasts onto the true reading rather than
+  // snapping to it. The trade is that the settle is compressed into ~600ms and
+  // is a return rather than a decay: the hand comes off AB once, smoothly,
+  // instead of shrinking through several ever-smaller swings.
+  //
+  // Aiming a few per cent past each stop is deliberate: the clamp is the hand
+  // sitting against AUF and AB for a beat, the way a real one would.
   let reserve = state.reserve;
   if (demoing) {
-    const damp = (1 - demoT) * (1 - demoT);
-    const swing = Math.sin(2 * Math.PI * DEMO.reserveCycles * demoT) * damp * DEMO.reserveSwing;
-    reserve = Math.min(1, Math.max(0, state.reserve + swing));
+    const u = Math.min(1, Math.max(0, (demoT - DEMO.reserveHold) / (1 - DEMO.reserveHold)));
+    const reach = DEMO.reserveOver * (1 - u * u * (3 - 2 * u));
+    const phase = Math.acos(1 - 2 * Math.min(1, Math.max(0, state.reserve)));
+    const sweep = 0.5 - 0.5 * Math.cos(2 * Math.PI * DEMO.reserveCycles * demoT + phase);
+    reserve = Math.min(1, Math.max(0, state.reserve + reach * (sweep - state.reserve)));
   }
   // .reserve-hand carries a .6s transition for the scroll-driven wind, which
   // would smear a per-frame sweep into a lagging blur. Suppressed for the demo
