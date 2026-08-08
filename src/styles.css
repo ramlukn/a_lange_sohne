@@ -55,6 +55,14 @@ a:hover { color: var(--gold-line-hover); }
   76%  { opacity: 1; transform: translate(0, 0) scale(1.025); }
   100% { opacity: 1; transform: none; }
 }
+/* componentSeat, but carrying the corrector cap's own -60deg lie-angle through
+   every keyframe: the cap's resting transform IS that rotation, and a filling
+   animation on the same property would otherwise flatten it out at 100%. */
+@keyframes correctorSeat {
+  0%   { opacity: 0; transform: translate(var(--fx, 0px), var(--fy, 0px)) rotate(-60deg) scale(.9); }
+  76%  { opacity: 1; transform: translate(0, 0) rotate(-60deg) scale(1.025); }
+  100% { opacity: 1; transform: rotate(-60deg); }
+}
 @keyframes glassSeat {
   0%   { opacity: 0; transform: scale(1.065); filter: blur(1px); }
   68%  { opacity: .76; transform: scale(1.008); filter: blur(0); }
@@ -256,8 +264,9 @@ a:hover { color: var(--gold-line-hover); }
 .face-back { transform: rotateY(180deg) translateZ(calc(var(--case-depth) / 2)); opacity: 0; }
 
 /* ===================== CROWN + CORRECTOR ===================== */
-/* Both fittings are rendered art now (tools/build-dial-art.py prints these
-   numbers). The div is only the hit target; the sprite inside it is inert. */
+/* The crown is rendered art (tools/build-dial-art.py prints these numbers): the
+   div is only the hit target and the sprite inside it is inert. The corrector
+   went back to the inline SVG cap, which is the element itself. */
 
 /* The crown sprite is cropped to its own ink: a stem, a tube collar, the fluted
    barrel and the domed end cap, 435x701 source px. The seam where the stem
@@ -278,54 +287,49 @@ a:hover { color: var(--gold-line-hover); }
 .crown-art { filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)); }
 .crown:hover { filter: brightness(1.2); }
 
-/* The corrector arrived as a 1254px full-face overlay, so its ink bbox is its
-   placement: left 9.091% top 23.445%, 1.754% x 6.380% of the face. The hit box
-   is that ink grown to 6% x 10% about its centre (9.968%, 26.635%) -- as large
-   as it can be without its near corner reaching into #aboutHit, whose circle is
-   r 25.55% about (31.64%, 50.05%). */
+/* The corrector is an inline SVG cap again, laid diagonally across a box that
+   straddles the case outline at 10 o'clock. */
 .corrector {
   position: absolute;
-  left: 6.97%;
-  top: 21.64%;
-  width: 6%;
-  height: 10%;
+  left: 1.7%;
+  top: 15%;
+  width: 9%;
+  height: 18%;
   cursor: pointer;
   transform-style: preserve-3d;
   --fx: -2vmin;
   z-index: 3;
 }
-/* The cap's ink sits at 0.90-0.96 of the case radius, i.e. inside the case
-   outline, so unlike the crown it never clears the silhouette: one copy on the
-   band plane would be hidden by whichever face is toward the camera. So it gets
-   a plane on each side of the case, which is also what the part is -- a fitting
-   in the band, reachable from either side of the watch.
-   The z lives on these wrappers and not on .corrector or on the caps because a
-   filling transform animation (componentSeat) makes Chrome flatten the element
-   it runs on, which would collapse both planes back onto the band -- which is
-   why the seat animation moved down to the caps.
-   The planes are also what catches the clicks: hit testing follows the same 3D
-   order as painting, so a target left on the band plane is not merely hidden
-   behind the case, it is unreachable. With a plane in front of each face the
-   pusher answers the mouse from whichever side is toward you, and the event
-   bubbles to #corrector either way. */
+/* The cap sits on the case band, at z 0 -- behind both faces, which are pushed
+   half the case depth toward and away from the camera. Since hit testing in a
+   preserve-3d subtree follows the same sort order as painting (and ignores
+   z-index), a single copy on the band plane is not merely hidden behind the
+   front face's dial layers: it is unreachable. Confirmed by clicking it.
+   So the cap gets a plane on each side of the case, which is also what the part
+   is -- a fitting in the band, reachable from either side of the watch. The
+   pusher answers the mouse from whichever face is toward you, and the click
+   bubbles to #corrector either way.
+   The z lives on these wrappers rather than on .corrector because a filling
+   transform animation (componentSeat) makes Chrome flatten the element it runs
+   on, which would collapse both planes back onto the band -- which is why the
+   seat animation sits on the caps instead. */
 .corrector-plane { position: absolute; inset: 0; }
 .corrector-plane-front { transform: translateZ(calc(var(--case-depth) / 2 + .05vmin)); }
 .corrector-plane-back  { transform: translateZ(calc(var(--case-depth) / -2 - .05vmin)); }
 /* flush bowed corrector cap: seated into the case with no visible stand-off */
 .corrector-cap {
   position: absolute;
-  left: 35.38%;
-  top: 18.10%;
-  width: 29.24%;
-  height: 63.80%;
-  pointer-events: none;
-  -webkit-user-drag: none;
-  user-select: none;
+  left: 2%;
+  top: 42%;
+  width: 96%;
+  height: 18%;
+  transform: rotate(-60deg);
+  overflow: visible;
   filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52));
-  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
+  animation: correctorSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
 }
-/* the hover brightness rides on the caps rather than on .corrector, for the
-   same reason: a filter on the parent would flatten its 3D context too. */
+/* the hover brightness rides on the caps for the same reason: a filter on the
+   parent would flatten its 3D context too. */
 .corrector:hover .corrector-cap {
   filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52)) brightness(1.09);
 }
