@@ -379,14 +379,22 @@ a:hover { color: var(--gold-line-hover); }
 .reserve-hand .sprite-art { filter: drop-shadow(-.08vmin .16vmin .34vmin rgba(0,0,0,.52)); }
 
 /* ===================== SMALL SECONDS + MOON =====================
-   The whole group is keyed to one centre: 60.4% / 73.8% of the face.
-   .sec-pivot, .sec-cap and .moon are all derived from it, as are
-   ZOOM_ORIGINS.currently / .books in main.js and the two .hint-dot
-   positions in index.html. Move the subdial and all of them follow. */
+   The whole group is keyed to one centre: 59.4% / 78.6% of the face.
+   Everything below is derived from it and must translate rigidly with it:
+     .seconds-dial  (this rule; centre = left + width/2, top + height/2)
+     .sec-pivot     (seconds-hand sprite; its box centre IS the rotation axis)
+     .moon          (two invariants -- see the comment above that rule)
+   plus, outside this file:
+     ZOOM_ORIGINS.currently  = the subdial centre       (src/main.js)
+     ZOOM_ORIGINS.books      = the .moon box centre     (src/main.js)
+     two .hint-dot inline positions                     (index.html)
+   Move the subdial and all five must follow by the same (dx, dy).
+   (.sec-cap used to be on this list; it was deleted when the hands were
+   rebuilt from sprites, and no longer exists.) */
 .seconds-dial {
   position: absolute;
-  left: 46.8%;
-  top: 60.2%;
+  left: 45.8%;
+  top: 65%;
   width: 27.2%;
   height: 27.2%;
   border-radius: 50%;
@@ -398,11 +406,11 @@ a:hover { color: var(--gold-line-hover); }
 /* Sized so the aperture's outer arc sits flush inside the seconds track.
    Two invariants, both load-bearing:
 
-   1. left = 60.4 - width/2, so the box stays on the subdial axis (60.4%).
-   2. top is set so the ARC's centre lands on the subdial centre (73.8%).
+   1. left = 59.4 - width/2, so the box stays on the subdial axis (59.4%).
+   2. top is set so the ARC's centre lands on the subdial centre (78.6%).
       The arc "A48 48" has its centre at v=56.74677 in the 0 0 100 50 viewBox,
-      so arc-centre-y = top + (56.74677/50) * height. Solving for 73.8 gives
-      60.25. That concentricity is what makes the fit even the whole way
+      so arc-centre-y = top + (56.74677/50) * height. Solving for 78.6 gives
+      65.05. That concentricity is what makes the fit even the whole way
       round; it was already true to 0.02% before this resize, and holding it
       is worth more than holding the wheel pivot's old 1.45% offset (see
       below), since both are the same one degree of freedom.
@@ -429,23 +437,26 @@ a:hover { color: var(--gold-line-hover); }
    offset is a consequence of the aperture geometry, not an independent
    anchor: pivot and aperture are both fixed in viewBox units, so a uniform
    box scale preserves their relationship exactly and the moon art is
-   unaffected. Keep both invariants above whenever the subdial moves. */
+   unaffected. Keep both invariants above whenever the subdial moves.
+   (A rigid translation of the whole group preserves them for free; the
+   72.35 / 1.45% figures above are from the pre-move frame and are quoted
+   only to show the scaling argument.) */
 .moon {
   position: absolute;
-  left: 48.3%;
-  top: 60.25%;
+  left: 47.3%;
+  top: 65.05%;
   width: 24.2%;
   height: 11.94%;
   cursor: pointer;
 }
 .moon:hover { filter: brightness(1.08); }
 
-/* Square sprite centred on (60.40%, 73.80%) -- the small-seconds axis, which is
+/* Square sprite centred on (59.40%, 78.60%) -- the small-seconds axis, which is
    the centre of .seconds-dial above. Keep the two in step if that dial moves. */
 .sec-pivot {
   position: absolute;
-  left: 48.723%;
-  top: 62.123%;
+  left: 47.723%;
+  top: 66.923%;
   width: 23.354%;
   height: 23.354%;
   transform-origin: 50% 50%;
