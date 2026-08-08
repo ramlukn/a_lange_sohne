@@ -114,7 +114,16 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes mvHandoff { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.44); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
-@keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(217,162,107,.4); } 100% { box-shadow: 0 0 0 12px rgba(217,162,107,0); } }
+/* One pass of the scribe: a live part's own principal line draws itself on,
+   then settles to a resting hairline. See the INTERACTION INDEX block below.
+   Duration is zeroed by the reduced-motion rule underneath, and `both` fill
+   then lands every mark on the `to` state -- drawn, at rest -- so the
+   affordance degrades to a static engraving rather than disappearing. */
+@keyframes hintScribe {
+  from { stroke-dashoffset: 100; opacity: .92; }
+  72%  { opacity: .92; }
+  to   { stroke-dashoffset: 0; opacity: .55; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -422,7 +431,9 @@ a:hover { color: var(--gold-line-hover); }
   --fs: .96;
 }
 .date-frame { position: absolute; inset: 0; filter: drop-shadow(0 .3vmin .85vmin rgba(0,0,0,.62)); }
-.date-window:hover { box-shadow: 0 0 0 .25vmin rgba(240,200,150,.55); }
+/* hover: see THE LIVE PARTS' HOVER at the end of this file. The lift goes on
+   the sprite inside .date-frame, not on .date-frame itself, so the frame's
+   drop-shadow survives; the printed numerals are ink and stay unlit. */
 
 /* Georgia, as the date read before the sprite rebuild -- old-style figures, so
    0/1/2 sit at x-height while 3/4/5/7/9 hang below and 6/8 climb. That uneven
@@ -494,7 +505,6 @@ a:hover { color: var(--gold-line-hover); }
   --fs: .96;
 }
 .reserve-scale { position: absolute; left: 57%; top: 6.435%; width: 24.104%; height: 89.715%; }
-.reserve:hover .reserve-scale { filter: brightness(1.14); }
 .reserve-hand {
   position: absolute;
   left: -28.073%;
@@ -540,7 +550,8 @@ a:hover { color: var(--gold-line-hover); }
    plus, outside this file:
      ZOOM_ORIGINS.currently  = the subdial centre       (src/main.js)
      ZOOM_ORIGINS.books      = the .moon box centre     (src/main.js)
-     two .hint-dot inline positions                     (index.html)
+     two .hint-mark shapes -- the seconds circle and the
+       moon aperture path -- in .hint-index            (index.html)
    Move the subdial and all five must follow by the same (dx, dy).
    (.sec-cap used to be on this list; it was deleted when the hands were
    rebuilt from sprites, and no longer exists.) */
@@ -554,7 +565,6 @@ a:hover { color: var(--gold-line-hover); }
   cursor: pointer;
   box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 .35vmin 1vmin rgba(0,0,0,.64);
 }
-.seconds-dial:hover { box-shadow: inset 0 .1vmin 0 rgba(4,8,16,.92), 0 0 0 .25vmin rgba(240,200,150,.55); }
 
 /* Sized so the aperture's outer arc sits flush inside the seconds track.
    Two invariants, both load-bearing:
@@ -602,7 +612,6 @@ a:hover { color: var(--gold-line-hover); }
   height: 11.94%;
   cursor: pointer;
 }
-.moon:hover { filter: brightness(1.08); }
 
 /* Square sprite centred on (64.50%, 75.115%) -- the small-seconds axis, which is
    the centre of .seconds-dial above. Keep the two in step if that dial moves. */
@@ -636,7 +645,45 @@ a:hover { color: var(--gold-line-hover); }
   border-radius: 50%;
   cursor: pointer;
 }
-.about-hit:hover { box-shadow: 0 0 0 .25vmin rgba(240,200,150,.52); }
+
+/* ===================== THE LIVE PARTS' HOVER =====================
+   These five used to speak two languages. .about-hit, .date-window and
+   .seconds-dial drew a `box-shadow: 0 0 0 .25vmin` ring AROUND themselves -- a
+   UI outline, the thing that makes an object look like a web page with hotspots
+   on it. .reserve, .moon and .crown instead lifted brightness: light falling on
+   metal. The second idiom is the one this site is built on, so hover is now
+   light everywhere and the ring idiom is gone.
+
+   That unification is not cosmetic here, it is structural: .hint-index now
+   speaks in line, so if hover also drew a line then "this part is live" and
+   "your cursor is on it" would be the same mark. Line says which parts are
+   live; light says which one you are on. Two channels, no collision.
+
+   Guarded by (hover: hover) so a tap on a touch screen cannot leave a part
+   stuck lit -- touch gets no hover state at all, which is why the index has to
+   persist there until the first tap. */
+@media (hover: hover) {
+  .about-hit,
+  .date-window .date-frame .sprite-art,
+  .reserve-scale,
+  .seconds-dial .dial-art,
+  .moon {
+    transition: filter .28s ease, opacity .28s ease;
+  }
+  /* The hours dial is an empty hit div over rendered art, so there is nothing
+     on it to brighten. It gets the light itself instead -- a wash centred up
+     and left, where the dial's own 315deg key already falls. */
+  .about-hit {
+    opacity: 0;
+    background: radial-gradient(circle at 32% 30%,
+      rgba(255,240,218,.15), rgba(255,240,218,.05) 52%, transparent 74%);
+  }
+  .about-hit:hover { opacity: 1; }
+  .date-window:hover .date-frame .sprite-art { filter: brightness(1.16) saturate(1.04); }
+  .reserve:hover .reserve-scale              { filter: brightness(1.16) saturate(1.04); }
+  .seconds-dial:hover .dial-art              { filter: brightness(1.16) saturate(1.04); }
+  .moon:hover                                { filter: brightness(1.14) saturate(1.04); }
+}
 
 /* ===================== CRYSTAL + HINTS ===================== */
 .crystal {
@@ -647,15 +694,84 @@ a:hover { color: var(--gold-line-hover); }
   overflow: hidden;
   animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s both;
 }
-.hint-dots { position: absolute; inset: 0; pointer-events: none; animation: fadeIn .5s ease 3.45s both; }
-.hint-dots[hidden] { display: none; }
-.hint-dot {
+/* ===================== INTERACTION INDEX =====================
+   How the watch says "these five parts are live".
+
+   It replaces .hint-dots: five .8%-wide dots (5.3px on a 900px viewport, 2.7px
+   on a phone, at 58% opacity) pulsing on infinite loops. They were too small to
+   read as an affordance at all, they duplicated the hit geometry as hard-coded
+   percentages that drift whenever a complication moves, and the infinite loop
+   contradicted the design bible's own rule -- "every motion must explain
+   function or depth. No ambient floating, glow, or ornamental looping."
+
+   The idea here: do not add a shape to the dial. Every live part except the
+   power reserve already OWNS a closed gold line -- the hours-dial rim, the
+   date's twin frame, the small-seconds rim, the moon aperture -- so the
+   affordance is that part's own line, scribed on once and then left a little
+   brighter than the rest of the dial's furniture. The power reserve has no
+   closed silhouette, so it gets the one line it does own: an arc concentric
+   with its AUF/AB scale. (Measured, not guessed: an alpha scan of
+   reserve-scale.webp about the hand pivot at 68.33/47.548 puts the tick ink
+   between r 13.15 and 14.40, with the AUF and AB legends alone reaching r 18.9
+   at the two ends. r 12.55 runs clean inside the ticks the whole way and never
+   meets the text.) The result reads as the instrument's own index picked out,
+   not as five hotspots stuck on top of it.
+
+   Three things fall out of that, all of them the point:
+     - It is sized by the PART, not by a constant. A 25.3%-radius circle is
+       legible at any viewport; the 2.7px dot was not. The stroke stays a
+       hairline at every size via vector-effect, so it never thickens into UI.
+     - It survives reduced motion. The scribe is only the introduction; the
+       resting hairline is the affordance, so zeroing the animation leaves it
+       fully drawn instead of leaving nothing.
+     - It recedes. main.js drops the whole layer once state.touched is set.
+
+   Alternatives prototyped over the real dial and rejected -- see the report:
+     - Pulsing rings around each part (the shape the brief floated). Scaling a
+       silhouette unregisters it from the edge it was tracing, so it stops being
+       the part's own line and becomes a halo hovering over the dial: the exact
+       "web hotspot" read this site cannot afford. Also necessarily a loop.
+     - A travelling specular band that lights each part as it passes (the index
+       sweep in docs/SITE-DIRECTION.md). Defeated by the Lange 1's own layout:
+       the date, small seconds and moon sit at x 63.75 / 64.50 / 64.50, so a
+       band crossing the dial reaches all three within 9ms and the "sequence"
+       collapses into one simultaneous flash across a subdial. Ordering them
+       properly would mean decoupling the flashes from the band's position, at
+       which point the band no longer explains anything.
+     - Breathing the hover state itself, one part at a time. Honest, and it is
+       why hover was unified on light below -- but brightness(1.2) on a sprite
+       over a busy dial sits under the perceptual threshold, and a persistent
+       lift would read as uneven dial lighting, contradicting the 315deg key.
+
+   Every shape carries pathLength="100", so one dash rule drives a circle, a
+   rect and two paths alike and stays correct if any geometry is nudged.
+   Decorative only: the layer never takes a pointer event -- the hit targets
+   are the .about-hit / .date-window / .reserve / .seconds-dial / .moon divs. */
+.hint-index {
   position: absolute;
-  width: .8%;
-  height: .8%;
-  border-radius: 50%;
-  background: rgba(232,170,126,.58);
-  animation: pulseRing 1.8s ease-out infinite;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  /* One knob for the whole layer: when the index is scribed, after assembly.
+     This is the same 3.45s the .hint-dots layer waited, kept in one place so
+     retiming the intro stays a one-number edit. */
+  --hint-at: 3.45s;
+  --hint-step: .23s;
+}
+.hint-index[hidden] { display: none; }
+.hint-index svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hint-mark {
+  fill: none;
+  stroke: url(#hintKey);  /* the 315deg key light -- see <defs> in index.html */
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;  /* a hairline at 390px as at 1440px */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0;
+  animation: hintScribe .46s cubic-bezier(.3,.7,.25,1)
+             calc(var(--hint-at) + var(--i, 0) * var(--hint-step)) both;
 }
 
 /* ===================== CASEBACK: sapphire display back =====================
