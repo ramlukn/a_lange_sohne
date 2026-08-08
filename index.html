@@ -11,16 +11,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/src/styles.css">
-<script>
-  /* The intro is a 4.1s show. It earns that once. On any later navigation in
-     the same session it is pure toll, so flag the document and let the CSS
-     collapse it. Inline and synchronous in <head> on purpose: this has to be
-     decided before the first paint or the long version flashes first. */
-  try {
-    if (sessionStorage.getItem('nr1-intro')) document.documentElement.dataset.introSeen = '';
-    sessionStorage.setItem('nr1-intro', '1');
-  } catch (e) { /* private mode: just play the full intro */ }
-</script>
 </head>
 <body>
 

@@ -137,22 +137,6 @@ a:hover { color: var(--gold-line-hover); }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
 }
 
-/* Second visit in the same session (flag set by the inline script in <head>).
-   Zeroing the delays -- and only the delays -- fires every seat animation at
-   once, so the watch blooms into place in about a second instead of building
-   over four. Durations and iteration counts are left alone, which is what keeps
-   the interaction index scribing itself and the caseback sheen on its own
-   schedule; both are excluded from the reset because their delays are stagger,
-   not sequence. (.hint-mark carries --hint-at plus a per-part step; zeroing it
-   would scribe all five marks at once, which is the flash this rule exists to
-   avoid.)
-   The movement act is dropped rather than accelerated: at zero delay its
-   thirteen parts land in one flash under a dial that is arriving at the same
-   moment, which reads as a glitch. */
-html[data-intro-seen] .loader,
-html[data-intro-seen] .watch-mvt { display: none !important; }
-html[data-intro-seen] .stage *:not(.hint-mark):not(.cb-rig-sheen) { animation-delay: 0s !important; }
-
 /* ===================== STAGE ===================== */
 .stage {
   min-height: 100vh;
