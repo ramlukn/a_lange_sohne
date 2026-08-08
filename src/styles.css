@@ -26,17 +26,15 @@ a:hover { color: var(--gold-line-hover); }
 
 /* ===================== ANIMATIONS ===================== */
 @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-/* Pulls a finished intro layer out of the render tree. visibility:hidden (and,
-   for the movement, being covered by an opaque dial) stops the pixels but
-   leaves the element composited and its animations ticking -- and both of these
-   are full-size layers stacked over the watch through the busiest part of
-   startup. display:none drops the subtree outright.
+/* Pulls the finished title card out of the render tree. visibility:hidden stops
+   the pixels but leaves the element composited and its animations ticking --
+   and this is a full-size layer stacked over the watch through the busiest part
+   of startup. display:none drops the subtree outright.
    A separate zero-duration animation is used rather than a display:none
    keyframe inside fadeOut: discrete properties flip at the midpoint of their
-   interval, which would cut the fade short. Each one is delayed to land exactly
-   when the layer stops being visible. */
+   interval, which would cut the fade short. It is delayed to land exactly when
+   the layer stops being visible. */
 @keyframes loaderGone { to { display: none; } }
-@keyframes mvGone { to { display: none; } }
 @keyframes fadeIn { from { opacity: 0; } }
 @keyframes lineFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes caseSeat {
@@ -84,67 +82,6 @@ a:hover { color: var(--gold-line-hover); }
   100% { opacity: 1; transform: translateZ(var(--z-glass)) scale(1); filter: blur(0); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
-
-/* ---- movement: calibre NR.1 arriving ----
-   One finished calibre resolving out of the dark. Transform / opacity / filter
-   only, and it does not rotate: this is a flat image, so turning it would carry
-   every wheel on it around the same axis at the same rate.
-
-   It arrives onto nothing -- the case discs do not seat until 1.68s and the
-   movement is at rest by 1.56s -- so it cannot descend onto a surface, and does
-   not pretend to. It comes up out of the dark the way the mainplate used to:
-   magnified, defocused and transparent while it is still off-plane, condensing
-   into a solid object and taking up with a shallow overshoot at the end. That
-   overshoot IS the settle; there is no second one, because there is no moment
-   any more where a last part lands and the whole stack then takes up.
-
-   The DROP-SHADOW is the one thing here that has to survive verbatim. Its
-   resting value falls on the case's polished flange -- the annulus the 0.80
-   scale leaves exposed, see .watch-mvt -- and it is the whole reason that
-   flange reads as a floor the movement is sitting on rather than as a gap
-   around it. It is thrown long and soft while the movement is in the air and
-   pulls in tight as it lands, and it has to live inside the keyframes: an
-   animated `filter` replaces the property outright, so a static drop-shadow
-   next to it would never paint. Every keyframe therefore carries the same
-   two-function list, in the same order, so the filter interpolates cleanly.
-   The `both` fill then holds the resting shadow after the animation ends, which
-   is what has it still there when the flange arrives at 2.06s.
-
-   HOW FAR OFF-PLANE IT STARTS is not chosen: 1.14 and 2.24px are the figures
-   the gear train and the balance descended from in the assembly -- the beat
-   with the most weight in it -- so the movement now arrives from the height its
-   own mechanism used to. A perspective magnification and a defocus blur both
-   depend on height off the plane and not on how big the thing is, which is what
-   makes carrying them over from a part to the whole legitimate. It also has to
-   be about that big: the easing below is heavily front-loaded, so a smaller
-   delta would be over inside 200ms and the rest of the window would be a hold.
-
-   Every length in here that is not a ratio was scaled by 0.80 with the
-   movement: the blur (px) and the standoff shadow (vmin). A movement 20%
-   smaller standing off the flange by the old figures would have read as half
-   again as proud of it.
-
-   The easing is the house arrival curve, cubic-bezier(.22,1,.36,1), which is
-   also caseSeat's and dialSeat's. The three big objects -- movement, case, dial
-   -- now arrive one after another as whole things, so they should arrive the
-   same way; that they do is the strongest argument for it. It applies per
-   keyframe interval, not across the whole animation, so the 84% overshoot gets
-   its own eased .12s recovery rather than being flattened by the long ease-out
-   that carries the scale in.
-
-   Being that front-loaded, the travel is spent in the first ~250ms and the rest
-   of the .76s is refinement you can barely see. That is not slack: it is what
-   hands a movement that has completely stopped to the case, and it is why the
-   duration is quoted as a window rather than as a length of motion. */
-@keyframes mvArrive {
-  0%   { opacity: 0; transform: scale(1.14);
-         filter: blur(2.24px) drop-shadow(0 .62vmin .96vmin rgba(0,0,0,.46)); }
-  58%  { opacity: 1; }
-  84%  { transform: scale(.9972);
-         filter: blur(0) drop-shadow(0 .16vmin .36vmin rgba(0,0,0,.5)); }
-  100% { opacity: 1; transform: scale(1);
-         filter: blur(0) drop-shadow(0 .19vmin .44vmin rgba(0,0,0,.48)); }
-}
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
 /* One pass of the scribe: a live part's own principal line draws itself on,
    then settles to a resting hairline. See the INTERACTION INDEX block below.
@@ -156,25 +93,6 @@ a:hover { color: var(--gold-line-hover); }
   72%  { opacity: .92; }
   to   { stroke-dashoffset: 0; opacity: .55; }
 }
-
-/* ---- startup gate ----
-   The intro's opening act is the only part of it that needs loaded art, and it
-   is also the first to play. Rather than let a time-based act run over a sprite
-   that has not decoded, the head script holds the whole sequence paused until
-   it has, then releases it; see the comment on that script in index.html for
-   the deadline and the fallback. Pausing rather than re-timing means every
-   delay downstream stays exactly as authored -- the clock simply starts later. */
-html.mvt-hold .stage,
-html.mvt-hold .stage *,
-html.mvt-hold .stage *::before,
-html.mvt-hold .stage *::after { animation-play-state: paused; }
-/* ...except the title card's own progress bar, which is what the user is
-   looking at while we wait, and which would read as hung if it froze. */
-html.mvt-hold .loader-fill { animation-play-state: running; }
-
-/* The sprite missed the deadline: drop the act rather than play it over
-   nothing. Nothing downstream depended on the movement having been there. */
-html.no-mvt .watch-mvt { display: none; }
 
 /* Light ARRIVING on a part's own silhouette, fired by hover, and settling to the
    steady glow it then holds for as long as the pointer is there. See the HOVER
@@ -211,11 +129,6 @@ html.no-mvt .watch-mvt { display: none; }
     transition-duration: .01ms !important;
   }
   .cb-rig { display: none !important; }  /* static original render is the caseback */
-  /* The movement is an arrival and nothing else -- it is not part of the
-     finished watch, so with the motion gone there is nothing to show. The
-     <picture> wrapper makes this the cheap path too: the art is not even
-     fetched. */
-  .watch-mvt { display: none !important; }
 }
 
 /* ===================== STAGE ===================== */
@@ -240,7 +153,7 @@ html.no-mvt .watch-mvt { display: none; }
 
 /* ===================== LOADER =====================
    A plain title card. It is opaque for 0.62s, then dissolves over 0.45s while
-   the movement's mainplate is already fading up underneath it. */
+   the case's cast shadow (0.90s) is already fading up underneath it. */
 .loader {
   position: fixed;
   inset: 0;
@@ -259,123 +172,6 @@ html.no-mvt .watch-mvt { display: none; }
 .loader-sub { font-family: var(--font-mono); font-size: 1.25vmin; letter-spacing: .35em; color: #9a8367; }
 .loader-track { width: 26vmin; height: 1px; background: rgba(217,162,107,.2); overflow: hidden; }
 .loader-fill { width: 100%; height: 100%; background: var(--gold-line); transform-origin: left; animation: lineFill .62s cubic-bezier(.4,0,.2,1) both; }
-
-/* ===================== MOVEMENT =====================
-   Calibre NR.1 arrives finished, as the watch's opening act: one image, one
-   gesture. The layer is painted over the case discs and under the dial plate,
-   so the case closes *around* a movement that is already there and the dial
-   then drops straight over it.
-
-   WHAT THIS REPLACED, so nobody re-derives it by accident. The movement used to
-   assemble itself out of six registered sprites in three beats -- the mainplate
-   coming up out of the dark, the train and balance descending onto it, then the
-   bridges, screws and rim closing it up -- with a settle on the finished stack.
-   Every part of that is gone, on request: the finished movement is what is
-   wanted, not the making of it. The six masters are still in
-   tools/assets-src/movement/ and the layered version is recoverable from git;
-   what ships is their flattened sum.
-
-   Geometry is measured, not guessed -- tools/build-movement-art.py prints every
-   number here and asserts on each build that the six masters still stack into
-   the supplied reference composite exactly, which is also what the shipped
-   sprite is made from. The box is placed off the perimeter ring, whose outer
-   edge is the movement's rim, so flattening changed none of it.
-
-   SIZE. The movement is drawn at 0.80 of the dial well's diameter
-   (MOVEMENT_SCALE in the build script): the well is inset 5.15%, i.e. 89.70% of
-   the face, and the rim spans 71.76% of it, concentric. That is a deliberate
-   break with what was here before, where the rim landed on the well to within
-   0.02px and the case appeared to close flush around the movement. It no longer
-   does, and it is not meant to: the movement is an object sitting inside the
-   case opening rather than the thing that fills it, the way a calibre is
-   smaller than the case it is fitted into.
-
-   That leaves an 8.97%-of-the-face annulus (20% of the well radius) between the
-   rim and the well, and it is a surface, not a gap. What shows through it is the
-   innermost case disc -- polished gold, inset 3.55% -- so it reads as the case's
-   own flange, and the movement's resting drop-shadow (mvArrive, above) falls on
-   it and gives the movement a floor to sit on. Nothing new was drawn for it.
-   The dial plate still covers the whole well at inset 5.15%, so the handoff at
-   2.24s is unchanged; it arrives over flange as well as movement, which is
-   exactly what a dial does.
-
-   SHAPE. The box is 0.45 percentage points taller than it is wide because the
-   sprite's ink is the union of all six masters and the mainplate reaches a few
-   px below the ring, the way a real mainplate is wider than its chapter ring.
-
-   The sprite's own pixels are 1089x1126, i.e. 1.03398 tall, and the box is
-   71.760% x 72.209% of the face, i.e. 1.00626 tall. So `object-fit: fill` is
-   deliberate here, not lazy: it scales the sprite's y by 0.97319. That corrects
-   the art rather than distorting it. The perimeter ring is rendered 1089x1119 --
-   2.755% taller than wide -- and the disc it has to be is a true circle; the
-   squash is that same correction re-expressed against the frame's aspect
-   instead of the ring's, and it lands the rim at 71.760% x 71.760% of the face.
-   Round by construction, at any scale. It is a pure aspect ratio, so it survived
-   the 0.80 rescale untouched and would survive another. Re-derive it, do not
-   copy it, if the art is ever re-exported: the property that has to hold is
-   that the RING comes out circular, not that the number stays 0.97319.
-
-   Nothing here rotates. This is a flat image: turning it would carry all five
-   wheels around the same axis in the same direction at the same rate, which is
-   not what a going train does. The arrival is the animation, and it is the only
-   one.
-
-   SCHEDULE, in seconds from page load:
-     .800 the calibre begins to resolve out of the dark, pinned to the title
-          card dissolving (.62s-1.07s)
-     1.560 it is at rest, and the case begins to close around it
-     3.000 mvGone drops the layer, long after the dial has covered it
-
-   THE DURATION IS SOLVED FOR, NOT CHOSEN. It is what fills the window between
-   the two fixed events either side of it: the act starts when the title card
-   goes (.80s) and the case's cast shadow starts at 1.56s. .76s. The old act ran
-   to 2.098s and so overlapped the case by half a second -- the movement was
-   still assembling while the case was already closing on it, which was a
-   compromise the three-beat version could not avoid without moving everything
-   downstream. One arrival does not need the room, so the two acts are now
-   sequential: the calibre is fitted, then the case closes around it, then the
-   dial drops on. Three whole objects, three arrivals, in order.
-
-   WHERE THE REST OF THE TIME WENT: into the gesture. A single arrival at a
-   layer's old .37s would have been over before it registered, and this one is
-   carrying the whole act, so it gets .76s -- twice the flight any individual
-   part had. What it did NOT do is shorten the intro. This act is not on the
-   intro's critical path: everything after it (case 1.56s, dial 2.24s, hands
-   3.14s, crown 3.38s, the interaction index at 4.11s) is anchored to the case,
-   not to the movement, so finishing earlier shortens nothing a visitor sits
-   through. If the whole intro should be shorter now -- and there is a case for
-   it, since the movement no longer needs 1.3s to say what it says -- that means
-   pulling the case forward and the whole chain with it, roughly a half-second
-   off every delay from 1.56s on. That is a different edit and it is not made
-   here. What IS bought is that the movement now stands finished and still for
-   .68s before the dial covers it, instead of the .14s the assembly left, so the
-   thing the act is about is actually looked at. */
-.watch-mvt {
-  position: absolute;
-  left: 14.12%;
-  top: 14.056%;
-  width: 71.76%;
-  height: 72.209%;
-  pointer-events: none;
-  animation: mvGone 0s linear 3s forwards;
-}
-/* The sprite is cropped to exactly the frame's ink, so it fills the box and
-   needs no measured position of its own -- the geometry above is the whole of
-   it. The arrival is on the image and not on .watch-mvt because it animates
-   `filter`, and .watch-mvt sits in .face-front's preserve-3d context alongside
-   the case discs and the dial plate, which settle their paint order by DOM
-   order alone; a filter on it would flatten it out of that context. Keeping the
-   filter one level down is the same arrangement the layered build had, and the
-   one the paint order was verified under. */
-.mv-art {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  animation: mvArrive .76s cubic-bezier(.22,1,.36,1) .8s both;
-}
 
 /* ===================== WATCH SHELL =====================
    THE DEPTH BUDGET
@@ -542,14 +338,12 @@ html.no-mvt .watch-mvt { display: none; }
       (.hint-index keeps `both`, and must: its `to` state is NOT its base
       style -- the mark would un-draw itself.)
 
-   .watch-mvt is exempt, and deliberately: the movement layer is
-   display:none by 3.00s and the crown does not seat until 3.38s, so it can
-   never be on screen during a flip and needs nothing from this rule. Leaving
-   it out means the depth work touches that layer's rendering in no way at all.
-   It stays at z 0 with the case discs and the dial plate -- all flat, all
-   untransformed, so they keep plain DOM order among themselves, which is the
-   one place in the front face where DOM order still decides. */
-.face-front > *:not(.watch-mvt),
+   Every direct child of .face-front is covered. The case discs and the dial
+   plate sit at z 0 -- all flat, all untransformed -- so they keep plain DOM
+   order among themselves, which is the one place in the front face where DOM
+   order still decides; hiding their backfaces changes nothing for them and
+   costs nothing. */
+.face-front > *,
 .hands > *,
 .reserve > *,
 .date-window > * {
@@ -575,7 +369,7 @@ html.no-mvt .watch-mvt { display: none; }
   width: 3.88%;
   height: 6.25%;
   cursor: pointer;
-  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 3.38s both;
+  animation: componentSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
   --fx: 2vmin;
 }
 .crown-art { filter: drop-shadow(.1vmin .38vmin .85vmin rgba(0,0,0,.58)); }
@@ -620,7 +414,7 @@ html.no-mvt .watch-mvt { display: none; }
   transform: rotate(-60deg);
   overflow: visible;
   filter: drop-shadow(-.15vmin .26vmin .4vmin rgba(0,0,0,.52));
-  animation: correctorSeat .55s cubic-bezier(.22,1,.36,1) 3.38s both;
+  animation: correctorSeat .55s cubic-bezier(.22,1,.36,1) 2.72s both;
 }
 /* the hover brightness rides on the caps for the same reason: a filter on the
    parent would flatten its 3D context too. */
@@ -666,7 +460,7 @@ html.no-mvt .watch-mvt { display: none; }
   letter-spacing: .22em;
   color: var(--ivory);
   text-shadow: 0 .1vmin .24vmin rgba(0,0,0,.78);
-  animation: partIn .62s ease 3s both;
+  animation: partIn .62s ease 2.34s both;
   --fy: -14px;
 }
 .maker-calibre {
@@ -679,7 +473,7 @@ html.no-mvt .watch-mvt { display: none; }
   font-size: .82vmin;
   letter-spacing: .32em;
   color: #c7d0dc;
-  animation: partIn .62s ease 3.08s both;
+  animation: partIn .62s ease 2.42s both;
   --fy: -10px;
 }
 
@@ -692,7 +486,7 @@ html.no-mvt .watch-mvt { display: none; }
    render() as a translateZ appended to the rotate it already writes (the Z has
    to ride on the same declaration or it would be overwritten every tick).
    `backwards` rather than `both` -- see THE FLATTENING / BACKFACE PROBLEM. */
-.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 3.08s backwards; pointer-events: none; transform-style: preserve-3d; }
+.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s backwards; pointer-events: none; transform-style: preserve-3d; }
 .hand-pivot { position: absolute; transform-origin: 50% 50%; }
 /* The cast shadow the lift buys: offset down and slightly left, which is where
    the dial's own 315deg key throws it, and blurred in proportion to how high
@@ -707,8 +501,8 @@ html.no-mvt .watch-mvt { display: none; }
 }
 .hand-hour { left: 14.720%; top: 32.920%; width: 34.159%; height: 34.159%; }
 .hand-min  { left:  9.680%; top: 27.880%; width: 44.240%; height: 44.240%; }
-.hand-hour .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 3.14s both; }
-.hand-min  .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 3.23s both; }
+.hand-hour .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.48s both; }
+.hand-min  .sprite-art { animation: windUp 1.05s cubic-bezier(.34,1.25,.4,1) 2.57s both; }
 
 /* ===================== OUTSIZE DATE =====================
    The rose-gold twin frame and its two cream panes are one rendered sprite;
@@ -722,7 +516,7 @@ html.no-mvt .watch-mvt { display: none; }
   height: 12.367%;
   cursor: pointer;
   border-radius: .4vmin;
-  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.7s backwards;
+  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.04s backwards;
   --fy: -38px;
   --fs: .96;
   transform-style: preserve-3d;
@@ -860,7 +654,7 @@ html.no-mvt .watch-mvt { display: none; }
   width: 26%;
   height: 26%;
   cursor: pointer;
-  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.93s backwards;
+  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.27s backwards;
   --fx: 38px;
   --fs: .96;
   transform-style: preserve-3d;
@@ -992,7 +786,7 @@ html.no-mvt .watch-mvt { display: none; }
 .sec-pivot .sprite-art {
   transform-origin: 50% 50%;
   filter: drop-shadow(-.06vmin .12vmin .3vmin rgba(0,0,0,.5));
-  animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 3.28s both;
+  animation: windUp .9s cubic-bezier(.34,1.25,.4,1) 2.62s both;
 }
 
 /* The small-seconds + moon wrapper: ONE applied sub-plate, lifted whole, and
@@ -1024,7 +818,7 @@ html.no-mvt .watch-mvt { display: none; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.82s backwards;
+  animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.16s backwards;
   transform: translateZ(var(--z-applied));
   --seatz: var(--z-applied);
   --fy: 38px;
@@ -1100,7 +894,7 @@ html.no-mvt .watch-mvt { display: none; }
   pointer-events: none;
   overflow: hidden;
   transform: translateZ(var(--z-glass));
-  animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 3.44s backwards;
+  animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s backwards;
 }
 /* ===================== INTERACTION INDEX =====================
    How the watch says "these five parts are live".
@@ -1163,11 +957,12 @@ html.no-mvt .watch-mvt { display: none; }
   pointer-events: none;
   overflow: visible;
   /* One knob for the whole layer: when the index is scribed, after assembly.
-     Was 3.45s, the wait the old .hint-dots layer used; moved to 4.11s when the
-     movement assembly went in front of the watch build and pushed the crystal
-     out to 3.44s. Kept in one place so retiming the intro stays a one-number
-     edit -- if the assembly moves again, this is the number that follows it. */
-  --hint-at: 4.11s;
+     3.45s is the wait the old .hint-dots layer used, and the crystal seats at
+     2.78s, so the index arrives on a finished watch. It briefly went to 4.11s
+     while a movement-assembly act ran in front of the build and pushed the
+     crystal out; that act was removed and this followed it back. Kept in one
+     place so retiming the intro stays a one-number edit. */
+  --hint-at: 3.45s;
   --hint-step: .23s;
   /* The hairline, in USER UNITS -- see the note on stroke-width below. This is
      only the fallback: hintHairline() in main.js overwrites it with the value
@@ -1699,7 +1494,7 @@ html.no-mvt .watch-mvt { display: none; }
   letter-spacing: .3em;
   color: #b9a184;
   text-align: center;
-  animation: fadeIn .8s ease 3.71s both;
+  animation: fadeIn .8s ease 3.05s both;
   transition: opacity .4s;
 }
 .hint-bar {
@@ -1712,7 +1507,7 @@ html.no-mvt .watch-mvt { display: none; }
   font-size: 1.05vmin;
   letter-spacing: .24em;
   color: #5b6172;
-  animation: fadeIn .8s ease 4.01s both;
+  animation: fadeIn .8s ease 3.35s both;
 }
 .hint-bar[hidden] { display: none; }
 

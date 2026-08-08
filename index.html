@@ -8,70 +8,6 @@
 <meta name="description" content="Nikhil Ramlukan — an interactive personal portfolio inspired by the precision and asymmetry of the Lange 1.">
 <title>Nikhil Ramlukan — Calibre NR.1</title>
 
-<!-- Startup gate. The intro is time-based, and its opening act is the only part
-     that needs loaded art: one sprite, ~66 KB, wanted 0.80s in. If it has not
-     arrived by then the act plays over nothing and the user just sees a gap
-     where the movement should be.
-
-     So the whole sequence is held paused until it has. The wait happens
-     behind the title card, which is already on screen and already says
-     "ASSEMBLING MOVEMENT" — it is the loading affordance this needs, so there is
-     no new UI. Released the moment the sprite has loaded; on a warm or local
-     load that is well under 200ms and nobody sees a hold at all.
-
-     Past a 1.2s deadline we stop waiting and drop the movement act instead
-     (.no-mvt), because making someone stare at a title card is worse than
-     losing one act — and everything downstream (case, dial, hands, index) is
-     CSS and vector and never depended on the movement having been there. So a
-     slow connection gets a shorter intro, not a broken one.
-
-     The wait is on `load`, not on decode(). decode() is the more precise signal
-     — it promises a rasterised frame, not just bytes — but its promise is tied
-     to the rendering pipeline, so in a tab that is not being painted (a
-     background tab, or a hidden preview pane) it simply never settles and every
-     load would fall through to the deadline. `load` always settles, and by the
-     time the act is cued a decoded 544px WebP is a millisecond of work.
-     Nothing here may depend on a frame happening either: rAF does not fire in a
-     tab that is not being painted, so deferring the release to one -- after the
-     deadline has been cleared -- would strand the page held forever.
-
-     This lives inline and self-contained rather than in main.js: the hold has
-     to be in effect before the first frame, and a gate that could strand the
-     page if its script failed to load would be a bad trade. The timeout is the
-     backstop — nothing here can leave the page paused.
-
-     Reduced motion never holds: that path display:none's the movement outright,
-     and the <picture> wrapper below keeps it from being fetched at all. -->
-<script>
-(function () {
-  var root = document.documentElement;
-  if (!window.matchMedia) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  root.classList.add('mvt-hold');
-  var released = false;
-  function release(ready) {
-    if (released) return;
-    released = true;
-    if (!ready) root.classList.add('no-mvt');
-    root.classList.remove('mvt-hold');
-  }
-  var deadline = setTimeout(function () { release(false); }, 1200);
-
-  addEventListener('DOMContentLoaded', function () {
-    var art = document.querySelector('.mv-art');
-    if (!art) { clearTimeout(deadline); return release(false); }
-
-    function settle(ready) {
-      clearTimeout(deadline);
-      release(ready);
-    }
-    if (art.complete) return settle(art.naturalWidth > 0);
-    art.addEventListener('load', function () { settle(true); }, { once: true });
-    art.addEventListener('error', function () { settle(false); }, { once: true });
-  });
-})();
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -183,49 +119,27 @@
         <div class="face face-front" id="faceFront">
           <!-- ============ CASE ============ -->
           <!-- pointer-events:none so the cast shadow, which spills past the case, does not swallow clicks on the crown -->
-          <div style="position:absolute;inset:-1.5%;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease 1.56s both;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c1a0d 0deg,#7d4d29 22deg,#fff5dd 44deg,#d9b27f 62deg,#a97545 88deg,#4a2e1b 108deg,#b98855 130deg,#f2d9ad 156deg,#d5ab77 178deg,#7d5531 200deg,#2e1d0f 214deg,#8a5e37 238deg,#e9cc9f 262deg,#c59867 284deg,#744c2d 306deg,#3a2515 330deg,#a87146 348deg,#2c1a0d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:caseSeat .8s cubic-bezier(.22,1,.36,1) 1.68s both;--fs:1.24;--fr:-2.5deg;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;animation:fadeIn .4s ease 1.88s both;"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);animation:fadeIn .4s ease 1.88s both;"></div>
-          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);animation:fadeIn .4s ease 1.9s both;"></div>
-          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);animation:fadeIn .4s ease 1.9s both;"></div>
-          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff5dd 0%,#ddbb8a 16%,#a97545 46%,#4a2e1b 70%,#b98855 88%,#e9cc9f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:caseSeat .72s cubic-bezier(.22,1,.36,1) 1.88s both;--fs:1.14;"></div>
-          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;animation:fadeIn .4s ease 2.06s both;"></div>
-          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a2e1b,#b98855 40%,#f2d9ad 52%,#9b6b3f 76%,#2c1a0d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 2.06s both;--fs:1.09;"></div>
+          <div style="position:absolute;inset:-1.5%;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(0,0,0,.55),transparent 70%);filter:blur(1.2vmin);animation:fadeIn .8s ease .9s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 202deg,#2c1a0d 0deg,#7d4d29 22deg,#fff5dd 44deg,#d9b27f 62deg,#a97545 88deg,#4a2e1b 108deg,#b98855 130deg,#f2d9ad 156deg,#d5ab77 178deg,#7d5531 200deg,#2e1d0f 214deg,#8a5e37 238deg,#e9cc9f 262deg,#c59867 284deg,#744c2d 306deg,#3a2515 330deg,#a87146 348deg,#2c1a0d 360deg);box-shadow:0 3.5vmin 10vmin rgba(0,0,0,.82),0 .45vmin 1.1vmin rgba(0,0,0,.58);animation:caseSeat .8s cubic-bezier(.22,1,.36,1) 1.02s both;--fs:1.24;--fr:-2.5deg;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(160deg,rgba(255,246,232,.55) 0%,rgba(255,246,232,0) 26%,transparent 74%,rgba(0,0,0,.35) 100%);mix-blend-mode:soft-light;animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,246,232,.05) 0deg .18deg,rgba(40,20,8,.05) .18deg .42deg);animation:fadeIn .4s ease 1.22s both;"></div>
+          <div style="position:absolute;inset:.55%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .09vmin rgba(255,248,236,.9),inset 0 .12vmin .4vmin rgba(50,26,10,.6);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:.95%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .07vmin rgba(38,18,6,.55);animation:fadeIn .4s ease 1.24s both;"></div>
+          <div style="position:absolute;inset:1.3%;border-radius:50%;background:linear-gradient(158deg,#fff5dd 0%,#ddbb8a 16%,#a97545 46%,#4a2e1b 70%,#b98855 88%,#e9cc9f 100%);box-shadow:inset 0 .24vmin .58vmin rgba(255,245,231,.84),inset 0 -.34vmin .95vmin rgba(45,18,8,.76),0 .1vmin .3vmin rgba(0,0,0,.42);animation:caseSeat .72s cubic-bezier(.22,1,.36,1) 1.22s both;--fs:1.14;"></div>
+          <div style="position:absolute;inset:2.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from 196deg,rgba(0,0,0,.42),rgba(255,246,232,.3) 46deg,rgba(0,0,0,.34) 104deg,rgba(255,246,232,.22) 168deg,rgba(0,0,0,.4) 226deg,rgba(255,246,232,.28) 288deg,rgba(0,0,0,.42) 360deg);mix-blend-mode:overlay;animation:fadeIn .4s ease 1.4s both;"></div>
+          <div style="position:absolute;inset:3.55%;border-radius:50%;background:linear-gradient(158deg,#4a2e1b,#b98855 40%,#f2d9ad 52%,#9b6b3f 76%,#2c1a0d);box-shadow:inset 0 .72vmin 1.55vmin rgba(34,16,6,.9),inset 0 -.12vmin 0 rgba(255,244,228,.62),0 .2vmin .55vmin rgba(0,0,0,.6);animation:caseSeat .68s cubic-bezier(.22,1,.36,1) 1.4s both;--fs:1.09;"></div>
 
-          <!-- ============ MOVEMENT ============ -->
-          <!-- Calibre NR.1, finished, arriving as one piece. Painted over the
-               case discs and under the dial plate, so the case closes around a
-               movement that is already there and the dial then drops straight
-               over it. The movement is drawn at 0.80 of the dial well, so the
-               case's own flange shows as an annulus around it; see the MOVEMENT
-               block of src/styles.css, which is also where the timing lives.
-
-               One sprite, cropped to exactly the frame .watch-mvt describes, so
-               it fills its parent and carries no measured box of its own. It is
-               the six masters in tools/assets-src/movement/ flattened;
-               build-movement-art.py asserts on every build that they still
-               stack into the supplied reference composite byte for byte, and
-               prints the geometry above.
-
-               It is a flat image: nothing here can turn, because rotating it
-               would spin every wheel on it the same way at the same rate. The
-               arrival IS the animation. -->
-          <div class="watch-mvt" aria-hidden="true">
-            <picture><source media="(prefers-reduced-motion: reduce)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="mv-art" src="/assets/movement/calibre.webp" alt="" decoding="async" fetchpriority="high"></picture>
-          </div>
-
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);animation:fadeIn .45s ease 2.24s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:0 0 1.45vmin .42vmin rgba(16,8,3,.8),inset 0 .3vmin 1.05vmin .28vmin rgba(2,6,14,.66);animation:fadeIn .45s ease 1.58s both;"></div>
 
           <!-- ============ DIAL PLATE ============ -->
-          <div style="position:absolute;inset:5.15%;border-radius:50%;box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:dialSeat .72s cubic-bezier(.22,1,.36,1) 2.24s both;">
+          <div style="position:absolute;inset:5.15%;border-radius:50%;box-shadow:inset 0 .64vmin 1.75vmin rgba(0,0,0,.78),inset 0 -.3vmin 1.2vmin rgba(120,160,210,.1);animation:dialSeat .72s cubic-bezier(.22,1,.36,1) 1.58s both;">
             <img class="dial-art" src="/assets/dial/main-dial.webp" alt="" decoding="async" fetchpriority="high">
           </div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.06),rgba(255,255,255,.01) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.04) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.05) 93%,rgba(214,232,255,.06) 100%);animation:fadeIn .65s ease 2.44s both;"></div>
-          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);animation:fadeIn .5s ease 2.42s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;background:conic-gradient(from 118deg at 50% 50%,rgba(214,232,255,.06),rgba(255,255,255,.01) 9%,transparent 22%,transparent 36%,rgba(214,232,255,.04) 50%,transparent 66%,transparent 81%,rgba(214,232,255,.05) 93%,rgba(214,232,255,.06) 100%);animation:fadeIn .65s ease 1.78s both;"></div>
+          <div style="position:absolute;inset:5.15%;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 .11vmin rgba(220,165,126,.48);animation:fadeIn .5s ease 1.76s both;"></div>
 
           <!-- ============ HOURS & MINUTES DIAL ============ -->
-          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 2.54s both;--fx:-38px;--fs:.96;">
+          <div style="position:absolute;inset:0;animation:partIn .72s cubic-bezier(.22,1,.36,1) 1.88s both;--fx:-38px;--fs:.96;">
             <div style="position:absolute;left:6.5%;top:24.7%;width:50.6%;height:50.6%;border-radius:50%;box-shadow:inset 0 .1vmin 0 rgba(4,8,16,.92),0 0 0 .09vmin rgba(219,179,134,.52),0 .12vmin 0 rgba(255,240,215,.24),0 .38vmin 1.05vmin rgba(0,0,0,.68);">
               <img class="dial-art" src="/assets/dial/hours-minutes-dial.webp" alt="" decoding="async" fetchpriority="high">
             </div>
