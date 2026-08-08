@@ -97,7 +97,7 @@ const el = {
   reserveHand: $('reserveHand'),
   reserveBar: $('reserveBar'),
   caption: $('caption'),
-  hintDots: $('hintDots'),
+  hintIndex: $('hintIndex'),
   hintBar: $('hintBar'),
   overlay: $('overlay'),
   curTitle: $('curTitle'),
@@ -267,7 +267,9 @@ function render() {
   el.overlay.dataset.justify = CONFIG.transitionStyle === 'panel' ? 'flex-end' : 'center';
   for (const [id, node] of Object.entries(panels)) node.hidden = state.active !== id;
 
-  el.hintDots.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
+  // The interaction index recedes the moment the watch has been understood:
+  // any click sets state.touched, and the scribed marks go with it.
+  el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
   el.hintBar.hidden = !(CONFIG.showHints && !state.active && !state.reqOpen);
 
   el.reqLayer.hidden = !state.reqOpen;
