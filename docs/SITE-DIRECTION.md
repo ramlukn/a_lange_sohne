@@ -970,19 +970,21 @@ The assessment recommended deleting `lab-3d.html`, `src/lab3d.js`,
 generators, and it framed the delete-vs-quarantine choice as worth thirty seconds
 of your opinion.
 
-**It no longer is, because the lab does not run.** `three` is listed in
-`package.json` but is not installed in `node_modules`, so `npx vite` now prints a
-dependency-scan failure on every start:
+**It still is — an earlier draft of this section was wrong.** It claimed the lab
+no longer runs, on the evidence that `three` was missing from `node_modules` and
+`npx vite` failed its dependency scan. That was a local install state, not a
+property of the project: `three` is still declared in `package.json`, so a fresh
+`npm install` restores it. Checked directly in a tree where it is installed,
+`/lab-3d.html` and `/src/lab3d.js` both serve 200 and vite starts clean.
 
-```
-(!) Failed to run dependency scan. …
-  three (imported by src/lab3d.js)
-```
-
-A lab that cannot start preserves no optionality — it only prints an error at the
-top of every dev session and signals to the next contributor that three.js is a
-sanctioned direction, which `HANDOFF.md:33` says it is not. Delete it, and rewrite
-that line to record *why* so the question is not re-litigated in six months. Git
+So this stays a judgment call, not housekeeping. The case for deleting is
+unchanged and still good: the lab renders a visibly worse movement than the
+sprite caseback it duplicates, it has not been touched in 110 commits, and
+keeping it signals that three.js is a sanctioned direction when `HANDOFF.md:33`
+says it is not. The case against is only that it costs nothing while nothing
+imports it. Decide on the merits above; do not decide because it appears broken.
+Whichever way, rewrite `HANDOFF.md:33` to record *why* so the question is not
+re-litigated in six months. Git
 keeps everything: `git show f2c7e72:src/lab3d.js`.
 
 This is §0.5 in action. It is the cleanest available example of deleting being
