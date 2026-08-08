@@ -261,8 +261,14 @@ html.no-mvt .watch-mvt { display: none; }
 /* Each sprite is cropped to its own ink and carries its measured box inline, so
    a layer scales about its own centre: the balance seats on the balance and the
    ring closes about the rim, rather than everything pivoting on the middle of
-   the movement. The boxes are a hair off the sprites' own aspect (the frame is
-   squashed 2.7% in y to put the rim exactly on the round well), so they fill. */
+   the movement.
+
+   The boxes are a hair off the sprites' own aspect -- the frame is squashed 2.7%
+   in y -- so object-fit: fill is deliberate here, not lazy. This corrects the
+   art rather than distorting it: the supplied perimeter ring measures 1088 wide
+   by 1118 tall, i.e. it was rendered 2.76% taller than wide, and the dial well
+   it has to sit in is a true circle. Squashing to 0.9998 makes the rim land on
+   the well by construction. Re-measure if the art is ever re-exported. */
 .mv-layer {
   position: absolute;
   display: block;
