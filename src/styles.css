@@ -1470,6 +1470,52 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    layer was reported for three times. The geometry still never moves, which is
    what the halo finding was actually about; what is fixed as well is the width.
 
+   WHERE THIS LAYER SITS: --z-pulse, just clear of the furniture it traces.
+   It used to sit at z 0, on the dial plate -- but three of the five marks trace
+   furniture that is APPLIED, at --z-applied (.22vmin): the small-seconds and
+   moonphase share one sub-plate, and the date has its twin frame. Inside
+   .face-front z IS the paint order, so the plate was painted over the band that
+   was tracing it, and the moon lost essentially all of its. Held band, in
+   thousands of dL added to the watch at 900x760, before and after:
+                        z 0    --z-pulse
+       moon aperture     5.7      190.8    the mark was not there at all
+       small-seconds   153.0      287.7    half of it, the half off the plate
+       date frame      146.2      179.5
+       reserve fan     238.7      237.4    encloses its scale, never on it
+       hours rim       368.6      368.4    the hours dial is itself at z 0
+   (The small seconds is now trimmed back to 182.7 -- see its own --pk below.
+   That trim is a consequence of this move, not a separate opinion: at .55 the
+   mark only measured level with the group because the plate was eating half of
+   it.)
+
+   THE HEIGHT IS A REGISTRATION DECISION, NOT A BRIGHTNESS ONE. Any height that
+   clears --z-applied delivers the same light -- measured at .24, .32 and .44vmin
+   and they agree within 1% -- so what is actually being chosen is how far the
+   band gets from the edge it traces, and the answer is the lowest rung that
+   clears the plate. WHY IT THINS INSTEAD OF EXPANDING above is the whole
+   argument, one storey up: a band that stops sitting on its edge is a halo.
+   What would do the unregistering here is parallax rather than scale, and the
+   stage's perspective is 2400px, so it can be measured. Displacement of the
+   outermost corner of each mark from where the furniture it traces projects to,
+   at 900x760, against a held band 1.6px wide:
+                        --z-pulse   --z-hand-hour   --z-wash
+       moon aperture       .16px         .42px       1.16px
+       small-seconds       .22px         .59px       1.61px
+       date frame          .18px         .47px       1.28px
+       hours rim           .23px         .62px       1.69px
+   A tenth of a band width, against a whole one.
+
+   NOT --z-wash, THE OTHER HOVER LIGHT, even though it is the nearer relative in
+   kind. That one is a wash in the volume over the hours dial: it has no edge to
+   register with, which is exactly why it is free to sit over the hands, and it
+   does. This one IS an edge, so the same freedom costs it the thing it is for.
+
+   AND UNDER THE HANDS, DELIBERATELY. Lifting past --z-hand-hour buys the date
+   frame 7k more band, every unit of it light painted over the minute hand where
+   it crosses the frame. A hand passing over a lit rim has to occlude it -- that
+   occlusion is a good part of what makes the light read as being ON the rim
+   rather than over the dial. Declined.
+
    Everything is in face-percent user units and scales with the watch, so the
    lit band is ~1.6% of the face wide: about 10.5px on a 900px viewport and
    ~4.5px at 390px. The .hint-dots it descends from were 5.3px and 2.7px.
@@ -1541,12 +1587,15 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      Held light over the whole watch box at 900x760, thousands of dL, as
      shipped, with the outline each mark is stroked along:
          about    540   159 units @ .3      projects  281    66 units @ .55
-         resume   342    69 units @ .45     research  426    85 units @ .55
+         resume   342    69 units @ .45     research  271    85 units @ .35
                                             miscellany 282  60 units @ .55
-     The three .55 marks span 281..426 rather than landing on one number, and
-     that is the geometry doing what this comment says it does: their outlines
-     span 60..85 units, so their light should span about 1.4x, and it spans 1.5.
-     The residue is the ground each band lies on. What matters is that the moon
+     Only projects and miscellany are left at .55, and they land on 281 and 282
+     -- one number, because their outlines are within a tenth of each other at
+     66 and 60 units. research is the one that used to break that: at .55 its
+     85-unit rim measured 426, which is 1.5x the pair it encircles, and outline
+     ratio does not predict it (85/66 is 1.29, the light was 1.52). It is
+     trimmed by measurement instead, one rule per part -- see its own note
+     below. The residue is the ground each band lies on. What matters is that the moon
      is now level with the date frame it was calibrated against -- it read 7
      while the plate was painted over it. */
   --pk: .55;
@@ -1579,6 +1628,27 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transition: opacity .24s cubic-bezier(.35,0,.65,1);
 }
 .pulse-mark[data-part="about"]  { --pk: .3; }
+/* The small seconds is trimmed for the same reason the hours dial is, and the
+   only reason it was not trimmed sooner is that it could not be seen whole. Its
+   rim is the longest outline of the four marks that are not the hours dial, and
+   while this layer sat under the applied plate (see WHERE THIS LAYER SITS) the
+   plate ate the inner half of the band -- so at .55 it measured 153 against the
+   date frame's 146 and looked like parity. Whole, at .55, it is 287.7 against
+   179.5 and 190.8 -- not a member of that group but the second loudest thing on
+   the dial, and on the one mark that encircles another, so the extra weight
+   lands directly around the moon's.
+   Held band, thousands of dL, at the lifted height:
+       .30  156.8     .34  177.3     .38  199.3
+       .32  167.2     .36  188.7
+   .35 measures 182.7, between the date frame and the moon. Linear in --pk to
+   within a percent across that range, so this is one multiplication if the
+   width or the blur ever changes.
+   The two measurement passes above and in THE LEVEL were run on different
+   branches and against different held-light baselines, and they agree on the
+   finding: 287.7 against a group of 179.5/190.8 is the same 1.55x that 426
+   against 281/282 is. Trimming to .35 lands this mark at 271 on THE LEVEL's
+   scale, which is level with the 281 it encircles. */
+.pulse-mark[data-part="research"] { --pk: .35; }
 /* The reserve gets a trim too, for the same reason: its mark is no longer a
    21.5-unit arc alongside the scale but a 69.4-unit fan around the whole
    indicator (see POWER RESERVE MARK below), and unlike the other four it
