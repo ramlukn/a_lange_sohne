@@ -622,6 +622,28 @@ function render() {
   el.front.style.opacity = state.flipped ? 0 : 1;
   el.back.style.opacity = state.flipped ? 1 : 0;
   el.back.classList.toggle('is-flipped', state.flipped);
+  // THE HIDDEN FACE IS STILL IN THE TAB ORDER. The two lines above and
+  // `backface-visibility: hidden` on .face answer the paint question and only
+  // the paint question: the face turned away stops being drawn, and .face-back
+  // is deliberately left flat so nothing inside it hit-tests through the front
+  // (see THE FLATTENING / BACKFACE PROBLEM in styles.css). Neither invisible
+  // nor untouchable means unfocusable. Without this, turning the watch over
+  // leaves ABOUT, the date window, the reserve, the seconds dial and the moon
+  // as the next five tab stops behind the caseback -- five buttons a keyboard
+  // can reach and press to open a section off a face nobody can see.
+  // inert is the primitive the intro's gate uses, for the same reason: it
+  // closes the tab stop, Enter and Space, and the accessibility tree along with
+  // the pointer (see INERT, NOT pointer-events below). Paint is not one of the
+  // doors it closes, so .hover-pulse and its marks inside .face-front are
+  // untouched -- they are decorative, never focusable, and lit from
+  // .watch-flip[data-hover], which is above both faces.
+  // Both faces and not just the front: the caseback carries no control today,
+  // but it is where CONTACT goes, and the first link engraved on it would
+  // otherwise be tabbable through the dial the moment it is added.
+  // Harmless during the intro -- inert is inherited, so el.flip.inert holds the
+  // whole subtree shut regardless of what these two say.
+  el.back.inert = !state.flipped;
+  el.front.inert = state.flipped;
   if (state.flipped) rigPlay(); else rigStop();
 
   el.overlay.hidden = !state.active;
