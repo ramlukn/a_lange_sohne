@@ -1421,6 +1421,36 @@ else {
 // MID-SITE in src/styles.css.
 applyRoute();
 
+// ---- THE GUILLOCHE'S PHASE ------------------------------------------------
+// The engine-turned field on the stage runs at one degree per second, so its
+// angle IS a reading of the clock -- but only if it starts where the clock is.
+// Left to itself a CSS animation starts at 0deg whenever the page happens to
+// load, which would make it a six-minute loop that merely has the right rate.
+// A negative animation-delay seeks it instead: the animation is told it began
+// `into` seconds ago, so the first painted frame is already at the right angle
+// and every visitor at a given instant sees the same one.
+//
+// Set once, not pumped. The animation keeps its own time from here, and the
+// pump next door redraws the hands ten times a second without touching this --
+// re-seeking it every tick would fight the compositor for a value it already
+// has right.
+//
+// Local time rather than UTC, deliberately: it is the same clock the hands are
+// reading two layers up. 360 is the cycle in seconds AND in degrees, which is
+// what 1deg/s buys -- the modulo and the angle are the same number, so there is
+// no conversion here to get wrong.
+{
+  const d = new Date();
+  const into = (d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()
+                + d.getMilliseconds() / 1000) % 360;
+  const node = $('stageGuilloche');
+  node.style.animationDelay = `${-into.toFixed(3)}s`;
+  // The same angle as a static value, for the reduced-motion rule that turns
+  // the animation off -- see THE ENGINE TURNING in src/styles.css. Written
+  // unconditionally because the animation outranks it whenever it is running.
+  node.style.setProperty('--guilloche-at', `${into.toFixed(1)}deg`);
+}
+
 const BEAT = { mechanical: 1000 / 6, quartz: 1000 }[CONFIG.secondsMotion] || 0;
 (function pump() {
   render();

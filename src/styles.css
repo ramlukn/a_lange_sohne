@@ -262,6 +262,74 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   font-family: var(--font-ui);
   color: var(--ink);
 }
+/* ===================== THE ENGINE TURNING =====================
+   Guilloche on the stage, turning at one degree per second of real time.
+
+   IT IS A CLOCK, NOT A LOOP, which is the only reason it is allowed to exist:
+   DESIGN_BIBLE's motion rule is that every motion must explain function or
+   depth, and that there is no ornamental looping. A pattern rotating on a clock
+   of its own would be ornament. This one takes its angle from the time of day
+   -- main.js writes the phase, see THE GUILLOCHE'S PHASE -- so one degree is
+   one second and a whole turn is six minutes. Two people opening the site at
+   the same instant see the same angle, which is what makes it a reading rather
+   than a decoration.
+
+   THE RATE IS THE SLOWEST THING THAT IS STILL HONEST. At 1deg/s the pattern
+   travels 0.9px per second at 100px from centre and 9px at 1000px, so nothing
+   near the watch visibly moves. What you see is the light on the field never
+   quite settling, which is how guilloche behaves under a real light. Faster
+   reads as a screensaver; slower stops being a second hand.
+
+   THE MOIRE IS THE POINT, AND IT IS FREE. Rays on a 0.8deg period crossed with
+   rings on a 3.6px pitch meet in a lattice whose crossings slide along the
+   rings as the rays turn -- which is what a rose engine actually produces. It
+   costs one transform: both gradients are rasterised once and the rotation is
+   composited.
+
+   THE SQUARE IS SIZED ON ITS DIAGONAL. A rotating box must cover the viewport
+   at every angle, and a square sweeping its own bounding box needs sqrt(2) =
+   141.4% of it. 150vmax is that with room to spare, so no corner ever swings
+   into view.
+
+   THE CONTRAST IS 3%, AND NOT MORE. The rays land at about 1.18:1 against the
+   stage's own #0a0d15. That is deliberately below the threshold where this
+   reads as a texture: the watch remains the navigation surface, and the moment
+   the field is legible as a pattern it competes with the case's own knurling --
+   the same gesture done properly, six inches nearer the eye. */
+.stage-guilloche {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+  pointer-events: none;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 50%,
+      rgba(217,162,107,.030) 0deg .34deg, transparent .34deg .8deg),
+    repeating-radial-gradient(circle at 50% 50%,
+      rgba(217,162,107,.020) 0 1.2px, transparent 1.2px 3.6px);
+  /* Held off the edges: full-bleed engine turning is wallpaper, and the eye has
+     to land on the watch. closest-side so the falloff stays round on any
+     viewport instead of stretching into an ellipse with the window. */
+  -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent 76%);
+          mask-image: radial-gradient(closest-side, #000 30%, transparent 76%);
+  /* The static angle. main.js writes it, and only reduced motion ever shows it
+     -- while the animation runs it overrides this. Keeping both means someone
+     who has asked for no motion still gets the reading, without the movement. */
+  transform: rotate(var(--guilloche-at, 0deg));
+  animation: guilloche 360s linear infinite;
+}
+@keyframes guilloche { to { transform: rotate(360deg); } }
+/* animation: none rather than the blanket .01ms, for the reason the hover
+   pulse's rule gives: a 0.01ms event is not a fast event, it is a state -- and
+   this one has a state to fall back to, the transform above. Left to the
+   blanket rule an infinite rotation is also handed iteration-count 1, which
+   lands it on 360deg and throws the phase away. */
+@media (prefers-reduced-motion: reduce) {
+  .stage-guilloche { animation: none !important; }
+}
+
 .stage-glow {
   position: absolute;
   inset: 0;
