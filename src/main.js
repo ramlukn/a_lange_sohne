@@ -10,12 +10,27 @@ const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
 // The rotating status line. It is NOT a section: its whole content was one line
 // and that line reads continuously in the caption, so the panel it used to open
 // gave back nothing you were not already reading. The array stays; the panel is
-// gone, and the small seconds now open Research.
+// gone, and the small seconds now open Research. render() is its only reader.
+//
+// THIS IS THE FIRST REAL CONTENT ON THE SITE. Every panel is still Lorem; these
+// three lines are not. Length is now a fact rather than a choice -- the caption
+// prints `CURRENTLY <label> — <value>` uppercased, and the longest of the three
+// sets the caption's own measure, which is why the wrap floor below 760px is
+// derived from it (see the .caption rule in src/styles.css).
+//
+// THE COUNT IS NOT LOAD-BEARING. It went four -> three when BUILDING left, and
+// nothing had to move: the ticker is a modulo over CURRENTLY.length, and the
+// four dots that used to count the entries went with the panel.
+//
+// THE NICKNAME TAKES TYPOGRAPHIC QUOTES, not the straight pair it was written
+// with. The caption is the one line on this site set in tracked uppercase mono,
+// and a straight " is a vertical tick that reads as code beside the em dash the
+// same line already prints; “ ” are a matched pair that read as a name. IBM Plex
+// Mono cuts both. The words are the visitor's own and are not touched.
 const CURRENTLY = [
-  { label: 'READING', value: 'Lorem Ipsum: A History' },
-  { label: 'WEARING', value: 'Dolor Sit Ref. 38.5' },
-  { label: 'BUILDING', value: 'Consectetur Engine' },
-  { label: 'RESEARCHING', value: 'Adipiscing Methods' }
+  { label: 'RESEARCHING', value: 'Passive Detection' },
+  { label: 'READING', value: 'Haruki Murakami' },
+  { label: 'WEARING', value: 'Tudor Black Bay 58 “Navy Blue”' }
 ];
 
 // ---- THE SECTIONS ----------------------------------------------------------
@@ -36,24 +51,56 @@ const CURRENTLY = [
 //   panel   the id of the <section> it opens
 //   origin  transform-origin for the 'zoom' transition style
 //
-// The order is the rail's order, top to bottom (docs/PLAN.md: About, Resume,
-// Projects, Research, Books, then Contact on the caseback). It is not DOM order,
-// and it is no longer in any tension with the interaction index's scribe order:
-// the index has no scribe order any more -- all five marks are drawn on one
-// frame -- and neither does the rail. This list orders the words on the page.
-// It does not order anything in time.
+// The order is the rail's order, top to bottom -- About, Resume, Projects,
+// Research, Miscellany, then Contact, which is docs/PLAN.md's own order with
+// Books renamed. It is not DOM order, and it is
+// no longer in any tension with the interaction index's scribe order: the index
+// has no scribe order any more -- all five marks are drawn on one frame -- and
+// neither does the rail. This list orders the words on the page. It does not
+// order anything in time.
+//
+// MISCELLANY WAS BOOKS, AND THE KEY MOVED WITH THE LABEL. The section is
+// deliberately broadening -- books were the first thing in it, not the whole of
+// it -- so the address is `#/miscellany`, the panel is `panel-miscellany` and
+// the pulse mark's data-part is `miscellany`. Renaming the label and leaving the
+// key would have put the drift this list exists to prevent inside the list
+// itself: one word in the rail, another in the URL, a third in the markup.
+// `#/books` is not redirected. It was never published -- every panel on this
+// site is still Lorem -- and a route table carrying an alias for an address
+// nobody has is a maintenance cost paid for nothing.
 const SECTIONS = [
-  { key: 'about',    label: 'About',    part: 'MAIN DIAL',     hit: 'aboutHit',    panel: 'panel-about',    origin: '31.8% 50%' },
-  { key: 'resume',   label: 'Resume',   part: 'POWER RESERVE', hit: 'reserve',     panel: 'panel-resume',   origin: '65.5% 47.5%' },
-  { key: 'projects', label: 'Projects', part: 'OUTSIZE DATE',  hit: 'dateWindow',  panel: 'panel-projects', origin: '63.75% 26.05%' },
-  { key: 'research', label: 'Research', part: 'SMALL SECONDS', hit: 'secondsDial', panel: 'panel-research', origin: '64.5% 75.115%' },
-  { key: 'books',    label: 'Books',    part: 'MOONPHASE',     hit: 'moon',        panel: 'panel-books',    origin: '64.5% 67.535%' }
+  { key: 'about',      label: 'About',      part: 'MAIN DIAL',     hit: 'aboutHit',    panel: 'panel-about',      origin: '31.8% 50%' },
+  { key: 'resume',     label: 'Resume',     part: 'POWER RESERVE', hit: 'reserve',     panel: 'panel-resume',     origin: '65.5% 47.5%' },
+  { key: 'projects',   label: 'Projects',   part: 'OUTSIZE DATE',  hit: 'dateWindow',  panel: 'panel-projects',   origin: '63.75% 26.05%' },
+  { key: 'research',   label: 'Research',   part: 'SMALL SECONDS', hit: 'secondsDial', panel: 'panel-research',   origin: '64.5% 75.115%' },
+  { key: 'miscellany', label: 'Miscellany', part: 'MOONPHASE',     hit: 'moon',        panel: 'panel-miscellany', origin: '64.5% 67.535%' }
 ];
 const SECTION = new Map(SECTIONS.map((s) => [s.key, s]));
 
+// ---- THE SIXTH WORD --------------------------------------------------------
+// Contact is in the rail and NOT in SECTIONS, because it is not one. The five
+// rows above each name a part of the dial, open a panel and carry a zoom origin;
+// Contact has none of the three. What it has is a destination -- it turns the
+// watch over -- and that is the whole of its definition here:
+//
+//   key     the address it answers to, `#/contact`, alongside the five
+//   label   the word in the rail
+//   hover   the part that IS this word, in state.hover's own vocabulary. The
+//           crown, which already has a caption, a pulse mark and a hit target of
+//           its own; CAPTIONS.crown is reused rather than copied, so hovering
+//           CONTACT and hovering the crown cannot say two different things.
+//
+// Putting it in SECTIONS with three empty fields would have been the shorter
+// diff and the worse one: `panels`, bind(), showSection() and the caption
+// derivation all read those fields unconditionally, and every one of them would
+// have needed a guard for the row that is not a section. One row that is honest
+// about being different costs one map lookup (hoverKeyOf, below).
+const CONTACT = { key: 'contact', label: 'Contact', hover: 'crown' };
+
 // The caption, derived. The crown and the pusher are the two hoverable things
 // that are not sections -- the crown turns the watch over, the pusher runs the
-// demonstration -- so they are the only captions still written out by hand.
+// demonstration -- so they are the only captions still written out by hand. The
+// crown's is now printed by two controls, the fitting and the rail's CONTACT.
 const CAPTIONS = {
   ...Object.fromEntries(SECTIONS.map((s) => [s.key, `${s.label.toUpperCase()} — THE ${s.part}`])),
   crown: 'THE MOVEMENT — PULL THE CROWN, TURN IT OVER',
@@ -169,6 +216,15 @@ const GAP_VH = 1.6;
 // .watch-stage, which is untransformed (the pose rides the child) and does not
 // move when a panel opens (the overlay is position: fixed), so it is stable
 // between resizes.
+//
+// THE BAND IS BETWEEN THE RAIL AND THE CARD, and both of its ends are read from
+// the overlay rather than assumed. The rail is a row along the TOP below 1200px,
+// so the clearance it charges is the overlay's padding-TOP, and the card -- which
+// is bottom-anchored, .overlay { align-items: flex-end } -- sits on the overlay's
+// padding-BOTTOM. The two paddings are no longer the same number and no longer
+// mean the same thing: the top one is the rail's rent, the bottom one is the
+// page's own margin. Reading both is what keeps the arithmetic honest now that
+// the watch has furniture above it as well as below it.
 let narrowPose = null;
 function measureNarrowPose() {
   if (!NARROW.matches) { narrowPose = null; return; }
@@ -176,18 +232,27 @@ function measureNarrowPose() {
   // --sheet-vh is declared in the narrow block next to the rule that uses it, so
   // the card's height and the watch's room above it cannot drift apart.
   const sheet = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sheet-vh')) || 0;
-  // And how far off the bottom the card sits, taken from the overlay's own
-  // padding rather than restated. That padding is THE RAIL's: below 1200px the
-  // links become a row along the bottom and the overlay makes room for them, so
-  // this reads the rail's clearance without knowing that is what it is. It
-  // resolves on a display:none element because it is an absolute length.
+  // The rail's clearance, taken from the overlay's own padding rather than
+  // restated. Below 1200px the links are a row across the top and the overlay
+  // makes room for them, so this reads the rail's height, its offset and the
+  // notch inset as ONE number without knowing that is what any of them are --
+  // which is the point: the clearance is stated once, in CSS, where the rail is.
+  // Both resolve on a display:none element because they are absolute lengths.
+  const above = parseFloat(getComputedStyle(el.overlay).paddingTop) || 0;
+  // And how far off the bottom the card sits. Plain page margin now, but read
+  // rather than assumed for the same reason as above.
   const below = parseFloat(getComputedStyle(el.overlay).paddingBottom) || 0;
   const box = el.pose.parentElement.getBoundingClientRect();   // .watch-stage
   if (!box.height) return;
   const gap = (innerHeight * GAP_VH) / 100;
-  const band = innerHeight - below - (innerHeight * sheet) / 100 - 2 * gap;
+  // What is left after the rail, the card and one gap at each end of the watch.
+  // The top gap used to be the air under the viewport's own edge; it is now the
+  // air under the rail, which is the same job against a different neighbour.
+  const band = innerHeight - above - below - (innerHeight * sheet) / 100 - 2 * gap;
   const scale = Math.max(.24, Math.min(.72, band / box.height));
-  const dy = (gap + (box.height * scale) / 2) - (box.top + box.height / 2);
+  // The band starts under the rail's clearance, not at the top of the viewport,
+  // so the lift carries `above` where it used to carry nothing.
+  const dy = (above + gap + (box.height * scale) / 2) - (box.top + box.height / 2);
   narrowPose = `translateY(${dy.toFixed(1)}px) scale(${scale.toFixed(3)})`;
 }
 // The pump would pick the breakpoint up within 100ms anyway; the listeners are
@@ -220,11 +285,11 @@ const el = {
 const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 
 // ---- THE RAIL --------------------------------------------------------------
-// The navigation, built from the same SECTIONS list the captions, the click
-// targets and the panels come from: one <a> per row, in that list's order, top
-// to bottom. It is #hintBar promoted -- the sentence that used to name the live
-// parts said the same thing in prose and could not be clicked. Its mode line,
-// "CROWN TO FLIP", moved into the caption; the part names moved into the words.
+// The navigation: the five SECTIONS rows and then CONTACT, one <a> each, in that
+// order. Five of the six come from the same list the captions, the click targets
+// and the panels come from. It is #hintBar promoted -- the sentence that used to
+// name the live parts said the same thing in prose and could not be clicked --
+// and the part names moved into the words.
 //
 // THERE IS NO REVEAL ORDER, so this list's order is only its reading order.
 // Each link used to carry `a.style.setProperty('--i', i)` and the stylesheet
@@ -237,24 +302,47 @@ const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 // one statement disagreeing about whether the five are peers. See THE INTRO'S
 // LAST BEAT and the arrival note on .rail in src/styles.css.
 //
-// THE SIXTH ITEM IS ABSENT, AND THAT IS A DECISION.
-// The rail was specified as six -- Contact is the sixth -- but Contact was to
-// live on the caseback and that work has been called off, so there is nothing
-// for a CONTACT link to open. This project's own rule for a section with no
-// content is that it leaves the rail (docs/PLAN.md: "it doesn't ship: it leaves
-// the rail"), and a link that looks live and does nothing is the worst of the
-// available options; rendering it greyed out is the same lie with an apology
-// printed next to it. So it is not here. When Contact has a destination it is
-// one more row in SECTIONS above, and nothing in this block changes.
+// THE SIXTH ITEM IS HERE, AND IT DOES NOT OPEN A PANEL.
+// It was absent for as long as it had nowhere to go: Contact was to live on the
+// caseback, that work was called off, and this project's rule for a section with
+// no content is that it leaves the rail (docs/PLAN.md: "it doesn't ship: it
+// leaves the rail"). It now has the destination docs/PLAN.md specified for it in
+// the first place and that needs no content written for it -- "Contact lives on
+// the back of the watch. A CONTACT control flips it there" -- so the rule is
+// satisfied by the object rather than by a panel. There
+// are still no contact details on the caseback; the word promises a movement and
+// delivers one, and its caption (CAPTIONS.crown) says so in as many words.
+//
+// IT IS A PEER IN EVERY WAY THE RAIL CAN EXPRESS, and that took one decision
+// each:
+//   the address   `#/contact`, alongside the five. The caseback is a place you
+//                 can be, so it is a place you can link to, reload into and walk
+//                 Back out of -- see WHICH TRANSITIONS ARE HISTORY. This is the
+//                 change that made CONTACT a link rather than a button: a real
+//                 href that resolves to nothing would have been a broken
+//                 middle-click sitting inside working navigation.
+//   the marker    travels to CONTACT and stays lit while the watch is turned
+//                 over, because the pointer's job is to say where you are and
+//                 the caseback is now one of the six places that is. placeNow()
+//                 is the one value it reads; nothing in the CSS changed.
+//   the cue       hovering CONTACT lights the CROWN and prints the crown's
+//                 caption, via hoverKeyOf() below. The reciprocal half comes
+//                 free: the crown already writes state.hover, so a pointer on it
+//                 lights the word.
+// The one thing it does not take is THE TOUCH CUE's 600ms delay -- see the click
+// handler.
 const railLinks = new Map();
-el.rail.append(...SECTIONS.map((s) => {
+// A rail key is a state.hover key for the five; CONTACT's part is the crown, and
+// this is the only place the two vocabularies have to be told apart.
+const hoverKeyOf = (key) => (key === CONTACT.key ? CONTACT.hover : key);
+el.rail.append(...[...SECTIONS, CONTACT].map((s) => {
   const a = document.createElement('a');
   a.className = 'rail-link';
   // A real href, so the link behaves like one -- middle-click, copy link
-  // address, the status bar -- and so Phase 3's routing has only to drop the
-  // preventDefault in the click handler below and listen for hashchange. The
-  // fragment deliberately matches no element id, so the default action would be
-  // a no-op rather than a scroll even if it ever got through.
+  // address, the status bar. All six resolve: routeKey() knows the five section
+  // keys and CONTACT's, and every one of them names somewhere the site can be.
+  // The fragment deliberately matches no element id, so the default action is a
+  // route change rather than a scroll when it does get through.
   a.href = `#/${s.key}`;
   a.dataset.key = s.key;
   a.textContent = s.label;
@@ -265,7 +353,7 @@ el.rail.append(...SECTIONS.map((s) => {
 // Where you are. A short gold hairline in the marker channel, level with the
 // open section, which travels to the next one over 200ms instead of fading out
 // and in -- one pointer along a scale, the gesture the reserve hand already
-// makes against AUF/AB. It is one element for all five positions, which is what
+// makes against AUF/AB. It is one element for all six positions, which is what
 // makes travel the only thing it CAN do.
 const railMarker = document.createElement('span');
 railMarker.className = 'rail-marker';
@@ -273,19 +361,23 @@ railMarker.setAttribute('aria-hidden', 'true');
 el.rail.append(railMarker);   // last child: the CSS reaches it with `~`
 
 // Both centres are written every time and the stylesheet uses whichever one is
-// its own axis -- vertical in the column, horizontal in the bottom row. That is
+// its own axis -- vertical in the column, horizontal in the top row. That is
 // deliberate: it keeps the 1200px breakpoint written once, in CSS, instead of
 // copying it into a matchMedia here that could drift from it. offsetTop and
 // offsetLeft are measured from the same padding edge the marker's own left/top
 // of 0 resolves to, so there is no origin to correct for in either layout.
+//
+// It follows placeNow() and not state.active, which is what puts the mark on
+// CONTACT while the watch is turned over. Six destinations, one pointer.
 let markerAt = null;
 function placeRailMarker(force) {
-  if (!force && markerAt === state.active) return;
-  const node = state.active ? railLinks.get(state.active) : null;
+  const at = placeNow();
+  if (!force && markerAt === at) return;
+  const node = at ? railLinks.get(at) : null;
   // A hidden rail measures zero; keep the last good value rather than parking
   // the mark at the top of a box that is not being laid out.
   if (node && !node.offsetHeight) return;
-  markerAt = state.active;
+  markerAt = at;
   if (!node) return;   // nothing open -- CSS fades the mark out where it stands
   el.rail.style.setProperty('--mx', `${(node.offsetLeft + node.offsetWidth / 2).toFixed(1)}px`);
   el.rail.style.setProperty('--my', `${(node.offsetTop + node.offsetHeight / 2).toFixed(1)}px`);
@@ -353,6 +445,15 @@ const state = {
   // rather than dropping it on <body> and starting the next Tab from the top.
   returnTo: null
 };
+
+// WHERE THE VISITOR IS, AS ONE VALUE: a section key, CONTACT's key, or null for
+// the bare watch. state.active and state.flipped are two fields, but they have
+// always been mutually exclusive -- flipping closes any open panel, and every
+// part that opens one is on the front face -- so the pair only ever expresses
+// three-and-a-bit of its four states. Collapsing them here is what lets the rail,
+// the marker and the address bar each read ONE thing: six destinations, one
+// pointer, one hash. Nothing writes through this; it is a view, not a field.
+const placeNow = () => (state.flipped ? CONTACT.key : state.active);
 
 function moonAge(now) {
   let age = ((now - KNOWN_NEW_MOON) / 86400000) % SYNODIC_DAYS;
@@ -498,13 +599,14 @@ function render() {
       ? ''
       : state.flipped
         ? 'CLICK THE CROWN TO TURN BACK'
-        // "CROWN TO FLIP" is the hint sentence's mode line, moved here when the
-        // rail took the element it used to live in. It belongs with the status
-        // line rather than in the rail: the rail says where you can GO, and the
-        // crown does not go anywhere -- it turns the object over. This is the
-        // one state in which nothing else is being said, which is why it can
-        // carry it without displacing anything.
-        : `CURRENTLY ${cur.label} — ${cur.value.toUpperCase()}   ·   CROWN TO FLIP`;
+        // The status line, and nothing else. It used to end "   ·   CROWN TO
+        // FLIP", a mode line inherited from the hint sentence the rail replaced,
+        // parked here because the rail said where you can GO and the crown did
+        // not go anywhere. The rail says it now: CONTACT is the sixth word and
+        // turning the watch over is where it goes. A caption that kept
+        // advertising the crown would be the site telling you twice, in the one
+        // state where it has something of its own to say.
+        : `CURRENTLY ${cur.label} — ${cur.value.toUpperCase()}`;
 
   const pose = watchPose();
   el.pose.style.transform = pose.transform;
@@ -533,14 +635,19 @@ function render() {
   // The rail, painted from the same two fields the watch is painted from. This
   // is the reciprocal cue's second half: state.hover already lights the part and
   // names it in the caption, so a pointer on the moonphase lighting the word
-  // BOOKS costs one more reader of the same value -- there is no second state,
-  // and no way for the two ends to disagree.
+  // MISCELLANY costs one more reader of the same value -- there is no second
+  // state, and no way for the two ends to disagree. CONTACT joins on the same
+  // terms through hoverKeyOf(): its part is the crown, so a pointer on the crown
+  // lights it and a pointer on it lights the crown.
   // Active outranks hover, so the word you are reading stays the word that is
-  // lit while the pointer wanders. Written only on change: render() also runs on
-  // a 100ms pump, and an unconditional write would restyle five links ten times
-  // a second and retrigger the colour transition on each.
+  // lit while the pointer wanders. It is placeNow() and not state.active, which
+  // is what keeps CONTACT lit for as long as the watch is turned over. Written
+  // only on change: render() also runs on a 100ms pump, and an unconditional
+  // write would restyle six links ten times a second and retrigger the colour
+  // transition on each.
+  const at = placeNow();
   for (const [key, node] of railLinks) {
-    const want = state.active === key ? 'active' : state.hover === key ? 'hover' : '';
+    const want = at === key ? 'active' : state.hover === hoverKeyOf(key) ? 'hover' : '';
     if (node.dataset.state === want) continue;
     node.dataset.state = want;
     if (want === 'active') node.setAttribute('aria-current', 'page');
@@ -549,8 +656,8 @@ function render() {
   placeRailMarker();
 
   // This one attribute IS the hover highlight's whole state. The CSS rule that
-  // carries it only matches while data-hover names the part, so '' -> 'books'
-  // starts the arrival and holds the glow, and 'books' -> '' releases it -- the
+  // carries it only matches while data-hover names the part, so '' -> 'miscellany'
+  // starts the arrival and holds the glow, and 'miscellany' -> '' releases it -- the
   // mark is lit if and only if this string names it, which is what makes a
   // stuck highlight impossible to express. render() is also pumped on a 100ms
   // interval, so the value is only written when it actually differs -- an
@@ -582,29 +689,30 @@ function render() {
   if (el.flip.dataset.hover !== lit) el.flip.dataset.hover = lit;
 }
 
-// Showing and hiding are the only two places focus moves on its own, and they
-// are a pair: showSection() remembers what it was opened from and puts focus on
-// the panel, hideSection() puts it back. Nothing is trapped -- Tab still walks
-// out of the card and on through the page -- but the keyboard never has to start
-// again from the top of the document, which is what "lost focus" actually feels
-// like.
+// Showing and hiding are the two places focus moves on its own, and they are
+// pairs: showSection() remembers what it was opened from and puts focus on the
+// panel, hideSection() puts it back; showContact() and hideContact() both leave
+// it on the crown, which is the control that turns the watch over and the only
+// way back to the dial. Nothing is trapped -- Tab still walks out of the card
+// and on through the page -- but the keyboard never has to start again from the
+// top of the document, which is what "lost focus" actually feels like.
 //
-// These two move STATE ONLY. They know nothing about the address bar, and
+// These four move STATE ONLY. They know nothing about the address bar, and
 // nothing outside the routing block below calls them: every control that
-// navigates goes through goToSection() / leaveSection(), which is what keeps the
-// address and the panel from ever disagreeing. They also do not set
-// state.touched -- arriving on a link is not operating the watch; see
-// goToSection().
+// navigates goes through goTo() / leave(), which is what keeps the address and
+// the watch from ever disagreeing. They also do not set state.touched --
+// arriving on a link is not operating the watch; see goTo().
 function showSection(key, from) {
   state.active = key;
   state.hover = null;
-  // THE FLIP, from Phase 2's goToSection(). It lives down here rather than up in
-  // the intent function because it is an invariant of the state and not of the
+  // THE FLIP. It lives down here rather than up in the intent function, goTo(),
+  // because it is an invariant of the state and not of the
   // click: every section is on the FRONT of the watch, so a panel must never
   // open over the back of one. The rail stays up while the watch is turned over,
   // so a section can be asked for from the caseback -- and so can Back, Forward
-  // and a pasted address, which are the paths that do not pass through
-  // goToSection() at all.
+  // and a pasted address, which are the paths that do not pass through goTo() at
+  // all. It is the only place a route to a section unflips the watch, which is
+  // why applyRoute() below does not have to say it a second time.
   if (state.flipped) state.flipped = false;
   // Falling back to the section's own hit target rather than to null: Back and
   // Forward open panels with no originating element, and a keyboard that leaves
@@ -619,9 +727,10 @@ function showSection(key, from) {
   if (panel) panel.focus({ preventScroll: true });
 }
 
-// keepFocus is for the one caller that has somewhere better to put it: flipping
-// the watch over closes any open panel, and handing focus back to a dial part
-// that is now facing away from you would be worse than leaving it alone.
+// keepFocus is for the one caller that has somewhere better to put it:
+// showContact() closes any open panel on its way to the caseback, and handing
+// focus back to a dial part that is now facing away from you would be worse than
+// leaving it alone.
 function hideSection(keepFocus) {
   if (!state.active) return;
   state.active = null;
@@ -631,11 +740,49 @@ function hideSection(keepFocus) {
   if (!keepFocus && back && back.isConnected) back.focus();
 }
 
+// The caseback, which the rail's CONTACT and the crown both ask for. It is
+// showSection()'s opposite number rather than a special case of it: no panel, no
+// returnTo, and the focus lands on the crown either way in and out, because the
+// crown is what turned the watch over and is the only way back to the dial.
+function showContact() {
+  // A panel and the caseback are mutually exclusive, so arriving here closes one
+  // if it is open. This is where THE FLIP's invariant is enforced from the other
+  // side, and it does not touch the address: applyRoute() is the address's
+  // reader, never its writer.
+  hideSection(true);
+  state.hover = null;
+  state.flipped = true;
+  // Turning the watch over takes the dial out of view, so the sweep is abandoned
+  // rather than left to finish behind the caseback. Cancelling drops every offset
+  // to zero, which the next frame draws as the true reading -- and the face it
+  // happens on is the one you cannot see.
+  state.demo = null;
+  render();
+  el.crown.focus({ preventScroll: true });
+}
+
+function hideContact() {
+  if (!state.flipped) return;
+  state.flipped = false;
+  render();
+  el.crown.focus({ preventScroll: true });
+}
+
 // ---- ADDRESSES -------------------------------------------------------------
-// One address per section, laid over the state that was already there.
-// `#/about` opens About; no hash, `#/`, or a hash naming nothing is the bare
-// watch. Keyed on SECTIONS, so a new row gets an address for free and a route
-// can never name a section that does not exist.
+// One address per destination, laid over the state that was already there.
+// `#/about` opens About; `#/contact` turns the watch over; no hash, `#/`, or a
+// hash naming nothing is the bare watch, face up. Keyed on SECTIONS plus
+// CONTACT, so a new row gets an address for free and a route can never name a
+// destination that does not exist.
+//
+// THE CASEBACK IS AN ADDRESS TOO, and that is the change the rail's sixth word
+// brought with it. It could have been a <button> that flips and writes nothing,
+// and that would have left one control in the navigation whose middle-click does
+// nothing, whose Back leaves the site, and whose state a reload forgets -- five
+// links and an impostor. Making it a route costs the widened routeKey() below
+// and one show/hide pair, and it buys the caseback the same three things every
+// section has: a link you can send, a Back that returns to the dial, and a
+// reload that lands where you were.
 //
 // The `#` is never sent to the server, so nothing about the build or the hosting
 // changes -- this is still one hand-authored index.html. What it buys is the
@@ -647,14 +794,14 @@ function hideSection(keepFocus) {
 // WHICH TRANSITIONS ARE HISTORY, decided one at a time:
 //
 //   opening a section        pushState      the one thing a visitor does that
-//                                           they might want to undo, link to or
+//   or the caseback                         they might want to undo, link to or
 //                                           come back to
 //   closing one, when the    history.back() the entry we pushed is RETIRED
 //   entry underneath is                     rather than buried under a second
 //   the bare watch                          one, so the history stays as short
 //                                           as the visit actually was
-//   closing one, any other   pushState      a second section underneath (Back
-//   time                                    there would re-open the panel you
+//   closing one, any other   pushState      a second destination underneath
+//   time                                    (Back there would re-open what you
 //                                           just closed) or a deep-link arrival
 //                                           (Back there leaves the site)
 //   a hash naming nothing    replaceState   the dead address is corrected in
@@ -662,30 +809,37 @@ function hideSection(keepFocus) {
 //                                           the way the visitor came
 //   render()                 nothing        it runs ten times a second
 //
-// THE TWO DIRECTIONS CANNOT FIGHT. Exactly one function moves state.active in
+// Section -> caseback and caseback -> section are ONE entry each, not a close
+// plus an open: goTo() pushes the destination and showSection()/showContact()
+// each shut the other down without touching the address. Back from the caseback
+// therefore re-opens the panel you flipped away from, which is what "back" means.
+//
+// THE TWO DIRECTIONS CANNOT FIGHT. Exactly one function moves the state in
 // response to the address -- applyRoute() -- and it returns early when the two
-// already agree, so a hashchange that names the open section is a no-op rather
+// already agree, so a hashchange naming where you already are is a no-op rather
 // than a re-open. Exactly one function writes an address in response to a
-// control -- goToSection() -- and it returns early for the section that is
-// already open. And pushState fires no event at all, so a click never
-// round-trips through the address bar and back into the state.
+// control -- goTo() -- and it returns early for the destination that is already
+// up. And pushState fires no event at all, so a click never round-trips through
+// the address bar and back into the state.
 const HOME_URL = location.pathname + location.search;
 const urlFor = (key) => (key ? `#/${key}` : HOME_URL);
 
-// The address bar's half of SECTIONS. Anything that is not `#/` plus a key we
-// know is the bare watch: a typo is not an error page.
+// The address bar's half of the rail: the five section keys and CONTACT's.
+// Anything else is the bare watch -- a typo is not an error page.
+const routes = new Set([...SECTION.keys(), CONTACT.key]);
 function routeKey() {
   const m = /^#\/([\w-]+)$/.exec(location.hash);
-  return m && SECTION.has(m[1]) ? m[1] : null;
+  return m && routes.has(m[1]) ? m[1] : null;
 }
 
 // THE ONE DOOR IN, and Phase 2's function with an address bolted to the front of
-// it. Every control that navigates calls this rather than opening a panel itself
-// -- the five watch parts, the rail's five links, the keyboard -- so there is no
-// way to change the section without changing the address. `from` is the element
-// focus should return to when the panel closes.
-function goToSection(key, from) {
-  if (!SECTION.has(key) || state.active === key) return;
+// it. Every control that navigates calls this rather than opening a panel or
+// flipping the watch itself -- the five watch parts, the rail's six links, the
+// crown, the keyboard -- so there is no way to change where you are without
+// changing the address. `from` is the element focus should return to when a
+// panel closes; the caseback ignores it and hands focus to the crown.
+function goTo(key, from) {
+  if (!routes.has(key) || placeNow() === key) return;
   railCue(null);   // whether this call is the cue's own or something that beat it
   // Set HERE and not in showSection(), because this is what state.touched
   // actually means: the visitor has operated the watch. Following a link into a
@@ -694,22 +848,24 @@ function goToSection(key, from) {
   // a watch with the interaction index already spent, which is the one thing
   // telling them anything on it is clickable.
   state.touched = true;
-  history.pushState({ key, from: state.active }, '', urlFor(key));
+  history.pushState({ key, from: placeNow() }, '', urlFor(key));
   applyRoute(from);
 }
 
-// Closing. history.state.from is the key of the entry underneath this one, and
-// `null` means the bare watch -- the one case where the entry we pushed can be
-// retired with a plain Back instead of being buried under a second one. Anything
-// else gets a pushed home entry: a second section underneath, or a deep-link
-// arrival, which carries no history.state at all because we never created it.
-function leaveSection(keepFocus) {
-  if (!state.active) return;
-  const leaving = state.active;
+// Closing, whichever of the two is up. history.state.from is the key of the entry
+// underneath this one, and `null` means the bare watch -- the one case where the
+// entry we pushed can be retired with a plain Back instead of being buried under
+// a second one. Anything else gets a pushed home entry: a second destination
+// underneath, or a deep-link arrival, which carries no history.state at all
+// because we never created it.
+function leave(keepFocus) {
+  const leaving = placeNow();
+  if (!leaving) return;
   const undo = !!history.state && history.state.from === null;
-  // The panel goes now rather than on the popstate a task later. history.back()
-  // is asynchronous, and Escape has to feel like a key, not like a request.
-  hideSection(keepFocus);
+  // The panel or the flip goes now rather than on the popstate a task later.
+  // history.back() is asynchronous, and Escape has to feel like a key, not like
+  // a request.
+  if (state.flipped) hideContact(); else hideSection(keepFocus);
   if (undo) history.back();   // applyRoute() then finds nothing left to do
   else history.pushState({ key: null, from: leaving }, '', urlFor(null));
 }
@@ -720,8 +876,13 @@ function applyRoute(from) {
   // visitor typed or was sent a dead address, and replacing it means Back still
   // leads back out the way they came instead of to a URL that never worked.
   if (!key && location.hash) history.replaceState(history.state, '', urlFor(null));
-  if (key === state.active) return;   // the address and the state already agree
-  if (key) showSection(key, from);
+  if (key === placeNow()) return;   // the address and the state already agree
+  // Each of these three shuts the other two down on its own -- showSection()
+  // unflips, showContact() closes the panel -- so there is no teardown step here
+  // that could get out of step with them.
+  if (key === CONTACT.key) showContact();
+  else if (key) showSection(key, from);
+  else if (state.flipped) hideContact();
   else hideSection();
 }
 
@@ -730,32 +891,9 @@ function applyRoute(from) {
 // adjacent entries share a hash (which the replaceState above can produce);
 // hashchange is the only one fired when someone edits the hash in the address
 // bar, which is a fresh navigation rather than a traversal. Neither is fired by
-// pushState, which is what keeps goToSection() from feeding itself.
+// pushState, which is what keeps goTo() from feeding itself.
 addEventListener('popstate', () => applyRoute());
 addEventListener('hashchange', () => applyRoute());
-
-// Turning the watch over. Extracted from the crown's click handler because
-// Escape is now a second way in: it returns from the caseback exactly as it
-// returns from a panel.
-function flipTo(flipped) {
-  // Any open panel closes THROUGH the router, so the address stops naming a
-  // section that is no longer on screen. Focus is deliberately left where it is:
-  // the crown is what turned the watch over (by click, by Escape, or later by
-  // the rail's CONTACT), and handing focus back to a dial part now facing away
-  // from the viewer is worse than leaving it on the control that was used.
-  // ...and onto the crown, which is where it should have been and is the only
-  // way back to the dial. Without this the closing panel drops focus on <body>,
-  // because the element that had it has just been hidden.
-  if (state.active) { leaveSection(true); el.crown.focus({ preventScroll: true }); }
-  state.flipped = flipped;
-  state.touched = true;
-  // Turning the watch over takes the dial out of view, so the sweep is
-  // abandoned rather than left to finish behind the caseback. Cancelling drops
-  // every offset to zero, which the next frame draws as the true reading -- and
-  // the face it happens on is the one you cannot see.
-  state.demo = null;
-  render();
-}
 
 // ---- interaction index: the hairline -----------------------------------
 // The one number the .hint-index layer cannot work out for itself.
@@ -810,7 +948,7 @@ function bind(section) {
   const id = section.key;
   const node = $(section.hit);
   node.setAttribute('aria-label', `${section.label} — the ${section.part.toLowerCase()}`);
-  node.addEventListener('click', () => goToSection(id, node));
+  node.addEventListener('click', () => goTo(id, node));
   node.addEventListener('mouseenter', () => { state.hover = id; render(); });
   // Focus is the keyboard's pointer, so it lights the part and prints the same
   // caption a hover does. The focus ring in styles.css says WHERE the keyboard
@@ -838,10 +976,14 @@ SECTIONS.forEach(bind);
 // The rail's other end of the same wiring. These handlers write the SAME
 // state.hover the watch's own hit targets write, which is the whole reciprocal
 // cue: the caption, the part's brightness lift and the bloom on its silhouette
-// all arrive from one value, so hovering the word BOOKS and hovering the
+// all arrive from one value, so hovering the word MISCELLANY and hovering the
 // moonphase cannot say different things. Focus is included for the reason bind()
 // includes it -- focus is the keyboard's pointer -- and the guards on leave and
 // blur are the same guards, for the same reason.
+//
+// hoverKeyOf() is what makes the sixth word part of that and not an exception:
+// CONTACT writes 'crown', so the fitting lights, the crown's caption prints, and
+// the crown's own handlers below light CONTACT coming back the other way.
 const COARSE_POINTER = matchMedia('(hover: none)');
 const TOUCH_CUE_MS = 600;
 let touchCue = 0;
@@ -859,13 +1001,14 @@ function railCue(key) {
 }
 
 for (const [key, node] of railLinks) {
-  node.addEventListener('mouseenter', () => { state.hover = key; render(); });
-  node.addEventListener('focus', () => { state.hover = key; render(); });
+  const part = hoverKeyOf(key);
+  node.addEventListener('mouseenter', () => { state.hover = part; render(); });
+  node.addEventListener('focus', () => { state.hover = part; render(); });
   node.addEventListener('mouseleave', () => {
-    if (state.hover === key) { state.hover = null; render(); }
+    if (state.hover === part) { state.hover = null; render(); }
   });
   node.addEventListener('blur', () => {
-    if (state.hover === key) { state.hover = null; render(); }
+    if (state.hover === part) { state.hover = null; render(); }
   });
   node.addEventListener('click', (e) => {
     // The href is a real address now, so a MODIFIED click is let through: it is
@@ -876,8 +1019,8 @@ for (const [key, node] of railLinks) {
     // A plain click is ours, and it does NOT fall through to the href. Letting
     // the browser do the navigation would work -- hashchange would open the
     // panel -- but the entry it creates carries no history.state, and that is
-    // what tells leaveSection() whether the bare watch is underneath. Same
-    // address either way; this one knows how it got there.
+    // what tells leave() whether the bare watch is underneath. Same address
+    // either way; this one knows how it got there.
     e.preventDefault();
     // A touch device has no hover, so a tap would open the panel with the watch
     // never having answered -- and the one thing a phone visitor has to learn is
@@ -885,14 +1028,21 @@ for (const [key, node] of railLinks) {
     // 600ms later: long enough to see which complication just replied, short
     // enough that it does not read as a stall. On a pointer device the hover has
     // already said it, so there is nothing to wait for.
-    if (COARSE_POINTER.matches) {
-      state.hover = key;
+    //
+    // CONTACT IS EXEMPT, and not for want of a rule to reuse. The cue exists to
+    // make the watch answer before the panel hides it; CONTACT hides nothing and
+    // its answer is the watch turning over, which is the largest thing this site
+    // does. Lighting the crown for 600ms first would delay that answer in order
+    // to announce it. (THE TOUCH CUE in styles.css also has no rule for the
+    // crown, and this is why it does not need one.)
+    if (COARSE_POINTER.matches && key !== CONTACT.key) {
+      state.hover = part;
       railCue(key);
       render();
-      touchCue = setTimeout(() => goToSection(key, node), TOUCH_CUE_MS);
+      touchCue = setTimeout(() => goTo(key, node), TOUCH_CUE_MS);
       return;
     }
-    goToSection(key, node);
+    goTo(key, node);
   });
 }
 
@@ -917,7 +1067,12 @@ window.addEventListener('blur', () => {
   if (state.hover) { state.hover = null; render(); }
 });
 
-el.crown.addEventListener('click', () => flipTo(!state.flipped));
+// The crown and the rail's CONTACT are the same control by two routes, so they
+// go through the same door: the fitting no longer flips the watch itself, it
+// asks for `#/contact` and lets applyRoute() do it. That is what makes the two
+// agree about history -- clicking the crown and clicking CONTACT leave the same
+// entry behind -- and what lets Back off the caseback work at all.
+el.crown.addEventListener('click', () => { if (state.flipped) leave(); else goTo(CONTACT.key, el.crown); });
 el.crown.addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
 el.crown.addEventListener('focus', () => { state.hover = 'crown'; render(); });
 // Same guard as bind()'s: the crown and the pusher own state.hover too, and a
@@ -968,7 +1123,7 @@ $('corrector').addEventListener('blur', () => {
 // closing writes the address exactly as Back does -- there is one way out of a
 // section and three things that can ask for it.
 document.querySelectorAll('[data-close]').forEach((node) =>
-  node.addEventListener('click', () => leaveSection())
+  node.addEventListener('click', () => leave())
 );
 
 $('resumeScroll').addEventListener('scroll', (e) => {
@@ -985,22 +1140,20 @@ $('resumeScroll').addEventListener('scroll', (e) => {
   }
 });
 
-// Escape is "go back one", and there are two things to go back from. A panel
-// and the caseback are mutually exclusive -- flipping closes any open panel,
-// and the parts that open panels are on the front face -- so the order below is
-// a formality rather than a precedence rule, but the panel is checked first
-// because it is the nearer of the two.
+// Escape is "go back one", and there are two things to go back from -- a panel
+// and the caseback. It used to test for them in turn; placeNow() is that test,
+// and leave() dispatches on the same value, so the key is now one line and the
+// precedence question it used to answer no longer exists. Returning from the
+// caseback still puts focus on the crown -- hideContact() does it, so every path
+// off the back of the watch lands there and not just this one.
 //
 // Escape still means CLOSE, not "walk the history". It lands on the bare watch
-// even when a second section is underneath in the history -- leaveSection()
-// pushes home in that case rather than backing into the previous panel, because
-// a key that closes a card by opening a different one is not a close.
+// even when a second destination is underneath in the history -- leave() pushes
+// home in that case rather than backing into the previous panel, because a key
+// that closes a card by opening a different one is not a close.
 window.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (state.active) { leaveSection(); return; }
-  // Returning from the caseback puts focus on the crown: it is the control that
-  // turned the watch over, so it is where the keyboard was, or should have been.
-  if (state.flipped) { flipTo(false); el.crown.focus(); }
+  leave();
 });
 
 // ---- living caseback rig ---------------------------------------------------

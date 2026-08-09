@@ -867,7 +867,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      .moon          (two invariants -- see the comment above that rule)
    plus, outside this file:
      SECTIONS research.origin = the subdial centre      (src/main.js)
-     SECTIONS books.origin    = the .moon box centre    (src/main.js)
+     SECTIONS miscellany.origin = the .moon box centre    (src/main.js)
      two .hint-mark shapes -- the seconds circle and the
        moon aperture path -- in .hint-index            (index.html)
    Move the subdial and all five must follow by the same (dx, dy).
@@ -1410,7 +1410,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
                                         frame's own casting
        research   199 ->  426   x1.93   the half of the rim band lying on the
                                         plate; the other half falls off it
-       books        7 ->  282   x36  <- the whole mark. Its aperture is the one
+       miscellany   7 ->  282   x36  <- the whole mark. Its aperture is the one
                                         outline entirely inside the plate.
    The moon now sits with the group it was calibrated into -- 282 against the
    date frame's 281 -- instead of two orders of magnitude below it. Nothing
@@ -1542,7 +1542,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      shipped, with the outline each mark is stroked along:
          about    540   159 units @ .3      projects  281    66 units @ .55
          resume   342    69 units @ .45     research  426    85 units @ .55
-                                            books     282    60 units @ .55
+                                            miscellany 282  60 units @ .55
      The three .55 marks span 281..426 rather than landing on one number, and
      that is the geometry doing what this comment says it does: their outlines
      span 60..85 units, so their light should span about 1.4x, and it spans 1.5.
@@ -1765,7 +1765,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .watch-flip[data-hover="projects"] .pulse-mark[data-part="projects"],
   .watch-flip[data-hover="resume"]   .pulse-mark[data-part="resume"],
   .watch-flip[data-hover="research"] .pulse-mark[data-part="research"],
-  .watch-flip[data-hover="books"]    .pulse-mark[data-part="books"],
+  .watch-flip[data-hover="miscellany"]    .pulse-mark[data-part="miscellany"],
   .watch-flip[data-hover="crown"]    .pulse-mark[data-part="crown"],
   .watch-flip[data-hover="pusher"]   .pulse-mark[data-part="pusher"] {
     /* The state, declared outright -- there is nothing else to it. */
@@ -2093,92 +2093,151 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    moved to x 312, so its upper-left arc sweeps through the corner, crossing
    y 134.4 at the top and x 38.2 at the left.
 
-   AND IT DOES NOT CLEAR EVERYWHERE. A real limit, not a rounding error.
-   Clearance from the nearest PAINTED GLYPH to that arc, with a panel open,
-   measured in real Chrome at 18px (the value before the type grew from 16px in
-   brackets, measured the same way on the same run):
+   AND IT DOES NOT CLEAR EVERYWHERE. A real limit, not a rounding error, and it
+   got worse rather than better in this pass. Clearance from the nearest PAINTED
+   GLYPH to that arc, with a panel open, measured in real Chrome at 20px with all
+   six items and MISCELLANY in place of BOOKS:
 
-     1920x1080  +68.0 [+71.2]   1440x900  +9.4 [+10.6]   1366x768  +2.9 [+6.4]
-     1280x800    -9.4  [-8.2]   1200x900 -19.2 [-19.6]
+                PROJECTS  RESEARCH  MISCELLANY  CONTACT
+     1920x1080    +87.1     +62.0      +20.3     +22.6   -- all six clear
+     1680x1050    +61.5     +35.1       -5.6      -8.7
+     1440x900     +34.6      +7.6      -32.4     -36.8
+     1366x768     +23.4      -2.7      -43.7     -42.9
+     1280x800     +16.8     -10.6      -50.0     -55.8
+     1200x900     +17.2     -11.6      -48.1     -63.0
+
+   (ABOUT and RESUME clear by 87px or more everywhere and are left out of the
+   table; they are never the binding item.)
 
    PAINTED GLYPH and not the font box: every label is uppercase, so the font's
    descender space below the baseline is empty and measuring to it overstates
-   the block by about .28em. Both columns above are measured the same way, so
-   the comparison is honest even where it disagrees with the older figures in
-   this file, which were taken to the font box and read 3-5px tighter.
+   the block by about .28em. The figures above are taken from a canvas ink
+   measurement of the same string in the same cut, so they run about .6px
+   optimistic against the older hand-measured column they replace -- which read
+   +9.4 for the five-item, 18px, BOOKS-not-MISCELLANY rail at 1440x900.
 
-   BOOKS is the binding item at most widths -- last down the column, and the one
-   the arc reaches first -- and RESEARCH takes over where the arc comes in
-   steeply from the right (1366, 1920). The rail clears from 1366px up and fouls
-   the bezel below it. THAT BOUNDARY DID NOT MOVE WHEN THE TYPE GREW: 18px costs
-   1-3.5px of clearance and 1366 still clears, which is the whole reason the
-   column was allowed to get bigger at all and the reason the row height was
-   re-derived downward to pay for it (see THE SCALE'S DIVISION IS THE ROW).
-   No choice of size fixes the widths below it: the rail as it was, 96 x 151 at
-   11px, is also negative at 1200x900 moved to this corner. A column of five
-   items simply does not fit beside the posed case around 1200-1280px wide. What
-   lands there is the tail of RESEARCH and BOOKS over the dimmed bezel, and it
-   stays legible because the rail paints above the overlay and the posed case is
-   held at brightness(.62). The card is doing the same thing at exactly those
-   widths -- measured 93px over the posed case at 1200x900 -- and nobody calls
-   that a collision. The right-hand rail had no such case to answer; this one
-   does, and it is bounded, measured and written down rather than found later.
+   TWO ROWS PAID FOR THE SIXTH WORD, AND THEY ARE THE TWO NEW ONES. The binding
+   item was BOOKS, five characters at the bottom of a five-row column. It is now
+   CONTACT, a sixth row 30px further down, with MISCELLANY -- ten characters where
+   BOOKS was five -- immediately above it. Both of those came from the content,
+   not from the type: at the OLD 18px and the old 6px lead, six rows ending in
+   MISCELLANY and CONTACT measure -26.1 and -30.4 at 1440x900. The size increase
+   to 20px adds 6.4px to an already-negative number; the sixth row and the longer
+   label are the other 30.
 
-   A BIGGER RAIL COSTS CLEARANCE, SO IT HAD TO BUY IT BACK. The type went 16 ->
-   18px, which is the whole of "make it bigger" and the only change in this
-   block that costs anything. Every px of column height costs .77px of clearance
-   at 1440 and every px of word width costs .62px, so the height is the
-   expensive axis -- and 16px at the old 2 * size pitch made a 152px column,
-   while 18px at that pitch would have made 170 and put 1440 well under water.
-   The pitch was re-derived instead (below), the column came out at 150, and the
-   two changes very nearly cancel. 20px was tried on paper and does not survive
-   any pitch that leaves the words room to breathe; 17px is comfortable but is a
-   6% change nobody would see.
+   SO THE BOUNDARY MOVED, from "all five clear at 1366 and up" to "the first four
+   clear at 1440, and the last two clear somewhere between 1680 and 1920". This
+   is a real cost and it is the one this pass could not design away: the corner
+   is 168.75 x 180 now and
+   the posed case sweeps through it. Every alternative was measured. 16px with a
+   4px lead is the only configuration in which six rows clear 1440 at all (+3.5),
+   and it is SMALLER than the rail already was; every step from there to 20px
+   costs 8-10px and none of them buys the corner back. Moving the rail out of the
+   5vmin margin, or moving the posed case, would each fix it and each breaks
+   something with a better claim.
 
-   128.88px IS DERIVED, NOT CHOSEN, and it is now derived IN THE STYLESHEET
-   rather than in this paragraph -- see the `width:` calc below. IBM Plex Mono
-   advances 0.6em, which at 18px is 10.80px, and the letter gap adds 2.64px, so
-   one character advances 13.44px. PROJECTS and RESEARCH are the longest labels
-   at 8 characters -- 107.52px of advance, and 104.88px of ink once the link
-   reclaims the trailing tracking column. The channel is 24px.
-   104.88 + 24 = 128.88.
+   WHAT THAT ACTUALLY LOOKS LIKE is what the old note already described one
+   breakpoint lower: the tails of MISCELLANY and CONTACT lie over the dimmed
+   bezel. They stay legible because the rail paints above the overlay and the
+   posed case is held at brightness(.62), and the card is doing the same thing at
+   the same widths -- measured 93px over the posed case at 1200x900 -- which
+   nobody calls a collision. Nothing is clipped and nothing is hidden. And the
+   CLOSED pose never meets the rail at any width the column is used at: the case
+   sits centred, and the tightest word clears it by 164px at 1440x900 and by 58px
+   at 1200x900, the narrowest viewport this layout serves. The overlap is a
+   panel-open condition only. It is bounded, measured and written down rather
+   than found later.
+
+   A BIGGER RAIL COSTS CLEARANCE, AND THIS TIME IT COULD NOT BUY IT BACK. The
+   type went 18 -> 20px. Every px of column height costs .77px of clearance at
+   1440 and every px of word width costs .62px, so the height is still the
+   expensive axis -- and the lead went 6 -> 5px with it, which is what keeps the
+   PITCH at exactly the 30px it already was (5 + 20 + 5, see THE SCALE'S DIVISION
+   IS THE ROW). That is the whole trick available: the type grew 11% and the
+   column grew only by the one row the sixth word brought, 150 -> 180 rather than
+   150 -> 192. 20px at the old 6px lead is a 192px column and a further 9.5px of
+   clearance for nothing anyone would see. 19px is a 6% change nobody would see
+   at all -- the same objection this note made about 17px last time.
+
+   168.75px IS DERIVED, NOT CHOSEN, and it is derived IN THE STYLESHEET rather
+   than in this paragraph -- see the `width:` calc below. IBM Plex Mono advances
+   0.6em, which at 20px is 12.00px, and the letter gap adds 2.64px, so one
+   character advances 14.64px. MISCELLANY is now the longest label at 10
+   characters -- it was PROJECTS and RESEARCH at 8 -- which is 146.40px of
+   advance, and 143.76px of ink once the link reclaims the trailing tracking
+   column. The channel is 25px. 143.76 + 25 = 168.76, and the calc's
+   `10ch + 9 * track` writes the same sum as 120 + 23.76. It measures 168.75 in
+   Chrome, because 1ch is the font's own 11.9985px and not the nominal 12 -- the
+   0.15px is the calc being right where the paragraph rounds, which is the whole
+   argument for putting the sum in the stylesheet.
+   THE 10 AND THE 9 ARE THE LABEL, so they move when it does: ten characters of
+   advance and the nine letter gaps BETWEEN them. Adding CONTACT changed nothing
+   here -- seven characters fit inside ten -- and renaming BOOKS did.
 
    THE LETTER GAP IS A PIXEL, NOT AN EM. The rail was 11px at .24em and then
    16px at .165em, and both of those are 2.64px between characters: the gap has
-   been held constant through two size changes while the em value chased it.
+   been held constant through three size changes while the em value chased it.
    Holding it is right -- tracking compensates for size, so it must fall as the
-   size rises, and a constant gap is what keeps a word a word instead of eight
+   size rises, and a constant gap is what keeps a word a word instead of ten
    letters in a row -- but writing it as an em was writing the wrong number down.
-   At 18px the em value would be .1467em, which is a quotient, not a decision.
-   So it is 2.64px, stated once on .rail, and the bottom row's .24em override
-   went with it: three declarations of one constant became one.
+   At 20px the em value would be .132em, which is a quotient, not a decision.
+   So it is 2.64px, stated once on .rail. The narrow row is now the ONE place
+   that overrides it, and it overrides it to a different number rather than to a
+   different spelling of the same one -- see THE ROW IS ITS OWN DERIVATION.
    The px stay fixed rather than vmin for the old reason -- a rail whose ink is
    measured in characters cannot have a width that floats.
 
-   THE CHANNEL IS THE POINTER PLUS ITS CLEARANCE. 18px of pointer, its length
-   set to the type size so the mark is as long as the words are tall, and 6px
-   of lead before the ink starts. 18 + 6 = 24.
+   THE CHANNEL IS THE POINTER PLUS ITS CLEARANCE. 20px of pointer, its length
+   set to the type size so the mark is as long as the words are tall, and 5px
+   of lead before the ink starts. 20 + 5 = 25.
 
    THE SCALE'S DIVISION IS THE ROW. It used to be two type sizes -- 32px at 16px
    type -- with the row 24px and an 8px gap left over. That put the division and
-   the row in tension: the gap was a remainder, and at 18px the same rule gives a
-   34px pitch and a 170px column, which the arc above cannot afford. The rule now
-   runs the other way. A row is the type's line with the SAME 6px of lead the
-   channel holds, above and below: 6 + 18 + 6 = 30. The rows abut -- gap: 0 --
-   so the division IS the row, the column is 5 * 30 = 150, and the lead is one
-   number doing the same job on both axes instead of two numbers agreeing by
-   arithmetic. It also means the five hit targets tile the column continuously,
-   with no dead band between one word and the next.
+   the row in tension: the gap was a remainder. The rule now runs the other way.
+   A row is the type's line with the SAME lead the channel holds, above and
+   below: 5 + 20 + 5 = 30. The rows abut -- gap: 0 -- so the division IS the row,
+   the column is 6 * 30 = 180, and the lead is one number doing the same job on
+   both axes instead of two numbers agreeing by arithmetic. It also means the six
+   hit targets tile the column continuously, with no dead band between one word
+   and the next.
+   THE PITCH IS THE SAME 30px IT WAS AT 18px TYPE, which is not a coincidence and
+   is the only reason 20px was affordable: the lead fell 6 -> 5 as the type rose
+   18 -> 20, so the whole of the column's growth is the sixth row. 5px of lead is
+   .25em against the old 6px's .33em, and what the eye actually reads is the gap
+   between one word's cap-bottom and the next word's cap-top -- 30 minus a 14px
+   cap height, so 16px of air between 14px letters, where it was 17.4 between
+   12.6. Proportionally tighter, absolutely almost identical, and still more air
+   than ink.
 
-   THE INK MOVED UP ONE TIER. The resting words were #5b6172, which is the
-   colour .reserve-hint uses and is 1.87:1 on this background -- a hint's
-   contrast, on the site's navigation. They are now #737b8d, 4.68:1, which
-   clears AA for body text at a size well above it. It stops one step short of
-   --muted (#8b93a6, 6.5:1, what the card's own mono labels use) and the stop is
-   the point: --muted's luminance is .290 against --gold-line's .303, so a rail
-   resting at --muted would make "active" a hue change at equal brightness, and
-   the one thing this site says in every layer is that the live thing is the
-   BRIGHTER thing. At #737b8d the gold is a 1.55x lift and still reads as one.
+   THE INK MOVED UP ONE TIER, AND STAYS THERE. The resting words were #5b6172,
+   which is the colour .reserve-hint uses -- a hint's contrast, on the site's
+   navigation. They are #737b8d, and the numbers below are measured against the
+   background AT THE CORNER rather than at the middle of the screen, because
+   .stage's gradient is a radial and the rail is never at its centre: 110vmax at
+   50% 34% running #111722 -> #070a11 -> #030509, sampled where the words sit at
+   1440x900, is #0a0d15. .stage-glow does not reach the corner (68vmin at 50%
+   45%, transparent by 441px; the rail is 651px out), so there is nothing else in
+   the stack.
+
+     datum        .3 -> .45   1.44 -> 1.84 : 1
+     graduations  .7 -> .85   2.81 -> 3.61 : 1
+     words        #737b8d               4.95 : 1   (4.58 at the gradient's centre)
+     pointer      --gold-line #c98662   6.79 : 1
+
+   THE WORDS DID NOT MOVE, AND THAT IS THE DECISION. #737b8d already clears AA
+   for body text at a size well above it, and the next tier up is --muted
+   (#8b93a6, what the card's own mono labels use), whose luminance is .288
+   against --gold-line's .317 -- a rail resting at --muted would make "active" a
+   hue change at equal brightness, and the one thing this site says in every
+   layer is that the live thing is the BRIGHTER thing. At #737b8d the gold is a
+   1.46x lift in luminance and reads as one. So "more defined" was spent on the
+   two tiers BELOW the words instead, where the ceiling is the words and not the
+   gold: the datum and the graduations both came up one notch. The ladder still
+   runs datum < graduations < words < pointer with a clear step at each rung,
+   which is the property that had to survive -- the datum is still the only one
+   of the four you are not meant to read, it is just no longer nearly invisible
+   on a dark screen. No fill, no border, no plate and no blur was added to buy
+   any of this; see the closing paragraph of this block.
 
    THE WORDS CARRY MORE WEIGHT. 400 -> 500. index.html already loads IBM Plex
    Mono at wght@400;500, so this is a real cut and not a synthesised smear, and
@@ -2201,26 +2260,31 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
                which is --hint-at and not a second constant. It used to be five
                arrivals 90ms apart; see the note on the animation below for why
                a queue could not survive the two layers being simultaneous.
-     scale     a datum hairline down the channel with five graduations struck
+     scale     a datum hairline down the channel with six graduations struck
                off it, one per item, in the label's own ink one step back. They
                do not light, travel or answer the pointer: a printed scale does
                not. They are what makes the travel legible -- the mark crosses
                from graduation to graduation instead of through empty space --
                and they are why the channel is a scale and not a margin.
-     position  a gold hairline in the channel, level with the open section,
-               which TRAVELS to the next one in 200ms at twice a graduation's
-               length, so it reads as the one moving mark against five fixed
-               ones. The gesture the reserve hand already makes against AUF/AB.
-               Never a pill, a fill or a box.
+     position  a gold hairline in the channel, level with where you are, which
+               TRAVELS to the next one in 200ms at twice a graduation's length,
+               so it reads as the one moving mark against six fixed ones. The
+               gesture the reserve hand already makes against AUF/AB. It marks
+               CONTACT while the watch is turned over, because the caseback is
+               now one of the six places you can be -- see placeNow() in
+               src/main.js. Never a pill, a fill or a box.
      reciprocal the word lights when the pointer is on it OR on its part.
    Nothing here loops, drifts or breathes.
 
    AND NO PANEL, BOX OR SHADOW EITHER. The block is bigger and firmer than it
-   was, and every px of that is type size, type weight, ink contrast and one
-   1px rule. Nothing was added behind the words: no plate, no blur, no border
-   on more than one side, no underline that slides. The rail has to read as
-   printing on the same instrument the watch is, and printing has no substrate
-   of its own. */
+   was, and every px of that is type size, type weight, ink contrast and 1px
+   rules. Nothing was added behind the words: no plate, no blur, no border on
+   more than one side, no underline that slides. That constraint is the reason
+   "more defined" had to be spent on the scale rather than on a substrate --
+   docs/SITE-DIRECTION.md 0.4 names the rounded-rect-with-a-hairline-border as
+   this project's standing slop risk, and the rail has never been one. The rail
+   has to read as printing on the same instrument the watch is, and printing has
+   no substrate of its own. */
 .rail {
   position: absolute;
   /* over .overlay's 40. The rail stays up with a panel open, so you can go
@@ -2246,13 +2310,13 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
        --rail-lead   the clearance the scale holds around a row, in BOTH axes.
        --rail-ink    the resting ink, as CHANNELS rather than a hex, because
                      three things are printed in it at three strengths -- the
-                     words at 1, the graduations at .7, the datum at .3 -- and
+                     words at 1, the graduations at .85, the datum at .45 -- and
                      a hex would have meant writing #737b8d once and
                      rgba(115,123,141,...) twice more, which is the same colour
                      asserted in three places. See THE INK MOVED UP ONE TIER. */
-  --rail-size: 18px;
+  --rail-size: 20px;
   --rail-track: 2.64px;
-  --rail-lead: 6px;
+  --rail-lead: 5px;
   --rail-ink: 115 123 141;   /* #737b8d */
 
   font-family: var(--font-mono);
@@ -2264,20 +2328,23 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   letter-spacing: var(--rail-track);
 
   /* THE CHANNEL: the pointer's own length, which is 1em, plus the lead before
-     the ink starts. 18 + 6 = 24. */
+     the ink starts. 20 + 5 = 25. */
   padding-left: calc(1em + var(--rail-lead));
-  /* THE WIDTH, as the sum it is: eight characters of advance, the seven letter
-     gaps between them, and the channel. 8ch is the monospace advance measured
-     by the font rather than asserted at 0.6em, so a font that failed to load
-     cannot leave the box the wrong size for the type inside it.
-     8 * 10.8 + 7 * 2.64 + 18 + 6 = 128.88. */
-  width: calc(8ch + 7 * var(--rail-track) + 1em + var(--rail-lead));
+  /* THE WIDTH, as the sum it is: TEN characters of advance -- MISCELLANY, the
+     longest label -- the nine letter gaps between them, and the channel. 10ch is
+     the monospace advance measured by the font rather than asserted at 0.6em, so
+     a font that failed to load cannot leave the box the wrong size for the type
+     inside it. The 10 and the 9 are the longest label's own character count and
+     must move with it: they were 8 and 7 when PROJECTS and RESEARCH were the
+     longest, and BOOKS becoming MISCELLANY is what changed them.
+     10 * 12 + 9 * 2.64 + 20 + 5 = 168.76. */
+  width: calc(10ch + 9 * var(--rail-track) + 1em + var(--rail-lead));
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   /* THE ROWS ABUT. There is no gap because the division IS the row -- see THE
-     SCALE'S DIVISION IS THE ROW above. It also means the five hit targets tile
+     SCALE'S DIVISION IS THE ROW above. It also means the six hit targets tile
      the column with no dead band between them. */
   gap: 0;
 
@@ -2300,17 +2367,27 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    block, which the graduations stand off. It is the one piece of furniture
    added here that is not a word or a mark, and it earns its place twice: it is
    what a printed scale actually has -- ticks are struck FROM a line, not left
-   floating in space -- and it gives a five-item column sitting alone in an
+   floating in space -- and it gives a six-item column sitting alone in an
    empty corner an edge to be aligned to. It is the faintest thing in the block
    on purpose: the ladder runs datum, graduations, words, pointer, and the datum
    is the only one of the four you are not meant to read.
+
+   .45 AND NOT .3. It is still the bottom rung and it is still the only one of
+   the four you are not meant to read -- but at .3 it measured 1.44:1 against the
+   corner of the stage, which is not "faint", it is "not there on a dark panel".
+   .45 is 1.84:1: still well under the graduations' 3.61 and the words' 4.95, so
+   the ladder's order and its steps both survive, and the edge the column is
+   aligned to is now an edge you can find. This is where a rail gets "more
+   defined" without acquiring a substrate. See THE INK MOVED UP ONE TIER.
 
    IT RUNS THE BLOCK, NOT MARK TO MARK, and the overhang is not slack. The
    graduations sit at the centre of their rows, so a rule spanning the block
    passes the outer two by exactly half a division -- 15px at each end -- which
    is the room a scale leaves for the mark it does not have yet. Ending it on
    the first and last graduation would make the block's edge depend on how many
-   sections there are; top: 0 / bottom: 0 makes it depend on the block.
+   items there are; top: 0 / bottom: 0 makes it depend on the block. (Which is
+   why adding CONTACT changed nothing here: the block grew, and the rule with
+   it.)
 
    It is not a border, a box or a panel. It has one side. */
 .rail::before {
@@ -2320,7 +2397,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgb(var(--rail-ink) / .3);
+  background: rgb(var(--rail-ink) / .45);
   pointer-events: none;
 }
 
@@ -2336,22 +2413,22 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   color: rgb(var(--rail-ink));
   text-decoration: none;
   text-transform: uppercase;
-  /* letter-spacing lays its tracking after the LAST character too, so an
-     8-character label advances 107.52px where its ink is 104.88. Reclaiming
+  /* letter-spacing lays its tracking after the LAST character too, so a
+     10-character label advances 146.40px where its ink is 143.76. Reclaiming
      that trailing column is what keeps the longest label inside the width the
-     sum above derives, and in the bottom row it is what makes the gaps between
-     words the gaps they are set to. One rule for both layouts now that the
-     tracking is a pixel: the row used to restate this as -.24em. */
+     sum above derives, and in the top row it is what makes the gaps between
+     words the gaps they are set to. One rule for both layouts: the row changes
+     --rail-track's value and not this rule. */
   margin-right: calc(-1 * var(--rail-track));
-  /* the lead, above and below: this is what makes the row 1em + 2 * 6 = 30px
+  /* the lead, above and below: this is what makes the row 1em + 2 * 5 = 30px
      and, with gap:0, the scale's division */
   padding: var(--rail-lead) 0;
   line-height: 1;
   white-space: nowrap;
   transition: color .28s ease;
 }
-/* The graduation this item sits at. It rides on the link rather than on five
-   more elements in main.js, so a section cannot exist without its mark and the
+/* The graduation this item sits at. It rides on the link rather than on six
+   more elements in main.js, so an item cannot exist without its mark and the
    mark cannot land anywhere but the middle of the word it belongs to -- the
    same centre placeRailMarker() writes into --my, arrived at from the other
    side. The left offset is the channel's full width measured back from the
@@ -2360,14 +2437,21 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    happen to agree.
 
    .5em is half the pointer's 1em, stated as the half it is rather than as the
-   9px it currently resolves to, so the two marks keep their 2:1 whatever the
-   type does. The colour is the label's own ink at .7 -- the same --rail-ink
+   10px it currently resolves to, so the two marks keep their 2:1 whatever the
+   type does. The colour is the label's own ink at .85 -- the same --rail-ink
    channels, not a second value that matches it -- and the scale is printed
-   in the same pass as the words it graduates, one step behind them. It takes no
-   [data-state] and no transition on purpose. A printed scale does not answer
-   the hand -- and for the same reason all five graduations are identical.
-   Giving one of them a major-division length would rank five peers, which is
-   the objection THE MARKS ARE NOT STAGGERED already made about the index. */
+   in the same pass as the words it graduates, one step behind them. .85 and not
+   .7 for the reason the datum went to .45: at .7 the graduations measured
+   2.81:1 against the corner of the stage, and the mark that is supposed to make
+   the pointer's travel legible was itself only just legible. 3.61:1 keeps a
+   clear step under the words' 4.95 -- the ladder is still four rungs -- and it
+   is what makes the channel read as a scale at a glance rather than on
+   inspection. It takes no [data-state] and no transition on purpose. A printed
+   scale does not answer the hand -- and for the same reason all six graduations
+   are identical. Giving one of them a major-division length would rank six
+   peers, which is the objection THE MARKS ARE NOT STAGGERED already made about
+   the index; CONTACT is not a section, but it is a peer in the rail, and the
+   rail is what this scale graduates. */
 .rail .rail-link::before {
   content: '';
   position: absolute;
@@ -2379,7 +2463,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transform: translateY(-50%);
   width: .5em;
   height: 1px;
-  background: rgb(var(--rail-ink) / .7);
+  background: rgb(var(--rail-ink) / .85);
   pointer-events: none;
 }
 .rail .rail-link[data-state='hover'] { color: var(--gold-line-hover); }
@@ -2400,7 +2484,12 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    centring is done here (translate -50%) rather than in main.js, so the script
    never has to know how long the hairline is -- or, in the row below, which way
    the rail is pointing. --mx and --my are both always written; each layout uses
-   the one that is its own axis. */
+   the one that is its own axis.
+
+   It marks six positions now, and one of them is not a panel: placeRailMarker()
+   follows placeNow(), so the pointer sits on CONTACT for as long as the watch is
+   turned over and travels back when a section opens. Nothing in this rule knows
+   that -- it is still one centre and one transition. */
 .rail-marker {
   position: absolute;
   left: 0;                /* flush with the datum the graduations stand off */
@@ -2413,45 +2502,101 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transition: transform .2s cubic-bezier(.4,0,.2,1), opacity .2s ease;
   pointer-events: none;
 }
-/* Lit only while a section is open, and driven off the link's own state rather
-   than a second attribute saying the same thing. The marker is the last child,
-   so every link precedes it. */
+/* Lit only while one of the six is where you are, and driven off the link's own
+   state rather than a second attribute saying the same thing. The marker is the
+   last child, so every link precedes it -- including CONTACT, which is why the
+   caseback lights it with the same `~` and no rule of its own. */
 .rail .rail-link[data-state='active'] ~ .rail-marker { opacity: 1; }
 
 @keyframes railIn { from { opacity: 0; transform: translateY(4px); } }
 
-/* Below 1200px the same list ranges horizontally along the bottom, where the
-   hint sentence used to sit -- the card already covers most of the posed watch
-   at that width, so a corner column would be under it. One <nav>, the same
-   links, the same marker and the same graduations: this query changes the flex
-   direction, what the two ends are anchored to, and the type size. The channel
+/* Below 1200px the same list ranges horizontally along the TOP. One <nav>, the
+   same links, the same marker and the same graduations: this query changes the
+   flex direction, which edge the block is anchored to, and the type. The channel
    goes from a column beside the words to a band beneath them, and the hairline
    still sits in it, still travels, still points at one item. The overlay takes
-   its clearance at the bottom instead, which is the only padding it changes now
-   that the rail rents nothing on the right.
+   its clearance at the top to match.
 
-   THE ROW IS ITS OWN DERIVATION, and that is why the size drops back. The
-   column fills a 128.88px corner; the row has to fit five words and four gaps
-   across the narrowest screen the site serves. At 390x844 the margins take
-   2 * 5vmin = 39.0 and the gaps 4 * 4vmin = 62.4, leaving 288.6px for 32
-   characters of ink. Ink is 32 * 0.6 * size + 27 * 2.64, because the letter gap
-   is the same 2.64px here as in the column and 27 is the gaps INSIDE the five
-   words: at 11px that is 211.2 + 71.3 = 282.5, which fits with 6.1px to spare,
-   and at 18px it is 345.6 + 71.3 = 416.9, which overruns the phone by 128px.
-   There is no tracking that saves 18px -- the advance alone is 345.6 -- so the
-   row keeps 11px and the column's growth stops at the breakpoint. (An older
-   note here claimed 29px of slack at 11px; it is 6.1. Measured at 390x844.)
+   THE TOP AND NOT THE BOTTOM. It sat along the bottom because that is where the
+   hint sentence it replaced had been, and the bottom is where a phone's thumb
+   is -- but this is navigation on a page that has exactly one screen, and the
+   bottom of that screen is also where the card is. At the bottom the rail and
+   the card share an edge and the clearance between them is the only thing
+   keeping the words off the reading; at the top they are at opposite ends and
+   the rail is the first thing on the page, which is what a list of six section
+   names should be. It also puts the words where the eye starts rather than where
+   it finishes, and it stops the one control that never scrolls from sitting in
+   the home-indicator strip.
 
-   ONE OVERRIDE, NOT THREE. The row used to restate the letter-spacing and the
-   link's negative margin as .24em, because the column stated them as .165em and
-   both were spellings of 2.64px. The constant is now written once on .rail in
-   the px it always was, so the only thing this query changes about the
-   typography is --rail-size, and the pointer, the graduation and the row height
-   follow it down on their own. */
+   THE CHANNEL STAYS UNDER THE WORDS. It could have turned over with the block --
+   the graduations and the pointer above the row, between it and the top edge --
+   and it should not. Two reasons, and the second is the one that decides it:
+   the mark points at what it governs, and what this rail governs (the watch, the
+   card, the whole page) is below it; and above the words is where the notch, the
+   status bar and env(safe-area-inset-top) live, so a channel up there would
+   either be pushed into the inset or push the words 24px further down for a mark
+   nobody can see against a status bar. So `bottom: -12px` on the graduation and
+   `bottom: 12px` on the marker are unchanged from the bottom-row layout: what
+   moved is the block, not the scale inside it.
+
+   THE ROW IS ITS OWN DERIVATION, AND IT HAS TWO TIERS NOW. The column fills a
+   168.75px corner; the row has to fit SIX words and five gaps across the width
+   it is given, and one of those words is MISCELLANY. The ink is
+   44 * 0.6 * size + 38 * track, where 44 is the characters in the six labels and
+   38 is the letter gaps INSIDE them (44 - 6). At 13px and the column's own
+   2.64px that is 343.2 + 100.3 = 443.5px, which fits every viewport from 761px
+   up with 48px+ of gap left over -- so from 761 to 1199 the row does not have to
+   give anything back, and it goes UP from the 11px it used to be rather than
+   down. On a phone it cannot:
+
+     390x844, margins 2 * 5vmin = 39.0, leaving 351px for the ink and five gaps
+       13px, track 2.64   343.2 + 100.3 = 443.5   92px over the viewport
+       11px, track 2.64   290.4 + 100.3 = 390.7   40px over, before any gaps
+       11px, track 1.00   290.4 +  38.0 = 328.4   5 gaps of 4.5px: words touching
+       10px, track 1.00   264.0 +  38.0 = 302.0   5 gaps of 8.6px at 2.2vmin,
+                                                  and 6.1px still to spare
+
+   -- measured 345.9px of ink and gaps in the 351px box, so 5.1px in real Chrome
+   against the 6.1 the nominal 0.6em advance predicts. Either way the row fits on
+   one line with no wrap and no horizontal overflow, and it fits by about a
+   character's width, which is not much.
+
+   So the phone tier drops to 10px and 1px of tracking, and both are forced by
+   the content rather than chosen: this row carried 32 characters and now carries
+   44. 10px is not an arbitrary floor either -- it is the SAME 10px the
+   legibility block below sets for the caption, which is this site's stated floor
+   for chrome type on a phone. The row has now reached it, which means the next
+   label that grows has to be paid for out of the gaps or out of the label.
+
+   THE TRACKING IS A SECOND VALUE, NOT A SECOND SPELLING, and it is confined to
+   the phone. The row used to restate 2.64px as `.24em`, which was one constant
+   asserted twice; from 761px up it now simply inherits the constant, and below
+   760 it states 1px, which is a different number honestly written. That is also
+   independently right: .24em was display tracking inherited from when this was a
+   sentence, and .1em is ordinary tracking for uppercase mono labels at 10px. The
+   pointer, the graduation and the row height still follow --rail-size on their
+   own, and --rail-lead and --rail-ink come across untouched in both tiers.
+
+   760 IS THE PHONE'S BREAKPOINT AND IT IS ALREADY IN THIS FILE, one tier below
+   the rail's own 1199 -- see NARROW SCREENS. Width alone and not the legibility
+   block's `(max-width: 760px), (max-height: 640px)`: this constraint is purely
+   horizontal, and a phone in landscape is 844px wide, which is wide enough for
+   the 13px row with 72px of gap.
+
+   THE 390px FLOOR IS THE STATED ONE. At 375px (SE, mini) the row overruns by
+   about 5px, exactly as the five-word row already did before this change; the
+   site's measured floor has always been 390x844. */
 @media (max-width: 1199px) {
   .rail {
-    top: auto;
-    bottom: 2.6vmin;
+    /* The notch, the status bar and the rounded corner. index.html has asked for
+       viewport-fit=cover since the layout work began and nothing had ever read
+       the insets back, which was harmless while every fixed element was at the
+       bottom or in a desktop corner. A top bar is the first thing on this site
+       that would sit under a status bar, so it is the first thing that has to
+       pay for the cover. The fallback is 0px, which is what every browser
+       without the notch reports anyway. */
+    top: calc(2.6vmin + env(safe-area-inset-top, 0px));
+    bottom: auto;
     left: 0;
     right: 0;
     width: auto;
@@ -2459,25 +2604,29 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     flex-direction: row;
     justify-content: center;
     gap: 4vmin;
-    /* the ONE number the row has to disagree with the column about. The
-       tracking, the ink, the lead and every mark measured off them come across
-       unchanged, so this query is now the layout change it claims to be and not
-       a second copy of the block's typography: `letter-spacing: .24em` and
-       `margin-right: -.24em` were both restatements of 2.64px and are gone. */
-    --rail-size: 11px;
+    /* The ONE number this tier disagrees with the column about. 13px rather than
+       the column's 20 because a row is bounded by the viewport's width and a
+       column is not, and 13 rather than the 11 it used to be because the row got
+       an axis back when it moved off the bottom edge and stopped sharing it with
+       the card. The tracking, the lead, the ink and every mark measured off them
+       come across unchanged. See THE ROW IS ITS OWN DERIVATION. */
+    --rail-size: 13px;
   }
   /* The datum does not turn with the scale, and it is the only part that does
      not. In the column it is the left edge of a block standing alone in a
-     corner; here the block is anchored to the viewport's own bottom edge and
-     spans its full width, so the same hairline would land as a border ruled
-     across the bottom of the page -- a box, which is the one thing this rail
-     has never been. The graduations carry the scale on their own. */
+     corner; here the block is anchored to a viewport edge and spans its full
+     width, so the same hairline would land as a rule ruled across the page --
+     a box, which is the one thing this rail has never been. That was true of
+     the bottom edge and it is true of the top: a full-width hairline under a
+     top bar is a header border, which is the same failure wearing a more
+     familiar name. The graduations carry the scale on their own. */
   .rail::before { display: none; }
   /* The graduation turns with the scale: out of the channel beside the word and
      down into the band under it, onto the same line the pointer travels along.
      -12px below the link's own box is where .rail's 24px of padding-bottom puts
      that line, which is the marker's `bottom: 12px` arrived at from the link's
-     side instead of the rail's. */
+     side instead of the rail's. The 24px channel does not follow --rail-size
+     down: it is the room the two marks need, not a multiple of the type. */
   .rail .rail-link::before {
     left: 50%;
     top: auto;
@@ -2487,7 +2636,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .rail-marker {
     left: 0;
     top: auto;
-    bottom: 12px;         /* centred in the 24px channel, now underneath */
+    bottom: 12px;         /* centred in the 24px channel, still underneath */
     transform: translateX(calc(var(--mx, 0px) - 50%));
   }
   /* The overlay's half of this swap lives with .overlay itself, further down --
@@ -2499,7 +2648,15 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    A tap on a rail word lights its watch part for 600ms before the panel opens.
    It is the only way a phone visitor can learn that the watch IS this rail:
    there is no hover to teach it, and once a panel is open the watch is behind
-   it. Tap BOOKS, watch the moonphase answer, then read.
+   it. Tap MISCELLANY, watch the moonphase answer, then read.
+
+   FIVE OF THE SIX, AND CONTACT IS THE EXCEPTION. There is no rule below for the
+   crown, and it is not an omission: the cue buys time for the watch to answer
+   before a panel covers it, and CONTACT covers nothing -- it turns the whole
+   object over, which is the largest answer this site gives. A 600ms crown-lit
+   pause in front of that would delay the answer in order to announce it. The
+   click handler in src/main.js skips the cue for CONTACT for exactly this
+   reason, so the two halves agree.
 
    It cannot borrow THE LIVE PARTS' HOVER, which is deliberately walled inside
    (hover: hover): a tap fires a compatibility mouseenter and never a
@@ -2532,7 +2689,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .watch-flip[data-cue='projects'] .date-window .date-frame .sprite-art { filter: brightness(1.16) saturate(1.04); }
   .watch-flip[data-cue='resume']   .reserve-scale                       { filter: brightness(1.16) saturate(1.04); }
   .watch-flip[data-cue='research'] .seconds-dial .dial-art              { filter: brightness(1.16) saturate(1.04); }
-  .watch-flip[data-cue='books']    .moon                                { filter: brightness(1.14) saturate(1.04); }
+  .watch-flip[data-cue='miscellany'] .moon                              { filter: brightness(1.14) saturate(1.04); }
 }
 
 /* ===================== PANELS ===================== */
@@ -2545,22 +2702,52 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   justify-content: center;
   /* Plain 5vmin on all four sides. The right side used to carry an extra 120px
      as the rail's rent, and that is refunded: the rail is in the top-left corner
-     now and ends at x 163, while the card is right-aligned in panel mode
+     now and ends at x 203, while the card is right-aligned in panel mode
      (data-justify below) and so starts at W - 5vmin - 706 -- x 689 at 1440x900,
-     x 449 at 1200x900. 526px and 286px of daylight: they no longer share an
+     x 449 at 1200x900. 486px and 246px of daylight: they no longer share an
      axis, so there is nothing to pay. Refunding it also puts the card back on
      the same 5vmin margin as everything else on the page. See THE RAIL. */
   padding: 5vmin;
 }
 /* The other side of THE RAIL's breakpoint. Below 1200px the rail is a row along
-   the bottom, so the clearance is taken underneath. The row's box is 43px and it
-   sits 2.6vmin up, of which the padding already covers 5vmin, so what is
-   actually owed is 43 + 2.6vmin - 5vmin: 21px at 900 tall, 28px at 620. 48
-   covers the range and leaves the card visibly clear of the words rather than
-   touching them. Stated here and not beside the rail's own query so that it can
-   outrank the base padding above it. */
+   the TOP, so the clearance is taken above and the bottom goes back to the plain
+   page margin. The row's box is 5 + size + 5 of link plus the 24px channel --
+   47px at the 13px tier, 44px at the phone's 10px -- and it sits 2.6vmin below
+   the safe-area inset, of which the padding already covers 5vmin, so what is
+   actually owed is box + inset + 2.6vmin - 5vmin:
+
+     1100x800   47 + 20.8 - 40.0 = 27.8
+      844x390   47 + 10.1 - 19.5 = 37.6   landscape phone, still the 13px tier
+      761x400   47 + 10.4 - 20.0 = 37.4
+      390x800   44 + 10.1 - 19.5 = 34.6   + 47 of inset on a notched iPhone
+
+   48 covers every one of those on a device reporting no inset, with 10px of
+   daylight to spare at the worst of them, and env() carries the rest. That is
+   why the inset is added here rather than folded into the constant: it is a
+   device fact, not a layout choice.
+
+   THIS IS THE RAIL'S CLEARANCE, STATED ONCE. measureNarrowPose() in src/main.js
+   reads padding-top and padding-bottom off this element to work out the band the
+   watch is posed into, so the rail's height, its offset and the notch reach the
+   watch's geometry without any of the three being written down a second time.
+   Stated here and not beside the rail's own query so that it can outrank the
+   base padding above it.
+
+   AND THE BOTTOM NEEDS THE INSET NOW THAT THE RAIL HAS STOPPED PAYING FOR IT.
+   The card is bottom-anchored, and while the rail was down there the 48px of
+   clearance was incidentally holding it clear of the home indicator (34px on a
+   notched iPhone) as well. With the rail at the top the bottom is a bare 5vmin,
+   which is 19.5px at 390 wide -- under the indicator, not over it. So the bottom
+   asks for its own inset. The two are written the same way, `margin + env`,
+   rather than one as a max() and the other as a sum: the page's margin is the
+   page's margin at both ends, and the inset is what the device adds to it. */
 @media (max-width: 1199px) {
-  .overlay { padding: 5vmin 5vmin calc(5vmin + 48px); }
+  .overlay {
+    padding:
+      calc(5vmin + 48px + env(safe-area-inset-top, 0px))
+      5vmin
+      calc(5vmin + env(safe-area-inset-bottom, 0px));
+  }
 }
 .overlay[hidden] { display: none; }
 .overlay[data-justify='flex-end'] { justify-content: flex-end; }
@@ -2698,12 +2885,18 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .tl-role { font-family: var(--font-display); font-size: 19px; color: #eef0f5; margin-bottom: 5px; }
 .tl-desc { font-size: 13.5px; line-height: 1.65; color: var(--body); }
 
-.book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.book { border: 1px solid rgba(217,162,107,.18); border-radius: 5px; padding: 22px; transition: border-color .25s; }
-.book:hover { border-color: rgba(217,162,107,.5); }
-.book-title { font-family: var(--font-display); font-size: 18px; color: #eef0f5; margin-bottom: 4px; }
-.book-author { font-size: 12.5px; color: var(--gold-line); margin-bottom: 10px; }
-.book-desc { font-size: 13px; line-height: 1.6; color: var(--body); }
+/* The Miscellany panel's cards. Named for entries and not for books, because the
+   section is: `.book-*` was renamed with the label rather than left behind as a
+   prefix nothing in the rail, the address or the markup still says. The rules
+   themselves did not change -- this was a rename, not a restyle -- and .entry-meta
+   is the one that will want a second look when the real entries arrive, since it
+   is styled as a byline and a miscellany's second line may not be one. */
+.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.entry { border: 1px solid rgba(217,162,107,.18); border-radius: 5px; padding: 22px; transition: border-color .25s; }
+.entry:hover { border-color: rgba(217,162,107,.5); }
+.entry-title { font-family: var(--font-display); font-size: 18px; color: #eef0f5; margin-bottom: 4px; }
+.entry-meta { font-size: 12.5px; color: var(--gold-line); margin-bottom: 10px; }
+.entry-desc { font-size: 13px; line-height: 1.6; color: var(--body); }
 
 /* ===================== NARROW SCREENS =====================
    The site's first layout rules. Everything above this line was written for one
@@ -2726,7 +2919,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      max-width: 760px    the phone: card padding, one column, tighter type.
 
    1199 IS THE RAIL'S BREAKPOINT, ON PURPOSE. THE RAIL says it is where the
-   navigation stops being a right-hand column and becomes a row along the bottom,
+   navigation stops being a top-left column and becomes a row along the top,
    which is the same event from the other side: below it there is no column on
    the right for the card to sit beside, and no room on the right for the watch
    to be pushed away from. Two breakpoints 19px apart would only have made a
@@ -2743,14 +2936,38 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      it are one number rather than two that can drift apart. */
   :root { --sheet-vh: 60; }
 
+  /* AND 50 ON A SHORT VIEWPORT, WHICH THE RAIL'S MOVE MADE COMPULSORY. The
+     landscape phone used to be listed at the bottom of this block as "usable,
+     unlovely" and explicitly left alone, with the note that the fix would be a
+     landscape-specific --sheet-vh. It is not optional now: a top bar takes its
+     clearance OUT of the watch's band instead of sharing the card's margin, and
+     at 844x390 that pushed the band below the .24 scale floor measureNarrowPose()
+     holds -- the watch stopped shrinking, kept its size, and went 17.7px behind
+     the card. Measured, not modelled.
+
+     480px IS WHERE IT BREAKS, derived rather than tried: with vmin following the
+     short axis in landscape, the band is H - 0.1H - 48 - 0.6H - 0.032H, and that
+     equals the floor's 80.5px watch at H = 479.5. So the query is max-height:
+     480px and the card gives 10vh back, which restores 6px of daylight at
+     844x390 and more above it. The card is the right one to give: at that height
+     it was showing about one and a half entries and now shows about one, while
+     the watch was showing nothing at all. */
+  @media (max-height: 480px) { :root { --sheet-vh: 50; } }
+
   /* Bottom-anchored. justify-content is written by render() as data-justify, so
      it is overridden at equal specificity rather than with !important -- a card
      at the bottom of the screen is centred whatever the transition style says.
-     THE PADDING IS DELIBERATELY NOT TOUCHED: THE RAIL's own rule at this same
-     breakpoint sets the bottom padding to clear the row of links, and that is
-     exactly the clearance this layout needs. Two rules for one gap would be one
-     too many, and measureNarrowPose() reads the resulting padding rather than
-     assuming a number for it. */
+     THE PADDING IS DELIBERATELY NOT TOUCHED HERE: THE RAIL's own rule at this
+     same breakpoint sets all three sides -- the rail's clearance on top, the
+     page margin plus the home indicator underneath -- and that is exactly what
+     this layout needs. Two rules for one gap would be one too many, and
+     measureNarrowPose() reads the resulting padding rather than assuming a
+     number for it.
+     THE CARD STAYS AT THE BOTTOM even though the rail moved to the top. It is
+     bottom-anchored because that is where a sheet belongs on a phone and where
+     the thumb is, and because the watch has to be ABOVE it to stay visible;
+     none of that depended on the rail being down there too. What changed is
+     that the two are no longer sharing an edge. */
   .overlay { align-items: flex-end; }
   .overlay[data-justify] { justify-content: center; }
 
@@ -2769,9 +2986,22 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
 /* ---- the phone ---- */
 @media (max-width: 760px) {
+  /* The rail's second tier, and the only place in this file where its typography
+     is stated twice. Six words including MISCELLANY are 44 characters, and 44
+     characters at the 13px the row uses above are 443.5px of ink against the
+     351px a 390px phone has between its margins. The two numbers below are the
+     arithmetic that closes that gap and they are derived in full in THE ROW IS
+     ITS OWN DERIVATION; 10px is this site's own floor for chrome type on a
+     phone, which the caption rule below sets for the same reason. */
+  .rail {
+    --rail-size: 10px;
+    --rail-track: 1px;
+    gap: 2.2vmin;
+  }
+
   /* 52px of side padding on a card that has been shrunk to 351px leaves a 245px
-     column, and .book-grid's `minmax(260px, 1fr)` does not fit in 245 -- which is
-     the horizontal overflow the Books panel shows on a 390px phone. 22px gives
+     column, and .entry-grid's `minmax(260px, 1fr)` does not fit in 245 -- which is
+     the horizontal overflow the Miscellany panel shows on a 390px phone. 22px gives
      the column 305px, and the single-column grid below removes the 260px floor
      as well; both halves of that were needed. */
   .card { padding: 26px 22px 24px; }
@@ -2788,7 +3018,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .about-grid { gap: 20px; }
   .about-copy { min-width: 0; }
 
-  .book-grid { grid-template-columns: 1fr; }
+  .entry-grid { grid-template-columns: 1fr; }
   .feature-row { gap: 14px; }
   .timeline { padding-left: 20px; gap: 22px; }
 }
@@ -2800,24 +3030,43 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    it to 4.1px and the caseback hallmark to 3.8px. Those are not small, they are
    unreadable.
 
-   The rail is not in this list, and does not need to be: it was already sized in
-   px rather than vmin -- 11px, derived from the character count of its longest
-   label -- so it is the one piece of chrome type that was legible on a phone
-   before this block existed.
+   The rail is not in this list, and does not need to be: it is sized in px
+   rather than vmin -- 10px in the top row, derived from the character count of
+   its six labels -- so it is the one piece of chrome type that was legible on a
+   phone before this block existed. It is now sitting on exactly the 10px floor
+   this block sets for the caption, which is not a coincidence and is stated as a
+   limit in THE ROW IS ITS OWN DERIVATION: the row has spent its last px, and the
+   next label that grows has to be paid for out of the gaps.
 
    Keyed on max-height as well as max-width, because vmin follows the SHORTER
    axis: a phone turned sideways is 844px wide and would miss a width-only rule
    while its type stayed at 5px. The desktop sizes are untouched -- at 1440x900
    these compute to 12.2px and 8.8px and neither query matches. */
 @media (max-width: 760px), (max-height: 640px) {
-  /* A fixed 5vmin height and one line was a desktop assumption. The caption is
-     the longest string on the page now that THE RAIL moved "CROWN TO FLIP" into
-     it, and the tracking is what makes it long, so the tracking is what gives.
-     min-height rather than height so it can take the second line it will need,
-     and a floor so the layout does not jump when the line count changes. */
+  /* A fixed 5vmin height and one line was a desktop assumption. The caption
+     still wraps on a phone and the tracking is what makes it long, so the
+     tracking is still what gives. min-height rather than height so it can take
+     the second line it needs, and a floor so the layout does not jump when the
+     line count changes.
+
+     3em AND NOT 4.6em. The 4.6 was three lines, and it was three lines because
+     the caption then ended "   ·   CROWN TO FLIP" -- a 62-character string. THE
+     RAIL took that mode line back when CONTACT joined it, and the longest
+     caption on the page is now the status line's own longest entry, measured
+     rather than guessed:
+
+       CURRENTLY WEARING — TUDOR BLACK BAY 58 “NAVY BLUE”   50ch, 2 lines, 30px
+       THE PUSHER — RUN THE WATCH THROUGH ITS PACES         44ch, 1 line
+       THE MOVEMENT — PULL THE CROWN, TURN IT OVER          43ch, 1 line
+
+     at 390x800, in a 343px box. Exactly one caption wraps and it wraps to two,
+     so the floor is two lines: 2 * 1.5em = 3em. That is 16px handed back to the
+     watch. The 50 is content and can move -- it is a real entry in CURRENTLY,
+     not Lorem -- so this is a floor to re-measure when that line changes, and
+     min-height is what makes a third line cost a reflow rather than a clip. */
   .caption {
     height: auto;
-    min-height: 4.6em;
+    min-height: 3em;
     padding: 0 6vw;
     font-size: 10px;
     letter-spacing: .16em;
@@ -2867,12 +3116,15 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      as "either the watch grows or the space earns its keep", and both of those
      are design decisions rather than layout fixes -- the watch is 86vmin
      everywhere and growing it on one axis means deciding what a phone's watch is.
-   - LANDSCAPE PHONES. At 844x390 the layout holds -- nothing is clipped and
-     nothing overlaps, because the pose is measured rather than assumed -- but
-     60vh of a 390px viewport is a 234px card, which shows about one and a half
-     resume entries before it scrolls, and the watch shrinks to 80px. Usable,
-     unlovely. The fix is a landscape-specific --sheet-vh, which is one line, but
-     it wants a judgement about which of the two is worth more at that size.
+   - LANDSCAPE PHONES are no longer on this list in full: the landscape
+     --sheet-vh this note called for has been written (max-height: 480px, 50vh,
+     up in the panel block), because moving the rail to the top took its
+     clearance out of the watch's band and the old 60vh put the watch 17.7px
+     behind the card at 844x390. What is still true is the shape of it: at that
+     height the card shows about one entry and the watch is 95px, and both are
+     small. Nothing is clipped and nothing overlaps -- the pose is measured, and
+     the clearance is now measured with it -- but nobody would choose to read
+     this site sideways on a phone.
    - THE HOVER PULSE NEVER FIRES ON A PHONE: it is walled inside
      @media (hover: hover) for a good reason of its own. THE TOUCH CUE covers the
      rail's taps, so the gap left is a tap on the WATCH, which opens its section
