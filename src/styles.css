@@ -320,7 +320,20 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transform: rotate(var(--guilloche-at, 0deg));
   animation: guilloche 360s linear infinite;
 }
-@keyframes guilloche { to { transform: rotate(360deg); } }
+/* BOTH ENDS ARE WRITTEN OUT, and the `from` is the whole reason. An implicit
+   `from` is taken from the element's own base style, which here is
+   rotate(var(--guilloche-at)) -- the static fallback below. So a lone `to`
+   made the animation run from the seeded angle to 360deg, which is not a turn:
+   it is whatever is left of one, covered in the same 360s. Seeded at 85.5deg it
+   ran at 274.5deg per turn-length, and the negative delay then seeked into THAT
+   ramp, so the phase was wrong as well as the rate. Measured before the fix:
+   173.23deg rendered where the clock said 115.05. Write both ends and the base
+   transform goes back to being what it is for -- the value reduced motion
+   falls back to, and nothing else. */
+@keyframes guilloche {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 /* animation: none rather than the blanket .01ms, for the reason the hover
    pulse's rule gives: a 0.01ms event is not a fast event, it is a state -- and
    this one has a state to fall back to, the transform above. Left to the
