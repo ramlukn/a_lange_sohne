@@ -329,6 +329,11 @@ const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 //                 caption, via hoverKeyOf() below. The reciprocal half comes
 //                 free: the crown already writes state.hover, so a pointer on it
 //                 lights the word.
+//   the toggle    clicking it while it is lit puts it away, the same as the
+//                 five. For them that is the panel going and the watch coming
+//                 back off its pose; for CONTACT it is the watch turning back to
+//                 the dial. This is what stops the crown -- ~30px on a 335px
+//                 phone watch -- from being the only way off the caseback.
 // The one thing it does not take is THE TOUCH CUE's 600ms delay -- see the click
 // handler.
 const railLinks = new Map();
@@ -674,10 +679,11 @@ function render() {
   // to do the same, and for the five dial parts it still does: they are face-up
   // furniture and there is nothing to light. But the crown and the corrector
   // are fittings in the case band. They are visible from the back, they are
-  // still clickable from the back, and the crown is the ONLY way back to the
-  // dial. Suppressing their highlight there would mean the one control you
-  // actually need is the one control that stops answering, which is a worse
-  // version of the bug this pass exists to fix.
+  // still clickable from the back, and the crown is the way back to the dial
+  // that is ON the watch -- the rail's lit CONTACT is the other one, and it is
+  // not part of this layer at all. Suppressing their highlight there would mean
+  // the control you reach for first is the one control that stops answering,
+  // which is a worse version of the bug this pass exists to fix.
   // The five dial marks need no guard of their own -- .face-front is
   // backface-hidden, so past 90deg it is neither painted nor hit-tested and
   // state.hover cannot become a dial part -- but the test is written on the
@@ -692,10 +698,14 @@ function render() {
 // Showing and hiding are the two places focus moves on its own, and they are
 // pairs: showSection() remembers what it was opened from and puts focus on the
 // panel, hideSection() puts it back; showContact() and hideContact() both leave
-// it on the crown, which is the control that turns the watch over and the only
-// way back to the dial. Nothing is trapped -- Tab still walks out of the card
-// and on through the page -- but the keyboard never has to start again from the
-// top of the document, which is what "lost focus" actually feels like.
+// it on the crown, which is the control that turns the watch over and the way
+// back that lives on the watch itself. Both hides take a keepFocus flag for the
+// callers that have somewhere better to put it than their own default -- the
+// caseback closing a panel on its way in, and a rail word closing itself, which
+// wants focus to stay on the word that was clicked. Nothing is trapped -- Tab
+// still walks out of the card and on through the page -- but the keyboard never
+// has to start again from the top of the document, which is what "lost focus"
+// actually feels like.
 //
 // These four move STATE ONLY. They know nothing about the address bar, and
 // nothing outside the routing block below calls them: every control that
@@ -742,8 +752,11 @@ function hideSection(keepFocus) {
 
 // The caseback, which the rail's CONTACT and the crown both ask for. It is
 // showSection()'s opposite number rather than a special case of it: no panel, no
-// returnTo, and the focus lands on the crown either way in and out, because the
-// crown is what turned the watch over and is the only way back to the dial.
+// returnTo, and the focus lands on the crown by default in and out, because the
+// crown is what turned the watch over and is the nearest thing to a handle on
+// the back of the watch. It is no longer the ONLY way back -- re-clicking the
+// lit CONTACT turns the watch over the other way, which is what hideContact()'s
+// keepFocus below exists for.
 function showContact() {
   // A panel and the caseback are mutually exclusive, so arriving here closes one
   // if it is open. This is where THE FLIP's invariant is enforced from the other
@@ -761,11 +774,19 @@ function showContact() {
   el.crown.focus({ preventScroll: true });
 }
 
-function hideContact() {
+// keepFocus is hideSection()'s parameter, with the same meaning and for the same
+// kind of caller. The crown is where focus belongs when the watch turns back over
+// with nowhere better to send it -- Escape, the crown itself, Back -- but the one
+// caller that HAS somewhere better is the rail's CONTACT closing itself: the word
+// is under the pointer, it is the control that was just operated, and it is where
+// a third click would land. Handing focus to the crown and letting that caller
+// steal it back a moment later would be two focus moves in one gesture, which is
+// one more than a screen reader or a focus ring can follow.
+function hideContact(keepFocus) {
   if (!state.flipped) return;
   state.flipped = false;
   render();
-  el.crown.focus({ preventScroll: true });
+  if (!keepFocus) el.crown.focus({ preventScroll: true });
 }
 
 // ---- ADDRESSES -------------------------------------------------------------
@@ -858,14 +879,36 @@ function goTo(key, from) {
 // a second one. Anything else gets a pushed home entry: a second destination
 // underneath, or a deep-link arrival, which carries no history.state at all
 // because we never created it.
-function leave(keepFocus) {
+//
+// THE ONE DOOR OUT, and the reason there is no second one. Four controls close:
+// Escape, the card's close control, the crown on the caseback, and now a rail
+// word re-clicked where it is already lit. All four call this, so all four leave
+// the same entry behind -- which is exactly the failure the block above is
+// written to prevent, three ways out that agree about the state and disagree
+// about the address.
+//
+// `focusTo` is the element focus should land on afterwards, for the caller that
+// has a better answer than the two defaults (the part a panel was opened from,
+// or the crown): the rail word that was just clicked. Everything else omits it
+// and gets the default, which is the behaviour that was already here.
+function leave(focusTo) {
   const leaving = placeNow();
   if (!leaving) return;
+  // A tap that closes must not sit through the touch cue, and a cue left running
+  // must not re-open what was just closed. goTo() clears it on the way in for the
+  // first reason; this clears it on the way out for the second, which also covers
+  // Escape and the close control landing while a cue is still counting down.
+  railCue(null);
   const undo = !!history.state && history.state.from === null;
   // The panel or the flip goes now rather than on the popstate a task later.
   // history.back() is asynchronous, and Escape has to feel like a key, not like
   // a request.
-  if (state.flipped) hideContact(); else hideSection(keepFocus);
+  if (state.flipped) hideContact(!!focusTo); else hideSection(!!focusTo);
+  // After the hide and before the history write: the hides are what make the
+  // panel [hidden] and the caseback face away, and focus must not be sitting
+  // inside either when that happens. isConnected because the rail is rebuilt by
+  // nothing today but the check costs nothing and hideSection() already makes it.
+  if (focusTo && focusTo.isConnected) focusTo.focus();
   if (undo) history.back();   // applyRoute() then finds nothing left to do
   else history.pushState({ key: null, from: leaving }, '', urlFor(null));
 }
@@ -1022,6 +1065,29 @@ for (const [key, node] of railLinks) {
     // what tells leave() whether the bare watch is underneath. Same address
     // either way; this one knows how it got there.
     e.preventDefault();
+    // A SECOND CLICK ON THE LIT WORD CLOSES IT, and it is the same click either
+    // way: the rail item you are on is the control for the place you are in, so
+    // it opens it and it puts it away. All six behave alike -- the five reverse
+    // the pose and take the panel down, CONTACT turns the watch back to the dial
+    // -- which is what makes the sixth word a peer here as well. On a phone it is
+    // the difference between a way out and the crown, a ~30px target on a 335px
+    // watch, being the only one. (docs/SITE-DIRECTION.md 6.6 asked for exactly
+    // this: "Tapping CONTACT again, or any other item, flips back".)
+    //
+    // BEFORE the touch cue, not after, and this is the whole reason it is written
+    // here rather than folded into goTo(). Opening waits 600ms on touch so the
+    // watch can answer first; closing has nothing to announce -- the answer IS
+    // the watch coming back -- and a close that sat through the cue would read as
+    // a dropped tap. It also has to come before goTo(), whose first line returns
+    // early for the destination that is already up: that guard is what stops the
+    // address bar and a re-entrant route from re-opening a panel, and it would
+    // swallow this too.
+    //
+    // leave() and not a hide, so the address is written the same way Escape, the
+    // card's close control and the crown write it, and `node` so focus stays on
+    // the word under the pointer instead of being thrown to the dial part or the
+    // crown -- see leave().
+    if (placeNow() === key) { leave(node); return; }
     // A touch device has no hover, so a tap would open the panel with the watch
     // never having answered -- and the one thing a phone visitor has to learn is
     // that the watch IS this rail. So the tap lights the part first and opens
@@ -1144,8 +1210,10 @@ $('resumeScroll').addEventListener('scroll', (e) => {
 // and the caseback. It used to test for them in turn; placeNow() is that test,
 // and leave() dispatches on the same value, so the key is now one line and the
 // precedence question it used to answer no longer exists. Returning from the
-// caseback still puts focus on the crown -- hideContact() does it, so every path
-// off the back of the watch lands there and not just this one.
+// caseback still puts focus on the crown -- hideContact() does it, so this path
+// does not have to say so. The one path that lands somewhere else is a rail word
+// closing itself, which keeps focus on the word; it passes leave() the element,
+// and everything that does not pass one gets the crown.
 //
 // Escape still means CLOSE, not "walk the history". It lands on the bare watch
 // even when a second destination is underneath in the history -- leave() pushes
