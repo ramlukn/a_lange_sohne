@@ -2490,20 +2490,25 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
                            to prevent
        theta 185..220 deg  the jewel arm's LEFT LOBE. The ruby is at
                            (555.2, 388.3) r 22.8 with three blue screws round
-                           it at r 33; the hub is r 18.01 and would sit on the
-                           stone itself from 190 to 210 and on a screw head at
-                           220. Teeth under the lobe are fine -- that is what
-                           this cut is for -- but the hub cannot go under
-                           anything, and a logo lying on a ruby is the same
-                           failure as teeth lying on a wheel
-       theta 220..270 deg  the VIERZIG (40) RUBINE engraving, which runs
-                           x 567..690 over y 300..340. The hub lands on RUB,
+                           it at r 31.4, 33.5 and 37.1; the hub is r 18.01 and
+                           would sit on the stone itself from 185 to 210 and on
+                           a screw head at 220. Teeth under the lobe are fine --
+                           that is what this cut is for -- but the hub cannot go
+                           under anything, and a logo lying on a ruby is the
+                           same failure as teeth lying on a wheel
+       theta 220..270 deg  the VIERZIG (40) RUBINE engraving, whose glyphs run
+                           x 546..719 over y 280..354. The hub lands on RUB,
                            then UBIN, then BINE
    There is no fourth option: theta below 68 is the far side of LinkedIn, where
    Gmail already is. The pocket the brief calls "between the two plates" holds
-   exactly one wheel, and the proof is smaller than the sweep: the lobe's traced
-   edge and LinkedIn's tip circle OVERLAP by 3.1 px. There is not a pixel of
-   plate between them at any size.
+   exactly one wheel, and the proof is shorter than the sweep. Traced along the
+   line from the lobe's centre (553, 390) to LinkedIn's (655.5, 422.8), the
+   arm's edge stands at r 53.50 and the centres are 107.62 apart, so with
+   LinkedIn's tip r 62.700 the daylight between the two is -8.58 render px:
+   LinkedIn's teeth are already under that edge, which is the tuck its own
+   block records. From 0 to 40 degrees off that line the traced edge lies
+   INSIDE LinkedIn's tip circle. There is no plate in that pocket to put a
+   wheel on, at any size.
    So the wheel was placed as near to LinkedIn on its left as the plate allows
    -- 170.60 centre to centre, 55.10 tip to tip, against 263.5 tip to tip before
    -- and the size step was still worth taking, because it is what leaves the
@@ -2515,7 +2520,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    it. Its undercut was traced off rig/base.webp per degree, as the darkest
    point along each ray out of (553, 390) between r 42 and r 62, refined to
    subpixel by a parabola through the minimum and smoothed over 2.5 degrees. It
-   runs r 45.4 at 180 deg, 46.2 at 160, 47.3 at 145, 48.5 at 125 and 49.5 at 90:
+   runs r 45.5 at 180 deg, 46.2 at 160, 47.3 at 145, 48.5 at 125 and 49.5 at 90:
    near enough a circle of radius 47, leaning out as it comes round to the
    bottom. (An earlier pass took the luminance = 110 crossing instead and read
    r 43..45; that is the INNER foot of the chamfer, not the darkest line of the
