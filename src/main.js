@@ -101,8 +101,47 @@ const CONTACT = { key: 'contact', label: 'Contact', hover: 'crown' };
 // that are not sections -- the crown turns the watch over, the pusher runs the
 // demonstration -- so they are the only captions still written out by hand. The
 // crown's is now printed by two controls, the fitting and the rail's CONTACT.
+// THE PUBLISHED ADDRESS, ONCE. It is printed in two places -- the mailto: in
+// index.html and the caption below -- and those two must never be able to
+// disagree, so the caption derives from this and the markup is checked against
+// it at startup rather than trusted. The personal address and not the
+// university one: a .edu expires with the degree and this site should outlive
+// it.
+const EMAIL = 'nikhilr.ramlukan@gmail.com';
+
+// The three wheels on the caseback, and what the caption says while you are on
+// one. The address is read out in full because that is the whole point of the
+// caption here: a mailto: is a dead end for someone who only wants to copy it,
+// and the engraved hub says "Gmail", not where it goes.
+const LINKS = {
+  linkedin: 'LINKEDIN.COM/IN/NIKHIL-RAMLUKAN',
+  github: 'GITHUB.COM/RAMLUKN',
+  email: EMAIL.toUpperCase()
+};
+
+// WHERE THE THREE GO, ONCE. LINKS above says what they are; this says where they
+// point. Both ends of the site read it -- the rail's three contact links below
+// are built from it, and the caseback's own hrefs are checked against it at
+// startup rather than trusted (see the link train). The two URLs used to live
+// only in index.html, so putting the same three words in the rail would have
+// meant retyping them; a table both ends read is the same defence the address
+// already had.
+//
+// EMAIL IS STILL A mailto: AND IT IS NO LONGER FOLLOWED. Both controls carrying
+// it -- the caseback's Gmail wheel and the rail's EMAIL -- copy the address to
+// the clipboard instead; see copyEmail(). The href stays because it is what
+// keeps them links rather than buttons in a link's clothes: middle-click, "copy
+// link address" and the status bar all still work, and a visitor whose script
+// never ran gets a mailto: that does exactly what it says.
+const LINK_HREF = {
+  linkedin: 'https://www.linkedin.com/in/nikhil-ramlukan-2a4a41277',
+  github: 'https://github.com/ramlukn',
+  email: `mailto:${EMAIL}`
+};
+
 const CAPTIONS = {
   ...Object.fromEntries(SECTIONS.map((s) => [s.key, `${s.label.toUpperCase()} — THE ${s.part}`])),
+  ...LINKS,
   crown: 'THE MOVEMENT — PULL THE CROWN, TURN IT OVER',
   pusher: 'THE PUSHER — RUN THE WATCH THROUGH ITS PACES'
 };
@@ -355,6 +394,86 @@ el.rail.append(...[...SECTIONS, CONTACT].map((s) => {
   return a;
 }));
 
+// ---- THE THREE UNDER CONTACT -----------------------------------------------
+// EMAIL, GITHUB and LINKEDIN, as real links, hanging off the sixth word. They
+// are the caseback's three wheels said in words: an engraved hub says "Gmail",
+// not where it goes, so the wheels are the prettier half and the illegible one.
+// These are the half you can read, tab to, and copy a link address from.
+//
+// THEY ARE NOT PEERS, AND THE RAIL SAYS SO IN ITS OWN VOCABULARY. No graduation,
+// no datum beside them, and the pointer never visits: the scale graduates the
+// six places you can BE, and these three are not places on this site. What they
+// take from the ladder is the WORDS' own ink at 13px against the column's 20 --
+// full ink because they are live controls and light is this site's only word for
+// "live", and because a tier down would have put a 13px link under 4.5:1. The
+// subordination is carried by size and by being off the scale, which is the one
+// hierarchy device this rail has that is not a box. See THE THREE UNDER CONTACT
+// in src/styles.css.
+//
+// THEY APPEAR WHEN CONTACT IS WHERE YOU ARE -- placeNow() === CONTACT.key, the
+// same value the pointer and the lit word already read, so there is no second
+// state to keep in step, no aria-expanded, and no question about whether opening
+// them flips the watch (the flip IS the opening). It is a sublist under the
+// current item, not a disclosure, and CONTACT's behaviour is untouched: it
+// routes, it flips, and re-clicking it closes -- which now also puts these away.
+//
+// ALWAYS-VISIBLE WAS MEASURED AND IT DOES NOT FIT, in either layout:
+//   the column   the rail's clearance table (THE RAIL in styles.css) already
+//                runs NEGATIVE for MISCELLANY and CONTACT at 1440x900 with a
+//                panel open -- the posed case is a 278.6px circle about
+//                (316.8, 450) and CONTACT's box is inside it. Three more rows
+//                carry LINKEDIN's corner to 236px from that centre, 42px inside
+//                the case, which is twice the worst overlap the rail has ever
+//                accepted. Tied to the flip they are never on screen with a
+//                posed case at all: the caseback has no panel, the watch is
+//                centred at 86vmin, and the nearest corner clears it by ~206px.
+//   the top row  the row is at its measured limit -- 345.9px of ink in a 351px
+//                box at 375px, "the row has spent its last px". Three more words
+//                IN it is 130px it does not have. They stay a stack and go BELOW
+//                the marker channel instead, out of flow, so the row is still
+//                six words on one line and pays nothing -- and that stack is
+//                only there while the watch is turned over.
+// So nothing is hidden on narrow screens: the phone gets the same three words in
+// the same arrangement and the same state the desktop gets them.
+const railContacts = document.createElement('div');
+railContacts.className = 'rail-contacts';
+railContacts.hidden = true;
+const railContactLinks = [
+  { key: 'email', label: 'Email' },
+  { key: 'github', label: 'GitHub' },
+  { key: 'linkedin', label: 'LinkedIn' }
+].map(({ key, label }) => {
+  const a = document.createElement('a');
+  a.className = 'rail-contact';
+  // The same data-link the caseback's wheels carry, because it is the same key:
+  // state.hover, CAPTIONS and LINK_HREF are all read with it, so hovering the
+  // word prints the full address in the caption exactly as hovering the wheel
+  // does. One vocabulary, two ends.
+  a.dataset.link = key;
+  a.href = LINK_HREF[key];
+  a.textContent = label;
+  if (key === 'email') {
+    // The accessible name says what it does, not where the href goes. This is
+    // the honest half of the trade made in LINK_HREF: the element is still an
+    // <a href="mailto:">, so it still degrades and still middle-clicks, and the
+    // name is what stops it announcing as a link to a mail client it will not
+    // open. Set here rather than in the markup so it cannot drift from EMAIL.
+    a.setAttribute('aria-label', `Copy email address ${EMAIL}`);
+  } else {
+    a.target = '_blank';
+    a.rel = 'noopener';
+    // The host and path in full, from the href itself rather than from LINKS --
+    // LINKS is the caption's SHORTENED reading and the LinkedIn one drops the
+    // id, which is fine to print under a pointer and wrong to read out as the
+    // destination.
+    a.setAttribute('aria-label',
+      `${label}, at ${LINK_HREF[key].replace(/^https?:\/\//, '')} (opens in a new tab)`);
+  }
+  railContacts.append(a);
+  return a;
+});
+el.rail.append(railContacts);
+
 // Where you are. A short gold hairline in the marker channel, level with the
 // open section, which travels to the next one over 200ms instead of fading out
 // and in -- one pointer along a scale, the gesture the reserve hand already
@@ -446,6 +565,16 @@ const state = {
   reserve: RESERVE_REST,
   touched: false,
   demo: null,  // { t0, reduced } while the pusher's sweep is running
+  // What the caption has to say instead of itself for a moment: { text, until }.
+  // Only ever a failed copy now -- the successful one is the mark against the
+  // control that was clicked, see showCopyMark(). Written by copyEmail() and
+  // expired by render() reading the clock, which is
+  // state.demo's own arrangement and for the same reason -- a timer that wrote
+  // the caption directly would be a second author of a line that already has
+  // one, and it would fight the hover state that owns it. Here the notice is
+  // just another branch of the one expression, so the pointer moving on cannot
+  // erase it and it cannot outlive its own deadline.
+  notice: null,
   // The element a panel was opened from, so closing can hand focus back to it
   // rather than dropping it on <body> and starting the next Tab from the top.
   returnTo: null
@@ -592,12 +721,22 @@ function render() {
   // reader now that the panel it also fed has gone.
   const cur = CURRENTLY[Math.floor(now / 4000) % CURRENTLY.length];
 
+  // The blocked-copy line, expired against the same clock the demo is. It
+  // outranks hover for the reason the demo does, and it is the whole reason it
+  // has to: the pointer is still on the word it was clicked on, so what this
+  // line would otherwise print is the address on its own, and the reader would
+  // never learn that the copy did not happen. Cleared here rather than on a
+  // timeout so there is exactly one writer -- see state.notice.
+  if (state.notice && state.notice.until <= now) state.notice = null;
+
   // The demo outranks hover: the cursor is still on the pusher that started it,
   // and under reduced motion this line is the only feedback the press gets.
   el.caption.textContent = state.demo
     ? (state.demo.reduced
         ? 'DEMONSTRATION SKIPPED — REDUCED MOTION'
         : 'DEMONSTRATION — ALL FUNCTIONS IN MOTION')
+    : state.notice
+    ? state.notice.text
     : state.hover
     ? CAPTIONS[state.hover]
     : state.active
@@ -648,6 +787,14 @@ function render() {
 
   el.overlay.hidden = !state.active;
   el.overlay.dataset.justify = CONFIG.transitionStyle === 'panel' ? 'flex-end' : 'center';
+  // BEFORE the panels are hidden, not after, and that ordering is the whole
+  // reason this line is not down with them. shotsRun(false) also closes the
+  // enlarged frame, and a <dialog> in the top layer stops generating a box the
+  // moment an ancestor goes display: none -- so it has to be closed while the
+  // card is still on screen, or the picture would still be "open" behind a
+  // hidden panel and its focus would have nowhere to return to. Same reasoning
+  // as rigPlay/rigStop above: state is the signal, never a poll.
+  shotsRun(state.active === 'projects');
   for (const [key, node] of panels) node.hidden = state.active !== key;
 
   // The interaction index recedes the moment the watch has been understood:
@@ -679,6 +826,22 @@ function render() {
     node.dataset.state = want;
     if (want === 'active') node.setAttribute('aria-current', 'page');
     else node.removeAttribute('aria-current');
+  }
+  // The three under CONTACT, on the same one value. `hidden` and not opacity,
+  // so they leave the tab order and the accessibility tree together with the
+  // paint -- three links a keyboard could reach behind a dial they are not on
+  // would be the same fault el.back.inert exists to prevent.
+  const wantContacts = at === CONTACT.key;
+  if (railContacts.hidden !== !wantContacts) {
+    // Hiding the box focus is standing in throws that focus on <body>. CONTACT
+    // is where it belongs: it is the word these three hang off, it is still on
+    // screen, and it is the control that put them away. Same rule the panels and
+    // the caseback follow, arrived at from the other side. The hide comes first
+    // and the move second, so the focus event this fires arrives at a render()
+    // that already agrees with itself -- see the [hidden] toggle above.
+    const rescue = !wantContacts && railContacts.contains(document.activeElement);
+    railContacts.hidden = !wantContacts;
+    if (rescue) railLinks.get(CONTACT.key).focus({ preventScroll: true });
   }
   placeRailMarker();
 
@@ -1207,12 +1370,659 @@ $('corrector').addEventListener('blur', () => {
   if (state.hover === 'pusher') { state.hover = null; render(); }
 });
 
+// ---- the link train on the caseback ---------------------------------------
+// The same four listeners bind() and the rail use, and the same guard on the
+// two that clear: a leave arriving after a neighbouring enter would otherwise
+// blank the wheel the pointer has just arrived on, and these three sit close
+// enough to each other for that to be an ordinary crossing rather than a
+// corner case.
+//
+// FOCUS IS NOT OPTIONAL HERE, and it matters more than anywhere else on the
+// site. The caption is the ONLY place the address appears in full -- the hub
+// says Gmail and the href says nothing you can read -- so without the focus
+// half, a keyboard visitor is handed a mailto: and never shown where it goes.
+//
+// THE RAIL'S THREE JOIN THE SAME LOOP, because they are the same three controls
+// by a second route -- the arrangement the crown and CONTACT already have. One
+// key, one caption, one set of listeners; a wheel and its word cannot say
+// different things because there is only one thing being said.
+const linkControls = [...document.querySelectorAll('.cb-gear'), ...railContactLinks];
+for (const node of linkControls) {
+  const key = node.dataset.link;
+  node.addEventListener('mouseenter', () => { state.hover = key; render(); });
+  node.addEventListener('focus', () => { state.hover = key; render(); });
+  node.addEventListener('mouseleave', () => {
+    if (state.hover === key) { state.hover = null; render(); }
+  });
+  node.addEventListener('blur', () => {
+    if (state.hover === key) { state.hover = null; render(); }
+  });
+}
+
+// ---- the address is copied, not followed ----------------------------------
+// A mailto: is a dead end for the visitor who only wants the address: it hands
+// the page to a mail client that may not exist, and on a machine where it does
+// not, nothing at all happens. Both controls carrying it now put it on the
+// clipboard and say so, and neither leaves the page.
+//
+// WHAT IT SAYS AND WHERE, IN TWO CHANNELS AND THREE PLACES. The mark -- see
+// showCopyMark() -- is the visible answer: a small gold box that stands against
+// whichever of the two controls was pressed and says only what happened, COPIED
+// or COPY BLOCKED. The announcement is its accessible half, and it says the same
+// fact in a sentence. The caption is the third place and it carries the ADDRESS,
+// on both outcomes: it outranks hover while it is up and expires against
+// render()'s own clock, see state.notice. The three never disagree because all
+// three are written from one boolean in copyEmail().
+//
+// TWO DURATIONS, BECAUSE THE TWO OUTCOMES ASK DIFFERENT THINGS OF THE READER. A
+// confirmation is read once; a failure is an instruction to select the address
+// by hand, and it prints the address for exactly that reason. One pair of
+// numbers, read by the mark and by the caption, so the two cannot fall out of
+// step on screen.
+const COPY_OK_MS = 1900;
+const COPY_FAIL_MS = 4500;
+
+// The announcement. role="status" is polite -- it waits for a gap rather than
+// cutting in -- and it has to be its own element rather than the caption
+// itself: the caption rewrites every 100ms with the CURRENTLY line, and a live
+// region on that would narrate the status line at a screen reader ten times a
+// second. Built here rather than in index.html so it exists from the first
+// frame, which is what makes the first announcement land at all.
+const copyStatus = document.createElement('p');
+copyStatus.className = 'rail-copy-status';
+copyStatus.setAttribute('role', 'status');
+document.body.append(copyStatus);
+function announce(text) {
+  // Cleared and rewritten on a task rather than assigned straight, because a
+  // live region set to the string it already holds is not a change and is not
+  // announced -- which would make the second of two copies silent.
+  copyStatus.textContent = '';
+  setTimeout(() => { copyStatus.textContent = text; }, 0);
+}
+
+// ---- THE COPY MARK: the confirmation stands where the click was ------------
+// WHY THIS EXISTS NEXT TO A CAPTION THAT ALREADY SAID IT. The two controls that
+// copy are nowhere near each other and neither is near the caption: at 1440 the
+// rail's EMAIL is in the top-left corner and the Gmail wheel is mid-face on the
+// caseback, some 500px apart, and the caption is a line under the watch that
+// neither of them is looking at. On a phone the rail is a row along the top and
+// the wheel is under the reader's own thumb. A confirmation printed in one fixed
+// place is a confirmation printed where the reader is not, which is the fault a
+// toast in a corner would have had too, at less code and the same cost. So: one
+// element, placed per activation from the trigger's own rect, so the answer
+// appears against the thing that was pressed.
+//
+// ONE ELEMENT AND ONE TIMER FOR BOTH CONTROLS. Two popups would be two things to
+// keep in step and two clocks to leave running; here the second of two clicks
+// clears the first one's timeout and restarts it, so nothing stacks and nothing
+// is orphaned.
+//
+// IT IS NOT IN THE ACCESSIBILITY TREE, deliberately. aria-hidden, because the
+// role="status" region above is the accessible half of this pair and says the
+// same fact in its own words -- without this, every copy would be announced
+// twice, once in chrome uppercase. Built here rather than in index.html for the
+// reason copyStatus is: it has to exist before the first click can happen.
+//
+// TWO TREATMENTS, AND ONE OF THEM IS ADDRESSED AT A GUESS -- READ THIS BEFORE
+// MOVING IT. The brief was "an outlined box beside the EMAIL text" and "for the
+// search, a solid box that disappears". The first is unambiguous and is the rail
+// variant. THERE IS NO SEARCH ON THIS PAGE -- no input, no field, no filter, and
+// every match for the string in index.html is inside the word RESEARCH, which is
+// a section and not a control -- so "the search" was read as the
+// OTHER place a copy fires, which is the caseback's Gmail wheel, and the solid
+// plate was built there. If that reading is wrong, the fix is one line: the two
+// variants are chosen by `brass` in showCopyMark() below, which is one test on
+// the trigger's class. Point that test at whatever the real second control turns
+// out to be and both treatments follow it; nothing else in this file or in
+// .copy-mark's CSS knows which control is which.
+const COPY_MARK_GAP = 10;   // px of air between the trigger and the mark
+const copyMark = document.createElement('p');
+copyMark.className = 'copy-mark';
+copyMark.setAttribute('aria-hidden', 'true');
+document.body.append(copyMark);
+let copyMarkTimer = 0;
+
+function showCopyMark(trigger, ok) {
+  // The restart. clearTimeout on 0 is a no-op, so the first call needs no guard.
+  clearTimeout(copyMarkTimer);
+  // WHICH SURFACE IT IS LANDING ON, decided once and used three times below --
+  // for the treatment, for the placement and for nothing else. The two controls
+  // sit on two materials, the page's near-black behind the rail and the
+  // caseback's light brass under the Gmail wheel, and .copy-mark draws itself as
+  // a gold line on the first and a gold plate on the second. The trigger says
+  // which, because the trigger is on it.
+  const brass = trigger.classList.contains('cb-gear');
+  copyMark.classList.toggle('copy-mark--brass', brass);
+  copyMark.classList.toggle('copy-mark--rail', !brass);
+  // TWO WORDS AND NOT A SENTENCE, now that there is a box around them. This used
+  // to read COPIED — <address>: 35 characters, which is the right length for a
+  // bare line of type set under a control and the wrong length for a box that
+  // has to stand BESIDE a five-letter word in the page's left margin. The
+  // address did not go missing with it -- the caption underneath carries it now,
+  // see copyEmail() -- so the division is that the box says WHAT HAPPENED and
+  // the caption says WHAT IT IS.
+  //
+  // IT CANNOT SAY COPIED WHEN NOTHING WAS COPIED. ok is the single source for
+  // this string, for the caption and for the announcement, and it is the
+  // clipboard write's own answer; the failure branch names the failure in the
+  // same box rather than declining to appear, because a control that answers
+  // sometimes is worse than one that answers badly.
+  copyMark.textContent = ok ? 'COPIED' : 'COPY BLOCKED';
+  // Measured while it is still invisible: visibility:hidden is laid out, so the
+  // rect is real, and the text is nowrap so its width is its content's wherever
+  // it is about to be put. Placing first and showing second is what keeps it
+  // from appearing for one frame at the previous click's position.
+  const r = trigger.getBoundingClientRect();
+  const m = copyMark.getBoundingClientRect();
+  // The page's own outer margin -- .overlay's 5vmin -- so the mark stops where
+  // everything else on this site stops rather than at some margin of its own.
+  const margin = 0.05 * Math.min(window.innerWidth, window.innerHeight);
+  let x = null;
+  let y = 0;
+  if (!brass) {
+    // BESIDE THE WORD ON THE RAIL, AND UNDER IT IS NOT AVAILABLE. EMAIL is the
+    // first of three contact rows stacked 23px apart, so a box dropped 10px
+    // below it lands on GITHUB. Beside is also where the room is: from 1201 up
+    // the rail is a column in the left margin and everything to its right is
+    // empty page.
+    //
+    // RIGHT FIRST, THEN LEFT, and the second branch is not defensive padding.
+    // Below 1200 the rail turns into a row along the TOP and the three contacts
+    // hang under CONTACT -- the last of six centred words -- where
+    // .rail-contacts is already clamped flush against the right margin at 375px.
+    // There is no room on that side by construction, and there is room on the
+    // other.
+    const right = r.right + COPY_MARK_GAP;
+    const left = r.left - COPY_MARK_GAP - m.width;
+    if (right + m.width <= window.innerWidth - margin) x = right;
+    else if (left >= margin) x = left;
+    // Level with the word rather than aligned to its top: the box is the height
+    // of a contact row (see .copy-mark's padding), so centring the two on one
+    // axis is what makes them read as one line.
+    if (x !== null) y = r.top + r.height / 2 - m.height / 2;
+  }
+  if (x === null) {
+    // THE CASEBACK'S PLACEMENT, AND THE RAIL'S LAST RESORT: centred under the
+    // trigger, clamped to the page's margin. The wheel is a 97px circle with
+    // clear plate below it and nothing stacked under it, so under is simply
+    // where a label belongs; the rail reaches this only on a viewport too narrow
+    // to have a side, and then under is better than off-screen.
+    const lo = margin;
+    const hi = window.innerWidth - margin - m.width;
+    // lo > hi means the box is wider than the space between the two margins, and
+    // then there is nothing to clamp to and the middle is the least bad place.
+    x = r.left + r.width / 2 - m.width / 2;
+    x = lo > hi ? (window.innerWidth - m.width) / 2 : Math.min(Math.max(x, lo), hi);
+    // Under the trigger, and above it if under would go off the bottom -- which
+    // is the rail's bottom-most row on a short window, not a hypothetical.
+    y = r.bottom + COPY_MARK_GAP;
+    if (y + m.height > window.innerHeight - margin) y = r.top - COPY_MARK_GAP - m.height;
+  }
+  copyMark.style.left = `${Math.round(x)}px`;
+  copyMark.style.top = `${Math.round(y)}px`;
+  copyMark.classList.add('is-on');
+  // The two durations are the caption's own, because they are one pair of
+  // numbers answering one question -- see COPY_OK_MS.
+  copyMarkTimer = setTimeout(() => { copyMark.classList.remove('is-on'); },
+    ok ? COPY_OK_MS : COPY_FAIL_MS);
+}
+
+// The fallback, and it is a real one rather than a gesture: navigator.clipboard
+// is undefined on an insecure origin and its write can be denied outright, and
+// both are ordinary rather than exotic -- a portfolio opened over http:// on a
+// LAN hits the first every time. execCommand('copy') is deprecated and still
+// the only synchronous route, so it is tried second and its result is believed
+// only when it says true.
+function copyByExecCommand(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  // Off-screen, but laid out: a display:none or visibility:hidden field cannot
+  // be selected, and position:fixed at the top-left with no size keeps the page
+  // from scrolling to it.
+  ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0';
+  document.body.append(ta);
+  const sel = document.getSelection();
+  const held = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+  let ok = false;
+  try {
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    ok = document.execCommand('copy');
+  } catch (err) {
+    ok = false;
+  }
+  ta.remove();
+  // Whatever the visitor had selected is put back. Copying an address should not
+  // silently discard a selection they made for some other reason.
+  if (held && sel) { sel.removeAllRanges(); sel.addRange(held); }
+  return ok;
+}
+
+function copyEmail(trigger) {
+  const done = (ok) => {
+    // THE MARK CARRIES THE OUTCOME AND THE CAPTION CARRIES THE ADDRESS. That was
+    // already the division; the box has just made it strict. The mark used to
+    // print COPIED — <address>, so the caption could stay silent on success and
+    // nothing was lost. The mark now prints six letters -- a box beside a
+    // five-letter word cannot carry twenty-six more -- so the address has to be
+    // somewhere, and the caption is the place on this site where the address is
+    // printed.
+    //
+    // AND THE SUCCESS LINE IS THE ADDRESS AND NOTHING ELSE. Not COPIED —
+    // <address>: the box three inches away is already saying COPIED, and a site
+    // that prints one word twice in one instant is telling you twice. So the box
+    // answers WHAT HAPPENED and this answers WHAT IT IS, and neither repeats the
+    // other.
+    //
+    // ON A POINTER THIS CHANGES NOTHING ON SCREEN, WHICH IS THE POINT. While
+    // either control is hovered or focused the caption is ALREADY CAPTIONS.email
+    // -- the same string, character for character -- so the notice overwrites the
+    // hover line with itself and the caption does not flicker. What it buys is
+    // the case that has no hover: a tap on a phone lights nothing, and without
+    // this a touch visitor would get COPIED and never see the address they were
+    // told was copied. It also holds the line for COPY_OK_MS after the pointer
+    // leaves, which is long enough to read twenty-six characters.
+    //
+    // THE FAILURE LINE STAYS AS IT WAS, and it is not the same case. It is not a
+    // second confirmation, it is the instruction's object: the announcement says
+    // the address is printed under the watch to select by hand, and this is that
+    // printing. It repeats the box's COPY BLOCKED on purpose, where the success
+    // pair refuses to -- a failure has to be legible in both places at once,
+    // because the box names it and only this line can be selected.
+    //
+    // A LINE THAT SAID "COPIED" WHEN NOTHING WAS COPIED is still the one outcome
+    // this must never produce; ok is the single source for all three channels.
+    showCopyMark(trigger, ok);
+    state.notice = ok
+      ? { text: LINKS.email, until: Date.now() + COPY_OK_MS }
+      : { text: `COPY BLOCKED — ${LINKS.email}`, until: Date.now() + COPY_FAIL_MS };
+    // THE SPOKEN LINE IS NOT THE PRINTED ONE, and this is the one place on the
+    // site where that is right. The caption is uppercase because everything in
+    // this chrome is; an address read aloud should be in its own case, and a
+    // failure has to say what to do about it, which a status line 40 characters
+    // wide cannot. Same two facts, said the way each channel says things.
+    announce(ok
+      ? `Copied ${EMAIL} to the clipboard`
+      : `Could not copy. The address is ${EMAIL} — it is printed under the watch to select by hand.`);
+    render();
+  };
+  const clip = navigator.clipboard;
+  if (clip && clip.writeText) {
+    // .then and not await, so this file stays free of async functions, and a
+    // rejection -- denied permission, an unfocused document -- lands in the same
+    // fallback the missing API does rather than in an unhandled rejection.
+    clip.writeText(EMAIL).then(() => done(true), () => done(copyByExecCommand(EMAIL)));
+    return;
+  }
+  done(copyByExecCommand(EMAIL));
+}
+
+// Both controls, one handler. Enter on a link fires exactly this event, so the
+// keyboard needs nothing of its own; Space does not activate a link and is not
+// meant to.
+function onEmailActivate(e) {
+  // A MODIFIED CLICK IS LET THROUGH, on the rail's own reasoning: it is asking
+  // the browser for a new tab, a new window or a saved link, and this handler
+  // has no business answering that. What it reaches is the mailto:, which is
+  // still there and still correct.
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  // currentTarget and not target: the caseback's wheel is an <a> wrapped round an
+  // <img>, so target is the picture and its rect is the picture's, not the
+  // control's. currentTarget is the element this handler was bound to, which is
+  // the thing the reader pressed in both places.
+  copyEmail(e.currentTarget);
+}
+
+// The address is written twice by necessity -- once as a mailto: this file does
+// not own, once as a caption this file does -- so the two are checked against
+// each other rather than assumed to agree. A silent mismatch here is a contact
+// link that goes somewhere the site says it does not.
+//
+// ALL THREE ARE CHECKED NOW, not just the address, because the rail builds its
+// three from LINK_HREF and the caseback keeps its own in the markup: two
+// spellings of one destination is exactly the drift this check already existed
+// to catch, and it is now catching it in three places instead of one. It warns
+// rather than throws -- a wrong link is worth a console line, not a blank page.
+for (const node of document.querySelectorAll('.cb-gear')) {
+  const key = node.dataset.link;
+  const href = node.getAttribute('href');
+  if (href !== LINK_HREF[key]) {
+    console.warn(`link train: ${key} disagrees with LINK_HREF (${href} vs ${LINK_HREF[key]})`);
+  }
+  if (key !== 'email') continue;
+  // The Gmail wheel stops navigating here. Its accessible name is rewritten to
+  // match, from EMAIL rather than from the markup: the hub's alt says "Email",
+  // which was true of a mailto: and is no longer the whole of what the control
+  // does, and the address it copies is the one thing a screen reader could not
+  // otherwise get at.
+  node.setAttribute('aria-label', `Copy email address ${EMAIL}`);
+  node.addEventListener('click', onEmailActivate);
+}
+// The rail's EMAIL, by its key rather than by its position in the list, so
+// reordering the three cannot quietly bind this to GITHUB.
+railContactLinks.find((a) => a.dataset.link === 'email')
+  .addEventListener('click', onEmailActivate);
+
 // The card's close control and the scrim behind it. Through the router, so
 // closing writes the address exactly as Back does -- there is one way out of a
 // section and three things that can ask for it.
 document.querySelectorAll('[data-close]').forEach((node) =>
   node.addEventListener('click', () => leave())
 );
+
+// ---- THE PROJECT ROWS: the loop, the index, and the enlarged frame ---------
+// THREE FRAMES SHARE ONE SLOT. A five-second timer advances them and three dots
+// underneath choose one directly -- both, not one or the other.
+//
+// THE RULE THIS BREAKS, AND WHO BROKE IT. Until 9 Aug 2026 this block held a
+// long argument for why there must never be a timer here: docs/DESIGN_BIBLE.md
+// requires that every motion explain function or depth -- "no ambient floating,
+// glow, or ornamental looping" -- and SITE-DIRECTION.md 0.3 had already thrown
+// out an idle re-cue on a timer with "a loop with a long period is still a
+// loop". That argument was correct and it lost. Nikhil asked for the loop in his
+// own words on 9 Aug 2026 -- "make the images auto rotate every 5 seconds" --
+// and asked again after being shown the stepper it would replace. The comment
+// that used to stand here said DO NOT ADD ONE LATER; it is deleted rather than
+// left to contradict the code beneath it, which is this codebase's recurring
+// failure mode.
+// WHAT DOES NOT CHANGE. The rule still holds everywhere else on the site: the
+// stage's guilloche remains the only loop that earns itself on the merits (its
+// angle IS the time, so the motion is the function), and no later pass may cite
+// these rows as a precedent for a second decorative loop. This is the owner's
+// decision about his own panel, recorded with its date.
+// WHAT THE OLD COMMENT DEMANDED IF A LOOP EVER ARRIVED, and where each is paid:
+// a pause on hover and on focus (below), a reduced-motion branch (below), and an
+// aria-live region -- which is deliberately NOT paid. A live region here would
+// announce a picture nobody asked to see, every five seconds, over whatever else
+// is being read. The frames carry aria-hidden so only the current one is in the
+// tree at all, and the dots announce themselves when pressed; that is the whole
+// of what a screen reader needs and none of what it does not.
+//
+// A DOT PRESS DEFERS THE TIMER, IT DOES NOT SWITCH IT OFF. This was the open
+// question and it is decided here. Stopping permanently would make one control
+// do two things -- "show me frame 2" and, silently, "never move again" -- and a
+// reader who wanted only the first would get the second without asking and with
+// no way back short of closing and reopening the panel. Deferring takes nothing
+// away: pressing a dot restarts the interval, so the frame you chose gets the
+// same full five seconds every other frame gets rather than being swapped out
+// 0.3s later by a tick that was already most of the way through.
+// WHAT DEFERRING COSTS is that there is no OFF, and that is paid twice over: the
+// loop halts entirely while the pointer is inside the row or the keyboard focus
+// is, which is exactly where a reader who has stopped to study a frame has them,
+// and prefers-reduced-motion never starts it at all.
+//
+// REDUCED MOTION SWITCHES THE TIMER OFF, NOT DOWN. A motion someone has asked
+// not to see becomes a state and not a fast event -- the argument
+// .stage-guilloche's `animation: none` already makes -- and half the interval is
+// the same loop. Nothing is out of reach in that mode: the dots are behind no
+// media query, so every frame is still one press away, which is why the
+// unstacking fallback that used to live in styles.css was deleted rather than
+// kept. The crossfade itself needs no branch: the blanket @media at the top of
+// styles.css collapses the opacity transition to .01ms, which is a cut, and a
+// cut is the correct reduced-motion form of a state change.
+//
+// THE MARKUP IS THE STATE. `data-current` on the frame is what the stylesheet
+// paints; `aria-current` on the dot is what a screen reader announces; `inert`
+// on the buttons is what stops the two frames nobody can see from taking the
+// click. None is mirrored in a variable, so there is no index to fall out of
+// step with the DOM, and show() is idempotent -- re-running it cannot
+// desynchronise anything because it writes all three sets from one argument.
+const SHOT_MS = 5000;
+const shotReduced = matchMedia('(prefers-reduced-motion: reduce)');
+const shots = [];
+
+for (const car of document.querySelectorAll('.shot-carousel')) {
+  const frames = [...car.querySelectorAll('.shot-frames .feature-shot')];
+  const dots = [...car.querySelectorAll('.shot-dot')];
+  // A row with four frames and three dots is a row two of whose pictures cannot
+  // be reached, and it would look fine. Say so rather than wiring up a control
+  // that lies about how much there is.
+  if (!frames.length || frames.length !== dots.length) {
+    console.warn(`shot carousel: ${frames.length} frames against ${dots.length} dots`);
+    continue;
+  }
+
+  const row = { car, frames, dots, at: 0, timer: 0, held: false };
+
+  const show = (i) => {
+    row.at = i;
+    frames.forEach((f, n) => {
+      f.toggleAttribute('data-current', n === i);
+      // aria-hidden rather than nothing at all: an image at opacity 0 is still
+      // in the accessibility tree, so without this a screen reader would read
+      // all three alts and report a row that prints three pictures at once.
+      if (n === i) f.removeAttribute('aria-hidden');
+      else f.setAttribute('aria-hidden', 'true');
+      // inert and not pointer-events: three buttons share grid cell 1/1 and all
+      // three generate boxes, so the last in DOM order would take every click.
+      // inert closes the pointer, the tab stop, Enter/Space and the
+      // accessibility tree at once -- the primitive el.back.inert uses on the
+      // face of the watch nobody can see.
+      const btn = f.closest('.shot-open');
+      if (btn) btn.inert = n !== i;
+    });
+    dots.forEach((d, n) => {
+      if (n === i) d.setAttribute('aria-current', 'true');
+      else d.removeAttribute('aria-current');
+    });
+  };
+  row.show = show;
+
+  // ONE setTimeout RE-ARMED, NOT A setInterval, and that is what makes "a dot
+  // press resets the clock" a one-line truth rather than a race. With an
+  // interval, a press 4.7s in leaves the pending tick alone and the chosen frame
+  // is replaced 0.3s later; clearing and re-arming is the only way the press
+  // buys a whole period. Every path that changes the frame goes through arm().
+  row.arm = () => {
+    clearTimeout(row.timer);
+    row.timer = 0;
+    if (!row.running || row.held || shotReduced.matches) return;
+    row.timer = setTimeout(() => {
+      show((row.at + 1) % frames.length);
+      row.arm();
+    }, SHOT_MS);
+  };
+
+  dots.forEach((d, i) => d.addEventListener('click', () => { show(i); row.arm(); }));
+
+  // THE PAUSE, AND WHY IT IS NOT A BUTTON. The old comment asked for a pause
+  // control; the pointer and the keyboard ARE it. A reader studying a frame has
+  // one or the other inside the row and a reader who is not has neither, so the
+  // loop stops for exactly the person it would interrupt and for nobody else --
+  // without a ninth mark on a panel whose argument is that a bare mark is
+  // enough.
+  // THE HOLD IS RECOMPUTED, NEVER TOGGLED. Two conditions can each hold the row
+  // and they expire independently: a mouseleave while a dot still has the
+  // keyboard, a Tab away while the pointer is still over the picture. A boolean
+  // set true by one and false by the other resumes the loop under a reader who
+  // is still holding it with the other, so every listener asks the DOM the whole
+  // question again instead.
+  // :focus-visible AND NOT activeElement, deliberately. Clicking a dot leaves
+  // focus on that dot, so a plain focus test would mean one mouse click stops
+  // the row until something else is clicked -- which is "a dot press switches
+  // the loop off", the behaviour argued against at the head of this block. A
+  // mouse reader is held by :hover while the pointer is there and released when
+  // it leaves, which is the deferral that was promised; :focus-visible holds it
+  // only for the keyboard, which is the case that needs holding.
+  // focusout IS DEFERRED BY A TASK because activeElement is <body> while it is
+  // dispatching -- asking the question during the event answers it about a
+  // moment that does not exist yet.
+  row.sync = () => {
+    row.held = car.matches(':hover')
+      || !!car.querySelector(':focus-visible')
+      || !!(zoom && zoom.open);
+    row.arm();
+  };
+  car.addEventListener('mouseenter', row.sync);
+  car.addEventListener('mouseleave', row.sync);
+  car.addEventListener('focusin', row.sync);
+  car.addEventListener('focusout', () => setTimeout(row.sync, 0));
+
+  // EVERY DOT IS ITS OWN TAB STOP, which is a deliberate departure from the
+  // roving tabindex a tablist would use. These are not tabs -- there is no panel
+  // to move into after choosing -- so a single stop would mean a keyboard reader
+  // can only reach frames 2 and 3 after first discovering that the arrow keys do
+  // something. Three stops a row is cheap and needs discovering by nobody.
+  // The arrows are added on top for anyone who expects them, and they move the
+  // focus AND the frame together: a focused dot that is not the frame on screen
+  // is two cursors disagreeing.
+  car.querySelector('.shot-index').addEventListener('keydown', (e) => {
+    const at = dots.indexOf(document.activeElement);
+    if (at < 0) return;
+    const to = { ArrowLeft: at - 1, ArrowRight: at + 1, Home: 0, End: dots.length - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();          // Home/End would otherwise scroll the card
+    const next = (to + dots.length) % dots.length;
+    show(next);
+    dots[next].focus();
+    row.arm();
+  });
+
+  // The markup already ships the first frame current. Re-asserting it here is
+  // what guarantees the three attribute sets agree before anything is clicked --
+  // and it is what lets a row be edited to open on a different frame without
+  // this file having to be told.
+  show(Math.max(0, frames.findIndex((f) => f.hasAttribute('data-current'))));
+  shots.push(row);
+}
+
+// THE TIMER IS HUNG OFF state.active, NOT OFF A POLL. render() is the one place
+// that knows a panel is open, and it already turns the caseback rig on and off
+// on the same line of reasoning (see rigPlay/rigStop). A loop advancing behind a
+// closed panel is invisible work on every device and a visible one on a phone;
+// worse, it would be advancing frames whose row has display: none, so the reader
+// would return to a card that had silently moved on.
+// IDEMPOTENT BECAUSE render() IS PUMPED TEN TIMES A SECOND. shotsRun() returns
+// on the first line unless `running` actually changed, so re-arming is not a
+// re-clock: an unconditional arm() here would reset every row's five seconds
+// 100ms before it was due to fire, and the frames would never advance at all.
+// That failure is silent and looks exactly like a broken timer, which is why the
+// guard is the first thing in the function.
+// A function declaration, hoisted, because render() is defined above this line.
+function shotsRun(on) {
+  for (const row of shots) {
+    if (row.running === on) continue;
+    row.running = on;
+    row.arm();
+  }
+  if (!on) closeZoom();
+}
+
+// ---- THE ENLARGED FRAME ---------------------------------------------------
+// "Become big when you click on them (fullscreen ish i guess)". A modal
+// <dialog>, and the reasoning for that over the Fullscreen API is written at the
+// element in index.html. What is here is the wiring, and it is three things.
+//
+// THE CAP IS THE SOURCE FILE, WRITTEN PER PICTURE. --shot-w / --shot-h come off
+// the clicked frame's naturalWidth/naturalHeight, so the ceiling is the file
+// rather than a number chosen in the stylesheet, and min() in .shot-zoom-img
+// takes whichever of the source and the viewport binds first. The three sources
+// are 1092x585, 1021x600 and 327x600, so 1092 wide and 600 tall are the largest
+// anything is ever drawn and nothing is upscaled at any viewport. Falling back
+// to the markup's width/height attributes rather than to nothing: the frames are
+// loading="lazy" and a picture that has not decoded reports naturalWidth 0,
+// which would leave the cap at 92vw and blow a 327px phone screenshot up to
+// 1324px on a desktop -- the one thing this whole block exists to prevent.
+//
+// FOCUS GOES BACK TO THE FRAME THAT OPENED IT. close() does this itself in
+// current browsers; afterZoom() re-asserts it rather than trusting it, because
+// the element is one this file already holds and an isConnected check is cheaper
+// than a bug that puts the keyboard at the top of the document. Trapping while
+// open is showModal()'s job, not ours.
+//
+// AND THE LOOP STOPS WHILE IT IS OPEN, ON A CONDITION OF ITS OWN. Neither of
+// the other two brakes survives the open: the dialog is in the top layer, so
+// focus leaves the row's subtree the moment it appears, and the pointer is over
+// a scrim rather than over the row. `zoom.open` is therefore the third term in
+// row.sync() -- an enlarged picture holds every row, including the one it did
+// not come from, because a frame swapping behind the scrim is a frame the reader
+// never saw change.
+const zoom = document.querySelector('.shot-zoom');
+let zoomFrom = null;
+
+function openZoom(img) {
+  if (!zoom || zoom.open) return;
+  const w = img.naturalWidth || Number(img.getAttribute('width')) || 0;
+  const h = img.naturalHeight || Number(img.getAttribute('height')) || 0;
+  if (w) zoom.style.setProperty('--shot-w', `${w}px`);
+  if (h) zoom.style.setProperty('--shot-h', `${h}px`);
+  const big = zoom.querySelector('.shot-zoom-img');
+  big.src = img.currentSrc || img.src;
+  // The alt is the frame's own, unchanged: the enlargement is the same picture,
+  // so a second description of it would be a second chance to get it wrong.
+  big.alt = img.alt;
+  zoomFrom = img.closest('.shot-open');
+  zoom.showModal();
+  // After showModal(), because sync() reads zoom.open as one of the three things
+  // that hold a row.
+  for (const row of shots) row.sync();
+}
+
+function closeZoom() {
+  if (!zoom || !zoom.open) return;
+  zoom.close();
+  afterZoom();
+}
+
+// THE TIDY-UP IS CALLED, NOT AWAITED, AND THE `close` EVENT IS ONLY THE BACKSTOP.
+// <dialog>'s close event is fired from a QUEUED task, not from close() itself,
+// and a document that is not being rendered can leave that task sitting: in the
+// review harness -- a hidden document -- it never arrived at all, for the same
+// family of reasons rAF never fires there. Hanging the focus return on it would
+// mean the keyboard is left in the top layer of a dialog that has gone. So every
+// path that closes the picture calls this directly and the event is wired to it
+// as well, for a close this file did not initiate. It is idempotent: the first
+// run clears the src, and the second returns on that.
+function afterZoom() {
+  const big = zoom.querySelector('.shot-zoom-img');
+  if (!zoomFrom && !big.hasAttribute('src')) return;
+  // The src is dropped so a 1092px decode is not held for a picture nobody is
+  // looking at, and so the next open cannot flash the previous frame.
+  big.removeAttribute('src');
+  big.alt = '';
+  const back = zoomFrom;
+  zoomFrom = null;
+  // The UA restores focus on close() by itself; this re-asserts it rather than
+  // trusting it, and skips a frame that is no longer the current one -- a picture
+  // opened, left open past an advance and then closed must not hand the keyboard
+  // to an inert button.
+  if (back && back.isConnected && !back.inert) back.focus({ preventScroll: true });
+  // The rows re-ask the whole question rather than being handed `false`: the
+  // pointer may well still be over the frame that was just clicked, in which
+  // case the row stays held and the loop does not restart under it.
+  for (const row of shots) row.sync();
+}
+
+if (zoom) {
+  for (const btn of document.querySelectorAll('.shot-open')) {
+    btn.addEventListener('click', () => {
+      const img = btn.querySelector('.feature-shot');
+      if (img) openZoom(img);
+    });
+  }
+  zoom.querySelector('[data-shot-close]').addEventListener('click', () => closeZoom());
+  zoom.addEventListener('close', afterZoom);
+
+  // ESCAPE CLOSES THE PICTURE FIRST AND THE PANEL ONLY WHEN NONE IS OPEN.
+  // The window handler further down turns Escape into leave(), and a modal
+  // dialog does not stop the key reaching it: the keydown is dispatched at the
+  // dialog and bubbles all the way up, and only afterwards does the UA process
+  // its own close request. Without this, one press would shut the picture AND
+  // the panel behind it.
+  // CAPTURE, ON window, so the ordering does not depend on which listener was
+  // registered first -- a capture listener on window runs before any bubble
+  // listener anywhere. The dialog is closed here explicitly rather than left to
+  // the UA, because stopPropagation is what keeps the key off leave() and there
+  // is no way to stop propagation and still be sure the default close ran.
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !zoom.open) return;
+    e.preventDefault();
+    e.stopPropagation();
+    closeZoom();
+  }, true);
+}
 
 $('resumeScroll').addEventListener('scroll', (e) => {
   const node = e.currentTarget;

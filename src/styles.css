@@ -2195,19 +2195,758 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     radial-gradient(circle at 50% 50%, transparent 0 93%, rgba(215,235,255,.09) 96%, rgba(255,252,246,.16) 98.5%, rgba(120,150,200,.09) 100%);
 }
 
-.cb-hallmark {
+/* ===================== THE LINK TRAIN =====================
+   Three wheels with enamelled hubs, each one a way to reach him. All three were
+   laid into the empty plate on the left of the movement and all three have since
+   been moved by hand onto it, so the empty band is empty again. They are the only
+   interactive thing on the back of the watch -- .cb-band-svg, .cb-movement and
+   every wheel of the rig are pointer-events: none.
+
+   WHERE THEY SIT. Measured off l9511-simplified-lossless.webp in its own 1254px
+   space. The plate's empty band runs x 210..470, y 300..718: the name bridge
+   walls it on the right at x 522 -- the leftmost pixel of the rig's own
+   static-bridges cut -- the seconds wheel takes the corner at (471, 624) r 88,
+   the No 58669 bridge floors it at y 718, and the aperture's inner edge is the
+   left wall. That edge is a circle, not a box: .cb-movement's scale(1.56)
+   translate(1.3%, 1.61%) shows only the disc centred (610.7, 606.8) r 401.9,
+   and a wheel whose far side lands outside it is quietly clipped. Everything
+   else in reach is bridgework, jewels or the balance, and a wheel over any of
+   those reads as a part that has come loose. That is the problem the three
+   original positions were solved against -- and the wheels have since been
+   moved and resized by hand, so the answer no longer holds. WHAT IS ACTUALLY ON
+   SCREEN, measured in the browser off getBoundingClientRect and converted back
+   into the render's 1254px space:
+       linkedin  centre (655.5, 422.8)  tip r 62.700  aperture clearance 149.8
+       github    centre (485.0, 417.0)  tip r 52.800  aperture clearance 121.5
+       gmail     centre (763.1, 413.1)  tip r 48.675  aperture clearance 106.8
+   Nothing is clipped, and the tight one against that wall is Gmail now. GitHub
+   held that title for most of this file's history -- 14.4px, then 19.5, then
+   67.1, then 71.9, then 53.6 -- and it lost it by leaving the band: the move up
+   to the jewel arm took it 121.5 clear, past Gmail's 106.8 and into second
+   place. Gmail's 106.8 is the number to watch now.
+   THE EMPTY BAND IS EMPTY. GitHub was the last wheel in it, and it has crossed
+   to (485.0, 417.0), a plate bay west of the jewel arm's left lobe, with 14.1%
+   of its tip ellipse behind that lobe -- see THE GITHUB WHEEL GOES UNDER below.
+   Nothing authored here now lies left of x 432.
+   THE NEAREST MOVING PART TO GITHUB IS THE RIG'S CENTRE WHEEL, (560, 552)
+   r 87, 14.6 render px from its tooth tips by that circle and 13.6 measured
+   against the part's own visible pixels in an offline composite. The seconds
+   wheel, which used to be the near one at 14.2, is 67.7 away now. So both link
+   wheels in this half of the movement are held off the same centre wheel, and
+   the two figures to watch are LinkedIn's 10.0 and GitHub's 13.6.
+   LINKEDIN IS NOT IN THE BAND, AND IS NO LONGER LOOSE. It
+   crossed the movement to (647.5, 455.8) -- a pocket of plate walled above by
+   the raised arm that carries VIERZIG (40) RUBINE and its two ruby bosses, and
+   below-right by the name bridge's sweep -- and it sat there over nothing but
+   its own shadow, with 15.0 render px of its tip circle lying across the tooth
+   tips of the rig's own centre wheel. Since .cb-links paints after .cb-rig, it
+   was the link wheel's teeth covering the movement's and not the other way
+   round: the loose part the paragraph above exists to prevent. Two hand moves
+   have fixed that, and the answer is the one THE LOW WHEEL GOES UNDER argued
+   for -- get the wheel to an edge and put the edge over it. A later 10% growth,
+   taken about the top edge so the wheel spread downward, has since spent half
+   of what that bought back: it is now at (655.5, 422.8), 16.2% of it behind the
+   jewel bridge and 10.0 px clear of the centre wheel it used to sit on -- still
+   clear, but 10.0 is the number to watch on this wheel now, and another 10%
+   would put teeth back across the movement's own. The sums are in THE LINKEDIN
+   WHEEL GOES UNDER below.
+   Centre distances are now 108.07 (linkedin-gmail, which is a mesh -- see
+   GMAIL MESHES WITH LINKEDIN below), 170.60 (linkedin-github) and 278.12
+   (github-gmail). The last two were 380.9 and 482.7 before GitHub crossed the
+   movement, and 136.0 and 119.0 when this was a train -- see THE MODULE WAS
+   NORMALISED below for what that cost. Tip to tip, the three now read
+   -3.30 / 55.10 / 176.65: a mesh, then 55 px of bare plate, then the far side
+   of the movement.
+   Those are BOX centres, and the box is 1.2-1.8% taller than it is
+   wide: only `width` is set here, so the height comes off the sprite's own
+   raster (506x512, 503x512, 508x512) and each `top` is the centre less half of
+   THAT. Which is why resizing a wheel is never a `width` edit on its own: leave
+   `left`/`top` where they are and the box keeps its top-left corner, so the
+   wheel slides up and left by half of what the width lost -- and by a different
+   amount vertically, because the sprite is not square. Both offsets are
+   recomputed from the CENTRE whenever the width changes. The 25% steps below
+   were done that way, and the residual drift measured at under 0.03 render px.
+   The positions are written as percentages of the render, and the layer is
+   INSIDE .cb-movement so it inherits the same scale(1.56) crop -- the wheels
+   stay registered to the plate at every viewport without a second copy of that
+   transform living here.
+
+   THE TRAIN CLIMBED, AND NOW IT LIES FLAT. The LinkedIn
+   wheel was the low one because it was the one that had to reach a bridge: see
+   THE LOW WHEEL GOES UNDER below, which is now the record of a thing that
+   stopped happening to that wheel and started happening to all three. Read top
+   to bottom the wheels now run gmail 413.1, github 417.0, linkedin 422.8 --
+   9.7 render px from highest to lowest, where a week ago GitHub sat 185 below
+   the other two. There is no climb left to read; what there is instead is a
+   ROW, github-linkedin-gmail left to right, one pair of it in mesh and the
+   other pair 55.10 px of bare plate apart.
+   What every wheel does now is reach a bridge, and it is the same bridge: the
+   arm carrying VIERZIG (40) RUBINE, taken under its left lobe, its crest and
+   its right-hand end respectively. That is the half of the original reasoning
+   that survived, and it is the only half that ever mattered. Document order in
+   index.html is unchanged -- linkedin, github, email -- so the tab order is
+   still the order of the links and not the order they sit in.
+
+   THE MODULE WAS NORMALISED, AND IS NOT ANY MORE. The original reasoning is
+   kept, not deleted, because it is what every radius here was derived from.
+   Measured from the source art -- tooth counts 74 / 62 / 57, tip radii 558.5 /
+   474.5 / 455.5px in their own 1254px frames -- the three arrived with modules
+   in the ratio 2.76 : 2.80 : 2.91. Wheels whose modules differ cannot mesh: the
+   teeth are literally different sizes, and at the native proportions the pitch
+   ran 6% out end to end, a gap that opens and closes as they turn. So all three
+   were drawn at ONE module, the middle wheel's -- which lands at m = 2.0
+   in the render's 1254px space, making tip r = (N + 2) * m / 2 = N + 2 and
+   pitch r = N * m / 2 = N. That gave tip radii 76 / 64 / 59, and centre
+   distances that were simply the tooth counts added: 74 + 62 = 136 and
+   62 + 57 = 119. Meshing is that one sum being right. It cost the gmail wheel
+   4.6% against its native proportion and was the whole reason the train could
+   be said to mesh at all.
+
+   THE 25% STEPS BROKE THE UNIFORM MODULE, AND IT HAS BEEN PUT BACK. LinkedIn
+   and GitHub were each taken to 0.75 of their width; Gmail was not. Tip radius
+   scales with m, so a three-quarter wheel is a three-quarter module, and
+   2.0 * 0.75 lands exactly on 1.5. None of them stayed there. LinkedIn was
+   grown 10%, to 0.825 of its original width, so 2.0 * 0.825 = 1.65; GitHub was
+   taken down 5%, to 0.7125, so 2.0 * 0.7125 = 1.425, then UP 20%, to
+   0.7125 * 1.2 = 0.855, so 2.0 * 0.855 = 1.710, and then DOWN 3.5% onto
+   LinkedIn's 0.825 exactly, so 2.0 * 0.825 = 1.65. Gmail had already been
+   redrawn onto that module -- see GMAIL MESHES WITH LINKEDIN below -- so the
+   three share one again, which they last did before the 25% steps:
+       linkedin  N 74   m 1.65   tip r 62.700  pitch r 61.05
+       github    N 62   m 1.65   tip r 52.800  pitch r 51.15
+       gmail     N 57   m 1.65   tip r 48.675  pitch r 47.025
+   ONE module across three wheels. Two of them are also set at the sum of their
+   pitch radii, 61.05 + 47.025 = 108.075 against 108.07 measured, so
+   linkedin-gmail is a mesh in the only sense that means anything. GitHub is
+   not, and the reason is the plate and no longer the teeth: its centre stands
+   170.60 from LinkedIn against the 112.20 that sum would need, 58.40 too far.
+   The teeth would now interleave if the two were ever brought together -- same
+   module, same 2.0 s per tooth -- and what stops it is that there is nowhere on
+   the 112.20 circle to put the wheel. See THE MESH CIRCLE IS FULL below, which
+   is the sweep rather than an opinion. This block once
+   claimed a meshing train after that stopped being true, which is exactly the
+   failure a file that measures everything is supposed to catch; what is true
+   now is a meshing PAIR and a third wheel drawn to join it, and it is written
+   that way.
+
+   SO WHAT DOES GITHUB'S SIZE MEAN NOW. It means the wheel is one edit away from
+   a mesh instead of two. Every radius is still (N + 2) * m / 2 taken off a
+   real tooth count, so each wheel is in true proportion to its own teeth; the
+   size ORDER is still strict, 62.700 > 52.800 > 48.675, where it read
+   62.7 > 54.7 > 48.7 before and 62.7 > 48.7 > 45.6 before that; and the one
+   thing that used to be missing -- a shared tooth size -- is no longer missing.
+   If the wheel is ever wanted in engagement the route is now the plate, not the
+   art: find 112.20 px of clear centre distance, or move what is standing in the
+   112.20 circle, which is the rig's centre wheel and a ruby.
+
+   THE RATIOS ARE THE TOOTH COUNTS, INVERTED, which is the one thing a gear train
+   on a watchmaker's site cannot get wrong. A wheel of N teeth driven by one of M
+   turns M/N times as fast, and meshed wheels turn in OPPOSITE directions. So the
+   periods are proportional to the counts -- 148s, 124s, 114s for 74, 62, 57 --
+   and the directions alternate down the chain. Three wheels turning the same way
+   at the same speed would be a decal, not a train. THE PERIODS ARE UNCHANGED,
+   and for the meshing pair they are now a consequence of the geometry again
+   rather than a claim about it: 148/74 and 114/57 are both exactly 2.0 seconds
+   per tooth, which is what keeps LinkedIn and Gmail in step for as long as the
+   back is showing. The alternation had to be re-cut for that pair, though --
+   the email wheel used to turn the same way as LinkedIn, which two wheels in
+   mesh cannot do, so it is `animation-direction: reverse` below. GitHub keeps
+   its own reverse and its 124s, and now that it is LinkedIn's left-hand
+   neighbour that is the RIGHT direction rather than an accident: in a train
+   github-linkedin-gmail the two outer wheels turn together and the middle one
+   against them, which is exactly reverse / forward / reverse as written. 124/62
+   is 2.0 s per tooth, the same as the other two, so if the gap ever closed the
+   three would already be in step.
+
+   THEY TURN ONLY WHILE THE BACK IS SHOWING. Gated on .is-flipped for the reason
+   rigStop() exists: an animation on a face nobody is looking at is work the
+   compositor does for nothing. */
+.cb-links {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 3.2%;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: .98vmin;
-  letter-spacing: .32em;
-  color: #46230f;
-  opacity: .6;
+  inset: 0;
+  /* .cb-movement is pointer-events: none and this layer is inside it, so the
+     wheels have to take them back explicitly -- see the anchors below. */
   pointer-events: none;
 }
+.cb-gear {
+  position: absolute;
+  pointer-events: auto;
+  display: block;
+  line-height: 0;
+  border-radius: 50%;   /* the focus ring follows the wheel, not its box */
+}
+/* THE LOW WHEEL WENT UNDER -- AND HAS BEEN MOVED OUT FROM UNDER. A wheel lying
+   on top of everything is a decal; a wheel with bridgework across its teeth is
+   a part in a movement. The rig gets that for free -- its .cb-rig-static cutouts
+   are drawn after its wheels and occlude them by DOM order alone, no z-index
+   anywhere in .cb-rig -- and this was the same mechanism one layer up, an
+   occluder last in .cb-links. Past tense throughout: the wheel it was cut for
+   has moved, and .cb-links-static now occludes NOTHING. See IT HIDES NOTHING
+   NOW at the end of this block; the reasoning is kept because it is still the
+   reasoning that would apply if a wheel were ever brought back down.
+
+   IT IS NOT THE RIG'S OWN CUT. The obvious move is to re-hang the rig's
+   static-bridges.webp (the name bridge, the curve that swallows the centre
+   wheel's teeth) over one of these. It cannot be done: that cut's leftmost
+   opaque pixel is x 522 of 1254, and every position from which a 76px wheel
+   could touch it is inside the centre wheel (560, 552) r 88 or the seconds
+   wheel (471, 624) r 88. Nothing the rig emits reaches the left plate at all.
+   So the No 58669 bridge -- which already floors the empty band -- was cut by
+   hand from rig/base.webp, the same floor the rig itself draws, and the
+   LinkedIn wheel was brought down to it: centre (315, 693) dropped the wheel's
+   last row of teeth to y 769 while the bridge's edge crosses at y 718, so 16.8%
+   of the wheel sat behind bridgework -- a bite you could see, and not a wheel
+   buried to a sliver. The hub set the depth: the nearest opaque bridge pixel
+   was 6.7px clear of the enamel, because a logo half-eaten by a bridge is a
+   broken link, not a watchmaking detail.
+
+   THE COPY IS OVER ITS OWN PIXELS. The cut is byte-identical to what is beneath
+   it -- rig/base.webp, tools/assets-src/caseback-empty.png and the lossless
+   render agree to 0 in this region -- so it is invisible except for what it
+   hides, and the alpha carries the render's own antialiased rim so the teeth
+   pass under a soft edge rather than a stair. Pointer-events stay off it: it
+   lies over a link, and a bridge that ate the click as well as the light would
+   make the wheel a target that fails where it looks solid.
+
+   IT HIDES NOTHING NOW, WHICH MAKES IT INERT RATHER THAN INVISIBLE. The
+   LinkedIn wheel has been moved off the bridge and up under the jewel arm at
+   (655.5, 422.8) -- it goes under bridgework again, but a different piece of it,
+   cut in THE LINKEDIN WHEEL GOES UNDER below. GitHub was the wheel nearest to
+   coming back down, at y 653.7 and 62.3px of daylight from this cut; it has
+   since gone the other way, up to (485.0, 417.0) under the jewel arm's left
+   lobe, so its lowest teeth are at y 470.7 and the LOWEST TEETH OF ANY LINK
+   WHEEL are LinkedIn's, at y 486.2 -- 229.8px above this cut's alpha bbox,
+   which begins at y 716. Measured in the
+   browser: its rect intersects no .cb-gear and no part the rig emits -- zero
+   hits. The daylight was 84px when this was written, closed to 62.3 by
+   GitHub's move to the recess wall, and is 229.8 now that every wheel has left
+   the lower half of the plate. Combine that with the paragraph above and the
+   element is not merely
+   unseen, it changes no pixel at all: a fetch, a decode and a paint for nothing.
+   It is left in the DOM and flagged here rather than quietly deleted, because
+   there are two honest fixes -- bring a wheel back down onto the bridge, which
+   is what the 16.8% bite above was worth, or drop the asset and this block with
+   it -- and choosing between them is a design decision, not a cleanup. What is
+   not acceptable is leaving it undocumented and having the next reader believe
+   the bite is still on screen. The case for dropping it is stronger than it has
+   ever been: all three wheels are now in a row along the top of the movement
+   and none of them is a candidate to come back down. */
+.cb-links-static {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+/* THE GITHUB WHEEL GOES UNDER, AND THIS ONE IS PRESENT TENSE. Everything the
+   block above describes in the past -- an occluder last in .cb-links, cut from
+   the floor the rig itself draws, hiding a wheel by DOM order and nothing else
+   -- is done again here for the GitHub wheel, and this time it is on screen.
+
+   WHAT WAS ASKED FOR: put this wheel on the LEFT of the LinkedIn wheel, in the
+   pocket between the two pieces of bridgework LinkedIn sits between, and change
+   its size as needed. The size was changed, the wheel was moved to LinkedIn's
+   left, and the pocket itself could not take it -- there is no plate in there.
+   The sweep that establishes that is THE MESH CIRCLE IS FULL below, and it is
+   the reason this block does NOT claim a mesh.
+
+   THE MOVE, IN THE RENDER'S OWN 1254px SPACE. Centre (317.3, 598.0) on the
+   recessed field at the far left to (485.0, 417.0) on the plate bay west of the
+   jewel arm's left lobe: right 167.7, up 181.0, 246.6 in a straight line. That
+   is the longest single move any wheel here has made, and it takes the last
+   wheel out of the empty band.
+
+   AND IT CAME DOWN 3.5% ON THE WAY, WHICH IS THE POINT OF THE SIZE CHANGE.
+   `width` 8.726% -> 8.421%, so rx 54.71 -> 52.7997 and ry 55.69 -> 53.7444,
+   and m 1.710 -> 1.65. 1.65 is not a round number chosen for looks: it is
+   LinkedIn's module and Gmail's, so with this step all three wheels on the
+   caseback are drawn at one tooth size for the first time since the 25% steps
+   broke that. 8.421% is 0.825 of the source width, the same fraction LinkedIn
+   carries, and 2.0 * 0.825 = 1.65 gives
+       tip r   = (62 + 2) * 1.65 / 2 = 52.80
+       pitch r =  62      * 1.65 / 2 = 51.15
+   The old joint anchored the RIGHT EDGE and the CENTRE HEIGHT through two
+   resizes, because the wheel was pressed into a leaning step and the joint was
+   the whole effect. This move has no such anchor to hold -- it is a new
+   position against a new edge -- so both offsets are solved from the CENTRE, as
+   THE LINK TRAIN requires (8.421% * 1254 = 105.599 wide, and 105.599 * 512/503
+   = 107.489 tall, because only `width` is authored and the sprite is 503x512):
+       left = 485.00 - 52.7997 = 432.200 -> 34.466%   -> centre x 485.003
+       top  = 417.00 - 53.7444 = 363.256 -> 28.968%   -> centre y 417.003
+   Three decimals of percentage is 0.01254 render px, and both land inside that.
+
+   THE MESH CIRCLE IS FULL, AND THAT IS WHY THERE IS NO MESH. Gmail engages
+   LinkedIn on the right; the obvious prize was to engage it on the LEFT and
+   make the three a real train again. Same module now, so the only remaining
+   condition is one distance: centres at the two pitch radii added,
+   51.15 + 61.05 = 112.20. That is a circle round LinkedIn's centre, and it was
+   swept degree by degree against an offline composite of the rig -- base, every
+   part, every cutout -- with the wheel's tip ellipse and its enamel hub tested
+   at each point. Nothing on the left half of it is free:
+       theta 68..185 deg   the rig's own CENTRE WHEEL, (560, 552) r 87. Dead
+                           left of LinkedIn, theta 180, the wheel would stand
+                           at (543.3, 422.8) and its tip circle would lie
+                           9.5 px INSIDE the centre wheel's -- teeth across a
+                           turning wheel, the loose part THE LINK TRAIN exists
+                           to prevent
+       theta 185..220 deg  the jewel arm's LEFT LOBE. The ruby is at
+                           (555.2, 388.3) r 22.8 with three blue screws round
+                           it at r 33; the hub is r 18.01 and would sit on the
+                           stone itself from 190 to 210 and on a screw head at
+                           220. Teeth under the lobe are fine -- that is what
+                           this cut is for -- but the hub cannot go under
+                           anything, and a logo lying on a ruby is the same
+                           failure as teeth lying on a wheel
+       theta 220..270 deg  the VIERZIG (40) RUBINE engraving, which runs
+                           x 567..690 over y 300..340. The hub lands on RUB,
+                           then UBIN, then BINE
+   There is no fourth option: theta below 68 is the far side of LinkedIn, where
+   Gmail already is. The pocket the brief calls "between the two plates" holds
+   exactly one wheel, and the proof is smaller than the sweep: the lobe's traced
+   edge and LinkedIn's tip circle OVERLAP by 3.1 px. There is not a pixel of
+   plate between them at any size.
+   So the wheel was placed as near to LinkedIn on its left as the plate allows
+   -- 170.60 centre to centre, 55.10 tip to tip, against 263.5 tip to tip before
+   -- and the size step was still worth taking, because it is what leaves the
+   mesh one distance away instead of a distance and a redraw.
+
+   THE EDGE IS THE JEWEL ARM'S LEFT LOBE, AND IT IS A DISC RATHER THAN A WALL.
+   The arm that carries VIERZIG (40) RUBINE ends on the left in a raised round
+   lobe with a ruby in a gold chaton at its middle and three blue screws round
+   it. Its undercut was traced off rig/base.webp per degree, as the darkest
+   point along each ray out of (553, 390) between r 42 and r 62, refined to
+   subpixel by a parabola through the minimum and smoothed over 2.5 degrees. It
+   runs r 45.4 at 180 deg, 46.2 at 160, 47.3 at 145, 48.5 at 125 and 49.5 at 90:
+   near enough a circle of radius 47, leaning out as it comes round to the
+   bottom. (An earlier pass took the luminance = 110 crossing instead and read
+   r 43..45; that is the INNER foot of the chamfer, not the darkest line of the
+   undercut, and it made the lobe about 3 px smaller than the thing that hides
+   pixels. The minimum is the edge used here and in the cut.) The wheel meets
+   that edge across its lower-left quadrant, at 158.34 deg from the lobe's
+   centre, where the edge stands at r 46.28 and the wheel's centre is 73.16
+   away -- so the tip circle reaches 25.9 px past it and the lobe takes the
+   rest. That is the whole of the joint: the visible right-hand outline of the
+   wheel is the lobe's edge, not the wheel.
+
+   WHAT IT COSTS AND WHAT IT BUYS. Every figure is in the render's 1254px space
+   and every one was measured against an offline composite, not scaled from the
+   old position: `now` is the wheel at (485.0, 417.0) tip rx 52.80, `was` the
+   same wheel at (317.3, 598.0) tip rx 54.71 under the recess step.
+       hidden behind the lobe   14.12% of the tip ellipse, was 15.0% behind the
+                                step. Measured by rasterising the tip ellipse at
+                                1000x1000 and counting samples inside the traced
+                                edge. It is a shade lighter than its neighbours
+                                (linkedin 16.2%, gmail 31.6%) and that is the
+                                lobe's shape, not a missed target: the lobe is a
+                                47px disc, so wheel and edge are two convex
+                                curves and the lens between them grows slowly.
+                                Two more px of depth would buy 1.4 points of
+                                bite and cost 2 px of hub clearance, and the hub
+                                is the one that must not be spent
+       deepest bite past it     26.50 render px at the deepest sample, 25.92 on
+                                the wheel's own centre line, was 19.8
+       enamel hub clearance     11.85 render px to the traced edge, was 20.5.
+                                The hub radii are measured off the sprite itself
+                                -- enamel disc r 70.8 and hub assembly r 85.8 of
+                                503, per ray at the luminance = 120 and
+                                alpha = 0.5 crossings, median of 1440 rays --
+                                and at this width they are 14.86 and 18.01
+       hub bezel clearance      8.68, was 17.2. This is the tightest the enamel
+                                has ever run against bridgework here except
+                                Gmail's 9.22, and it is above the No 58669
+                                precedent of 6.7 that was legible. It is also
+                                the number that fixes the depth of the bite
+                                above: the wheel is as far under the lobe as the
+                                logo can afford
+       gap to the centre wheel  14.6 render px tip to tip against the rig's own
+                                (560, 552) r 87, and 13.60 measured against that
+                                part's visible pixels in the composite rather
+                                than its nominal radius. THIS IS THE TIGHTEST
+                                THING ON THE WHEEL and the number that would
+                                stop it growing. It is also the same wheel
+                                LinkedIn is held 10.0 off: both link wheels in
+                                this half of the movement are kept clear of one
+                                turning part
+       gap to the seconds wheel 67.7, was 14.2. The old near thing is the far
+                                thing now
+       gap to the grey cap      23.85 to the capped hole at (426.0, 343.0) r 18,
+                                the only other feature in this bay. The screw
+                                boss at (275, 663) that used to be 5.8 away is
+                                210 px behind the wheel and off this block
+       aperture-edge clearance  121.45, was 53.6. GitHub is no longer the
+                                tightest of the three against that wall; Gmail
+                                is, at 106.8 (linkedin 149.8)
+       gap to the linkedin wh.  55.10 render px of bare plate, tip to tip, was
+                                263.5. Centres 170.60, was 380.9
+       gap to the gmail wheel   176.65, was 379.3. Centres 278.12, was 482.7
+   Every line but two improved, and the two that did not are the two that had
+   nothing to lose: the bite is 0.9 points lighter and the hub 8.7 px tighter,
+   both bought deliberately to get 208 px nearer the wheel this one is supposed
+   to belong with. The tightest figure on the wheel is 8.68 px of enamel to
+   bridgework and 13.60 px of tooth to a turning wheel; those are the two to
+   bring to the next size step.
+
+   WHAT IS UNDERNEATH IT NOW. Flat plate and nothing else: the bay between the
+   recess step's left wall, the capped hole at (426, 343) and the lobe. No
+   jewel, no screw, no engraving under any part of the wheel that is not behind
+   the lobe -- the three blue screws and the ruby of the chaton are all inside
+   the traced edge, so the cut puts them back on top of the teeth, which is what
+   makes the wheel read as running under the arm rather than over its jewels.
+   Nothing .cb-rig emits reaches this bay either; the nearest thing it paints is
+   the centre wheel's teeth, 13.60 px below and to the right, which is why this
+   cut still has to be authored by hand rather than borrowed from
+   static-bridges.webp.
+
+   THE COPY IS OVER ITS OWN PIXELS, AND THE FILE WAS RE-CUT RATHER THAN LEFT
+   LYING. The old asset was 42x108 taken at x 336..378, y 544..652, cut for the
+   recess step; the moment the wheel left that step it would have become an
+   occluder covering nothing, which is the one thing this block already carries
+   an example of and must not carry twice. So static-plate-github.webp is a new
+   file: 46x80 lifted straight out of rig/base.webp at x 500..546, y 362..442,
+   and everywhere its alpha is above zero its RGB matches what is beneath it
+   with a maximum channel difference of 0 -- it paints nothing but its own
+   alpha. (Fully transparent pixels carry no RGB at all; WebP zeroes them, which
+   is what the LinkedIn and Gmail cuts do too, and it cannot matter because
+   nothing is drawn from them.) That alpha is 1 inside the traced edge and 0
+   outside; the boundary is the per-degree luminance minimum described above,
+   evaluated on a 4x supersampled grid so the edge lands where the trace says
+   rather than on a pixel corner, and feathered 0.7px so the teeth pass under a
+   soft edge rather than a stair. Pointer-events are off it because it lies over
+   a link, and bridgework that ate the click as well as the light would make the
+   wheel a target that fails where it looks solid.
+
+   PROVENANCE, PROVED THE WAY THE OTHER TWO CUTS WERE. A full offline composite
+   was built twice -- rig/base.webp, every rig part, every rig cutout, all three
+   link wheels and all four link cuts -- once with this file and once without.
+   942 pixels differ. Every one of them belongs to the GitHub sprite: 879 lie
+   inside its tip ellipse and the remaining 63 are its own antialiased tooth
+   tips a fraction outside the mathematical ellipse. NOT ONE lies inside
+   LinkedIn's tip ellipse or Gmail's, so this cut, which is drawn after the
+   LinkedIn wheel, takes nothing off it.
+
+   THE CUT REACHES, AND IT WAS CHECKED RATHER THAN ASSUMED. The lens -- the part
+   of the tip ellipse lying inside the traced edge -- occupies x 507.13..537.76,
+   y 369.93..435.05, inside a box of x 500..546, y 362..442. That leaves 7.13px
+   of cut to its left, 8.24 right, 7.93 above and 6.95 below: the tightest
+   margin is 6.95px, and the box is padded on every side because this wheel has
+   been resized four times and the next reader should be able to nudge it
+   without recutting the file. Sampled at 1200x1200 across the tip ellipse,
+   every point inside the lens reads alpha 1 except within 1.44px of the traced
+   edge, where the shallowest value is 0.996 -- that is the 0.7px feather spread
+   over one pixel of raster and nothing else. No tooth comes through the plate.
+
+   THE OLD JOINT IS GONE, AND SO IS THE QUESTION IT LEFT OPEN. This wheel used
+   to press into the curved step that walls the recessed field -- chamfer traced
+   at x 334 (y 520), 343 (y 560), 357 (y 590), 350 (y 630) -- with 15.0% of it
+   behind that step, and a long passage here worked out that it could NOT go on
+   down to sit flush on the No 58669 bridge: at ry 55.69 tangency put its centre
+   at y 658.6, where the corridor between the screw boss at (275, 663) r 17 and
+   the step's chamfer is 61.04 px against a requirement of rx 54.71 + hub 18.67
+   = 73.38. Twelve px short, with no cx that fixed it. That arithmetic is
+   retired rather than deleted because it is still the reason the wheel did not
+   go DOWN, and this move went up instead. Both the step and the bridge are now
+   bare plate: nothing authored in .cb-links lies below y 486.2 or left of
+   x 432.2.
+
+   ITS OWN DECLARATIONS ON PURPOSE. It does not carry .cb-links-static as well.
+   That rule is flagged dead directly above and one of the two honest fixes
+   named there is to delete it; a cut that IS doing its job must not fall over
+   when that happens. Same three properties, written out here. */
+.cb-links-static--github {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+/* THE LINKEDIN WHEEL GOES UNDER, AND IT IS THE SECOND ONE ON SCREEN. Same
+   mechanism again -- an occluder after the wheel it hides, inside .cb-links, by
+   DOM order alone and no z-index anywhere -- for the wheel that had been left
+   lying on open plate with its teeth across the rig's centre wheel.
+
+   THE EDGE IS THE JEWEL BRIDGE, NOT THE NAME BRIDGE. Two edges were in reach.
+   The name bridge's sweep runs below and to the right of the wheel and falls
+   AWAY as you go up, so nothing up-and-right takes the wheel any further under
+   it. The other is the raised arm overhead -- the one engraved VIERZIG (40)
+   RUBINE, carrying a ruby boss at each end -- and its chamfered underside is a
+   real step in the movement with its own cast shadow. That is the edge chosen,
+   and the direction the wheel had to travel to reach it is exactly up and a
+   little right.
+
+   WHERE THE EDGE IS. Measured off rig/base.webp in the render's 1254px space,
+   the underside crests at y 380 beneath x 660 and falls away on both sides --
+   y 412 at x 600, y 382 at x 630, y 383 at x 680, y 397 at x 720. So the pocket
+   the wheel sits in is domed, and the wheel meets the arm across the crest.
+
+   THE TWO MOVES, AND THE GROWTH AFTER THEM. Step one, right 8.0 and up 17.6,
+   from centre (647.5, 455.8) to
+   (655.5, 438.2): that puts the crest of the wheel's tip circle on the crest of
+   the arm, tangent to it, where before there were 14.1 render px of shadowed
+   plate between them. Right 8.0 is the whole of the "slightly": it slides the
+   wheel from x 647.5 to the 660 the arm is deepest at, so the bite is taken
+   square across the crest and not off one shoulder of it.
+   Step two, up a further 21.2 to (655.5, 417.0): the tip circle crossed the
+   line by 21.0 px at its deepest, and 17.1% of it lay behind the arm. That is
+   the same bite the No 58669 bridge was worth at 16.8%, chosen for the same
+   reason: a sixth of a wheel is an overhang
+   you can read across the room, and a third is a wheel buried to a sliver.
+
+   STEP THREE IS A SIZE, NOT A MOVE, AND IT IS ANCHORED ON THE TOP EDGE.
+   width 9.091% -> 10.000%, tip r 57.0 -> 62.7, m 1.5 -> 1.65. The rule THE LINK
+   TRAIN gives for resizing -- recompute both offsets from the CENTRE -- is the
+   rule for a wheel that has no edge to hold. This one has: the tuck under the
+   chamfer is the whole point of it, so what is held constant is the TOP of the
+   box, not the centre. `top` fixes the box's top-left corner, so a box that
+   only grows wider grows DOWNWARD from an unchanged `top` and `top` was left
+   at 28.654% -- the box top stays at y 359.32 to within 0.00 px, and the tip
+   circle's own crest moves 0.07 px, from y 360.00 to y 360.06. `left` is the
+   offset that had to move, and only far enough to keep the centre on the 660
+   the arm is deepest at: left = 52.273% - 10.000%/2 = 47.273%, which is
+   x 592.80 and centre x 655.50 against 655.50 before. The bite is therefore
+   untouched -- deepest penetration past the chamfer is 20.9 px before and
+   after -- and the centre has dropped to (655.5, 422.8), half the height gain.
+   The bite is the same absolute bite over a bigger disc, so the FRACTION falls:
+   16.2% -- 1998 of 12348 sampled disc pixels, against 1744 of 10198 before.
+   Still a sixth of the wheel, still an overhang you read across the room; the
+   floor is where it stops looking deliberate, and 16.2% is not near it.
+
+   THE HUB SET THE CEILING, as it did on the bridge, AND GROWING DOWNWARD MOVED
+   THE CEILING AWAY. The enamel `in` disc scales with the sprite -- r 13.4 to
+   r 14.7 -- but the arbor it is centred on dropped 5.8 px away from the arm,
+   which is the larger of the two effects. The nearest opaque bridge pixel was
+   22.0 px clear of the enamel and is now 26.6 px clear, so the logo is whole
+   with more room than before, not less. It is still the one number that stops
+   the wheel going further up: a logo half-swallowed by a bridge is a broken
+   link, not a watchmaking detail.
+
+   WHAT THE MOVE ALSO FIXED, AND WHAT THE GROWTH HAS SPENT HALF OF. The wheel
+   used to overlap the rig's own centre wheel (560, 552) r 88 by 15.0 render px
+   of tooth tips --
+   the loose part THE LINK TRAIN records. The two moves took it to 20.3 px
+   clear; growing 10% downward -- 5.7 px of tip radius plus 5.8 px of centre,
+   both spent toward that wheel -- has taken it to 10.0 px clear. Still clear,
+   so nothing the rig emits is crossed by a link wheel anywhere on the caseback,
+   but this is now the tightest thing about the wheel and the number that would
+   go negative first: another 10% on the same anchor would put teeth back across
+   the movement's own, which is the exact fault the two moves were made to fix.
+   Underneath the visible five-sixths: bare pocket plate and its shadow, no
+   jewel, no screw, no engraving. Aperture clearance went from 189.5 to 149.9,
+   and the growth barely touched it: 149.8, because the 5.7 px the tip radius
+   gained was all but cancelled by the 5.6 px the dropping centre moved TOWARD
+   the centre of the clipping disc -- the movement's own, (610.7, 606.8) r 401.9,
+   and nowhere near tight. Gmail is the wheel to watch there now, at 106.8;
+   GitHub held that title until it crossed the movement and went to 121.5.
+   The name bridge's sweep below and right is the other wall of the pocket, and
+   growing downward did not reach it either: the nearest shadowed step on any ray
+   from 20 to 95 degrees is 25.3 px past the tip circle.
+
+   THE COPY IS OVER ITS OWN PIXELS. static-plate-linkedin.webp is 140x84 lifted
+   straight out of rig/base.webp at x 584..724, y 344..428, and it was checked
+   the honest way: a full offline composite of base + every rig part + every rig
+   cutout, built twice, with and without this file laid over it. Maximum channel
+   difference 0, pixels changed 0. It paints nothing but its own alpha.
+   That alpha is the arm itself, flood-filled on the bilaterally-filtered base
+   behind a luminance = 105 barrier -- the chamfer bottoms out near 10, so the
+   barrier is the chamfer and the fill cannot leak into the pocket -- then the
+   largest connected component, holes filled so the rubies and screws come with
+   it, dilated 6px to take in the polished chamfer the fill stops short of, and
+   feathered 0.7px so the teeth pass under a soft edge rather than a stair.
+
+   THE BOX IS BIGGER THAN THE BITE ON PURPOSE, AND THE 10% SPENT HALF OF THAT
+   TOO. The wheel used to meet the arm over x 599..708, y 361..413 inside a box
+   of x 584..724, y 344..428 -- ~15px of padding on every side, so that a later
+   nudge of a few px could not slide a tooth out from under the cut's own edge.
+   The bigger wheel meets it over x 593..711, y 361..420, and the padding is now
+   9 left, 13 right, 17 top, 8 bottom. The bite is still wholly inside the cut,
+   so nothing pokes through and the file did not need re-cutting -- which is
+   exactly what the padding was for. What is worth naming is WHERE the margin
+   went: the alpha is truncated by the box at its lower LEFT, where the arm runs
+   on out of frame past x 584, and the wheel's leftmost tooth tip is now x 592.8.
+   8.8 px of daylight between a tooth and an edge the arm continues past is the
+   number that decides whether a future change needs a new cut, and it is not
+   the 15 this box was drawn with. Padding costs nothing here because the copy
+   is invisible, so a re-cut should widen it rather than re-centre it.
+
+   ITS OWN DECLARATIONS, for the same reason .cb-links-static--github has its
+   own: .cb-links-static is flagged dead above and may be deleted, and a cut
+   that IS doing its job must not fall over when that happens. Pointer-events
+   off, because it lies over a link and bridgework that ate the click as well as
+   the light would make the wheel a target that fails where it looks solid. */
+.cb-links-static--linkedin {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+/* GMAIL MESHES WITH LINKEDIN, AND GOES UNDER THE BRIDGE BELOW IT. This is the
+   third cut of the same kind -- an occluder after the wheel it hides, inside
+   .cb-links, by DOM order alone and no z-index anywhere -- and it is the first
+   one made for a wheel that is actually in gear with another.
+
+   THE MESH IS A MODULE AND A SUM, AND BOTH HAD TO BE PAID FOR. LinkedIn sits at
+   width 10.000%, so its module is m = 2 * 62.7 / (74 + 2) = 1.65. Gmail was at
+   m 2.0. Wheels of different modules have different-sized teeth and cannot
+   engage at any spacing, so there were only two honest ways to answer "move the
+   gmail cog to fit with the teeth of the linkedin cog":
+       (a) redraw Gmail at m 1.65 and set the centre distance to the sum of the
+           pitch radii -- a real mesh, at the cost of a resize nobody asked for;
+       (b) leave Gmail at m 2.0 and set the tip circles tangent -- no resize,
+           and no engagement either, just two wheels touching at a point.
+   (a) was taken, for two reasons. The first is that (b) would have made this
+   comment a lie the moment it was written, and this block has form for that.
+   The second is that (a) is the only one that FITS: the bay Gmail had to land
+   in is 72 render px of daylight between the jewel arm and the name bridge, and
+   the m 2.0 wheel is 118 across against the m 1.65 wheel's 97. The shrink is
+   what got it into the gap. So:
+       tip r    = (57 + 2) * 1.65 / 2 = 48.675  -> width 7.763% (97.348 px)
+       pitch r  =  57      * 1.65 / 2 = 47.025
+       centres  = 61.05 + 47.025      = 108.075
+   and the wheel is written at 108.070 from LinkedIn's centre, 0.005 render px
+   short, which is under half of the 0.01254 px that one digit of these
+   percentages is worth. The tip circles overlap by 3.30 px because tip r exceeds pitch r by
+   m on each wheel: 2m = 3.30. That overlap is the check -- two circles set
+   tangent would read 0.00, and the difference between the two options is
+   exactly those 3.3 px of interleaved tooth.
+
+   WHICH WAY ROUND THE CIRCLE: THE TOOTH PHASE. The sum fixes the distance, not
+   the direction, and only some directions land a tooth in a gap. Sampling each
+   sprite's alpha at 0.97-0.995 of its tip radius over 7200 angles and taking
+   the Nth harmonic puts LinkedIn's tooth centres at 2.404 deg + k * 4.8649 and
+   Gmail's at 1.538 + j * 6.3158 in their own unrotated frames; the relative
+   phase then runs through a whole tooth every 2.75 deg of travel round the
+   centre circle. Rasterising both sprites at 6x and counting the pixels opaque
+   in BOTH gives 22 px^2 at the worst angle in that cycle and 2.25 px^2 at
+   -5.128 deg, which is the antialiased tip contact and nothing more. -5.128 is
+   where the wheel is written, and the occlusion below is flat to a tenth of a
+   percent over that whole stretch of the circle, so nothing was traded for it.
+   THE PHASE HOLDS, BUT NOT PERFECTLY, AND THE REASON IS THE ART. The periods
+   are already one tooth every 2.0 s on both wheels -- 148/74 and 114/57 -- and
+   the email wheel is reversed below, so the two sweep the contact point at the
+   same rate in the same direction and the tooth-to-gap relationship is fixed.
+   What is not fixed is the wheels themselves: the sprites are 506x512 and
+   508x512, ellipses rather than circles, so each tip radius breathes as it
+   turns, and the teeth are drawn art rather than involutes. Sampled every 2.5 s
+   through a full 148 s turn, the opaque-in-both figure averages 10.6 px^2 and
+   peaks at 20.8, against 24.0 and 32.1 at the opposite phase and 59 for two
+   solid discs at this spacing. Forcing both sprites square drops the average to
+   6.7, which is how much of the residual is the ellipse and how much the teeth.
+   The phasing is worth having -- it more than halves the crossing -- and it is
+   not a claim that no tip ever grazes another.
+
+   THE BAY, AND WHY THERE ARE TWO BITES. Everywhere on the mesh circle is
+   crowded -- left of LinkedIn is the ruby boss, above is the arm, below is the
+   rig's own centre wheel -- and the one opening is east of LinkedIn, between
+   the right-hand end of the VIERZIG (40) RUBINE arm and the upper-left sweep of
+   the N ROSHAN RAMLUKAN bridge. Traced off rig/base.webp, the arm's chamfer
+   runs y 390 at x 700, 395 at x 720, 393 at x 740, 382 at x 760 and dies out at
+   x 778; the bridge's runs y 499 at x 700, 472 at x 740, 454 at x 760, 433 at
+   x 780, 407 at x 800. That leaves 72 px of daylight at the wheel's own centre
+   height against 97 px of wheel, so it is bitten top and bottom:
+       behind the name bridge   19.59% of the tip ellipse, 38.9 px deep at the
+                                deepest -- the edge BELOW it, which is the one
+                                the brief was about
+       behind the jewel arm     11.97%, 23.3 px deep
+       total hidden             31.56%
+   That is twice the ~17% both neighbours were cut to, and it is not a target
+   that was missed, it is what a 97 px wheel in a 72 px bay costs. Neither bite
+   on its own is out of family, and the number that actually decides whether
+   this is watchmaking or a broken link is the next one.
+       enamel hub clearance     9.22 render px, hub r 16.67 measured off the
+                                sprite's own enamel disc (87 of 254 sprite px).
+                                The LinkedIn cut kept 22.0 and the No 58669
+                                precedent 6.7 and was legible; this is between
+                                them, and the logo is whole.
+       rig parts crossed        none. Zero pixels of the wheel's tip ellipse
+                                touch a pixel the rig's own parts paint --
+                                counted against an offline composite built with
+                                and without the parts.
+       aperture-edge clearance  106.4, was 25.5. Gmail was the tightest thing on
+                                the caseback; crossing the movement traded that
+                                for GitHub's 71.9, which was then the number to
+                                watch. GitHub has since left that wall too, for
+                                121.5, so this 106.4 is the tightest of the three
+                                again -- and it is four times the 25.5 it was.
+   IT ALSO SETTLES AN OLD INCONSISTENCY. Gmail used to lie across the recessed
+   field's curved step at x 334..362 with its teeth OVER the step while the
+   GitHub wheel, on the same step, went UNDER it -- one boundary treated two
+   ways. Both wheels have since left that step, so nothing lies across it at all
+   and the inconsistency is gone rather than resolved.
+
+   THE COPY IS OVER ITS OWN PIXELS. static-plate-gmail.webp is 120x120 lifted
+   straight out of rig/base.webp at x 704..824, y 350..470, and it was checked
+   the way the LinkedIn cut was: a full offline composite of base + every rig
+   part + every rig cutout, built twice, with and without this file laid over
+   it. Maximum channel difference 0, pixels changed 0. It paints nothing but its
+   own alpha. That alpha is 1 above the arm's chamfer and 1 below the bridge's,
+   both walls found per column at subpixel accuracy off the bilaterally filtered
+   base -- an edge trace, as .cb-links-static--github uses (per degree there,
+   round a lobe, rather than per column), and not the flood
+   fill .cb-links-static--linkedin uses, because here the two surfaces are the
+   same brightness and only the chamfer between them is dark, so a fill leaks
+   straight across it. Smoothed over five columns and feathered 0.7px, so the
+   teeth pass under a soft edge rather than a stair.
+
+   THE BOX REACHES BACK OVER THE LINKEDIN WHEEL, AND THAT IS SAFE. x 704..824
+   pads the wheel's own 714..812 by ten px a side so a later nudge cannot slide
+   a tooth out from under the cut. LinkedIn's last teeth reach x 718, so this
+   cut's arm alpha does lie over them -- but only above the arm chamfer, which
+   .cb-links-static--linkedin (drawn earlier, box x 584..724) already covers to
+   a deeper line. Verified by compositing all three wheels and all three cuts
+   with and without this file: 1920 pixels change, every one of them a pixel of
+   the Gmail sprite, and not one of them inside LinkedIn's tip circle.
+
+   ITS OWN DECLARATIONS, for the same reason the other two cuts have theirs:
+   .cb-links-static is flagged dead above and may be deleted, and a cut that IS
+   doing its job must not fall over when that happens. Pointer-events off,
+   because it lies over a link and bridgework that ate the click as well as the
+   light would make the wheel a target that fails where it looks solid. */
+.cb-links-static--gmail {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+.cb-gear img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* The sprites are cropped to their own tooth-tip box, so the box IS the wheel
+     and 50% 50% is the arbor to within a fifth of a percent -- measured off the
+     opaque centroid, which sits at (49.93%, 50.02%) of the crop. */
+  transform-origin: 50% 50%;
+}
+.face-back.is-flipped .cb-gear img { animation: linkGear linear infinite; }
+.face-back.is-flipped .cb-gear[data-link='linkedin'] img { animation-duration: 148s; }
+.face-back.is-flipped .cb-gear[data-link='github']   img { animation-duration: 124s;
+  animation-direction: reverse; }
+/* Reverse because it is in mesh with LinkedIn and meshed wheels counter-rotate;
+   114s over 57 teeth is 2.0s per tooth, the same as LinkedIn's 148s over 74, so
+   the phase the position was chosen for holds for as long as the back shows.
+   See GMAIL MESHES WITH LINKEDIN above. */
+.face-back.is-flipped .cb-gear[data-link='email']    img { animation-duration: 114s;
+  animation-direction: reverse; }
+@keyframes linkGear {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Light says which one you are on -- the same law the dial obeys. The wheel is
+   already gold, so the light is a lift in brightness rather than a colour, and
+   the hub's enamel is what carries it: a logo is the one part of this watch that
+   is allowed to be its own colour. Walled in (hover: hover) so a tap cannot
+   leave a wheel lit, exactly as the dial's own hover block is. */
+@media (hover: hover) {
+  .cb-gear img { transition: filter .28s ease; }
+  .cb-gear:hover img { filter: brightness(1.18) saturate(1.06); }
+}
+.cb-gear:focus { outline: none; }
+/* The rail's focus ring, revalued for gold. #f0c9a1 is the site's focus colour
+   and it is 1.24:1 against this brass -- a ring nobody can see. #2c1605 is
+   7.57:1 on the same metal and is the ink the caseback's own engraving darkens
+   to, so the ring and the surface agree. Same shape, same offset, the value
+   flipped for a light ground. */
+.cb-gear:focus-visible {
+  outline: 1px solid #2c1605;
+  outline-offset: .55vmin;
+}
+.cb-gear:focus-visible img { filter: brightness(1.18) saturate(1.06); }
 
 .caption {
   height: 5vmin;
@@ -2667,6 +3406,324 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
 @keyframes railIn { from { opacity: 0; transform: translateY(4px); } }
 
+/* ===================== THE THREE UNDER CONTACT =====================
+   EMAIL, GITHUB and LINKEDIN, hanging off the sixth word. They are the caseback's
+   three wheels said in words, and they are on screen only while the watch is
+   turned over -- src/main.js builds them and toggles [hidden] off placeNow(),
+   and the reasoning for that, rather than always-visible, is written there.
+
+   THEY ARE OUT OF FLOW, AND THAT IS THE LOAD-BEARING DECISION HERE. Absolute,
+   so .rail's own box is exactly the box it was: the datum still runs the six
+   rows and no further, the graduations still tile the column with nothing under
+   the last of them, the ResizeObserver in main.js never fires on the reveal, and
+   the marker's --my in the column and its bottom of 12px in the row are both
+   measured against a block that has not moved. A sublist in flow would have
+   grown the rail by three rows and taken the pointer down with it -- in the row
+   layout the mark would have parked under the sub-line rather than under the
+   words it points at, which is the one failure this had to be designed away
+   from rather than tested for.
+
+   WHERE THEY SIT IN THE LADDER. Datum, graduations, WORDS, pointer -- and these
+   join the words' rung, at the words' full #737b8d, one size down. Not a rung
+   below: --rail-ink at .85 is 3.6:1, which is a graduation's job and not a
+   13px link's, and dimming a live control would say "not live" in the one
+   vocabulary this site uses for exactly the opposite. So the subordination is
+   carried by size, 13 against 20, and by being OFF THE SCALE -- no graduation,
+   no datum beside them, and the pointer never visits. That is the hierarchy
+   device this rail already owns, and it is not a box, a plate or a fill.
+
+   AND THEY ARE NOT AT THE SCALE'S PITCH. One clear em of air below the block --
+   the datum already overhangs the last graduation by half a division -- puts the
+   first word's centre 46.5px under CONTACT's, where a division is 30, and the
+   three run at a 23px pitch of their own (5 + 13 + 5, the same lead in the same
+   place, around a smaller type). A cluster at the wrong pitch cannot be misread
+   as three more items on the scale; a cluster at 30px could.
+
+   THE SHELF IS THE DATUM TURNED THROUGH NINETY DEGREES. A 1px rule in the same
+   --rail-ink at the same .45, ended rather than run to the edge, sitting at the
+   midpoint of that em of air so the gap is split evenly between the scale above
+   and the cluster below. It is the third thing in this block drawn from those
+   channels and the second at that value, which is the point: the rail has two
+   hairline tiers and this is one of them, not a third.
+
+   .45 AND NOT THE GRADUATIONS' .85, decided the same way the datum was. The
+   graduations are marks that belong to items -- one per peer, struck off the
+   scale -- and a separator printed at their weight would rank a piece of
+   furniture with the marks that stand for the six words. The datum's tier is
+   what a rule gets: findable rather than invisible (1.84:1 against the corner of
+   the stage, which is the value .3 was raised to for exactly this reason) and
+   the one rung in the ladder you are not meant to read.
+
+   ITS LENGTH IS DERIVED, NOT CHOSEN, exactly as .rail's width is: eight
+   characters of advance and the seven letter gaps between them, which is
+   LINKEDIN, the longest of the three. The shelf is therefore as wide as the
+   widest thing standing on it, in both tiers, with no number to keep in step. */
+.rail-contacts {
+  position: absolute;
+  /* the words' own left edge: the channel, stated the same way .rail's
+     padding-left states it, so the two cannot drift */
+  left: calc(var(--rail-size) + var(--rail-lead));
+  /* one em clear of the block's end -- see AND THEY ARE NOT AT THE SCALE'S
+     PITCH above */
+  top: calc(100% + var(--rail-size));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* THE ROWS ABUT, exactly as the six above them do. The lead is spent as
+     padding INSIDE each row rather than as a gap between them (see
+     .rail-contact), which makes the row 5 + type + 5 and tiles three hit targets
+     with no dead band -- the same reasoning as THE SCALE'S DIVISION IS THE ROW,
+     and the reason these are not 10px-tall tap targets on a phone. */
+  gap: 0;
+  /* 13px against the column's 20. A real step down that is still three px above
+     this site's stated floor for chrome type, and it is the same 13px the narrow
+     row uses for its own words, so the two tiers of small in this block are one
+     number. */
+  font-size: 13px;
+  /* The arrival the rail itself makes, once, at a shorter duration: the same 4px
+     settle, because this is the same object arriving. It replays on each reveal,
+     which is correct -- it IS an arrival each time. */
+  animation: railIn .28s cubic-bezier(.22,1,.36,1);
+}
+.rail-contacts[hidden] { display: none; }
+/* THE SHELF. See THE SHELF IS THE DATUM TURNED THROUGH NINETY DEGREES above.
+   Half an em above the cluster's own top edge, which is the middle of the air
+   between the end of the datum and the top of the first row off it. */
+.rail-contacts::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(-1 * var(--rail-size) / 2);
+  width: calc(8ch + 7 * var(--rail-track));
+  height: 1px;
+  background: rgb(var(--rail-ink) / .45);
+  pointer-events: none;
+}
+.rail .rail-contact {
+  display: block;
+  color: rgb(var(--rail-ink));
+  text-decoration: none;
+  text-transform: uppercase;
+  /* the same reclaim of the trailing tracking column the words make, for the
+     same reason -- see .rail .rail-link */
+  margin-right: calc(-1 * var(--rail-track));
+  /* the lead, above and below, which is what makes the row 5 + type + 5 and the
+     target something a thumb can find */
+  padding: var(--rail-lead) 0;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color .28s ease;
+}
+/* Hover and focus only, and no active state: these three are not places you can
+   be, so there is nothing for the pointer to mark and nothing to stay lit. The
+   colour is the words' own hover value, because it is the same answer to the
+   same question. main.js writes state.hover on both, so the caption prints the
+   full address or the full URL while one of these is lit -- which is what makes
+   an unlabelled destination readable before it is followed.
+
+   WALLED IN (hover: hover) for the reason .cb-gear's own lift is: a tap fires a
+   compatibility mouseenter and never a mouseleave, so an ungated :hover would
+   leave the last word tapped lit for the rest of the session -- and EMAIL is
+   tapped and stays on the page, which is exactly the case that would strand it. */
+@media (hover: hover) {
+  .rail .rail-contact:hover { color: var(--gold-line-hover); }
+}
+.rail .rail-contact:focus { outline: none; }
+.rail .rail-contact:focus-visible {
+  outline: 1px solid #f0c9a1;
+  outline-offset: .55vmin;
+  color: var(--gold-line-hover);
+}
+
+/* The copy confirmation's other half, for a screen reader. main.js builds this
+   element and writes the same sentence the caption shows; it is off-screen and
+   NOT display:none, because a hidden live region announces nothing. clip-path
+   rather than the old clip rect, and it keeps a 1px box so the text still has a
+   layout to be read out of. */
+.rail-copy-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===================== THE COPY MARK =====================
+   The visible half of the copy confirmation: one line of chrome type that
+   appears under whichever control was pressed -- the rail's EMAIL or the
+   caseback's Gmail wheel -- and takes itself away. main.js owns the element, the
+   text, the position and the clock; this file owns what it looks like.
+
+   IT IS A BOX NOW, AND docs/SITE-DIRECTION.md 9.6 SAYS THE CHROME HAS NO BOXES.
+   That rule is not being pretended away. It reads "No boxes, no pills, no filled
+   buttons, no icon set", and what is below is a box, one of whose two variants is
+   filled. It was asked for directly, and the reason to grant it rather than argue
+   is that 9.6 governs what is PERMANENTLY on screen -- its neighbour 9.9 is
+   "Chrome recedes", and the whole section is about a navigation that has to sit
+   there all session without becoming a menu. This is on screen for 1.9 seconds
+   and its entire job is to be noticed. A rule written against furniture does not
+   automatically bind an announcement.
+
+   WHAT IT DOES NOT GET IS THE IDIOM 0.4 ACTUALLY NAMES. The slop risk in 0.4 is
+   not the rectangle, it is the rounded rectangle with a hairline border and a
+   soft fill -- .card and .tag, quoted there with their 6px and 3px radii. There
+   is no radius here on either variant, and there is no shadow, no gradient and no
+   blur. The border is one CSS pixel of --gold-line, which is the hairline 9.6
+   itself prescribes for chrome, closed into a rectangle; the type is IBM Plex
+   Mono micro-caps at the rail's own tracking. Every material is already the
+   site's. Only the topology is new.
+
+   ONE GOLD, DRAWN TWICE. --gold-line #c98662 is the whole palette of both
+   variants, and which part of the box it is depends on the metal underneath. On
+   the page's near-black behind the rail it is the LINE and the ink, at 6.54:1
+   against the #0a0d15 the rail block above samples at that corner -- the
+   pointer's own value, which is what the rail already spends on the thing that is
+   answering. (That block prints 6.79 for the same pair; 6.54 is what the formula
+   gives on the value it quotes. The gap is in their sample, not in the ladder,
+   and the rung is the same either way.) On the caseback it is the FILL, because a
+   gold line on that brass is
+   1.24:1 and unreadable: .cb-gear:focus-visible two thousand lines up states that
+   exact measurement and flips to #2c1605, and this flips with it. Same gold, same
+   corners, the value moved from the edge to the ground.
+
+   AND IT IS NOT #f0c9a1, WHICH WOULD HAVE BEEN THE OBVIOUS BRIGHTER GOLD. That
+   value is this site's focus ring, and .rail-contact:focus-visible puts it as a
+   1px outline around the EMAIL link itself -- so a keyboard visitor who copies
+   would get a 1px #f0c9a1 rectangle around the word and a second 1px #f0c9a1
+   rectangle 10px to its right, which is two focus indicators on one screen.
+   --gold-line-hover is out for the neighbouring reason: it is the value the EMAIL
+   word IS at the instant it is clicked, so a box in it would join the word rather
+   than stand beside it and answer for it.
+
+   ABOVE THE RAIL, WHICH IS ABOVE THE OVERLAY. 60 over 50 over 40. It is
+   position: fixed and a child of <body> rather than of either trigger, which is
+   what keeps it out of the caseback's preserve-3d and off the rail's stacking
+   context -- neither has to change to let it through. That is also what lets it
+   stand beside a rail row without moving one: .rail-marker travels on offsetTop
+   and offsetLeft read off the words themselves, and a fixed box parented to
+   <body> contributes nothing to either. The rail's own box is byte-identical
+   whether this is up or not. */
+.copy-mark {
+  position: fixed;
+  z-index: 60;
+  /* main.js writes the box's own left edge, not a centre: it places beside the
+     word on the rail and centred under the wheel on the caseback, and one of
+     those is not a centre at all. The translate that used to be here made left
+     mean centre and would have had to be undone for half the cases. */
+  font-family: var(--font-mono);
+  /* the rail's second tier. Level with .rail-contacts, which is where one of the
+     two triggers lives -- and now stands beside. */
+  font-size: 13px;
+  letter-spacing: .28em;
+  line-height: 1;
+  white-space: nowrap;
+  /* THE PARAGRAPH'S OWN MARGIN, AND IT WAS A REAL 13px. This element is a <p>,
+     so the UA sheet gives it margin: 1em 0 -- 13px top and bottom at this size.
+     It was here all along and nobody could see it: the mark used to be centred
+     under its trigger, and a uniform 13px push down just read as a slightly
+     larger gap. Standing the box BESIDE a word is what exposed it -- top was
+     written as 253px and the box rendered at 266px, one full row low against the
+     word it was supposed to be level with. Measured in the browser, not guessed. */
+  margin: 0;
+  /* 4px of lead where .rail-contact spends 5, so the box measures 13 + 8 + 2 =
+     23px tall -- which is exactly a .rail-contact row (13px of type in 5px of
+     lead on each side, no border). The box beside EMAIL is the height of EMAIL's
+     own row, so the two read as one line rather than as a word with a taller
+     thing next to it.
+
+     THE RIGHT PADDING GIVES BACK THE TRAILING TRACKING COLUMN. .28em of empty
+     space follows the last letter of a tracked line, and every other line of
+     this chrome reclaims it with a negative margin -- see .rail-contact and
+     .rail .rail-link. It cannot be a margin here: the box has two edges and the
+     margin is outside both, so it would move the box and not the ink. Spent out
+     of the padding instead, which puts the letters between the two borders
+     rather than 3.64px left of centre. */
+  padding: 4px calc(8px - .28em) 4px 8px;
+  border: 1px solid var(--gold-line);
+  /* NO RADIUS, stated rather than left at the initial value, because this is the
+     one property in the block that docs/SITE-DIRECTION.md 0.4 is actually about
+     and a later hand should have to delete a line to break it. */
+  border-radius: 0;
+  /* It is a statement, not a control: it must never eat a click meant for the
+     wheel it is sitting under. */
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility 0s linear .18s;
+}
+/* THE LINE, on the page's near-black behind the rail. Transparent fill and not a
+   dark one: there is nothing behind the rail but the page, so the box's job here
+   is to bound the word and not to floor it, and a plate in the left margin would
+   be exactly the substrate the rail block above spends a paragraph refusing. */
+.copy-mark--rail {
+  color: var(--gold-line);
+  background: none;
+}
+/* THE PLATE, on the caseback's brass, and it is floored because that surface is
+   not flat. Measured off public/assets/caseback/rig/base.webp at the footprint
+   this box actually lands on -- x 707..819, y 475..507 of the 1254 base, read out
+   of the browser against .cb-links once the flip had SETTLED, which matters: read
+   mid-rotateY the same box reports x 435..547, the mirror of itself, and the
+   metal there is a different metal. The Gmail wheel's centre is the check --
+   (763.1, 413.1) settled, which is the number index.html derives, and 490.9
+   mid-flip, which is 1254 minus it.
+   At the settled footprint the metal averages #c4ad99 and swings from #6a3816 in
+   the engraving to #f9f4ee on the highlights. Type laid straight onto that is
+   type on a texture, which is the fault the rail variant cannot have and this one
+   would.
+   So the gold moves from the edge to the ground: --gold-line as the fill is
+   1.38:1 against that mean, 3.23:1 against the darkest pixel under it and 2.72:1
+   against the lightest, so it is never lost in either direction -- it reads as a
+   change of surface rather than as a hole cut in the metal, and it gives the
+   letters one value to sit on instead of the range above. #2c1605 does the rest:
+   5.78:1 as ink on the fill, 7.99:1 as the edge against the metal, which is what
+   makes the box's boundary legible where 1.38 alone would not. It is the value
+   the caseback's own engraving darkens to and the one .cb-gear:focus-visible has
+   already flipped to on this same brass. */
+.copy-mark--brass {
+  color: #2c1605;
+  background: var(--gold-line);
+  border-color: #2c1605;
+}
+.copy-mark.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .18s ease, visibility 0s;
+}
+/* transition: none rather than the blanket .01ms, for the reason .stage-guilloche
+   states: a motion someone has asked not to see becomes a state, not a fast
+   event. The mark is simply there and then simply not, and its clock -- which is
+   not motion -- still takes it away. Stated here rather than left to the blanket
+   rule because that rule collapses durations and not delays, and the visibility
+   delay above would otherwise outlive the fade it exists to cover. */
+@media (prefers-reduced-motion: reduce) {
+  .copy-mark, .copy-mark.is-on { transition: none !important; }
+}
+/* The floor, and it has moved from 760 to the RAIL's own breakpoint. 10px is
+   this site's stated minimum for chrome type on a phone; the reason to step down
+   at 1200 rather than at 760 is that .rail-contacts steps down at 1200, in the
+   query below, and one of the two things this box now stands beside is a
+   .rail-contact. Between 761 and 1200 the old rule left a 13px box against a
+   10px word -- tolerable when the box sat under the whole cluster, wrong now
+   that it is level with one row of it. The box follows the word it answers for.
+   The plate on the caseback comes down with it, which is right for the same
+   reason it was right at 760: it is the same chrome at the same rank.
+
+   Padding follows the type so the box stays the height of a row: 10 + 8 + 2 =
+   20px, against a .rail-contact of 10 + 5 + 5. And the reclaim follows the
+   tracking -- .22em out of the right padding, as .28em is out of it above. */
+@media (max-width: 1200px) {
+  .copy-mark {
+    font-size: 10px;
+    letter-spacing: .22em;
+    padding: 4px calc(7px - .22em) 4px 7px;
+  }
+}
+
 /* Below 1200px the same list ranges horizontally along the TOP. One <nav>, the
    same links, the same marker and the same graduations: this query changes the
    flex direction, which edge the block is anchored to, and the type. The channel
@@ -2795,6 +3852,63 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     top: auto;
     bottom: 12px;         /* centred in the 24px channel, still underneath */
     transform: translateX(calc(var(--mx, 0px) - 50%));
+  }
+  /* THE THREE STAY A COLUMN. The stack does not turn with the block: three words
+     on top of each other is the arrangement in both layouts, and the only thing
+     that changes is what they hang from. In the column that is the words' own
+     left edge, with the shelf struck from the same edge; here the words are a
+     centred row with no left edge to hang from, so the cluster and its shelf
+     centre on CONTACT instead.
+
+     UNDER CONTACT, AND IT COSTS NOTHING TO SAY SO. --mx is already on .rail --
+     main.js writes both centres every render and each layout reads the one that
+     is its own axis -- and while these three are on screen the active item IS
+     CONTACT, so --mx is CONTACT's centre and the cluster hangs from it directly.
+     No new property, nothing measured in the script, and the stack tracks the
+     word when the row re-centres under it.
+
+     THE CLAMP IS THE PAGE'S OWN MARGIN. CONTACT is the LAST of six centred
+     words, so at 375px its centre is x 335.5 and a 55px stack centred there
+     would end 12px from the viewport's edge -- inside the 5vmin the rest of the
+     page keeps. min() stops it at the last position where the widest of the
+     three is still on that margin: the viewport, less the margin, less half the
+     stack. At 375 that binds -- 328.75 rather than 335.5, so the stack ends
+     flush at 356.25 -- and at every wider viewport in this tier it does not, so
+     the cluster is centred on the word. The half is half the same
+     8ch + 7 * track the shelf's own length is, so one derivation serves both.
+
+     translate AND NOT transform, deliberately. The centring shift has to survive
+     railIn, which animates transform: an animation of that property replaces the
+     -50% for its whole duration, and the cluster would arrive half a stack to
+     the right and then snap back. `translate` is its own property and composes
+     with the animation instead of losing to it.
+
+     THE ROW ITSELF IS UNTOUCHED, which is the whole reason this fits at all. It
+     is at its measured limit -- 345.9px of ink in a 351px box at 375px, "the row
+     has spent its last px" -- so three more words IN it was never available.
+     These are out of flow and BELOW it, so they cost the row nothing: it is
+     still six words on one line, and the stack is 55px wide under it. */
+  .rail-contacts {
+    /* under CONTACT, clamped to the page's own margin -- see UNDER CONTACT and
+       THE CLAMP IS THE PAGE'S OWN MARGIN above */
+    left: min(var(--mx, 50%), 100% - 5vmin - (8ch + 7 * var(--rail-track)) / 2);
+    right: auto;
+    width: max-content;
+    /* translate and not transform: railIn animates transform and would replace
+       this for its whole duration */
+    translate: -50%;
+    align-items: center;
+    /* 10px, this site's stated floor for chrome type on a phone -- the same
+       floor the caption and the row's own second tier reach. A step down from
+       the 13px the row uses from 761 up, and level with it below 760, where the
+       words have reached the floor themselves and there is no step left to
+       spend. What carries the rank there is position: off the scale, under the
+       shelf, on their own line. */
+    font-size: 10px;
+  }
+  .rail-contacts::before {
+    left: 50%;
+    transform: translateX(-50%);
   }
   /* The overlay's half of this swap lives with .overlay itself, further down --
      same query, stated where the property it overrides is, because a rule of
@@ -2976,16 +4090,13 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   height: 150px;
   flex: none;
   border-radius: 50%;
-  border: 1px dashed rgba(217,162,107,.35);
+  /* Solid at .3 is .card's own border exactly, so the photo reads as something
+     set in a bezel rather than as something missing. The dashed .35 and the
+     eight properties that centred the words "Your photo" went with the
+     placeholder: on a replaced element they are inert. */
+  border: 1px solid rgba(217,162,107,.3);
   background: rgba(255,255,255,.03);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: .2em;
-  color: var(--muted);
-  text-align: center;
+  object-fit: cover;
 }
 .about-copy { flex: 1; min-width: 260px; font-size: 15px; line-height: 1.75; color: #c3c9d6; }
 .about-copy p { margin: 0 0 14px; }
@@ -3001,34 +4112,936 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   padding: 7px 12px;
 }
 
+/* ---- THIS PANEL IS WIDER THAN THE OTHER FIVE, AND ONLY THIS PANEL ----
+   SCOPED TO THE ID ON PURPOSE. .card's `width: min(600px, 92vw)` and its 52px of
+   side padding are shared by About, Resume, Research, Miscellany and Contact, and
+   widening the shared rule to suit the one panel that now carries pictures would
+   have widened five panels of prose to suit three screenshots. 600 is still the
+   right measure for a panel that is only words -- the comment on .card derives it
+   -- so this rule argues with that one only for #panel-projects.
+
+   THE RIGHT PADDING PAYS FOR MOST OF THE WIDTH. .card is content-box above
+   1199px, so trimming padding alone would have made the card narrower rather than
+   its contents wider -- padding is outside `width` there, and "less padding" and
+   "wider panel" are the same wish only if the width goes up too. So both move:
+   52 -> 28 -> 20 on the right, 600 -> 680 -> 760 of content. Measured at 1440x900
+   across the two passes, the card's outer box goes 706 -> 762 -> 834 while the
+   content it holds goes 600 -> 680 -> 760: 160px more measure for 128px more card,
+   so 32 of the 160 is recovered from the margin rather than taken from the screen.
+   That is the part "wider by decreasing the padding on the right" was asking for.
+
+   IT GROWS TO THE RIGHT BECAUSE OF WHERE THE CARD IS ANCHORED. .overlay carries
+   data-justify='flex-end' in panel mode, so the card is pinned to the right-hand
+   5vmin margin and its LEFT edge is the one that travels: at 1440x900 the outer
+   box runs x 561 -> 1395 against 45px of overlay padding a side, so the card still
+   sits inside the overlay with 516px of daylight to its left. What moves rightward
+   is the content, because the gutter between it and the card's right edge shrinks,
+   and that gutter is the thing being looked at.
+
+   THE CEILING IS NOT `width`, IT IS THE BOX MODEL EITHER SIDE OF 1199px. Above
+   1199 the card is content-box, so the outer box is width + 72 of padding + 2 of
+   border = 834, and 92vw cannot bind there (it only takes over below 826px of
+   viewport). Below 1200 the card is border-box, so the outer box IS min(760px,
+   92vw) and can never exceed the screen. 834 needs a 924px viewport at 900 tall to
+   clear both 5vmin margins and the content-box tier does not start until 1200, so
+   the two tiers do not meet at a cliff.
+
+   20, NOT 0. The close button sits in that corner -- right: 22px, so its glyph is
+   already inside this padding -- and the eyebrow runs into it; the padding is what
+   keeps a screenshot's right edge off the case-coloured hairline. It is
+   deliberately not symmetrical with the 52 on the left: the left margin is where
+   the eye enters each row, and it is now the only side with a margin worth the
+   name, the numerals that used to hang off it having been deleted. */
+#panel-projects { width: min(760px, 92vw); padding-right: 20px; }
+
 .feature-list { display: flex; flex-direction: column; gap: 16px; }
+
+/* ---- THE ROW IS ONE COLUMN NOW, AND THAT IS THE WHOLE CHANGE ----
+   IT USED TO BE A FLEX ROW: a 58px engraved numeral in a rose-brown box, a 22px
+   gap, and the words. The numeral is deleted -- "remove the number box to make the
+   images bigger" -- and with it go `display: flex`, the gap, `align-items:
+   flex-start` (which existed only to stop the numeral centring itself against a
+   five-line paragraph) and the wrapper <div> in the markup that was the numeral's
+   only sibling. A one-item flex container is a block that has to be explained, so
+   this is a block.
+   WHAT THE DELETION BOUGHT, EXACTLY: the numeral cost 62px of the row -- 58 of
+   width plus its 2px border on each side, the four pixels that reading arithmetic
+   off the shorthand always loses -- plus the 22px gap. 84px, all of it handed to
+   the text column, which goes 546 -> 710 once the card's own 80 is added.
+   WHAT IT COST: nothing in the layout, and one thing in the reading. flex-start
+   was pinning the numeral level with the project's NAME, so a row said "03,
+   BrainSentry" at a glance; the rows no longer number themselves at all. That is
+   recorded where the order is argued, in the markup, not here.
+   THE BORDER, RADIUS AND PADDING ARE UNCHANGED. This is still a bordered plate;
+   it is the contents that were re-columned. */
 .feature-row {
-  display: flex;
-  gap: 22px;
-  align-items: center;
   border: 1px solid rgba(217,162,107,.18);
   border-radius: 5px;
   padding: 20px 24px;
   transition: border-color .25s;
 }
 .feature-row:hover { border-color: rgba(217,162,107,.5); }
-.feature-num {
-  flex: none;
-  width: 58px;
-  height: 58px;
-  background: linear-gradient(180deg, #f5eddc, #e9dfc8);
-  border: 2px solid #9f5637;
+/* ---- 21.5px, AND IT IS DERIVED RATHER THAN NUDGED ----
+   "Make the title text bigger for all projects." 19 -> 21.5, by .tl-section's
+   method and not by taste: THE GEOMETRIC MEAN OF THE TWO SIZES IT STANDS
+   BETWEEN. The display ladder in this panel is .card-title's 34 above and
+   .feature-desc's 13.5 below, and sqrt(34 * 13.5) = 21.42, which lands on 21.5
+   on the half-pixel grid .feature-desc's own 13.5 already sits on.
+
+   WHAT 19 ACTUALLY WAS, which is the argument for moving it at all: 19 * .7002
+   (Marcellus's measured cap ratio) = 13.30px of cap -- to the second decimal the
+   cap height of .role-org, the ORGANISATION line of a CV entry. The name of a
+   project was set one tier below the panel's own primary rows, at the size of a
+   supporting line in a different panel. 21.5 gives 15.05, against 23.81 for
+   .card-title and 9.26 for .feature-desc (Archivo, .686). The mean survives the
+   translation into cap height -- sqrt(23.81 * 9.26) = 14.85, within .2px of the
+   15.05 the size actually draws -- because the two faces' cap ratios are close.
+
+   NO TRACKING, AND THAT IS ALSO DERIVED. .tl-section had to move its
+   letter-spacing to hold its letter gap because both its neighbours are tracked
+   spaced caps. This ladder's neighbours are not: .card-title at 34 and this rule
+   at 19 both carried letter-spacing: normal, so interpolating between them gives
+   normal, and Marcellus's own sidebearings keep doing the work. Nothing here is
+   weight -- there is no bold type anywhere on this site, and Marcellus ships one
+   weight, so any bold would be a synthetic one the browser drew itself.
+
+   THE ROW GOT 4px TALLER AND NOTHING MOVED SIDEWAYS. .feature-head is a baseline
+   flex, so the 11px mono date stays on the name's baseline as it grows; the name
+   column has min-width: 0 and the longest name (BrainSentry) measures 116px at
+   21.5 against a 588px column at 1440x900, so there was never a wrap to buy. The
+   card scrolls and absorbed the three rows' 12px. See the narrow tier for why
+   the phone keeps 19. */
+.feature-name { font-family: var(--font-display); font-size: 21.5px; color: #eef0f5; margin-bottom: 5px; }
+.feature-desc { font-size: 13.5px; line-height: 1.6; color: var(--body); }
+.feature-date { font-family: var(--font-mono); font-size: 11px; color: var(--gold-line); letter-spacing: .15em; }
+
+/* ---- THE NAME AND THE EVENT SHARE A LINE ----
+   THIS IS .role-head's PATTERN, NOT A SECOND ONE. The Research and Resume
+   entries already say "the thing on the left, when and where it happened ranged
+   right" -- .role-head is flex, space-between, with a nowrap mono .role-meta
+   pinned by flex: none -- and a project row is making the same statement about
+   the same kind of fact. Copying the mechanism was the whole point; what is NOT
+   copied is .role-meta's own type, because .feature-date already exists at
+   11px/.15em and inventing a second gold mono half a pixel away from it is how a
+   stylesheet ends up with two of everything.
+
+   THE EVENT USED TO BE THE LAST WORDS OF THE PARAGRAPH, and that was the fault
+   worth fixing: HACKPRINCETON · APR 2026 is not a clause of the sentence about
+   XGBoost, it is the row's dateline, and a reader scanning three projects for
+   "when" had to read to the end of three paragraphs to find it. On its own line
+   at the right margin it is scannable down the column.
+
+   BASELINE, NOT FLEX-START, which is where this parts company with .role-head.
+   .role-head aligns flex-start because its left side is a two-line stack -- an
+   org and a title -- so there is no single baseline to share. Here the left side
+   is one line of 19px display type and the right is one line of 11px mono, and
+   "same level as the title" means their baselines agree; flex-start would set
+   the two boxes' tops level and leave the mono floating 4px high.
+   24px of gap is .role-head's gap, unchanged. */
+.feature-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+}
+.feature-head .feature-name { margin-bottom: 0; min-width: 0; }
+.feature-meta { flex: none; margin: 0; text-align: right; }
+.feature-meta .feature-date { white-space: nowrap; }
+
+/* ---- .feature-link IS NO LONGER ON ANY ROW, AND IS STILL HERE ----
+   THE ROWS LINK BY ICON NOW (see .feature-icon below), so nothing in the markup
+   carries this class. It is kept rather than deleted for one reason: it is where
+   this stylesheet writes down its underline -- text-decoration rather than
+   border-bottom, 1px, 28% gold, 3px of offset -- and .tl-link and the CV rules
+   both cite it by name as the place that argument lives. Deleting it would leave
+   two live comments pointing at nothing, in a file three other panels are being
+   edited in. If a later pass moves the underline's derivation somewhere else,
+   this rule goes with it in the same edit.
+   THE .08em AGAINST .feature-date's .15em was the original point: both are gold
+   mono at 11px, and without the difference a URL reads as a second label rather
+   than as an address. Global `a` (line 70) already paints these gold. */
+/* `.feature-row > div { min-width: 0 }` was deleted with the numeral. It existed
+   to stop the text column -- a flex item beside a 62px box -- refusing to shrink
+   below its longest word. The row is a block now and its children are blocks, so
+   min-width was already 0 on every one of them; the rule was doing nothing. */
+.feature-link {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: .08em;
+  color: var(--gold-line);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(201,134,98,.28);
+  text-underline-offset: 3px;
+  transition: color .25s, text-decoration-color .25s;
+}
+.feature-link:hover,
+.feature-link:focus-visible { color: var(--gold-line-hover); text-decoration-color: rgba(239,193,160,.6); }
+
+/* ---- THE SCREENSHOT, AND WHY IT IS CAPPED BY HEIGHT RATHER THAN WIDTH ----
+
+   THE OBVIOUS LAYOUT IS WRONG HERE. A picture column beside the words is what a
+   project list usually does, and it did not fit when it was tried: the card's
+   content box was 680px, the row's own border and padding took 50 of it and the
+   numeral took 62 more -- 58 of width plus its 2px border on each side, the four
+   pixels that reading the arithmetic off the shorthand always loses -- so with the
+   22px gap the words had 546px, and a picture column wide enough to be a picture
+   would have been 220 of that, returning these 200-character descriptions at 304px
+   of measure. 45 characters a line, five lines of ribbon against three.
+   THE NUMBERS HAVE MOVED AND THE CONCLUSION HAS NOT. The card is 760 now and the
+   numeral is gone, so the words have 710: 760 less the row's 50 of border and
+   padding, measured at 1440x900, not modelled. A 220px picture column would still
+   leave 468 of measure and would still be the wrong shape for a 1.87:1 dashboard,
+   which at 220 wide is 118px tall -- a thumbnail, not a screenshot. So the picture
+   still goes in the same column as the words, and the only question is how tall.
+
+   AND IT GOES ABOVE THE DESCRIPTION, BELOW THE NAME. It sat under the paragraph
+   in the first version of this rule, on the argument that a row should read
+   "this is the thing, this is what it does, this is what it looks like". That
+   was overruled deliberately: a screenshot is how a stranger decides whether to
+   read the paragraph at all, and 200 characters of prose standing between the
+   project's name and the only picture of it is a paywall made of type. What the
+   old order was protecting was protected by .feature-head instead -- the numeral
+   lined up with the project's NAME rather than with the middle of the paragraph.
+   The numeral has since been deleted outright, so nothing is being aligned to
+   anything any more; the order stands on its own argument, which is the one above.
+
+   390px, AND IT IS DERIVED FROM THE WIDEST SHOT RATHER THAN FROM THE WORDS. The
+   first cap was 200, from a rule that the picture must not out-weigh the
+   paragraph it illustrates; "make the image bigger" retired that rule, and the cap
+   became 300, derived instead from the widest shot filling the measure edge to
+   edge. That derivation is kept and only its input has changed: the measure went
+   546 -> 710 when the numeral's column was handed to the pictures, and GreenChain
+   at 1.866:1 is 380px tall across 710. A cap of 390 sits just above that, which
+   buys the same two things it bought at 300 -- the widest picture is width-limited
+   and spans the whole measure, the other two are height-limited and land within
+   10px of its height. 380, 390, 390. That is what makes three differently-shaped
+   pictures read as one set: they share a height they were never cropped to.
+   THE TWO LANDSCAPE SHOTS ARE EXACTLY 1.3x THEIR OLD SIZE, which is not a
+   coincidence and is worth stating because it is the check. 710/546 = 1.3004 and
+   390/300 = 1.3, so both grew by the same factor on both axes and their
+   proportions are untouched. If a later pass changes the card's width, recompute
+   the cap the same way -- widest shot's aspect against the new measure, rounded up
+   to the next 10 -- rather than picking a number that looks right.
+
+   IT IS A MAX-HEIGHT RATHER THAN A HEIGHT because the three are not one shape:
+   two are landscape dashboards (1.866:1 and 1.702:1) and the third is a phone
+   screen at 0.545:1, and cropping them to a common rectangle would either behead
+   the dashboards or reduce the phone to a slot. So all four of
+   max-width/max-height/width/height are declared and the browser fits each shot
+   into the 710x390 box on its own terms:
+
+     greenchain    1092x585 shipped   ->  710x380   width-limited    1.54x shipped
+     prophis       1021x600 shipped   ->  664x390   height-limited   1.54x shipped
+     brainsentry    327x600 shipped   ->  213x390   height-limited   1.54x shipped
+
+   THOSE THREE FILES ARE RETIRED AND THE TABLE IS NOW A TABLE OF NINE, WHICH IS
+   THE SAME TABLE. Each row carries three frames -- greenchain-1..3,
+   prophis-1..3, brainsentry-1..3 -- and every frame was measured off disk rather
+   than assumed: 1092x585, 1021x600 and 327x600, the three shipped sizes above,
+   repeated three times each. So the three lines hold exactly as written, nine
+   times over, and the cap needs no rederiving: 380, 390, 390 of rendered height
+   at 1.54x on all nine, nothing upscaled, and the set reads as one set because
+   every frame in it shares the same 390.
+   IF A FRAME IS EVER RE-CUT AT A DIFFERENT ASPECT, redo the third column for it
+   -- max-width 100% against the measure, max-height against the cap, whichever
+   binds first -- and check the fourth: shipped height over 390 must stay above 1,
+   or something on this panel is being stretched past its own pixels. The layout
+   will absorb the change without moving anything else, for the reason written at
+   THREE FRAMES WHERE THERE WAS ONE below.
+
+   HEIGHT PARITY IS THE INVARIANT, AND THE THIRD SHOT IS WHERE THAT GETS TESTED.
+   BrainSentry's frame was re-cut from outside this stylesheet and its aspect went
+   0.792:1 -> 0.545:1 -- a phone-shaped column now, not a squarish crop -- so at the
+   shared cap it lands 213px wide in a 710px measure and leaves roughly 497px of the
+   row empty to its right. That was 308px empty before. The cap is NOT special-cased
+   for it, deliberately:
+     - Matching WIDTHS instead is the only other invariant on offer, and it would
+       render this shot at 710x1302: four times the height of the paragraph it
+       illustrates, and a row you cannot see the ends of.
+     - Lowering the cap for the portrait shot alone would shrink the smallest
+       picture in a pass whose entire brief was "make the images bigger", and would
+       trade a void on the right for a void on the right AND a void below.
+     - A phone screenshot beside two dashboards SHOULD be narrow. It is a phone.
+       Cropping or stretching it to fill a dashboard's measure would be the picture
+       lying about the artifact, which is the one thing this panel does not do.
+   So the void stays and is paid for on ONE side: the shot is flush left with the
+   name, the paragraph and the icons, so the empty band is a margin rather than a
+   gap in the middle of the row.
+
+   NONE IS UPSCALED, AND THE HEADROOM IS NOW NAMED RATHER THAN ASSUMED. Every file
+   was cut at exactly 2x a 300px display cap -- 585 or 600 of shipped height -- so
+   displaying at 390 spends 1.3 of that 2 and leaves 1.54x on all three, the
+   portrait one included: 600/390 = 1.538, the same figure as its neighbours. Above
+   1x, so nothing is stretched past its own pixels, but the next such pass has 0.54
+   left, not another 2, and the binding number is the SHIPPED HEIGHT rather than the
+   cap -- this set upscales at a 600px display height, not at 300. Growing it again
+   means re-cutting the webps from tools/assets-src/projects (4080x2186, 2828x1662
+   and, for BrainSentry, brainsentry-home-source.png at 1290x2370), not raising the
+   cap. 101KB for the three, against 4.8MB of dial art already in public/assets, so
+   re-cutting is cheap if it comes to that -- and see the markup: this row's shot
+   needs re-cutting for a reason that has nothing to do with its size.
+
+   THE FILTER IS THE POINT OF THE WHOLE BLOCK. These are real screenshots of real
+   applications and they arrive at full saturation -- GreenChain's greens and
+   Prophis's teal choropleth are the brightest things on a #111726 plate, and at
+   full strength three of them turn a written panel into a contact sheet. .82
+   saturation and .92 brightness put them back on the card's own value scale,
+   which is the same argument .feature-link makes about its hairline underline.
+   The row already brightens its border on hover; the shot clearing to full
+   colour on the same 250ms is that gesture continued, not a new one.
+   NO BORDER AND NO SHADOW ON THE SHOT. It sits inside a bordered row already,
+   and a hairline rectangle inside a hairline rectangle is the rounded-rect-plus-
+   hairline habit SITE-DIRECTION 0.4 names as this project's standing slop risk.
+   3px of radius was the numeral's radius. The numeral is gone and the 3 stays,
+   because it is also .tag's radius and .feature-icon:focus-visible's -- it was
+   never a number this rule invented, only one it borrowed from the nearest
+   neighbour, and the nearest neighbour is now the focus ring. */
+.feature-shot {
+  display: block;
+  margin: 14px 0;
+  max-width: 100%;
+  max-height: 390px;
+  width: auto;
+  height: auto;
   border-radius: 3px;
+  filter: saturate(.82) brightness(.92);
+  transition: filter .25s;
+}
+.feature-row:hover .feature-shot { filter: none; }
+
+/* ---- THREE FRAMES WHERE THERE WAS ONE, AND THE BOX DOES NOT MOVE ----
+   The two landscape rows now hold three frames each and step between them; the
+   portrait row holds three side by side. Both are built out of the box above
+   rather than beside it -- every frame is still a .feature-shot, so the 390px
+   cap, the 3px radius, the saturation and the row's hover-to-full-colour are one
+   rule for nine pictures rather than four rules for three shapes. What is added
+   here is only the arrangement.
+
+   THE STACK IS A GRID, NOT position: absolute, AND THAT IS THE LOAD-BEARING
+   CHOICE. Three frames have to share one slot to cross-fade, and the obvious way
+   -- absolute children in a relative parent -- is the way this panel has already
+   been bitten once: an absolutely positioned box still counts towards an
+   ancestor's scrollable overflow, which is how .feature-icon::after put 79px of
+   invisible horizontal scroll on a 375px card while sitting at opacity 0 (the
+   note on that rule has the measurement). Three screenshots are a much bigger
+   box than one URL. Putting all three in grid cell 1/1 stacks them with every
+   frame still IN FLOW, so each is clamped by the same max-width: 100% the single
+   shot was, and the widest frame -- not the sum -- sizes the container.
+
+   min-height IS NOT THE width/height ATTRIBUTES OVER AGAIN, AND BOTH ARE HERE.
+   All nine frames carry their measured intrinsic size in the markup, exactly as
+   the single shots did -- they landed while this was being written and were read
+   off disk rather than guessed, which matters because those attributes set the
+   aspect ratio the browser lays out with: a merely plausible pair distorts the
+   frame rather than just mis-reserving space. What the attributes cannot do is
+   the thing min-height is for. They reserve the height of THE FRAME THAT IS
+   SHOWING; the slot has to be the same height for all three or the paragraph
+   below jumps every time you step from a 1.867:1 frame to a 1.702:1 one. 390 is
+   that slot, so the row reserves its height before any frame decodes AND holds it
+   whichever frame is current. Height parity across a set stops being something
+   the cuts have to get right and becomes something the layout guarantees -- which
+   is what makes it safe for a later pass to re-cut one frame at a new aspect.
+
+   THE FADE IS 250ms BECAUSE THE ROW ALREADY MOVES AT 250ms -- the border on
+   hover, the shot clearing to full colour. It is one transition, not an
+   animation, and it is driven by BOTH a five-second timer in main.js and the dot
+   index below: see THE PROJECT ROWS there, and the record in index.html of who
+   overruled the rule that said no. A cut is still the right answer for a state
+   change, which is what the blanket reduced-motion rule at the top of this file
+   makes of it: with the timer off, a dot press swaps the frame in .01ms.
+
+   THE WRAPPER IS BACK, AND SO IS ITS JOB. .shot-carousel exists to hold the
+   stack and the index together -- it was deleted in the pass that deleted the
+   index, on the grounds that a div left carrying nothing but `margin: 14px 0` is
+   one box too many, and that grounds expired when the dots returned. The margin
+   is on the wrapper again, so the pair moves as one thing and .shot-frames owns
+   no outer space of its own. It is also what main.js iterates: frames and the
+   dots that drive them are paired by containment rather than by being next to
+   each other in the source. */
+.shot-carousel { margin: 14px 0; }
+.shot-frames {
+  display: grid;
+  align-items: start;
+  justify-items: start;
+  min-height: 390px;
+  margin: 0;
+}
+.shot-frames .shot-open { grid-area: 1 / 1; }
+.shot-frames .feature-shot {
+  margin: 0;
+  opacity: 0;
+  transition: filter .25s, opacity .25s;
+}
+.shot-frames .feature-shot[data-current] { opacity: 1; }
+
+/* ---- THERE IS NO REDUCED-MOTION FALLBACK HERE ANY MORE, AND THAT IS THE POINT ----
+   A `@media (prefers-reduced-motion: reduce)` block used to sit at this line and
+   unstack .shot-frames into a column of three opaque frames. It existed for one
+   reason: main.js never starts the timer under that query -- a motion someone has
+   asked not to see becomes a state and not a fast event, the argument
+   .stage-guilloche's `animation: none` already makes -- and with the index
+   deleted, a stopped timer left frames 2 and 3 unreachable by exactly the readers
+   least able to work round it.
+   THE DOTS CLOSE THAT HOLE AT THE SOURCE. They are three ordinary buttons behind
+   no media query at all: in the tab order, operable by Enter, Space and the arrow
+   keys, and they write data-current directly. So under reduce the row loses the
+   timer and keeps every frame, which is what the fallback was buying, without
+   buying it twice.
+   AND IT WAS NOT FREE. Unstacking cost two extra 390px frames on each of two rows
+   -- 780px of card, on a card that already scrolls -- and it made the slot a
+   different shape under a user preference, so a layout bug could hide there and
+   be reachable only with the setting on. Both are gone with it.
+   IF THE DOTS ARE EVER DELETED AGAIN, THE FALLBACK HAS TO COME BACK IN THE SAME
+   EDIT. It is in git; the argument for it is this paragraph. The one thing that
+   must not happen is the index going without it, which is the state this panel
+   was found in. */
+
+/* ---- THE DOT INDEX ----
+   THREE REAL BUTTONS, NOT PIPS WITH A CLICK HANDLER. Each is its own tab stop,
+   which is a deliberate departure from the roving tabindex a tablist would use:
+   these are not tabs, there is no panel to move into after choosing, so one stop
+   would mean a keyboard reader reaches frames 2 and 3 only after discovering that
+   the arrow keys do something. Three stops a row is cheap. main.js adds the
+   arrows on top for anyone who expects them.
+
+   44x44 IS THE TARGET AND 8px IS THE MARK, and the difference between those two
+   numbers is the whole of this rule. 44 is the finger floor .feature-icon already
+   works to, and it is an accessibility minimum rather than a proportion of the
+   thing inside it, so the dot does not grow to fill it. 8 is what a hairline ring
+   can be drawn at and still read as a ring at this weight: 1px of gold at .5, the
+   same hairline .shot-open's focus ring and .feature-row's border are drawn in,
+   round rather than 3px-radiused because a 8px rounded rect is a rounded rect and
+   §0.4 is the reason this file draws as few of those as it can.
+   FILLED WHEN CURRENT, HOLLOW OTHERWISE -- one mark in two states, not two marks.
+   The fill is --gold-line itself, so the current dot is the only fully saturated
+   gold in the row and nothing else has to change to say which frame is up.
+
+   THE PULL IS DERIVED FROM THE MARK, exactly as .feature-icon's is: the target is
+   44 and the mark is 8, so the first dot's ink sits (44 - 8) / 2 = 18px right of
+   the box's left edge, and -18px of margin puts it back on the text column's
+   margin instead of indenting the row by half a target. If the mark ever changes
+   size, this number moves with it.
+   THE BOTTOM MARGIN IS -14 AND NOT -18, AND THE DIFFERENCE IS A HIT AREA. The
+   target's lower half is 18px of air below the ink and .shot-carousel's own
+   bottom margin is 14, so pulling back the full 18 would leave the last 4px of
+   every dot's 44px box lying under the top of the paragraph -- a click on the
+   first line of the description changing the picture above it. Pulling back 14
+   instead lands the target's lower edge exactly on the paragraph's upper one:
+   nothing overlaps, and the ink keeps 18px of air below it to match the 18 above.
+   THAT 18 EITHER SIDE IS 4px MORE THAN THE ROW'S 14 STEP, on purpose. It is the
+   44px floor's own air, it is the same on both sides so the index reads as
+   belonging to the frames rather than to the paragraph, and 4px is under half the
+   dot's diameter -- not worth a second correction that would have to move every
+   time the target or the mark does.
+   THE FOCUS RING IS INSET RATHER THAN OUTSET, which is the opposite of
+   .shot-open's and for the same underlying reason. There the ring had to clear a
+   photograph; here it has to not be a 44px ring around an 8px dot. -14px of
+   offset on a border-radius: 50% box draws it at 16px across -- 4px of gap around
+   the mark -- so it reads as a ring on the dot rather than on the target. */
+.shot-index {
+  display: flex;
+  margin: 0 0 -14px -18px;
+}
+.shot-dot {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.shot-dot::before {
+  content: '';
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(217,162,107,.5);
+  border-radius: 50%;
+  transition: background-color .25s, border-color .25s;
+}
+.shot-dot[aria-current]::before {
+  background: var(--gold-line);
+  border-color: var(--gold-line);
+}
+.shot-dot:hover::before { border-color: var(--gold-line-hover); }
+.shot-dot[aria-current]:hover::before {
+  background: var(--gold-line-hover);
+  border-color: var(--gold-line-hover);
+}
+.shot-dot:focus { outline: none; }
+.shot-dot:focus-visible {
+  outline: 1px solid rgba(217,162,107,.5);
+  outline-offset: -14px;
+}
+
+/* ---- THE PICTURE IS ITS OWN CONTROL ----
+   THIS IS THE SECOND CONTROL ON THE ROW, NOT A REPLACEMENT FOR THE FIRST. The dot
+   index above chooses WHICH frame; this chooses to see the one that is up bigger.
+   They were briefly the same question -- for one pass the frames were the only
+   thing left to press, because the index had been deleted -- and they are not:
+   opening a picture large is not a way of reaching the other pictures, which is
+   why BrainSentry's .shot-trio has these buttons and no dots at all.
+
+   AND IT IS STILL NOT A CONTROL YOU CAN SEE, IT IS THE FRAME. Every screenshot on
+   this panel is wrapped in a bare <button> whose only content is the picture, so
+   the target is exactly the thing you want to press and there is nothing else to
+   look at. That is the answer to "become big when you click on them" AND to §0.4
+   in the same move: the alternative -- a magnifier badge in the corner, or an
+   Enlarge caption under each shot -- would have been nine new marks on a panel
+   whose whole argument is that a bare mark is enough. A rounded rect with a
+   hairline border is the idiom SITE-DIRECTION 0.4 names as this project's
+   standing slop risk, and the surest way not to draw one is to draw nothing.
+
+   SO THE ONLY THING THE BUTTON ADDS IS A CURSOR AND A RING. zoom-in is the one
+   cursor the platform already means this by, and it costs no ink. The ring is
+   .shot-dot's, inherited rather than invented -- same 1px, same gold at .5, same
+   3px radius as .feature-shot's own corners -- but OUTSIDE the picture at +2
+   rather than inset, because a focus ring drawn on top of a photograph is a ring
+   nobody can see. That is the one thing it does not share with .shot-dot, whose
+   ring is inset for the opposite reason: see the note there.
+
+   THE STACKED FRAMES ARE INERT EXCEPT THE CURRENT ONE, and that is main.js's
+   job rather than a rule here: three buttons share grid cell 1/1, all three
+   generate boxes, and the last in DOM order would take every click if nothing
+   said otherwise. `inert` closes the pointer, the tab stop and the accessibility
+   tree together, which is the same primitive el.back.inert uses on the face of
+   the watch nobody can see. There is deliberately no :has() fallback in CSS: if
+   :has() were unsupported the fallback would make all three unclickable, which is
+   worse than the bug it guards. */
+.shot-open {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: zoom-in;
+  font: inherit;
+  color: inherit;
+}
+.shot-open:focus { outline: none; }
+.shot-open:focus-visible {
+  outline: 1px solid rgba(217,162,107,.5);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ---- THE ENLARGED FRAME ----
+   A modal <dialog>, which is why there is no z-index in this block. The top
+   layer paints over .overlay's 40 and the rail's 50 without either number moving,
+   and neither can be broken by a later pass renumbering the other. The reasoning
+   for the mechanism -- and for why this is not the Fullscreen API he named -- is
+   written at the element in index.html; what is here is only the shape.
+
+   IT IS A PICTURE AND A WAY OUT, AND NO PLATE UNDER EITHER. background: none and
+   border: 0 undo the UA's white box: a dark scrim, one photograph and the ESC ✕
+   the panels already close with. Adding a card behind the image would have been
+   the rounded-rect-with-a-hairline habit §0.4 names, at the largest size it has
+   ever been drawn on this site.
+
+   THE CAP IS THE SOURCE, AND IT IS PER-IMAGE. --shot-w / --shot-h are written on
+   this element by main.js from the clicked frame's naturalWidth/naturalHeight, so
+   the ceiling is the file rather than a number chosen here: 1092x585 for
+   GreenChain, 1021x600 for Prophis, 327x600 for BrainSentry -- 1092 and 600 are
+   the widest and tallest anything gets. min() takes whichever of the source and
+   the viewport binds first, so nothing is ever upscaled and nothing ever needs a
+   scrollbar. At 1440x900 that is GreenChain at its full 1092x585, against the
+   710x380 the row prints inline: 1.54x linear, 2.4x the area. At 375px it is
+   345x185 against the row's 242x129, because 92vw binds long before the source
+   does -- smaller gain, and the honest one; a phone cannot show more pixels than
+   the phone has.
+   82vh, NOT 92: the close control and its 10px gap sit above the picture in the
+   same column, and the picture may not eat the row that dismisses it. */
+.shot-zoom {
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+/* only when open, so the UA's `dialog:not([open]) { display: none }` still holds
+   the closed state -- an unconditional display: flex here would print the dialog
+   into the panel */
+.shot-zoom[open] { display: flex; }
+.shot-zoom::backdrop { background: rgba(3,5,9,.86); }
+/* .card-close is position: absolute against the card it sits in the corner of.
+   Here the column places it, so the position comes off and the type, the colour
+   and the hover/focus behaviour stay. */
+.shot-zoom-close { position: static; }
+.shot-zoom-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(92vw, var(--shot-w, 92vw));
+  max-height: min(82vh, var(--shot-h, 82vh));
+  border-radius: 3px;
+}
+
+/* ---- THE PORTRAIT ROW PUTS ITS THREE SIDE BY SIDE, AND THE VOID PAYS FOR IT ----
+   NIKHIL'S CALL, IN HIS WORDS: "you can do 3 pics in a row since its not wide".
+   The block above .feature-shot spends four paragraphs arguing that a phone
+   screenshot beside two dashboards SHOULD be narrow and that the ~497px of empty
+   row to its right is the honest price of not stretching a phone into a
+   dashboard's measure. That argument is unchanged and this is what it was
+   waiting for: the void was always the space for more phone, and now it holds
+   two more frames instead of nothing.
+   THE CAP IS NOT SPECIAL-CASED, WHICH IS WHY THE SET STILL READS AS A SET. Three
+   1fr columns across the 710px measure with 14px gaps -- .feature-shot's own
+   vertical margin, borrowed rather than invented -- give 227.33px a column, and a
+   phone frame at roughly 0.55:1 is height-limited long before that: 390 tall
+   buys 213 wide, so each frame is 213x390 and the three plus their gaps come to
+   667 of 710. Same 390 as the two landscape rows, same 1.54x density, nothing
+   upscaled, and 43px of margin left over rather than a scrollbar.
+   1fr RATHER THAN letting the images size the row, deliberately: the frames were
+   not on disk when this was written, and a flex row of three auto-width images
+   overflows the card the moment their aspect comes out wider than 0.583:1. Three
+   equal columns cannot overflow whatever arrives -- max-width: 100% then resolves
+   against a 227px cell instead of a 710px one -- so an unexpected aspect costs a
+   smaller picture rather than a horizontal scrollbar. If the frames land wider
+   than that, the cap stops binding and the columns do; check which, and re-derive
+   here rather than at .feature-shot.
+   THE GRID ITEM IS THE .shot-open BUTTON NOW, NOT THE IMAGE, and the arithmetic
+   above survives it because the button is a shrink-to-fit block with no padding
+   or border: its content box is the picture's box. The one thing it can leave
+   behind is up to 14px of clickable air to the right of a frame at desktop, where
+   the 390px cap makes the picture 213 in a 227px cell. That is a click just
+   beside a picture opening that picture, which is not a fault worth a rule. */
+.shot-trio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: start;
+  justify-items: start;
+  margin: 14px 0;
+}
+.shot-trio .feature-shot { margin: 0; }
+
+/* ---- THE DESTINATIONS ARE ICONS NOW, AND WHAT THAT COST ----
+   THE THING THAT WAS GIVEN UP IS WRITTEN DOWN FIRST, because it was deliberate
+   before it was overruled: the rows used to print `github.com/thejustjim/...` in
+   full, so a reader could see that two of these three destinations sit in
+   TEAMMATES' orgs before clicking rather than after. An icon cannot say that. So
+   the URL is not deleted, it is moved -- every icon carries data-host and ::after
+   prints it on hover and on focus-visible, in the same 11px gold mono the line
+   used to be set in. The row reserves 18px for that readout whether or not
+   anything is hovered, so nothing below it moves when it appears; a readout that
+   shoves the next row down is worse than no readout.
+   AND aria-label CARRIES IT INDEPENDENTLY. A ::after is decoration. A screen
+   reader gets "GreenChain source code on GitHub, at github.com/thejustjim/..."
+   off the <a> itself, which is also why there is no title attribute anywhere
+   here: title is a tooltip pretending to be an accessible name.
+
+   44x44, WHICH IS THE ONLY REASON THE BOX IS BIGGER THAN THE GLYPH. The target is
+   44, the floor for a finger, and it does NOT move when the glyph does: 44 is an
+   accessibility minimum, not a proportion of the mark inside it. The mark was 20
+   and is 26 -- "make the link icons bigger" -- so the box still has 9px of air on
+   every side, which is enough that a 44px target does not read as a button. 4px
+   between boxes keeps two of them from touching without opening a gap.
+
+   THE PULL IS DERIVED FROM THE GLYPH, NOT TYPED. The container's negative left
+   margin puts the FIRST glyph's left edge back on the text column's margin instead
+   of indenting the row by half a target, so it is (44 - glyph) / 2 and it moved
+   with the glyph: -12 at 20px, -9 at 26. The ::after below undoes the same pull
+   from the other side and its `left` is the same number, which is the whole reason
+   these two are written next to each other.
+
+   THE GLYPHS ARE DRAWN, NOT FETCHED. This page loads no icon font, no icon
+   library and nothing from a CDN, so every mark is inline SVG in the markup.
+   Hairline strokes in currentColor and no fill, because a filled brand blob is
+   exactly the vocabulary SITE-DIRECTION 0.4 says this project keeps drifting into.
+
+   THE STROKE GOT THINNER SO THAT IT WOULD NOT GET THICKER. stroke-width is in
+   viewBox units, and every one of these is a 24x24 viewBox, so what lands on the
+   screen is stroke * (rendered size / 24). At 20px the 1.3 was 1.083 device pixels
+   -- deliberately near the 1px the card and the rows are drawn in. Scaling the box
+   to 26 and leaving 1.3 alone would have rendered 1.408px, a 30% heavier hairline
+   on a page whose whole line vocabulary is one pixel, and the icons would have
+   read as bolder rather than bigger. 1.0 at 26px is 1.083px again: identical ink,
+   larger drawing. If the glyph size changes again, solve stroke = 26/size * 1.0
+   for the new size rather than nudging it by eye.
+
+   THE CONSEQUENCE OF DRAWN MARKS, stated plainly rather than hidden: a hexagon
+   reads as "Devpost", and an arrow leaving a window reads as "the live thing",
+   only once you have hovered one of them. That is the trade the readout below is
+   paying for.
+   THE SOURCE MARK NO LONGER PAYS IT, AND THAT IS THE ONE ICON CHANGE HERE. It was
+   a chevron-and-slash -- </> -- which is a generic "code" glyph: it said the
+   destination was source, but not whose, and every row's source happens to be on
+   GitHub. It is the octocat now, drawn as an OUTLINE rather than as the filled
+   silhouette the brand ships: one continuous stroke for the body, ears and legs
+   and a second for the tail, both in currentColor at the same stroke-width: 1 in
+   the same 24x24 viewBox as its two neighbours, so it renders at the identical
+   1.083 device pixels the paragraph above derives. Nothing is fetched, nothing
+   is filled and no icon library is loaded -- a filled brand blob beside two
+   hairline drawings would have been the vocabulary break 0.4 warns about, and it
+   would have been the only solid shape on the panel.
+   THE GLYPH IS NOW RECOGNISABLE AND THE READOUT IS STILL WORTH IT: a reader who
+   knows the mark learns "GitHub" without hovering but still cannot see WHOSE
+   GitHub, and two of these three repositories sit in teammates' orgs. That was
+   the whole reason the readout exists. */
+.feature-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  margin: 10px 0 0 -9px;
+  padding-bottom: 18px;
+}
+.feature-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-size: 30px;
-  color: #20242c;
+  color: var(--gold-line);
+  text-decoration: none;
+  transition: color .25s;
 }
-.feature-name { font-family: var(--font-display); font-size: 19px; color: #eef0f5; margin-bottom: 5px; }
-.feature-desc { font-size: 13.5px; line-height: 1.6; color: var(--body); }
-.feature-date { font-family: var(--font-mono); font-size: 11px; color: var(--gold-line); letter-spacing: .15em; }
+.feature-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.feature-icon:hover,
+.feature-icon:focus-visible { color: var(--gold-line-hover); }
+.feature-icon:focus-visible { outline: 1px solid rgba(217,162,107,.5); outline-offset: -6px; border-radius: 3px; }
+
+/* Absolute, so a 39-character URL cannot add width to a flex row that has to fit
+   inside a 375px card. left: 9px undoes the container's own -9px pull, landing
+   the text on the paragraph's left margin rather than on the glyph's -- both
+   numbers are (44 - 26) / 2 and they must move together, which is why the pull is
+   derived above rather than typed.
+
+   THE max-width IS NOT DECORATION AND IT WAS NOT THERE FIRST. An absolutely
+   positioned box still counts towards an ancestor's scrollable overflow, so
+   `nowrap` with no cap put 292px of github.com/thejustjim/hackprinceton2026
+   inside a 166px column and gave the card 79px of horizontal scroll at 375px --
+   invisible at rest, because the thing causing it sits at opacity 0, and caught
+   only by checking the card's scrollWidth against its clientWidth. calc(100% -
+   9px) resolves against .feature-links, which is the text column plus that same
+   9px, so the readout ends exactly where the paragraph above it ends. The
+   ellipsis is what a narrow screen gets in place of the overflow; desktop never
+   reaches it, the longest of these being 292px against 710 of measure. A phone
+   never reaches it either, for a reason worth stating: there is no hover on a
+   touch screen, so the readout is a desktop affordance and the aria-label is what
+   carries the destination everywhere else.
+   THE PHONE'S COLUMN GREW TOO AND THE CLAMP STILL HAS TO HOLD. Deleting the
+   numeral took the 375px text column from 166 to 251, which does not reach 292;
+   the ellipsis is still the mechanism there, not a spare. */
+.feature-icon::after {
+  content: attr(data-host);
+  position: absolute;
+  left: 9px;
+  bottom: 0;
+  max-width: calc(100% - 9px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: .08em;
+  color: var(--gold-line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+}
+.feature-icon:hover::after,
+.feature-icon:focus-visible::after { opacity: 1; }
+
+/* .feature-foot IS DELETED, RULES AND ALL. It was a hairline, the words EVERY
+   HACKATHON SUBMISSION, and one hexagon linking the Devpost profile, and it is
+   gone on request. Three rules went with it -- the foot's own box, and two that
+   re-anchored the readout to the right because a 56px container would have clamped
+   a 27-character URL to about two characters -- because dead CSS that no selector
+   in the markup can reach is worse than no CSS: the next reader has to prove it is
+   dead before they can move anything near it.
+   WHAT THAT COST IS RECORDED IN THE MARKUP, not here, where a reader looking for
+   the missing project will actually be standing: see the comment at the end of
+   #panel-projects. Short version, because it matters more than the rules did --
+   The First Match (TreeHacks 2026) is a real project that this site no longer
+   references anywhere, the profile link having been its only mention.
+   IF IT IS EVER RESTORED, the right-anchored readout has to come back with it, and
+   `right:` is now 9px rather than 12: the number is (44 - glyph) / 2 and the glyph
+   is 26 now. Do not copy the old 12 out of git. */
+
+/* ---- THE CV ENTRY, AND WHY IT IS NOT A .feature-row ----
+   Research holds two current positions, not two finished artifacts. A
+   .feature-row is a bordered plate holding a screenshot as wide as the panel,
+   and it used to carry a 58px engraved numeral as well; numbering two concurrent
+   labs 01 and 02 would have ranked them, which is a claim the panel does not want
+   to make, and a full-width screenshot of a lab is a claim it cannot make at all.
+   So the entry is the CV shape instead:
+   institution, role beneath it, dates ranged right, a sentence under both, and
+   a hairline between entries.
+
+   Modelled on jibang.me/cv, read off its stylesheet rather than its rendering.
+   Nothing there is bold: .cv-entry-title sets font-size and line-height and no
+   weight, and the institution reads as the heading because it is larger and at
+   full contrast while the role is smaller and muted. That is this site's own
+   mechanism, which is the only reason the shape ports at all -- there is no
+   bold type anywhere in this file to borrow.
+
+   No new colour and no new body size. .role-desc and .role-title are
+   .feature-desc's 13.5/1.6 exactly; .role-org's 17px sits between
+   .feature-name and that 13.5, and lands within .3px of jibang's own
+   1.08rem. (.feature-name was 19 when this was written and is 21.5 now -- see
+   its own block. The relation still holds, with more air above 17 than there
+   was; the number is not repeated here so it cannot go stale a second time.) */
+
+.role-list { display: flex; flex-direction: column; gap: 16px; }  /* .feature-list's gap */
+
+/* THERE IS NO `.about-copy + .role-list` RULE ANY MORE, and its absence is the
+   point of this comment. A framing paragraph used to sit between the title and
+   the entries and that rule gave it 26px of clearance; the paragraph is gone, so
+   .role-list now follows .card-title directly and inherits that heading's own
+   28px bottom margin -- which is where the 26px was borrowed from in the first
+   place. If a framing line is ever restored to #panel-research, restore the rule
+   in the same edit, or the entries will sit hard against the paragraph. */
+
+.role {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;                                    /* .about-copy's paragraph step; jibang's .9rem is 14.4 */
+  border-top: 1px solid rgba(217,162,107,.18);  /* .feature-row's border colour, exactly */
+  padding-top: 20px;                            /* .feature-row's vertical padding; jibang's 1.3rem is 20.8 */
+}
+.role:first-child { border-top: 0; padding-top: 0; }
+
+/* THE MEASURE IS NOT THE SAME NUMBER AT BOTH DESKTOP WIDTHS, and the narrower
+   one is what sizes .role-org. .card is content-box everywhere except under
+   (max-width: 1199px), where THE CARD IS MEASURED TO ITS EDGES flips it to
+   border-box -- so `width: min(600px, 92vw)` buys a 600px measure above 1199
+   and only 600 - 104 of padding - 2 of border = 494px below it. Both measured
+   in the browser rather than read off the shorthand.
+
+   The meta column takes what it needs and no more: NOVEMBER 2025 - PRESENT is
+   23 characters at 10.5px IBM Plex Mono, and 0.6em of advance plus .18em of
+   tracking is 8.19px each, so 188px. With this 24px gap that leaves 388px for
+   the institution at desktop and 282px in the 760-1199 band.
+
+   Johns Hopkins School of Medicine sets 259.3px of 17px Marcellus -- measured
+   off a Range around the rendered text, not off a character-advance ratio,
+   which underestimates it by 6px. It clears the 388 easily and the 282 with
+   22px spare. 19px, the obvious alternative and what .feature-name was set at
+   when this was measured -- it is 21.5 now, which only widens the gap -- is 290px:
+   it fits the 388 and misses the 282, and it does wrap to two lines there when
+   you try it. So the size is settled by the band this rule is not written for,
+   which is the whole reason it is written down here. */
+.role-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+.role-head > div { min-width: 0; }
+
+.role-org {
+  font-family: var(--font-display);
+  font-weight: 400;          /* h2's UA default is bold, and nothing on this site is */
+  font-size: 17px;
+  line-height: 1.42;
+  margin: 0;
+  color: #eef0f5;
+}
+.role-title {
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 3px 0 0;
+  color: var(--muted);
+}
+
+/* Uppercased here rather than in the markup, so the HTML keeps sentence case
+   and a screen reader is not handed NOVEMBER as an initialism. jibang does the
+   same. The spans do not wrap; the column takes exactly its 188px.
+
+   BOTH SPANS ARE FILLED NOW -- the location line was a commented-out placeholder
+   until the locations were known, and the column was sized for the date alone.
+   IT DID NOT HAVE TO GROW, and this is measured rather than estimated.
+   BALTIMORE, MD - ON-SITE is 23 characters, the same count as
+   NOVEMBER 2025 - PRESENT, and the two set to the same 185.5px -- so the
+   Hopkins meta column is exactly the width it already was. (185.5, not the 188
+   the paragraph above estimates off character advance; the estimate is 2.5px
+   long, which is why it was safe.) CAMBRIDGE, MA - HYBRID is 22 characters and
+   177.5px, wider than JULY 2024 - PRESENT's 153.3, so the Harvard column does
+   grow -- to 8px LESS than the Hopkins one, and both are ranged right against
+   the same card edge, so nothing visibly moves. Measured at 761, 900 and 1440:
+   .role-org holds one line in every case, 255.4px of institution inside the
+   277.4px the 760-1199 band gives it, 22px of spare intact.
+
+   ANY LATER EDIT THAT LENGTHENS A LOCATION LINE PAST 23 CHARACTERS RE-OPENS
+   THAT ARITHMETIC and takes the spare with it -- it is the .role-org line that
+   pays, and it pays by wrapping. */
+.role-meta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--gold-line);
+}
+.role-meta span { white-space: nowrap; }
+
+.role-desc { font-size: 13.5px; line-height: 1.6; margin: 0; color: var(--body); }
+
+/* Two notes under one sentence is the shape that lets a role say what it is for
+   without the sentence growing a subordinate clause, and jibang's entries carry
+   one or two of them. */
+.role-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.role-notes li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--body);
+}
+.role-notes li::before { content: '\2022'; position: absolute; left: 2px; color: var(--gold-line); }
+
+/* The AANS link is the only <a> that sits INSIDE a sentence anywhere on this
+   site, and the global rule at line 70 gives it colour and nothing else -- one
+   gold word in a --body line, which is a link identified by colour alone. The
+   underline is borrowed from .feature-link rather than invented: same
+   thickness, same offset, same two decoration colours, because the two panels
+   are making the same claim about the same kind of destination. */
+.role-notes a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(201,134,98,.28);
+  text-underline-offset: 3px;
+  transition: color .25s, text-decoration-color .25s;
+}
+.role-notes a:hover,
+.role-notes a:focus-visible { text-decoration-color: rgba(239,193,160,.6); }
 
 .reserve-meter { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 .meter-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; color: var(--muted); }
@@ -3037,10 +5050,129 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .meter-fill { height: 100%; background: linear-gradient(90deg, #83513a, #efc1a0); transition: width .3s; }
 .reserve-hint { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .25em; color: #5b6172; margin-bottom: 18px; }
 .timeline-scroll { overflow: auto; flex: 1; min-height: 0; max-height: 44vh; padding-right: 14px; }
-.timeline { display: flex; flex-direction: column; gap: 26px; border-left: 1px solid rgba(217,162,107,.25); padding-left: 26px; }
-.tl-when { font-family: var(--font-mono); font-size: 11px; letter-spacing: .25em; color: var(--gold-line); margin-bottom: 6px; }
-.tl-role { font-family: var(--font-display); font-size: 19px; color: #eef0f5; margin-bottom: 5px; }
-.tl-desc { font-size: 13.5px; line-height: 1.65; color: var(--body); }
+/* THE ENTRY IS A BLOCK NOW, NOT THREE STACKED LINES. Organisation, role beneath
+   it, location and dates ranged right, then one or two bullets. The hierarchy is
+   carried by size and colour and never by weight -- there is no bold type
+   anywhere on this site, and Marcellus ships one weight, so any bold here would
+   be a synthetic one the browser drew itself.
+
+   The spine stays. It is the vertical of the reserve the horizontal meter above
+   already draws, and with no section-label column competing for the left edge it
+   costs 27px the measure can afford: 559px of entry against a 586px scroll box. */
+.timeline { display: flex; flex-direction: column; gap: 0; border-left: 1px solid rgba(217,162,107,.25); padding-left: 26px; }
+
+/* TWO PARTS ON ONE SPINE. Education is its own section and the roles are the
+   other; the spine, the measure and the entry block are shared, which is what
+   keeps this two blocks rather than the CV taxonomy that was rejected. The
+   parts are separated by SPACE ALONE and never by a rule -- the .14 hairline
+   already means "next entry", and a second hairline at a different opacity
+   would be two dividers asking to be told apart. 29px above the label plus
+   13px below it reads as a larger break than the 44px of padding between two
+   entries, because a labelled gap outranks an unlabelled one.
+
+   WAS 30 AND 14, AND THE PIXEL EACH GAVE BACK IS THE LABEL'S. Going to 16px
+   grew .tl-section's line box from 14px to 20px, and that growth is leading
+   sitting outside the letters -- gap the eye already reads. So the margins hand
+   back what the box gained, and the INK gap is what stayed fixed: measured at
+   1440x900, 37.5px from the last line of Education to the cap top of
+   EXPERIENCE and 22.1px from that label's baseline to the cap top of Dash Bio,
+   against 37.6 and 22.1 before the label grew. */
+.tl-part + .tl-part { margin-top: 29px; }
+
+/* THE LABEL IS A HEADING NOW AND NOT FURNITURE. It took .tl-end's type exactly
+   -- mono, 10.5px, .25em, #5b6172 -- on the reasoning that a section label is
+   subordinate to the entries beneath it. At that size it did not read as
+   subordinate so much as absent: 7.33px of cap height against the 9.26px
+   Archivo draws at 13.5px, so the label measured SMALLER than the sentences it
+   introduced. (Cap ratios measured off the loaded faces: Marcellus .7002,
+   Archivo .686, IBM Plex Mono .698 of the em.)
+
+   16px IS THE GEOMETRIC MEAN OF THE TWO SIZES IT STANDS BETWEEN -- sqrt(19 *
+   13.5) = 16.02, .tl-org above it and .tl-role / .tl-bullets below. In cap
+   height that is 11.17px, between the entry's 9.26 and the org line's 13.30,
+   and it is a third of the way up to .card-title's 23.81. Measuring under the
+   org line is deliberate and is the ceiling, not a compromise: uppercase at
+   .16em is 96px of solid caps against a title-case line that shows one, so the
+   label already reads level with the name it introduces. Tried at 19px, where
+   its cap height equals .tl-org's exactly, and it out-shouted the entry.
+
+   .16em, NOT .25em. Tracking is a number of pixels to the eye rather than a
+   ratio, and 16 * .16 = 2.56px is the 10.5 * .25 = 2.63px the label already
+   had. The letters grew; the spacing between them did not, so the line keeps
+   the density of every other spaced-caps run on the site.
+
+   var(--muted), NOT #5b6172. That ink is the furniture tier .tl-end and
+   .reserve-hint share, and it measures 2.89:1 against the card gradient's
+   lightest corner (#111726) -- under the 3:1 floor at any size, and it was
+   only ever survivable because the label was small enough not to be read.
+   --muted is 5.81:1 there and clears AA's 4.5:1, which 16px still owes since
+   WCAG large text starts at 24px. It is the panel's next named tier up rather
+   than a new hex, and it is still four steps under .tl-org's #eef0f5.
+
+   Still weight 400. It is an <h2> and .tl-org below it an <h3>; the explicit
+   weight is here for the same reason it is on .tl-org, since Marcellus is not
+   in play but the browser's own <h2> bolding still is, and there is no bold
+   type anywhere on this site. */
+.tl-section {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 13px;
+}
+
+.tl-entry { display: flex; flex-direction: column; gap: 10px; padding: 22px 0; }
+/* :first-of-type, not :first-child -- the label is the first child of every
+   part now, so :first-child stopped matching any entry at all and the run
+   would open with 22px of padding the design never had. */
+.tl-part > .tl-entry:first-of-type { padding-top: 0; }
+.tl-entry:last-child { padding-bottom: 0; }
+.tl-entry + .tl-entry { border-top: 1px solid rgba(217,162,107,.14); }
+
+.tl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; }
+/* min-width: 0 is why the ranged-right date starves this column instead of
+   bursting the card. See the note under .tl-when. */
+.tl-head-main { min-width: 0; }
+
+.tl-org { font-family: var(--font-display); font-weight: 400; font-size: 19px; line-height: 1.3; color: #eef0f5; margin: 0; }
+.tl-role { margin: 3px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+
+/* WAS a single gold date line above the role. It is now the meta stack -- the
+   same field, the same type, turned on its side and ranged right. flex: none
+   with nowrap children is deliberate: a date that wraps is worse than a title
+   that does, and the 760px rule below is what stops it eating the title. */
+.tl-when {
+  flex: none;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  text-align: right;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .25em;
+  color: var(--gold-line);
+}
+.tl-when span { white-space: nowrap; }
+
+.tl-bullets { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.tl-bullets li { display: grid; grid-template-columns: 14px minmax(0, 1fr); align-items: start; }
+.tl-mark { color: var(--gold-line); font-size: 13.5px; line-height: 1.65; }
+.tl-bullets p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--body); }
+
+.tl-end {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .25em;
+  color: #5b6172;
+  border-top: 1px solid rgba(217,162,107,.14);
+  margin-top: 22px;
+  padding-top: 22px;
+}
 
 /* The Miscellany panel's cards. Named for entries and not for books, because the
    section is: `.book-*` was renamed with the label rather than left behind as a
@@ -3171,21 +5303,164 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      them. Wrapping is the right layout; it just needs the gap of a stack rather
      than the gap of a row, and a paragraph that may be narrower than 260px.
      The portrait keeps its size: it is a circle, and a full-width one is an
-     ellipse with a photo squashed into it. */
+     ellipse with a photo squashed into it.
+
+     Except that min-width: 0 bought the narrow paragraph by giving away the
+     wrap: a flex item with no minimum will accept any width, so the copy stopped
+     going to the next line and took the 122px left over beside the portrait
+     instead -- a 16-character measure, which the Lorem was too short to expose
+     and 90 words of real copy is not. flex-basis: 100% asks for the whole line,
+     which is what wraps it; flex-shrink then lets it come back under 260px once
+     it is down there. Scoped to .about-grid because .about-copy is used outside
+     this panel now. */
   .about-grid { gap: 20px; }
-  .about-copy { min-width: 0; }
+  .about-grid > .about-copy { min-width: 0; flex-basis: 100%; }
 
   .entry-grid { grid-template-columns: 1fr; }
-  .feature-row { gap: 14px; }
-  .timeline { padding-left: 20px; gap: 22px; }
+  /* `.feature-row { gap: 14px }` was deleted here with the numeral it separated.
+     The row is a block now; a gap on a block does nothing, and a declaration that
+     does nothing at one breakpoint is a trap at the next. */
+
+  /* THE PANEL GIVES ITS EXTRA WIDTH BACK HERE. #panel-projects sets
+     padding-right: 20px against .card's 52 to buy measure at desktop, and that
+     rule is an ID, so without this line it would also beat the 22px this
+     breakpoint sets for every card on a phone -- a 2px asymmetry on a 338px card.
+     The asymmetry is smaller than it was at 28 and the line is not: the point is
+     that a phone gets one margin on both sides, not that the difference is big.
+     Note this override now makes the phone's right padding LARGER than the
+     desktop's, which is the correct direction -- desktop is trading gutter for
+     measure and a 338px card has no gutter to trade. The width above it needs no
+     undoing: min(760px, 92vw) is 92vw at any phone width, exactly as min(680px,
+     92vw) and min(600px, 92vw) were, and 92vw measures 338 at 375 once the
+     scrollbar inside the viewport unit is accounted for. */
+  #panel-projects { padding-right: 22px; }
+
+  /* THE HEAD STACKS AT THE BREAKPOINT .role-head STACKS AT, for the reason
+     written there: ranged-right meta starves the title column on a phone. 24px
+     of nowrap mono against a 173px column would leave the name nothing, so the
+     event drops under it and ranges left with everything else. */
+  .feature-head { flex-direction: column; gap: 4px; }
+  .feature-meta { text-align: left; }
+
+  /* THE NAME KEEPS 19, AND THAT IS THE SAME DERIVATION, NOT AN EXEMPTION FROM IT.
+     .feature-name is the geometric mean of the two sizes it stands between (see
+     its block); this tier moves the top of that ladder, .card-title 34 -> 26, and
+     leaves the bottom where it is, so the mean moves with it: sqrt(26 * 13.5) =
+     18.73. 19 is 0.27px above that and 18.5 is 0.23 below, which is a quarter of
+     a pixel either way -- so the tie goes to the number this rule already had,
+     and the phone renders exactly as it did before the desktop grew. Measure was
+     never the constraint here: the head stacks at this breakpoint, so the name
+     has the whole 246px column, and BrainSentry is 116px of it at 21.5. */
+  .feature-name { font-size: 19px; }
+
+  /* align-items IS NOT RESTATED HERE, and neither is anything else about the row's
+     shape: the row is a plain block at both tiers now that the numeral is gone, so
+     there is nothing left for this breakpoint to correct.
+     150 STAYS, AND IT STILL BINDS ON EXACTLY ONE OF THE THREE -- the same one, for
+     a differently-sized reason. The phone's text column went 166 -> 242, which is
+     exactly the numeral's 62 and its 14px gap handed back, so both landscape shots
+     are still width-limited well short of the cap and the desktop's 390 is still
+     unreachable here. Measured at 375px, not modelled: the card lands at 338 rather
+     than the 345 a bare reading of 92vw suggests, because the scrollbar sits inside
+     the viewport unit, and 338 is the same basis the 166 above was measured on.
+     What changed is that they are no longer tiny:
+
+       greenchain  ->  242x129   width-limited    was 165x89
+       prophis     ->  241x142   width-limited    was 165x97
+       brainsentry ->   82x150   height-limited   was 119x150, the cap still holds it
+
+     The phone shot is the only one the height can reach, and it is the only one
+     whose WIDTH changed without the column changing: its frame was re-cut outside
+     this stylesheet and went 0.792:1 -> 0.545:1, so the same 150 of height now buys
+     82px of width instead of 119. That is narrow, and it is left alone for the
+     reason written at the base rule -- height is the invariant, a phone screenshot
+     is phone-shaped, and the alternative is 251x460 of picture on a 375px screen.
+     150 was already the number that stopped this shot being two thirds of a screen
+     of picture; at the new aspect it would be 460px tall uncapped, so it is doing
+     more work than before, not less.
+     The set still reads as one set -- 134/147/150 against the old 89/97/150 -- so
+     the cap is left exactly where it was, and that is the whole reason this comment
+     was rewritten instead of the rule. None of the three is upscaled at this tier
+     or anywhere near it: the shipped files were 1092x585, 1021x600 and 327x600.
+
+     THE TABLE ABOVE IS THE RETIRED SINGLE SHOTS AND IS KEPT AS THE WORKED
+     EXAMPLE, not as a description of what loads now. Each row carries three
+     frames -- greenchain-1..3, prophis-1..3, brainsentry-1..3 -- cut in another
+     pass, so the per-file arithmetic has to be redone against their real sizes
+     the same way it is done above: measure, do not model. What does NOT change is
+     the mechanism, because 150 is a max-height on .feature-shot and every frame
+     is one; the two things this tier has to add are a floor for the stack and a
+     tighter gap for the row of three.
+     THE STACK'S FLOOR TRACKS THE CAP, 390 -> 150, for the reason min-height
+     exists at all (see THREE FRAMES WHERE THERE WAS ONE): it reserves the slot
+     before any frame decodes and keeps the paragraph still when you step between
+     frames of different aspect. A 390px floor left here would reserve 240px of
+     empty row under a 150px picture on every phone.
+     THE TRIO'S GAP DROPS 14 -> 8 BECAUSE THE COLUMN IS A QUARTER OF THE WIDTH.
+     Three 1fr columns across the phone's 242px text column leave (242 - 16) / 3 =
+     75.3px each at 8px gaps, against 71.3 at 14 -- the gap is 5% of the desktop
+     measure and 17% of this one, so holding it would spend a twelfth of each
+     phone frame on air between them. 75px is small, and it is three phone screens
+     on a 375px screen: the honest alternative was one at 82px, which is not
+     meaningfully bigger and shows a third as much. Width binds here rather than
+     the cap -- 75.3 wide at roughly 0.55:1 is 138px tall against the 150 floor --
+     so nothing is upscaled at this tier either, whatever the frames turn out to
+     be. */
+  .feature-shot { max-height: 150px; }
+  .shot-frames { min-height: 150px; }
+  .shot-trio { gap: 8px; }
+
+  /* The CV head stacks for the same reason the timeline's does below. 22px of
+     side padding on a border-box card of 92vw leaves 291.5px on a 375px phone,
+     measured. The meta column still wants its 188px of nowrap mono, which with
+     the 24px gap leaves 79px for the institution. At the 8.37px per character
+     that 17px Marcellus actually measures, that is nine characters -- "Johns
+     Hop" and nothing after it, against the 259px the name wants. So the
+     two-column head cannot survive here, and jibang collapses his own at 860px
+     on the same arithmetic. */
+  .role-head { flex-direction: column; gap: 6px; }
+  .role-meta { align-items: flex-start; text-align: left; }
+
+  /* THE RANGED-RIGHT META STACKS HERE, and this is the breakpoint that already
+     exists rather than a new one. jibang collapses the same two-column head at
+     860px; the arithmetic is the same and the number is ours. Above 760 the
+     entry has 453px and the longest institution name wants 285.5, so the row
+     holds with 18.6px spare -- measured at 761x900, the tightest case in the
+     whole range. Below it the meta's 129px of nowrap mono plus the 20px gap
+     takes 58% of a 257px row and leaves 106px for the title -- that is "Johns
+     Hopkins School of Medicine" over four lines, and 149px taller overall. */
+  .timeline { padding-left: 20px; }
+  .tl-entry { padding: 18px 0; gap: 8px; }
+  /* The part break tracks the entry padding down, 29 -> 23 against 22 -> 18,
+     so the section still reads as the larger of the two gaps at 375px.
+
+     The label runs the same derivation on the sizes this breakpoint actually
+     has. .tl-org drops to 17px below and .tl-role does not move, so the mean
+     the label sits on moves with it: sqrt(17 * 13.5) = 15.15 -> 15px, which is
+     11.22px of cap between the entry's 9.26 and the org line's 12.41. The two
+     margins hand back the 5px the line box gained exactly as they do at
+     desktop -- measured at 375x812, 19.6px of ink from the label's baseline to
+     the cap top below it, the same 19.6px it had at 10.5px. */
+  .tl-part + .tl-part { margin-top: 23px; }
+  .tl-section { font-size: 15px; margin-bottom: 11px; }
+  .tl-end { margin-top: 18px; padding-top: 18px; }
+  .tl-head { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .tl-when { align-items: flex-start; text-align: left; gap: 3px; }
+  .tl-org { font-size: 17px; }
 }
 
-/* ---- legibility floors ----
+/* ---- legibility floor ----
    Every piece of chrome type on this site is sized in vmin, which is right for
    type that belongs to the watch and wrong at the bottom of the scale: on a
-   390x844 phone vmin is 3.9px, so the caption computes to 5.3px, the bar under
-   it to 4.1px and the caseback hallmark to 3.8px. Those are not small, they are
-   unreadable.
+   390x844 phone vmin is 3.9px, so the caption computes to 5.3px and the bar
+   under it to 4.1px. That is not small, it is unreadable.
+
+   IT USED TO BE FLOORS, PLURAL. The other tenant was .cb-hallmark -- Au 750 ·
+   Nº 1 · 250735, engraved across the bottom of the case band -- which fell to
+   3.8px here and was floored at 7px and raised off the bottom of the band to
+   clear the case's own curve. The hallmark has been removed from the caseback
+   entirely, so that rule and its derivation went with it and this block governs
+   the caption alone.
 
    The rail is not in this list, and does not need to be: it is sized in px
    rather than vmin -- 10px in the top row, derived from the character count of
@@ -3197,8 +5472,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
    Keyed on max-height as well as max-width, because vmin follows the SHORTER
    axis: a phone turned sideways is 844px wide and would miss a width-only rule
-   while its type stayed at 5px. The desktop sizes are untouched -- at 1440x900
-   these compute to 12.2px and 8.8px and neither query matches. */
+   while its type stayed at 5px. The desktop size is untouched -- at 1440x900
+   the caption computes to 12.2px and neither query matches. */
 @media (max-width: 760px), (max-height: 640px) {
   /* A fixed 5vmin height and one line was a desktop assumption. The caption
      still wraps on a phone and the tracking is what makes it long, so the
@@ -3229,18 +5504,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     letter-spacing: .16em;
     line-height: 1.5;
   }
-  /* The one engraving that survives a phone -- which is the point
-     docs/SITE-DIRECTION.md 6.6 makes: the flip is universal, the engraving is a
-     desktop refinement. 3.8px is not small, it is unreadable; 7px is the floor.
-
-     IT HAS TO MOVE UP TO GO BIGGER, because the surface it is engraved on is
-     round. At 390x844 the band is 337px across and the mark sits 10.7px off the
-     bottom, where the metal is only 141.6px wide -- and 22 characters at 7px
-     with .2em of tracking are 146.3px of ink, so it ran off the case into the
-     background at both ends. Raising it to 5.4% puts it where the chord is
-     169px, which is 11px of metal clear on each side, and still 12px below the
-     sapphire's lower edge. Both numbers measured, not guessed. */
-  .cb-hallmark { font-size: 7px; letter-spacing: .2em; bottom: 5.4%; }
 }
 
 /* THE ONE WAY OUT HAS TO BE A THING YOU CAN HIT, AND IT MUST NOT NAME A KEY THE
@@ -3262,6 +5525,41 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      multiplication sign is 45px tall and only 38 wide, and the target has to
      clear 44 on both axes, not just the one the text happens to fill. */
   .card-close { top: 4px; right: 4px; padding: 14px; min-width: 44px; font-size: 13px; text-align: center; }
+
+  /* ---- THE EYEBROW'S GUTTER ----
+     THIS PANEL ONLY, BECAUSE THIS PANEL IS THE ONE THAT COLLIDED. The rule above
+     turns the exit into a 44px block pinned to the card's top-right corner, and
+     .card-eyebrow is a full-width block sitting on exactly that line -- so an
+     eyebrow long enough to reach the corner runs underneath the one visible way
+     out of a card on a phone. Measured at 375x812 with the panel open, against the
+     running dev server: the eyebrow's ink ended at x 327.6 and this button's box
+     starts at x 305.45, so 22.2px of the line sat under the target.
+
+     26 IS FLUSH; 34 IS THE GUTTER. The button's left edge is right(4) +
+     min-width(44) = 48px inside the card's padding box, and the eyebrow's right
+     edge is #panel-projects' own 22px of phone padding inside that same edge (set
+     in the 760px block above) -- so 48 - 22 = 26px of extra padding puts the two
+     exactly in contact. 34 leaves 8.4px between them, because text touching a hit
+     target reads as text under it.
+
+     IT RESERVES THE CORNER RATHER THAN TRUSTING THE COPY. The shipped eyebrow is
+     now short enough to clear the button unaided -- ink to 292.2, 13.3px of
+     daylight -- so at 375 this declaration changes nothing anyone can see. That is
+     the point of it: it is here so a longer eyebrow written later WRAPS, which is
+     what the Research, Resume and Miscellany eyebrows already do at this width,
+     instead of tunnelling under the control. Keyed on the pointer rather than on
+     the width for the reason this block's own header gives: it answers the button
+     above it, and that button is keyed on the pointer.
+
+     THE OTHER FOUR PANELS ARE OUT OF SCOPE HERE AND ONE OF THEM SHOULD NOT BE.
+     Measured the same way at 375x812: About clears by 13.3, Research by 39.9,
+     Miscellany by 13.3 -- and Resume's first line ends at x 309.9, which is 4.4px
+     INSIDE this button. That is a real, smaller instance of the same collision, on
+     a panel this rule deliberately does not touch. Whoever owns .card-eyebrow
+     should lift this declaration into the shared rule and delete the ID; it is
+     scoped this narrowly only because #panel-projects was the panel being worked
+     on when it was found. */
+  #panel-projects .card-eyebrow { padding-right: 34px; }
 }
 
 /* ---- deliberately left for later ----

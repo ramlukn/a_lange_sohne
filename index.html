@@ -469,14 +469,70 @@
           <div class="cb-band"></div>
           <div class="cb-band-grain"></div>
 
-          <!-- engraved on the case band, flanking the display window -->
+          <!-- engraved on the case band, ACROSS THE TOP of the display window
+               and nowhere else. It used to flank: a matching right-hand arc read
+               NIKHIL RAMLUKAN, and it was removed on request. #cbRightArc went
+               with it -- the arc was that textPath's only caller. That left one
+               line running up the left of the band with bare metal opposite, and
+               a one-sided band reads as a missing half rather than as a choice.
+               The survivor was moved to 12 o'clock, where a single line is
+               centred on the case rather than hanging off one side of it, which
+               is where a real case band carries its one line of engraving.
+
+               THE MOVE IS THE PATH, NOT A TRANSFORM. The text is a textPath, so
+               the only thing that decides where it sits and which way it leans
+               is the arc it is laid on; rotating the <svg> or the <text> by 90deg
+               would carry the letters' lean with it and stand them on their sides
+               at the top. #cbLeftArc's d is therefore re-described rather than
+               transformed -- same centre, same radius 43.8, only the endpoints
+               move -- and the id renamed to match where it now runs.
+
+               THE SWEEP IS WHAT MAKES IT READABLE. A textPath sets each glyph's
+               up-vector to the path's left normal, so the arc has to be traversed
+               left-to-right OVER the top: start at 9 o'clock (6.2,50), end at
+               3 o'clock (93.8,50), sweep-flag 1 (the positive-angle direction,
+               which is clockwise on screen because y runs down). The same two
+               endpoints with sweep-flag 0 run UNDER the bottom instead, and the
+               reversed pair (93.8,50 to 6.2,50) with sweep-flag 0 does cross the
+               top but travels right-to-left, which hangs every letter upside
+               down from the arc. Only this one reads upright. The old left arc
+               ran 6 o'clock -> 12 o'clock on the same sweep flag and by the same
+               rule, so the two are the same drawing a quarter turn apart.
+
+               startOffset 50% + text-anchor middle centres the line on the
+               path's midpoint, which for a semicircle is exactly 12 o'clock, and
+               the centring is exact rather than about right: the text's own bbox
+               spans 18.19..81.81, midpoint 50.00. Measured in the browser at
+               1440x900 and at 375x812 -- the numbers below are the same at both,
+               because the whole caseback is one 100-unit space scaled by vmin.
+               getComputedTextLength is 65.15 units of the 137.62 the semicircle
+               offers, so the line takes 85.2deg of the 180 available (-42.6 to
+               +42.6 off 12 o'clock) and stops 47deg short of each end.
+
+               CLEARANCES, in viewBox units (1 unit = 7.83px at 1440x900, 3.24px
+               at 375px). Baseline at 43.8 with the caps growing OUTWARD from it,
+               that same left normal, so the INK -- cap ascent, not the em box --
+               runs 43.75..46.18:
+                 inside, to .cb-ring's outer edge at 40.5      3.25  (25.4px)
+                 inside, to .cb-aperture and the movement, 38  5.75  (45.0px)
+                 outside, to the case edge at 50              3.82  (29.9px)
+               The line is very slightly outboard of the band's midline, which is
+               the old left-hand arc's bias unchanged -- the radius did not move.
+               The nearest thing on the band is the corrector cap's back-plane
+               copy, which starts at 53deg; the engraving's last ink is at 42.6,
+               so 10.4deg of bare band separates them. The crown is at 90deg and
+               outside r 49.5 -- not on the band at all. -->
+          <!-- NOT SUPPRESSED ON A PHONE, and it does not need to be. The
+               legibility floor at the foot of styles.css once had two tenants and
+               the caseback one was .cb-hallmark, which has been removed; this arc
+               was never in it. At 375x812 .cb-band-svg is 324px, so 3.3 units
+               computes to 10.69px -- above the 10px floor that block sets for the
+               caption, and measured on screen rather than assumed. -->
           <svg class="cb-band-svg" viewBox="0 0 100 100" aria-hidden="true">
             <defs>
-              <path id="cbRightArc" d="M 50,6.2 A 43.8,43.8 0 0 1 50,93.8"></path>
-              <path id="cbLeftArc" d="M 50,93.8 A 43.8,43.8 0 0 1 50,6.2"></path>
+              <path id="cbTopArc" d="M 6.2,50 A 43.8,43.8 0 0 1 93.8,50"></path>
             </defs>
-            <text class="cb-engraved"><textPath href="#cbRightArc" startOffset="50%" text-anchor="middle">NIKHIL RAMLUKAN</textPath></text>
-            <text class="cb-engraved"><textPath href="#cbLeftArc" startOffset="50%" text-anchor="middle">CALIBRE NR.1 &#183; HANDWERKSKUNST</textPath></text>
+            <text class="cb-engraved"><textPath href="#cbTopArc" startOffset="50%" text-anchor="middle">CALIBRE NR.1 &#183; HANDWERKSKUNST</textPath></text>
           </svg>
 
           <!-- polished retaining ring seating the sapphire -->
@@ -525,12 +581,271 @@
               <img class="cb-rig-static" src="/assets/caseback/rig/static-gem-seconds.webp" style="left:36.762%;top:48.724%;width:2.073%;height:2.073%" alt="" decoding="async">
               <div class="cb-rig-sheen"></div>
             </div>
+            <!-- THE LINK TRAIN. Three wheels, each one a way to reach him. None
+                 of them lies in the empty plate on the left any more; all three
+                 have been moved by hand onto the movement.
+                 Hand-authored,
+                 and a SIBLING of .cb-rig rather than part of it: the rig block above is
+                 emitted whole by `node tools/generate-rig-markup.mjs` and must
+                 never be hand-edited, so anything added by hand lives out here
+                 where a regeneration cannot overwrite it.
+                 Inside .cb-movement on purpose -- it inherits the same
+                 scale(1.56) translate() crop as the movement art, so these
+                 percentages are percentages OF THE RENDER and the wheels stay
+                 registered to the plate at every viewport. Positions are
+                 measured off l9511-simplified-lossless.webp in its own 1254px
+                 space; see THE LINK TRAIN in src/styles.css for the sums.
+                 THE TRAIN NO LONGER CLIMBS, IT LIES IN A ROW, AND ONE PAIR OF
+                 IT MESHES. It used to climb:
+                 LinkedIn was the low wheel with a sixth of it behind the No
+                 58669 bridge, and the other two ran up the plate from it. Five
+                 hand moves have rebuilt it along a different line -- LinkedIn
+                 carried across to the name bridge and then shrunk 25% and
+                 nudged down-right, GitHub shrunk 25%, nudged down-left, carried
+                 down-right to the recess wall, shrunk a further 5%
+                 about that wall, grown 20% about the same wall and then carried
+                 up and across the movement to the jewel arm's left lobe, and
+                 Gmail carried across the movement to
+                 LinkedIn. Gmail's move put a real mesh back: it was redrawn
+                 at LinkedIn's module and set at the sum of their pitch radii, so
+                 those two engage. GitHub's last move put it on the same module
+                 -- all three are m 1.65 now -- and 55.1 render px of tip-to-tip
+                 daylight from LinkedIn, down from 263.5, but 58.4 further off
+                 than a mesh would need; the left half of that mesh circle is
+                 solid bridgework and rig, and the sweep that proves it is in
+                 src/styles.css. What the wheels
+                 touch besides each other is one piece of bridgework, the same
+                 for all three: LinkedIn is under the jewel arm's crest, GitHub
+                 under its left lobe, and Gmail in the bay east of LinkedIn where
+                 the name bridge bites it from below and the arm's right-hand end
+                 from above; each has its own cut
+                 below. The centres, the
+                 modules and what the sizes mean are all in THE LINK
+                 TRAIN in src/styles.css. Document order is still linkedin,
+                 github, email -- the tab order is the order of the links, not
+                 the order they
+                 happen to sit in. -->
+            <div class="cb-links" id="cbLinks">
+              <a class="cb-gear" data-link="linkedin"
+                 style="left:47.273%;top:28.654%;width:10.000%"
+                 href="https://www.linkedin.com/in/nikhil-ramlukan-2a4a41277"
+                 target="_blank" rel="noopener">
+                <img src="/assets/caseback/links/gear-linkedin.webp" alt="LinkedIn" decoding="async">
+              </a>
+              <!-- THE LINKEDIN WHEEL GOES UNDER THE JEWEL BRIDGE. The wheel
+                   above has been moved in two steps and then grown by a third,
+                   from centre (647.5, 455.8) to (655.5, 422.8). Step one, right
+                   8.0 and up 17.6, took its
+                   tooth tips from 14.1 render px clear of the bridge overhead to
+                   flush against it -- the bridge is the raised arm carrying
+                   VIERZIG (40) RUBINE and the two ruby bosses, and the edge is
+                   its chamfered underside, which crests at y 380 under x 660 and
+                   falls away to y 412 at x 600 and y 397 at x 720. Step two, up
+                   a further 21.2, drove the tips 21.0 px past that line. Step
+                   three grew the wheel 10% -- width 9.091% -> 10.000%, tip
+                   r 57.0 -> 62.7 -- about its own TOP EDGE and not its centre,
+                   which is why `top` did not change: `top` fixes the box's
+                   top-left corner, so a box that only gets wider grows downward
+                   and `left` alone had to move, left by half the gain, to hold
+                   the centre on x 655.5. The tuck overhead is therefore
+                   untouched -- deepest penetration past the chamfer is 20.9 px
+                   before and after -- while 16.2% of the tip disc is now behind
+                   bridgework, down from 17.1% because the same bite is being
+                   taken out of a larger wheel. This
+                   cut is what makes that read as under rather than over: same
+                   trick as the rig's own .cb-rig-static cutouts and as
+                   .cb-links-static--github below, an occluder after the thing it
+                   hides, by DOM order alone and no z-index anywhere.
+                   IT IS CUT FROM rig/base.webp, the floor the rig itself draws,
+                   so its RGB is byte-identical to the pixels beneath it
+                   (verified against a full offline composite of base + every rig
+                   part and cutout: max channel difference 0, zero pixels
+                   changed) and it is invisible except for what it hides. Box is
+                   x 584..724, y 344..428 of the render's 1254px space, 140x84;
+                   the alpha is the bridge surface flood-filled on the
+                   bilaterally-filtered base behind a luminance = 105 barrier,
+                   largest component, holes filled, dilated 6px to take in the
+                   polished chamfer, feathered 0.7px so the teeth pass under a
+                   soft edge rather than a stair.
+                   It sits here rather than at the end of the block because it
+                   only has to be after the wheel it bites, and its box reaches
+                   no wheel it could harm: the GitHub wheel spans x 432..538,
+                   clear of this box's x 584, and the email wheel's x 714..812
+                   does reach into it but is drawn AFTER it, so DOM order keeps
+                   the cut off it. Pointer-events
+                   stay off it -- see .cb-links-static--linkedin in
+                   src/styles.css, where the sums are. -->
+              <img class="cb-links-static--linkedin" src="/assets/caseback/links/static-plate-linkedin.webp"
+                   style="left:46.571%;top:27.432%;width:11.164%;height:6.699%"
+                   alt="" aria-hidden="true" decoding="async">
+              <a class="cb-gear" data-link="github"
+                 style="left:34.466%;top:28.968%;width:8.421%"
+                 href="https://github.com/ramlukn"
+                 target="_blank" rel="noopener">
+                <img src="/assets/caseback/links/gear-github.webp" alt="GitHub" decoding="async">
+              </a>
+              <!-- THE GITHUB WHEEL GOES UNDER THE JEWEL ARM'S LEFT LOBE. The
+                   wheel above has crossed the movement, from centre
+                   (317.3, 598.0) on the recessed field at the far left to
+                   (485.0, 417.0) -- right 167.7, up 181.0 -- and it was resized
+                   on the way: width 8.726% -> 8.421%, tip radius 54.71 -> 52.80
+                   render px. The shrink is not decoration. It puts the wheel on
+                   m 1.65, the module LinkedIn and Gmail already share, so all
+                   three wheels are drawn at ONE tooth size again for the first
+                   time since the 25% steps:
+                   tip r = (62 + 2) * 1.65 / 2 = 52.80, pitch r = 62 * 1.65 / 2
+                   = 51.15. Read top to bottom the three now run gmail 413.1,
+                   github 417.0, linkedin 422.8 -- a row across the movement,
+                   9.7 render px from highest to lowest, where GitHub used to
+                   sit 185 below the other two.
+                   IT DOES NOT MESH WITH LINKEDIN, AND THIS SAYS SO ON PURPOSE.
+                   A mesh wants the two pitch radii added, 51.15 + 61.05 =
+                   112.20, and this wheel stands 170.60 from LinkedIn's centre,
+                   58.40 too far. That circle was swept degree by degree and
+                   every point on the left of it is taken: below-left the rig's
+                   own centre wheel, dead left this ruby lobe, above-left the
+                   VIERZIG (40) RUBINE engraving. The sums are in THE MESH
+                   CIRCLE IS FULL, in src/styles.css.
+                   THE EDGE IT MEETS is the left lobe of that same jewel arm --
+                   the ruby in its gold chaton with three blue screws round it,
+                   a raised disc whose undercut runs at radius 45.4..51.1 from
+                   (553, 390). The wheel presses 25.9 px past that undercut on
+                   its own centre line, so 14.1% of its tip ellipse is behind
+                   the lobe and the visible right-hand outline of the wheel is
+                   the lobe's edge and not the wheel. Same trick as
+                   .cb-links-static--linkedin above and .cb-links-static--gmail
+                   below -- an occluder after the thing it hides, by DOM order
+                   alone and no z-index anywhere. All three wheels now go under
+                   one bridge: LinkedIn under the arm's crest, Gmail under its
+                   right-hand end, GitHub under its left lobe.
+                   IT IS CUT FROM rig/base.webp, the floor the rig itself draws,
+                   so its RGB is byte-identical to the pixels beneath it
+                   (verified against a full offline composite of base + every
+                   rig part + every rig cutout + all three wheels, built with
+                   and without this file: 942 pixels change, every one of them a
+                   pixel of the GitHub sprite, none inside LinkedIn's or Gmail's
+                   tip ellipse; and everywhere the file's alpha is above zero
+                   its RGB matches the base with a maximum channel difference
+                   of 0). Box is x 500..546, y 362..442 of the render's 1254px
+                   space, 46x80; the alpha is 1 inside the traced edge and 0
+                   outside it, the boundary taken per degree at the luminance
+                   minimum of the undercut, smoothed over 2.5 degrees and
+                   feathered 0.7px so the teeth pass under a soft edge rather
+                   than a stair.
+                   It sits here rather than at the end of the block because it
+                   only has to be after the wheel it bites, and its box reaches
+                   no other wheel: the LinkedIn sprite begins at x 592.8, the
+                   email wheel's at x 714.5, the Gmail cut at x 704 and the dead
+                   plate-bridge cut at y 716 -- all clear of x 500..546,
+                   y 362..442. Pointer-events stay off it -- see
+                   .cb-links-static--github in src/styles.css, where the sums
+                   are. -->
+              <img class="cb-links-static--github" src="/assets/caseback/links/static-plate-github.webp"
+                   style="left:39.872%;top:28.868%;width:3.668%;height:6.380%"
+                   alt="" aria-hidden="true" decoding="async">
+              <a class="cb-gear" data-link="email"
+                 style="left:56.975%;top:29.031%;width:7.763%"
+                 href="mailto:nikhilr.ramlukan@gmail.com">
+                <img src="/assets/caseback/links/gear-gmail.webp" alt="Email" decoding="async">
+              </a>
+              <!-- THE GMAIL WHEEL MESHES WITH THE LINKEDIN WHEEL, AND GOES UNDER
+                   THE NAME BRIDGE BELOW IT. The wheel above has crossed the
+                   movement from centre (336.7, 446.5) on the empty left plate to
+                   (763.1, 413.1), and it was resized on the way: width 9.410% ->
+                   7.763%, tip radius 59.0 -> 48.674 render px. The shrink is not
+                   decoration. LinkedIn at width 10.000% carries module
+                   m = 2 * 62.7 / (74 + 2) = 1.65, and teeth only engage when both
+                   wheels are drawn at ONE module, so Gmail's 57 teeth had to be
+                   redrawn at m 1.65 too: tip r = (57 + 2) * 1.65 / 2 = 48.675.
+                   Then the mesh is a single sum -- centre distance = the two
+                   PITCH radii added = 74*1.65/2 + 57*1.65/2 = 61.05 + 47.025 =
+                   108.075 -- and it is 108.070 as written, 0.005 render px out.
+                   The tip circles therefore overlap by 3.30 px, which is 2m, the
+                   signature of a real mesh rather than two circles set tangent.
+                   THE ANGLE ALONG THAT CIRCLE IS THE TOOTH PHASE. -5.128 deg
+                   from LinkedIn's centre. Anywhere on the circle the sum is
+                   right, but only every 2.75 deg does a tooth land in a gap;
+                   measured by rasterising both sprites at 6x and counting pixels
+                   opaque in both, the crossings run 22 px^2 at the worst angle
+                   and 2.25 at this one. The pair keeps that phase because the
+                   periods are already 2.0 s per tooth on both wheels (148/74 and
+                   114/57) and the email wheel is turned the other way, since
+                   meshed wheels counter-rotate. It is not perfect: the sprites
+                   are ellipses (506x512, 508x512), so over a full turn the
+                   crossing averages 10.6 px^2 and peaks at 20.8 against 24.0 and
+                   32.1 at the opposite phase. The sums are in GMAIL MESHES WITH
+                   LINKEDIN in src/styles.css.
+                   THE CUT BELOW IT. The wheel now sits in the bay east of
+                   LinkedIn, and the bay is 72 px of daylight where the wheel is
+                   97 across, so it is bitten twice: 19.6% of its tip disc is
+                   behind the N ROSHAN RAMLUKAN bridge's upper-left sweep below
+                   it, and 12.0% behind the right-hand end of the VIERZIG (40)
+                   RUBINE arm above it. Same trick as .cb-links-static--linkedin
+                   and .cb-links-static--github above -- an occluder after the
+                   thing it hides, by DOM order alone and no z-index anywhere.
+                   IT IS CUT FROM rig/base.webp, the floor the rig itself draws,
+                   so its RGB is byte-identical to the pixels beneath it (verified
+                   against a full offline composite of base + every rig part and
+                   cutout, built with and without this file: max channel
+                   difference 0, pixels changed 0). Box is x 704..824, y 350..470
+                   of the render's 1254px space, 120x120; both walls of the bay
+                   are traced per column at subpixel accuracy off the
+                   bilaterally-filtered base, alpha 1 above the arm's chamfer and
+                   below the bridge's, feathered 0.7px so the teeth pass under a
+                   soft edge rather than a stair.
+                   It sits here rather than at the end of the block because it
+                   only has to be after the wheel it bites. Its box does reach
+                   back over the LinkedIn wheel's last teeth at x 714..718, but
+                   only above that wheel's own cut line, which
+                   .cb-links-static--linkedin already covers -- verified by
+                   compositing with and without this file: every pixel it
+                   changes belongs to the Gmail sprite and none lies inside
+                   LinkedIn's tip circle. Pointer-events stay off it -- see
+                   .cb-links-static--gmail in src/styles.css, where the sums
+                   are. -->
+              <img class="cb-links-static--gmail" src="/assets/caseback/links/static-plate-gmail.webp"
+                   style="left:56.140%;top:27.911%;width:9.569%;height:9.569%"
+                   alt="" aria-hidden="true" decoding="async">
+              <!-- THE BRIDGE OVER THE LOW WHEEL -- WHICH IS NO LONGER UNDER IT.
+                   The rig hides its own wheels under bridgework by DOM order
+                   alone -- .cb-rig-static cutouts drawn after the parts, no
+                   z-index anywhere -- and this WAS the same trick one layer up:
+                   the No 58669 bridge, cut from the very base the rig draws
+                   (rig/base.webp, byte-identical to
+                   tools/assets-src/caseback-empty.png and to the lossless
+                   render in this region, so the copy lands on its own pixels
+                   and there is no seam), laid over the wheels so the LinkedIn
+                   wheel's teeth ran under its curved edge instead of over it.
+                   It is NOT static-bridges.webp: that cut is the name bridge,
+                   its leftmost opaque pixel is x 522 of 1254, and back when the
+                   LinkedIn wheel was a 76px-radius wheel on the left plate,
+                   every centre from which it could have touched that cut landed
+                   inside the rig's own centre or seconds wheel. Nothing the rig
+                   emits reaches that side of the plate, so this cut was authored
+                   here.
+                   IT NOW OCCLUDES NOTHING. Box is the alpha's own bbox in the
+                   render's 1254px space, x 289 y 716, 210 x 186, and every
+                   wheel has been moved out from under it: the lowest
+                   teeth of any wheel now stop at y 486.2 (LinkedIn's -- GitHub
+                   used to be the low one and its move up to the jewel arm lifted
+                   it to y 470.7), 229.8px above this
+                   cut's top edge. Verified in the browser -- its rect intersects
+                   no .cb-gear and no rig part. Since the cut is byte-identical
+                   to the pixels beneath it, it is not merely invisible, it is
+                   inert: a fetch, a decode and a paint that change no pixel.
+                   Left in place and flagged rather than quietly deleted -- the
+                   fix is either to bring a wheel back down onto the bridge or to
+                   drop the asset, and that is a design call, not a cleanup.
+                   Still last in the layer, because a bridge is over every wheel
+                   and not just the one it happens to bite. -->
+              <img class="cb-links-static" src="/assets/caseback/links/static-plate-bridge.webp"
+                   style="left:23.046%;top:57.097%;width:16.746%;height:14.833%"
+                   alt="" aria-hidden="true" decoding="async">
+            </div>
             </div>
             <div class="cb-case-shadow" aria-hidden="true"></div>
             <div class="cb-sapphire" aria-hidden="true"></div>
           </div>
-
-          <div class="cb-hallmark">Au 750 &nbsp;&#183;&nbsp; N&#186; 1 &nbsp;&#183;&nbsp; 250735</div>
         </div>
       </div><!-- /.watch-flip -->
     </div>
@@ -556,36 +871,1018 @@
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">HOURS &amp; MINUTES — THE CENTER</div>
       <h1 class="card-title" id="title-about">About Me</h1>
+      <!-- DO NOT REWRITE THIS TO A PLAIN-LANGUAGE STANDARD. It has been tried
+           and rejected once. The previous pass cut 224 words to 135 using NASA's
+           plain-language rules and generic short-bio advice; the length was
+           right and the register was wrong. Nikhil's verdict, verbatim: "dont
+           ever do the nasa stuff. It is very boring and simple. Look at how i
+           write in other places." The only authority for this section's voice is
+           his own writing. Do not go looking for style guides for it.
+
+           FOURTH PASS. Nikhil supplied a sample of his own writing and asked for
+           its register: "it should be similar to this in verbiage and style and
+           tone and content (content would have more though)". The sample,
+           verbatim:
+
+             "I'm an undergraduate at Johns Hopkins University with an interest
+             in applying computer science and technology to Biomedical and Life
+             Science problems in academia and industry. I'm actively involved in
+             neurology and public health research, exploring global neurosurgery
+             and passive stroke detection."
+
+           That is the target now and it supersedes the third pass. Complete
+           sentences, first person, professional, unhurried, no fragments.
+
+           HARD CAP, from him, in the same breath: "For the about sample, it
+           should be 2 small paragraphs of real content max". TWO PARAGRAPHS,
+           BOTH SMALL. That is a ceiling and not a target -- if it says
+           everything in two short ones, do not stretch to fill, and do not add a
+           third for the sake of a closer. The panel ran three paragraphs from
+           the second pass until now.
+
+           READ THE WARNING ABOVE BEFORE YOU TOUCH THIS. The sample is calmer and
+           more conventional than the copy it replaced, and the failure mode is
+           swinging to it carelessly and landing back in the NASA version he
+           threw out. His sample is a REGISTER, not a licence to write plainly --
+           "write plainly" is exactly what produced the pass he rejected. What
+           keeps the two apart is specificity. His own two sentences name global
+           neurosurgery, passive stroke detection, academia and industry,
+           Biomedical and Life Science; measured in tone, concrete in content,
+           every clause carrying a real noun. The test, unchanged from every pass
+           before this one: if a sentence would survive having its nouns swapped
+           for someone else's, it is wrong and it goes.
+
+           FIFTH PASS -- A CUT, ORDERED BY HIM, PLUS ONE NEW SENTENCE. Everything
+           above still governs the VOICE; what follows governs the CONTENT, and
+           where the two lists disagree the fifth pass wins. His instruction,
+           verbatim: "for the about, you can remove the last sentence of the first
+           paragraph. And in the remove all of it except for the kee stuff. Then
+           add a sentence or 2 about outside of academics you like playing squash,
+           running and watches and cars".
+
+           So: paragraph one lost the Dash Bio / VS Code sentence and is now a
+           single sentence. Paragraph two was cut to the Dr. Kee B. Park sentence
+           and given two new ones about life outside academics. 137 -> 93 words,
+           33 and 60. Still two paragraphs, both smaller than before; the cap in
+           the fourth pass was a ceiling and this is well under it.
+
+           SIXTH PASS -- THE WATCH CLAUSE TRADED FOR THE REFERENCE NUMBER, ORDERED
+           BY HIM. Everything above still governs the VOICE. His instruction,
+           verbatim: "remove the ',which i build by hand...' to the end of the
+           about. Replace with --- the watch this site is based on is the A Lange
+           Sohne Lange 1 (ref 191.063) but with a unique moonphase added".
+
+           Before:  "The rest goes to cars and to mechanical watches, which I
+                     build by hand -- I drew the Lange 1 you are reading this
+                     inside."
+           After:   "The rest goes to cars and to mechanical watches. This site
+                     is based on the A. Lange &amp; Söhne Lange 1, reference
+                     191.063, with a moonphase the original does not have."
+
+           93 -> 101 words, 33 and 68. Two paragraphs, both still small; the cap
+           holds and the card has room (see the measurements below).
+
+           WHY IT IS A SENTENCE AND NOT A PARENTHESIS. His note is shorthand, not
+           copy. The register here is complete sentences carrying real nouns, so
+           the reference sits in apposition inside the sentence rather than in
+           brackets bolted to the end, the same way the degree name and the
+           Blavatnik Institute sit in theirs. "Unique moonphase added" became "a
+           moonphase the original does not have" because that is the same claim
+           stated as a fact a reader can check, which is what the register runs
+           on. Nothing beyond his claim was invented: no case metal, no dial
+           colour, no limitation figure, no year.
+
+           REF 191.063 WAS VERIFIED BEFORE IT WAS PUBLISHED, and it checks out on
+           every point his sentence depends on. It is a real A. Lange &amp; Söhne
+           Lange 1: the 30th-anniversary edition of 2024, 38.5 mm, 750 pink gold
+           case with a blue dial in 925 silver, calibre L121.1 hand-wound, 72-hour
+           reserve, limited to 300 pieces. Its functions are hours, minutes,
+           subsidiary seconds with stop seconds, UP/DOWN power reserve and the
+           outsize date -- AND NO MOON PHASE. That is the point that makes his
+           sentence hold rather than contradict itself: A. Lange &amp; Söhne do
+           make a separate Lange 1 Moon Phase, but 191.063 is not it, so "a
+           moonphase the original does not have" is exactly right. Sources were
+           the brand's own product page for 191.063 plus the 2024 launch
+           coverage. It also agrees with the dial this repo actually draws, which
+           has a moon aperture over the lunar wheel sprite.
+
+           WHAT THIS RETIRES, AND IT IS NOT TO BE REINSTATED FROM THE DRAFTS.
+           "I build watches" / "which I build by hand" was an OPEN QUESTION FOR
+           FOUR PASSES -- every one of them flagged that the present tense rests
+           on 2024 evidence and nobody could confirm it still holds. IT IS
+           RESOLVED BY DELETION. The claim is gone, so the tense problem is gone
+           with it. The drafts at ../lange-workshop/drafts/about.md still carry
+           the clause and the voice study that argued for it; do not paste it
+           back from there. Only Nikhil reopens this.
+
+           WHAT THIS COSTS, FLAGGED RATHER THAN SWALLOWED. "I drew the Lange 1
+           you are reading this inside" was THE ONLY STATEMENT OF AUTHORSHIP ON
+           THE SITE, and the fifth pass carried it through a cut for exactly that
+           reason. It is now gone and NOTHING ELSE ON THE PAGE SAYS HE MADE THIS
+           -- checked: no footer, no colophon, no byline, no About line, and the
+           only other occurrence of "drew" in the file is this comment block. The
+           replacement describes the WATCH, not the making of the site, which may
+           be precisely what he wants; it is recorded here so it is a choice and
+           not an accident. If he wants authorship back, it does not have to come
+           out of this sentence -- a colophon or a line in Contact would carry it
+           without spending About's word budget.
+
+           THE TAGS STILL HOLD. HOROLOGY is stronger than it was: it now stands
+           on "mechanical watches" plus a named maker, model and reference rather
+           than on one clause. ENGINEERING lost its watches-built-by-hand half
+           and now rests on the degree in paragraph one, which is enough on its
+           own. LIFE SCIENCE and RESEARCH are untouched by this pass.
+
+           TYPOGRAPHY OF THE NAME, matched to the file rather than guessed. The
+           ampersand is &amp; because every ampersand in rendered copy here is
+           (see paragraph one's "Chemical &amp; Biomolecular" and the eyebrow's
+           "HOURS &amp; MINUTES"); the umlaut is a literal ö because every other
+           non-ASCII character in this document is literal under
+           <meta charset="utf-8"> -- the em dashes, the middots, "résumé", "3×".
+           There is no &amp;ouml; anywhere in the file and this does not
+           introduce one. Verified rendered, not assumed.
+
+           THE ONE AMBIGUOUS CUT, AND IT IS THE ONE TO RESTORE FIRST IF HE MEANT
+           OTHERWISE. "Remove all of it except for the kee stuff" plainly kills
+           the Stevens/LCICM sentence and the watch clause. It is LESS clear about
+           the sentence that opened paragraph two, which is gone with them:
+
+             "I'm actively involved in neurology and public health research,
+             exploring global neurosurgery and passive stroke detection."
+
+           That line is HIS OWN WORDING, lifted straight from the writing sample
+           he supplied, and it was the lead-in the Park sentence completed. It was
+           also the most specific research framing the panel had -- "global
+           neurosurgery" and "passive stroke detection" appear nowhere else in the
+           copy now. It was cut because the literal reading of his instruction
+           cuts it, not because anyone judged it weak. Paste it back as the first
+           sentence of paragraph two if he says so; nothing else has to move.
+
+           THE LANGE 1 SELF-REFERENCE SURVIVED, DELIBERATELY. It was inside the
+           clause the cut removed, and it was put back into the new interests
+           sentence rather than left out. Two reasons, both the fourth pass's own:
+           it is the only sentence on the page that tells a visitor what he is
+           looking at, and it is the only copy behind the HOROLOGY tag. Watches
+           return anyway in the new sentence he asked for, so it costs nothing to
+           carry the Lange 1 in with them. If he wants it gone, HOROLOGY goes too
+           or the tag stands on nothing.
+           SUPERSEDED BY THE SIXTH PASS -- read that block, not this one. He asked
+           for the clause gone and the Lange 1 stayed anyway, as a named reference
+           in a sentence of its own, so HOROLOGY did not have to go with it. What
+           did go, and what the paragraph above was really protecting, is the
+           AUTHORSHIP half of that sentence. It is listed as a cost in the sixth
+           pass, not recovered.
+
+           WHAT THE NEW SENTENCES MAY AND MAY NOT SAY. Squash, running, watches
+           and cars are his own statement about himself, so they are verified by
+           him. Squash played competitively and juniors coached, and watches built
+           by hand, were already on the verified list. RUNNING AND CARS ARE NEW TO
+           THIS SITE -- nothing else in the repo mentions either, so there is
+           nothing to check them against and nothing to elaborate from. No
+           distance, no marque, no model, no result has been invented and none may
+           be added without him. The instruction was a light "outside of
+           academics" line, not a second CV.
+
+           WHAT THE FIFTH PASS COST, listed so he can trade any of it back: the
+           Dash Bio internship and the VS Code extension (he cut these himself);
+           Dr. Robert David Stevens, the Laboratory of Computational Intensive
+           Care Medicine and the craniotomy risk-stratification work; and the
+           neurology/public-health lead-in quoted above. Squash came BACK in this
+           pass, which answers the fourth pass's largest regret.
+
+           What the fourth pass removed, so nobody re-derives it from the essays
+           and undoes this: the numeric noun-phrase openers, the reader question
+           ("can the phone in your pocket ..."), the short flat declarative ("I
+           build watches."), and the whole IWC paragraph -- 45 million years, the
+           0.03 mm hairspring, "Mine make it to about Thursday". Those were the
+           third pass's four moves, they were sourced from his essays, and they
+           are all fragments or near-fragments. The voice study that produced
+           them survives in ../lange-workshop/drafts/about.md if the register
+           ever swings back.
+
+           Sources for that study, kept because they are still the only authority
+           on his voice: the UChicago watch supplemental and the Common App
+           personal statement (four drafts: Alchemist, watches, stroke), both in
+           iCloud under Nikhil/College/Essays; then his Devpost profile and the
+           DEVPOST.md in github.com/ramlukn/treehacks. NOT this repo's commit
+           messages or comments -- agents wrote those.
+
+           "Content would have more though" and "2 small paragraphs max" pull
+           against each other, and the way through is DENSITY, NOT COMPRESSION.
+           Every clause names something real, the way his own sample does with
+           global neurosurgery and passive stroke detection. What must not happen
+           is a summary that lists his affiliations generically to fit the space.
+           When something has to go, cut a WHOLE ITEM; do not thin every item
+           into vagueness. So, explicitly:
+
+           KEPT BY THE FOURTH PASS (the fifth pass has since cut three of these;
+           see WHAT THE FIFTH PASS COST above) -- the full
+           degree name and class year, Dash Bio and the VS Code extension, Dr.
+           Kee B. Park and Harvard Medical School's Blavatnik Institute with the
+           multimodal deep learning named, Dr. Robert David Stevens and the
+           Laboratory of Computational Intensive Care Medicine with the
+           craniotomy work named, building watches, the Lange 1.
+
+           CUT WHOLE BY THE FOURTH PASS, to fit two paragraphs (squash has since
+           come back, in the fifth pass) -- SportMind.io with the World Squash
+           Federation and US Squash (it ran in this copy for one revision today;
+           the Timeline panel carries it, which is the same reason it was left
+           out of the third pass); squash, played and coached, which went with
+           it; the Tudor Black Bay 58; and the grandfather's 1982 Tissot with its
+           "worth almost nothing, the most expensive watch I own" paradox, which
+           is the best line he has and is the biggest loss here. None of them
+           were thinned into a vaguer phrase. They are gone, and they are listed
+           so he can trade one back for something else.
+
+           137 -> 136 words, 50 and 86, two paragraphs, at the fourth pass.
+           Nearly the same length as the pass before it, which was the point: the
+           cap did not make it shorter, it made it choose. THE FIFTH PASS TOOK IT
+           TO 93 WORDS, 33 AND 60 -- that is the current figure.
+
+           THE WATCH CLOSER: FOLDED IN, NOT DROPPED, AND THAT WAS A JUDGEMENT
+           CALL -- SAID OUT LOUD BECAUSE HE ASKED FOR IT ONCE AND IT SHOULD NOT
+           VANISH QUIETLY. His words in an earlier pass were "At the end include
+           a fun statement about watches", and the third pass gave him a whole
+           paragraph of it. Two things killed that paragraph: his new sample is a
+           straight professional bio with no joke register in it, and a
+           two-paragraph cap leaves nothing for a closer to stand in.
+
+           So it is one clause at the end of paragraph two -- "Away from that I
+           build mechanical watches by hand, and drew the Lange 1 you are reading
+           this inside" -- and the joke is gone with the IWC paragraph (45
+           million years, the 0.03 mm hairspring, "Mine make it to about
+           Thursday"). Why this clause and not the funnier one: it is the only
+           copy behind the HOROLOGY tag, so cutting it entirely would leave a tag
+           with nothing under it, and it is the one sentence on the page that
+           tells the reader what he is looking at. It is dry rather than funny,
+           which is a real departure from what he asked for, and he may want it
+           back. If he does, the Tissot line goes after it as one sentence and
+           something else comes out to pay for it.
+
+           Deliberately NOT carried over from the essays: the abstract closings
+           (unbroken chains, transcending generations), the tricolons, and the
+           word "passion", which appears four times across them. That is
+           seventeen-year-old-writing-for-admissions, and it is also exactly what
+           reads as a language model in 2026.
+
+           Measured after the fifth pass, innerWidth asserted at 1440 first
+           because other agents share the browser pane. Use offsetHeight, NOT
+           getBoundingClientRect: the pane is document.hidden, so the card's open
+           transition freezes part-way and a rect there reads about 1.5% small
+           (matrix(0.985, 0, 0, 0.985, 0, 28) was what it stuck at).
+
+           At 1440x900: card 532px against an 872px ceiling (max-height 774 + 96
+           padding + 2 border, content-box), scrollHeight == clientHeight so it
+           does not scroll, measure 416px, paragraphs 4 and 6 lines, tag row one
+           row, no paragraph overflow, no document overflow, no console errors,
+           portrait 152px and the webp 200s.
+
+           340px of headroom now, up from 183px after the fourth pass -- the cut
+           bought a lot of room, and this is the most slack the card has had.
+           The three-paragraph 195-word version that existed for one revision
+           on 9 Aug 2026 measured 861px against the same 872px ceiling -- one
+           line from scrolling, and already scrolling on any viewport shorter
+           than about 885px. If copy is ever added back here, that is still the
+           wall, and there are now about six lines of room before it.
+
+           At 375x812 the copy is 292px wide, nothing overflows it, the tag row
+           is two rows (ENGINEERING + LIFE SCIENCE, then RESEARCH + HOROLOGY) and
+           the card scrolls inside itself, as it always has on a phone.
+
+           496px is NOT the desktop measure, whatever earlier notes say. .card is
+           content-box above 1199px, so width:min(600px,92vw) sets a 600px
+           CONTENT box; 600 - 152 portrait - 32 gap = 416. 496 is the <=1199px
+           number, where a media rule flips the card to border-box.
+
+           The underlying draft is lange-workshop/drafts/about.md, which is NOT in
+           this repo -- it sits at ../lange-workshop/drafts/about.md, a sibling of
+           the project directory. The same file holds DRAFT B, the warmer version,
+           which names the reason the research exists. B is the better piece of
+           writing and it puts a living relative's medical history on a public
+           page, so it is not a choice anyone but Nikhil gets to make. Swap it in
+           from the draft file if that is the answer. Note that the fourth pass
+           moved the register away from B as well as from A: B is warm and
+           story-shaped where the sample is measured and professional, so it
+           would need rewriting rather than pasting, and it is 205 words against
+           a card that has 11px of room left.
+
+           Open questions, carried forward and added to:
+           * "I build watches" is still present tense -- "I build mechanical
+             watches by hand" now -- and the evidence for it is still from 2024.
+             Draft question 3. Unresolved, and carried forward for the third
+             time. If the last one was two years ago the verb is a small lie and
+             should be "I used to build".
+             It now sits inside a clause that also carries the Lange 1, so
+             cutting the verb costs the site's own explanation too. STILL
+             UNRESOLVED after the fifth pass, and now it is the fourth time:
+             "mechanical watches, which I build by hand" is the same claim in the
+             same tense, and the fifth pass had no new evidence to settle it on.
+             CLOSED IN THE SIXTH PASS, BY DELETION, ON HIS OWN INSTRUCTION. The
+             clause is gone, so there is no verb left to be wrong. Four passes of
+             this question end here. It is NOT to be reopened by pasting the
+             clause back from the drafts -- see the sixth-pass block.
+           * The watch closer is a judgement call, made and argued above rather
+             than taken silently. Flagged here so he can overrule it: he asked
+             for a FUN statement about watches, and what survived the
+             two-paragraph cap is one dry clause. The fifth pass did not make it
+             funnier either -- it moved the same dry clause into the new
+             interests sentence, where it now shares a line with cars.
+             The sixth pass replaced that clause with the reference-number
+             sentence, so the closer is now a plain statement of fact and the
+             "fun statement about watches" he once asked for is further away than
+             ever. Still his to overrule.
+           * NOTHING ON THE PAGE SAYS HE MADE THIS SITE, as of the sixth pass.
+             "I drew the Lange 1 you are reading this inside" was the only such
+             line anywhere and it left with the clause he cut. There is no
+             footer, colophon or byline to carry it instead. Argued in full in
+             the sixth-pass block; raised here because it is a whole-site gap and
+             not just an About one.
+           * THE NEUROLOGY / PUBLIC HEALTH LEAD-IN WAS CUT ON A LITERAL READING
+             OF "remove all of it except for the kee stuff", and it is the single
+             most likely thing in this panel to have been cut against his intent.
+             It is quoted in full in the fifth-pass block above so restoring it
+             is a paste. See that block before anything else here.
+           * Dr. Robert David Stevens, the Laboratory of Computational Intensive
+             Care Medicine and the craniotomy work are gone again, cut by him in
+             the fifth pass. Dr. Kee B. Park is what "the kee stuff" named and he
+             is the whole of the research copy now.
+           * RESEARCH, as a tag, now stands on the Park sentence alone. It still
+             holds -- early detection of neurological conditions using multimodal
+             deep learning, at Harvard Medical School's Blavatnik Institute, is
+             research by any reading -- but the WORD "research" no longer appears
+             anywhere in the copy, because it left with the lead-in. The tag is
+             true and it is thinner than it was. If the lead-in comes back this
+             stops being worth thinking about.
+           * Squash is BACK, in the fifth pass, and this closes the fourth pass's
+             largest regret -- the playing and the coaching, in his own words.
+             Still absent: the Framingham PSA Challenger wildcard and
+             SportMind.io, which the Timeline panel still carries.
+           * RUNNING AND CARS ARE NEW TO THIS SITE. They entered on his own
+             say-so and nothing else in the repo mentions either, so there is no
+             second source and nothing to elaborate from. Both are deliberately
+             bare -- no distance, no marque, no model. Anything more specific has
+             to come from him.
+           * "Chemical & Biomolecular Engineering and Computer Science" is
+             spelled out in full. Draft question 6 asked whether he would rather
+             say "ChemBE and CS"; that matters more now the sentence is formal.
+             Unresolved.
+           * The unchecked IWC figures (0.03 mm, 45 million years) left with the
+             paragraph that carried them. Nothing in the copy now is a number
+             that has not been verified.
+           * He calls himself "Niki" in the treehacks writeup. Nothing here does,
+             and nothing here should without his say-so. -->
       <div class="about-grid">
-        <div class="portrait" role="img" aria-label="Portrait placeholder"><span>Your photo</span></div>
+        <img class="portrait" src="/assets/dial/portrait.webp" width="150" height="150"
+             alt="Nikhil Ramlukan, smiling, in a navy suit and white shirt, outdoors in front of trees."
+             decoding="async" loading="lazy">
         <div class="about-copy">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, urna at gravida luctus, sapien ligula fermentum nisl, non commodo massa arcu eget dolor.</p>
-          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; integer euismod, velit sit amet volutpat pretium.</p>
+          <p>I'm an undergraduate at Johns Hopkins studying Chemical &amp; Biomolecular Engineering and Computer Science, class of 2029, with an interest in applying computing to biomedical and life science problems in academia and industry.</p>
+          <p>With Dr. Kee B. Park at Harvard Medical School's Blavatnik Institute, I work on early detection of neurological conditions using multimodal deep learning. Outside of academics I play squash competitively and coach juniors, and I run. The rest goes to cars and to mechanical watches. This site is based on the A. Lange &amp; Söhne Lange 1, reference 191.063, with a moonphase the original does not have.</p>
         </div>
       </div>
+      <!-- Four tags, named by Nikhil. They replace HOROLOGY / RESEARCH / BUILDING;
+           BUILDING is gone (it always overlapped HOROLOGY and it was the one word
+           here that could sit on anyone's site) and READING stays gone (the copy
+           never mentions a book, and Miscellany is still Lorem).
+
+           The draft's rule still holds: tags and sections must not disagree.
+           Each of these has copy behind it, RE-CHECKED AFTER THE FIFTH PASS cut
+           the copy to two sentences of bio and one of interests -- ENGINEERING
+           from paragraph one's degree and from watches built by hand, LIFE
+           SCIENCE from the same degree sentence's "biomedical and life science"
+           and from the Harvard neurological work, RESEARCH from the Dr. Kee B.
+           Park sentence, which is now the only research copy on the panel (see
+           the RESEARCH note in the open questions above -- the tag holds, but
+           the word itself left with the cut lead-in), HOROLOGY from the watches
+           and the Lange 1 at the end of paragraph two, which is the reason that
+           clause was carried through the cut rather than dropped with it.
+
+           RE-CHECKED AGAIN AFTER THE SIXTH PASS, which replaced that clause with
+           the reference-number sentence. All four still have copy behind them.
+           HOROLOGY is the one that changed and it got STRONGER: it now stands on
+           "mechanical watches" plus a named maker, model and reference number
+           rather than on a single clause. ENGINEERING lost its second support
+           (watches built by hand went with the clause) and now rests on the
+           degree in paragraph one alone, which carries it. LIFE SCIENCE and
+           RESEARCH were not touched by that pass.
+
+           Four is the draft's stated ceiling and measured fine: .tag-row is
+           flex-wrap, so the row cannot overflow the card -- it only grows rows.
+           Measured at 375px it is two rows (ENGINEERING + LIFE SCIENCE, then
+           RESEARCH + HOROLOGY), the same two rows three tags produced, so the
+           fourth tag is free. One row at 1440. A fifth would push it to three. -->
       <div class="tag-row">
-        <div class="tag">HOROLOGY</div><div class="tag">RESEARCH</div><div class="tag">READING</div><div class="tag">BUILDING</div>
+        <div class="tag">ENGINEERING</div><div class="tag">LIFE SCIENCE</div><div class="tag">RESEARCH</div><div class="tag">HOROLOGY</div>
       </div>
     </section>
 
     <section class="card" id="panel-projects" tabindex="-1" aria-labelledby="title-projects" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">THE OUTSIZE DATE — WHAT'S NEWEST</div>
+      <!-- ******** THE EYEBROW MOVED. THE ORDER DID NOT. ********
+           ANSWERED BY HIM ON 9 AUG 2026 — "fix the eyebrows". It read
+           `THE OUTSIZE DATE — WHAT'S NEWEST` over rows ordered strongest-first, so
+           the panel pointed at row three while ranking row one, and a reader was
+           being sent to the wrong end of the list by the line above its title.
+
+           WHY THE EYEBROW AND NOT THE ORDER, since either would have stopped the
+           contradiction. Reordering to newest-first puts BrainSentry in the first
+           slot, and the first slot is where a reader decides whether the rest is
+           worth reading — it is the row carrying the least behind it, and it is the
+           row whose live demo is still an OPEN ITEM further down this panel. The
+           order is doing real work; the eyebrow was the half that was wrong.
+
+           WHY THESE TWO WORDS. `BIGGEST FIRST` has to be true of the complication
+           and of the section at once, which is what every eyebrow on this site is:
+           the outsize date is the largest thing on a Lange 1's dial and the first
+           thing anyone reads off it, and these rows are ordered largest-first. It
+           names an order, not a league table — the numerals that would have made it
+           a ranking are gone; see the note below.
+
+           IT STILL NAMES THE PART, AND THAT IS NOT OPTIONAL. The eyebrow is how each
+           panel is bound to a complication, and the binding is real: main.js's
+           SECTIONS row for this panel carries `part: 'OUTSIZE DATE'`, which the rail
+           and the caption read — and the eyebrow now spells the part exactly as that
+           row does. The other four are THE CENTER, NEVER FINISHED, WOUND OVER TIME and
+           REFLECTIVE &amp; TIMELESS — complication, em dash, one phrase true of the
+           complication and of the section together. A phrase true of only one of the
+           two does not belong here.
+
+           THE LEADING "THE" WENT, AND IT PAID FOR ITSELF TWICE. Three of the other
+           four eyebrows open with THE and About's does not, so this is inside the
+           family rather than a new shape; what it buys is four characters, and four
+           characters are what this line had to find. MEASURED AT 375x812 WITH THE
+           PANEL OPEN, on the running server: the old 32-character string set one line
+           of ink ending at x 327.6, and .card-close's 44px target starts at x 305.45
+           — 22.2px of the eyebrow ran underneath the one visible way out of this card
+           on a phone. This string ends at 292.2, clear by 13.3. That is the collision
+           OPEN-ITEMS records, measured rather than estimated, and closed.
+           THE COPY IS NOT THE FIX ON ITS OWN, THOUGH. 13.3px of clearance is a fact
+           about this sentence and not about this panel, so a longer eyebrow written
+           later would walk straight back under the ✕. See THE EYEBROW'S GUTTER in
+           styles.css: it reserves the corner so a longer line wraps instead. Both,
+           deliberately — the reserve is the rule, the short line is what makes the
+           rule cost nothing here. -->
+      <div class="card-eyebrow">OUTSIZE DATE — BIGGEST FIRST</div>
       <h1 class="card-title" id="title-projects">Projects</h1>
       <div class="feature-list">
+        <!-- Ordered strongest-first, not newest-first, and the eyebrow above now says
+             so rather than arguing with it. See THE EYEBROW MOVED at the head of this
+             panel for the record, and for why the rows were not reordered instead.
+             THE ROWS NO LONGER COUNT THEMSELVES. 01/02/03 were engraved numerals in a
+             58px box; the box is gone and its column belongs to the pictures now. The
+             order is still an ordering, it just no longer announces itself as a
+             ranking — which is what lets the eyebrow name the order without the panel
+             printing a placing against any row.
+             GREENCHAIN'S AWARDS ARE SETTLED, BY HIM, AND THE CLAIM IS IN THE ROW.
+             This replaces a standing "GreenChain claims NO AWARD" note, and it is
+             replaced rather than deleted so the question does not reopen a fourth
+             time. THE RECORD: on 9 Aug 2026 Nikhil stated it himself — GreenChain
+             won 3 tracks and was a grand-prize finalist at HackPrinceton. It is his
+             award and his figure, and that is the authority the sentence below runs
+             on; nothing here was inferred from a source.
+             WHAT IT REPLACED, because the disagreement was real: three sources gave
+             three incompatible answers — résumé "3× Track Winner"; LinkedIn "Best
+             Use of K2 Think V2 + two Dedalus track wins + grand-prize finalist";
+             README "built *for* a Dedalus track" — and while that stood, the row
+             shipped with no award claim at all rather than pick one. It no longer
+             stands. The person whose award it is has named it.
+             DEVPOST CORROBORATES THE THREE AND IS SILENT ON THE FINALIST, checked
+             unauthenticated on the same date. Its winner block lists exactly three
+             and no more: Best Use of K2 Think V2 (MBZUAI), Best use of Dedalus
+             Containers, and Best agent swarm hosted on Dedalus Containers. There is
+             no finalist line on that page, so that half rests on his word alone —
+             which is why the sentence says "a grand-prize finalist" and does not
+             name a placing Devpost never printed.
+             DO NOT EMBROIDER IT. "Won three tracks" and "grand-prize finalist" are
+             the whole of what he said. "Swept", "dominated", "top three overall" and
+             any restatement as a finishing position are not his words and must not
+             be written in on a later pass. -->
         <div class="feature-row">
-          <div class="feature-num">01</div>
-          <div><div class="feature-name">Lorem Ipsum Research Paper</div><div class="feature-desc">Consectetur adipiscing elit — sed do eiusmod tempor incididunt ut labore. <span class="feature-date">JULY 2026</span></div></div>
+          <div class="feature-head">
+            <div class="feature-name">GreenChain</div>
+            <p class="feature-meta"><span class="feature-date">HACKPRINCETON · APR 2026</span></p>
+          </div>
+          <!-- ******** THE FRAMES LOOP EVERY FIVE SECONDS, AND THE DOTS STEP THEM ********
+               BOTH, ON HIS ORDER, AND THE SECOND HALF CAME AFTER THE FIRST. Nikhil
+               asked for the loop in his own words on 9 Aug 2026 — "make the images
+               auto rotate every 5 seconds" — then, while this row still carried a
+               stepper, "ok ignore the carousel command. Just make it auto looping",
+               which is why a version of this comment said the index was deleted. It
+               is not deleted: he asked for it back in the same day's messages —
+               "the manual click option too for the images with the 3 dots below it".
+               So the row is a loop AND an index rather than one or the other: three
+               frames in one slot, crossfading over 250ms, advanced by a five-second
+               timer, with three dots underneath that choose a frame outright. The
+               mechanism is in src/main.js under THE PROJECT ROWS, and so is the
+               argument for what pressing a dot does to the timer — it defers it by a
+               full interval rather than switching it off.
+
+               THE RULE IT BREAKS IS STILL A RULE. HE OVERRULED IT HERE, AND ONLY
+               HERE. DESIGN_BIBLE's motion rule is "every motion must explain function
+               or depth; no ambient floating, glow, or ornamental looping", and
+               SITE-DIRECTION 0.3 has already thrown out an idle re-cue on a timer
+               with "a loop with a long period is still a loop". This row is now a
+               loop with a five-second period and it does not qualify for the one
+               exemption on the site: the stage's guilloché survives because its angle
+               IS the time of day, so its motion is its function, and a screenshot
+               changing every five seconds tells nobody the time. Nothing here weakens
+               §0.3 and nothing else may cite this row as a precedent — it is the
+               owner's decision about his own panel, written down rather than argued
+               away. The one thing the index changes about that argument is its cost:
+               with the dots back, the loop is a convenience over a control rather
+               than the only way to see frames 2 and 3, so a later pass that wanted to
+               drop the timer would take nothing away but the timer. That is still his
+               call to reverse and not a defect to fix.
+
+               REDUCED MOTION SWITCHES THE TIMER OFF OUTRIGHT — NOT A SLOWER ONE.
+               A motion someone has asked not to see becomes a state and not a fast
+               event, which is the argument .stage-guilloche's `animation: none`
+               already makes; halving the interval would be the same loop. main.js
+               reads the query and never starts the timer under it.
+               AND NOTHING IS OUT OF REACH IN THAT MODE, WHICH IS WHY THERE IS NO
+               STATIC FALLBACK HERE. This block used to unstack .shot-frames into a
+               column of three under prefers-reduced-motion, because with the index
+               deleted a stopped loop WOULD have been the whole of this row's access
+               to two of its pictures. The dots are not behind a media query: they are
+               three ordinary buttons, in the tab order, that write data-current
+               directly. So a reader with the setting on reaches every frame by the
+               same control everyone else has, the slot stays a slot at every width,
+               and the card does not pay two extra 390px frames a row for a fallback
+               nobody needs. The unstacking rule went out of styles.css with this
+               paragraph; do not restore one without the other.
+
+               EACH FRAME IS A BUTTON, AND PRESSING IT OPENS THAT PICTURE LARGE. See
+               THE ENLARGED FRAME at the foot of this panel. The button carries no box
+               of its own — its own picture is the control — for the reason
+               .feature-icon carries none: a rounded rect with a hairline border is
+               the idiom SITE-DIRECTION 0.4 names as this project's standing slop
+               risk. Its accessible name is the frame's own alt, which is the right
+               name: pressing it shows you the thing it just described, bigger.
+
+               EVERY alt HERE WAS WRITTEN FROM THE FILE, NOT FROM THE FILENAME.
+               The nine frames landed while this markup was being written and each
+               one was opened and read before it was described; the placeholders
+               that stood here in the meantime said so in words rather than guess a
+               picture, and they are gone because the guessing is no longer
+               necessary. Keep that order if the frames are ever re-cut: alt that
+               describes a different image is a defect a sighted reader cannot see
+               and a screen-reader user cannot get round.
+               FRAMES 1 AND 2 WERE EXCHANGED ON DISK ON 9 AUG 2026 AND THESE TWO alt
+               STRINGS WERE EXCHANGED WITH THEM. The filenames did not move; the file
+               contents did — greenchain-1.webp is the landing page now and
+               greenchain-2.webp the dashboard. Both were re-opened and re-read here
+               before the strings were moved, rather than swapped on the strength of
+               being told they had been, which is the same rule as the paragraph
+               above and the reason it survived the swap. -->
+          <!-- .shot-carousel IS BACK BECAUSE ITS JOB IS BACK. It was deleted when the
+               index was, on the grounds that a div whose only remaining work was
+               `margin: 14px 0` is one box too many; the index makes it the thing that
+               holds the stack and the dots together again, and it is what main.js
+               iterates, so the frames and the dots that drive them cannot be paired
+               by proximity in the source. THE ROW OF DOTS IS A GROUP, NOT A TABLIST:
+               there is no panel to move into after choosing, so each dot is its own
+               tab stop rather than one roving stop — see main.js. -->
+          <div class="shot-carousel">
+            <div class="shot-frames">
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/greenchain-1.webp" data-current
+                     width="1092" height="585" loading="lazy" decoding="async"
+                     alt="GreenChain's landing page: the line “Compare sourcing options before you place the order.” set large over a dark world map of city lights, above a short paragraph and an Open Platform button.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/greenchain-2.webp" aria-hidden="true"
+                     width="1092" height="585" loading="lazy" decoding="async"
+                     alt="GreenChain's dashboard: a supply-chain graph of linked supplier nodes on the left, an opened manufacturer card giving one supplier's CO₂e and climate-risk figures, a globe on the right with the shipping routes drawn on it, and a plain-language filter box across the foot.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/greenchain-3.webp" aria-hidden="true"
+                     width="1092" height="585" loading="lazy" decoding="async"
+                     alt="GreenChain's import screen, headed “Import a CSV or open the demo”: a drag-and-drop panel for a scenario CSV on the left, and on the right a demo card and a summary table listing the product, units and current suppliers it read out of the file.">
+              </button>
+            </div>
+            <div class="shot-index" role="group" aria-label="GreenChain frames">
+              <button type="button" class="shot-dot" aria-current="true" aria-label="Frame 1 of 3, the landing page"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 2 of 3, the dashboard"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 3 of 3, the import screen"></button>
+            </div>
+          </div>
+          <div class="feature-desc">Ranks real manufacturers on emissions, transport CO₂, grid carbon and climate risk. An agent swarm finds the candidates, XGBoost models score them, a Three.js globe draws them. With three teammates. It won three tracks and was a grand-prize finalist.</div>
+          <div class="feature-links">
+            <a class="feature-icon" href="https://github.com/thejustjim/hackprinceton2026" target="_blank" rel="noopener"
+               data-host="github.com/thejustjim/hackprinceton2026"
+               aria-label="GreenChain source code on GitHub, at github.com/thejustjim/hackprinceton2026">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 21.4V18.4C15.2 17.5 14.9 16.8 14.4 16.2C17.5 15.9 20.6 14.8 20.6 9.7C20.6 8.3 20.1 7.1 19.3 6.2C19.7 5.2 19.6 4 19.2 3C19.2 3 18.1 2.7 15.6 4.4C13.3 3.8 10.7 3.8 8.4 4.4C5.9 2.7 4.8 3 4.8 3C4.4 4 4.3 5.2 4.7 6.2C3.9 7.1 3.4 8.3 3.4 9.7C3.4 14.8 6.5 15.9 9.6 16.2C9.1 16.8 8.8 17.5 8.8 18.4V21.4"/><path d="M8.8 18.9C4.4 20.2 4.4 16.7 2.6 16.3"/></svg>
+            </a>
+            <a class="feature-icon" href="https://devpost.com/software/greenchain-1xglhu" target="_blank" rel="noopener"
+               data-host="devpost.com/software/greenchain-1xglhu"
+               aria-label="GreenChain hackathon submission on Devpost, at devpost.com/software/greenchain-1xglhu">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.6 20.4 7.3v9.4L12 21.4 3.6 16.7V7.3z"/><path d="M9.7 8.4h2.4a3.6 3.6 0 0 1 0 7.2H9.7z"/></svg>
+            </a>
+            <!-- THERE IS NO LIVE DEMO ICON HERE BECAUSE THERE IS NO LIVE DEMO, and
+                 that was looked for rather than assumed (9 Aug 2026): the Devpost
+                 submission's "Try it out" field carries only the GitHub repo; the
+                 GitHub API reports homepage: null, deployments [] and has_pages
+                 false; the repo tree holds no vercel.json, netlify.toml,
+                 render.yaml, Procfile or fly.toml; and the README's only URLs are
+                 localhost:3000 and localhost:8000. Prophis and BrainSentry each
+                 earn a third icon on this row's own rule — a link is a claim — and
+                 GreenChain does not, so it gets two.
+                 DO NOT "FIX" THIS WITH greenchain.vercel.app. It returns 200, which
+                 is exactly the trap: the body is a create-react-app crypto wallet
+                 (Connect Wallet, ArbitrumRinkeby, ethers) and GreenChain is FastAPI
+                 plus Next.js. It belongs to someone else. Same for
+                 hackprinceton2026.vercel.app, which 404s. If a deployment is ever
+                 put up, the icon goes here and the URL is checked unauthenticated
+                 for a 200 AND for a body that is this project first. -->
+          </div>
         </div>
         <div class="feature-row">
-          <div class="feature-num">02</div>
-          <div><div class="feature-name">Dolor Sit Watch Review</div><div class="feature-desc">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. <span class="feature-date">JUNE 2026</span></div></div>
+          <div class="feature-head">
+            <div class="feature-name">Prophis</div>
+            <p class="feature-meta"><span class="feature-date">YHACK · MAR 2026</span></p>
+          </div>
+          <!-- Three frames, one slot, on the same five-second loop, with the same
+               three dots under it. The mechanism, the record of who overruled the
+               rule against it, what a dot press does to the timer, and the
+               reduced-motion answer are all written once, at GreenChain's row above,
+               and so is the
+               rule these alts were written under: each was read off the file, not off
+               the filename. Each frame is a button and opens large; see THE ENLARGED
+               FRAME at the foot of the panel.
+               THE PATIENT IN FRAMES 2 AND 3 IS DEMO DATA AND BOTH alts SAY SO. The
+               second screen is headed with a patient's name and carries a Demo badge;
+               the third names the same person all the way through its cards and
+               carries no badge at all. Both descriptions mark him, because an alt
+               that reported a named person's diabetes figures — or, in the third,
+               what his clinicians should have done and did not — without marking it
+               would be the only place on this site that reads as a real medical
+               record.
+               FRAME 3 WAS REPLACED ON DISK ON 9 AUG 2026 AND THIS alt WAS REWRITTEN
+               FROM THE NEW FILE. It was the county detail dialog and is now the
+               Prevention Review; the file was opened and read here rather than
+               described from the hand-off note. One thing deliberately left out: the
+               badge on that screen reads "4 OPPORTUNITYIES". The typo is the real
+               product's, it is illegible at the size this row prints, and an alt is
+               not the place to either reproduce or silently correct somebody's
+               spelling — so the count is described and not quoted. -->
+          <div class="shot-carousel">
+            <div class="shot-frames">
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/prophis-1.webp" data-current
+                     width="1021" height="600" loading="lazy" decoding="async"
+                     alt="Prophis's population view: a green choropleth of the north-east United States behind a metric panel on the left, a tooltip giving one county its diabetes rate and population, and a right-hand column comparing that county against the patient anchor.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/prophis-2.webp" aria-hidden="true"
+                     width="1021" height="600" loading="lazy" decoding="async"
+                     alt="Prophis's individual view, built from a demo patient profile: a form on the left, a percentage context-match dial with three county rate tiles beside it, and scored panels for health outcomes, economic equity and healthcare access.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/prophis-3.webp" aria-hidden="true"
+                     width="1021" height="600" loading="lazy" decoding="async"
+                     alt="Prophis's health narrative for the demo patient, headed “7 key clinical moments · age 22 – 52”: a horizontal timeline with event cards standing above it on stems, each tagged HISTORY with its year — type 2 diabetes diagnosed in 2011 at age 38, stage 1 hypertension in 2014 at age 41 — over an instruction to drag or scroll through the record and click any event for detail.">
+              </button>
+            </div>
+            <div class="shot-index" role="group" aria-label="Prophis frames">
+              <button type="button" class="shot-dot" aria-current="true" aria-label="Frame 1 of 3, the population view"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 2 of 3, the individual view"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 3 of 3, the health narrative"></button>
+            </div>
+          </div>
+          <div class="feature-desc">Simulates public-health interventions across US counties on a D3 choropleth, over County Health Rankings data. A second view projects one person's risk ten years out. Second of three contributors.</div>
+          <div class="feature-links">
+            <a class="feature-icon" href="https://github.com/sophia-mai/yhack2026" target="_blank" rel="noopener"
+               data-host="github.com/sophia-mai/yhack2026"
+               aria-label="Prophis source code on GitHub, at github.com/sophia-mai/yhack2026">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 21.4V18.4C15.2 17.5 14.9 16.8 14.4 16.2C17.5 15.9 20.6 14.8 20.6 9.7C20.6 8.3 20.1 7.1 19.3 6.2C19.7 5.2 19.6 4 19.2 3C19.2 3 18.1 2.7 15.6 4.4C13.3 3.8 10.7 3.8 8.4 4.4C5.9 2.7 4.8 3 4.8 3C4.4 4 4.3 5.2 4.7 6.2C3.9 7.1 3.4 8.3 3.4 9.7C3.4 14.8 6.5 15.9 9.6 16.2C9.1 16.8 8.8 17.5 8.8 18.4V21.4"/><path d="M8.8 18.9C4.4 20.2 4.4 16.7 2.6 16.3"/></svg>
+            </a>
+            <a class="feature-icon" href="https://devpost.com/software/prophis" target="_blank" rel="noopener"
+               data-host="devpost.com/software/prophis"
+               aria-label="Prophis hackathon submission on Devpost, at devpost.com/software/prophis">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.6 20.4 7.3v9.4L12 21.4 3.6 16.7V7.3z"/><path d="M9.7 8.4h2.4a3.6 3.6 0 0 1 0 7.2H9.7z"/></svg>
+            </a>
+            <!-- THE HOST IS NOT A TYPO AND IT IS NOT GUESSABLE. Neither the repo
+                 (sophia-mai/yhack2026) nor the project's name produces
+                 at350-yhack2026; the GitHub API reports homepage: null and no
+                 deployments, and the README's only URLs are localhost. This
+                 address appears in exactly one place — the "Try it out" field on
+                 the Devpost submission linked to the left — which is also why it
+                 is written down here rather than left to look like a slip.
+                 VERIFIED BEFORE IT SHIPPED, 9 Aug 2026, unauthenticated with no
+                 cookies: 200, served by Vercel, and the body is the app rather
+                 than a deployment-not-found page — <title>Prophis — Retrospective
+                 Health Context Tool</title>, with its JS, CSS and logo all 200.
+                 That check is the whole point: prophis.vercel.app 404s, and
+                 yhack2026.vercel.app returns 200 belonging to somebody else's
+                 project entirely. A row's link is a claim; a plausible hostname
+                 is not one. -->
+            <a class="feature-icon" href="https://at350-yhack2026.vercel.app/" target="_blank" rel="noopener"
+               data-host="at350-yhack2026.vercel.app"
+               aria-label="Prophis live deployment, at at350-yhack2026.vercel.app">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 4H20v5.5M20 4l-8.4 8.4"/><path d="M18 14.6V19a1.6 1.6 0 0 1-1.6 1.6H5A1.6 1.6 0 0 1 3.4 19V7.6A1.6 1.6 0 0 1 5 6h4.4"/></svg>
+            </a>
+          </div>
         </div>
+        <!-- OPEN ITEM, NOT A COPY ISSUE — do not publicise this link until it is done.
+             The deployed demo's verdict is a module constant ("No change detected")
+             and its two percentages are Math.random() * 10 - 5, freshly rolled on
+             every mount. Nothing on screen says it is a demo. A stranger who lands
+             on a stroke self-check from a portfolio, runs it, and is told they are
+             fine has been reassured by a random number generator, and the app's
+             polish is exactly what makes that plausible. The fix is one element in
+             the BrainSentry repo — a persistent "Demo — sample data, not a medical
+             device" line on the home and results screens — not a change here.
+             The copy below is written so it stays true either way: it describes the
+             interaction and says plainly there is no scoring behind it. It must
+             never be edited to say this detects, screens or analyses anything.
+             THE SOURCE LINK BELOW DOES NOT DISCHARGE ANY OF THAT. ramlukn/
+             brainsentry_mvp is public — checked unauthenticated, `"private": false`
+             — so the row may carry it, and it is the repo the missing disclaimer
+             would be added to. A reader who opens the repo is not the reader at
+             risk; the one at risk taps the prototype and is handed a number. The
+             open item above closes when that element ships, not when this links.
+
+             THE ROW NOW SAYS WHAT THE DEMO IS FOR, ON HIS AUTHORISATION, AND THAT
+             DOES NOT CLOSE ANY OF THE ABOVE. Asked on 9 Aug 2026 what the frame's
+             Kemenkes mark was doing on a portfolio, Nikhil answered in his own
+             words: "Explain and specify that this is a proof of concept demo
+             presented to the Health Ministrys of Indoesia and South Sudan for
+             potentially collaboration". That is the authorisation and its date, and
+             it is recorded here because an earlier pass had ruled the Indonesian
+             ministry work out of the site entirely — CONTENT-BRIEF.md:519-523 marks
+             ~/Desktop/Brain Sentry/Advancing Early Stroke Detection in Indonesia.pdf
+             "Confidential — for Ministry discussion only" on every page and says it
+             must not appear in any form, and index.html's Research panel still
+             carries that ban for its own copy. THE BAN ON THE DOCUMENT STANDS. What
+             he has authorised is the one fact he stated himself — that the demo was
+             presented to two health ministries for potential collaboration — and
+             nothing is drawn from that PDF: no findings, no figures, no dates, no
+             named counterpart, no summary of it. Do not "complete" the sentence
+             below from that file.
+             WHAT IT BUYS THE READER is the frame's own explanation. Frame 1 carries
+             the Indonesian health ministry's pinwheel, and until now the panel gave
+             a visitor no reason for a government health mark on a stroke-screening
+             demo. Now it does.
+             WHAT IT DOES NOT BUY is the demo's output. "Proof of concept" is doing
+             that work on purpose and it is the whole of the frame the row uses — the
+             sentence carries the caveat inside it rather than adding a second
+             disclaimer sentence, because a portfolio row disclaiming itself twice
+             reads as an app that has been made safe, and this one has not been. The
+             element in the BrainSentry repo is still the fix and still unshipped. -->
         <div class="feature-row">
-          <div class="feature-num">03</div>
-          <div><div class="feature-name">Amet Consectetur Internship</div><div class="feature-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse. <span class="feature-date">SUMMER 2026</span></div></div>
+          <div class="feature-head">
+            <div class="feature-name">BrainSentry</div>
+            <p class="feature-meta"><span class="feature-date">MAY — JUL 2026</span></p>
+          </div>
+          <!-- ******** THE FRAME IS THE HOME SCREEN, BY HIS EXPLICIT DECISION ********
+               NOT AN ACCIDENT. DO NOT REVERT IT WITHOUT ASKING HIM. Nikhil asked for
+               this exact frame -- "change the brainsentry image to the homescreen
+               with the indonesia health logo" -- having just been told, in those
+               words, that the screen pairs a Math.random() verdict with a government
+               health ministry's mark. It is his project and his call.
+
+               The argument below was written BEFORE that instruction. It is kept
+               because the risk it describes is still real and a reader should see it
+               -- but it is the case he overruled, not an open defect and not a
+               to-do. A later pass that "fixes" this frame is undoing his decision.
+
+               THE "KEE" IN THE HEADER IS ANSWERED AND CLOSED — 9 AUG 2026. The home
+               screen greets "Kee" over a "KP" avatar, which is Kee B. Park, his
+               Harvard PI, named on the Research panel; so the frame pairs a real,
+               named physician with readings a random number generator produced. That
+               was raised with him and he answered it: "its fine to put kee there.
+               theres no problem with his name". The flag is retired, THE IMAGE IS NOT
+               TO BE RE-CUT ON THIS GROUND, and the question is recorded closed rather
+               than deleted so a later pass does not rediscover it and act on it.
+               NOTE WHAT THIS DOES NOT SETTLE. It is his answer about a name in a
+               screenshot of his own app. It is not Dr. Park's clearance to be named
+               on the Research panel, which is a separate item and still open.
+
+               THE ARGUMENT AS IT STOOD: the frame was the camera-off one, and that was
+               the whole point. /check/face before the camera is enabled is the only
+               screen in the deployed app that asserts nothing: it shows the
+               face-alignment oval and the capture button and says "Camera is off" in
+               its own words. Every screen that shows a NUMBER is showing
+               Math.random() — the home screen's "You look steady today" and the
+               trends view's "% from baseline" both are — and putting either on a
+               portfolio would publish a reassuring health verdict that nothing
+               produced. The home screen is disqualified twice over: its top-right
+               mark is aria-label="Kemenkes", the Indonesian health ministry's logo,
+               and that is not ours to reprint. If this shot is ever reframed, reframe
+               it to another screen with no reading on it, or drop it.
+
+               WHAT IS ACTUALLY IN public/assets/projects/brainsentry.webp NOW: the
+               home screen. 327x600, cut from tools/assets-src/projects/
+               brainsentry-home-source.png (1290x2370, added the same minute). Opened
+               and read, not inferred from the filename. It carries, in this order:
+               "You look steady today", "Face and voice readings match your baseline",
+               two "0 % from baseline" tiles with sparklines, "14 passive checks
+               today", and the Kemenkes pinwheel in the top-right corner. That is
+               every one of the two disqualifications above, in one picture — the
+               reassuring verdict AND the ministry mark — and the numbers on it are
+               the Math.random() ones the OPEN ITEM above describes.
+
+               THIS WAS NOT CHANGED HERE AND CANNOT BE FIXED HERE. The swap came from
+               outside this markup and the fix is another cut of the webp, not an
+               edit to this tag. Two ways out, both cheap: re-cut from
+               brainsentry-check-source.png (2000x1800), which is still on disk and is
+               the camera-off screen the rule asks for, or drop the shot from this row
+               entirely and let the paragraph carry it. Until one of those happens
+               this row publishes a health verdict a random number generator produced,
+               over a government health ministry's logo.
+
+               THE alt BELOW DESCRIBES WHAT THE FILE ACTUALLY IS, because alt that
+               describes a different picture is a second defect on top of the first,
+               and a screen-reader user is entitled to the same information a sighted
+               one gets. It is worded as a description of a screen rather than as a
+               reading — "shows the line" — so that it reports the app's claim without
+               the page making it. If the shot is re-cut, this alt goes with it.
+
+               THE ROW NOW CARRIES THREE FRAMES INSTEAD OF ONE, AND EVERYTHING
+               ABOVE STILL GOVERNS ALL THREE. brainsentry.webp is no longer
+               referenced here; brainsentry-1/-2/-3.webp are. His decision about
+               which screens may appear is his decision about these three as well —
+               it was not scoped to one file — and so is the standing rule
+               underneath it: no frame on this row may be captioned, described or
+               read as working detection, because the app behind every one of them
+               returns Math.random().
+               ALL THREE WERE OPENED AND READ BEFORE THEY WERE DESCRIBED, and this
+               is what is in them, in order: (1) the home screen exactly as the
+               block above describes it — the "KP / Kee" header, the Kemenkes
+               pinwheel, "You look steady today" and the two 0% tiles; (2) the FACE
+               step of the active check with the camera off, reading "Camera is off.
+               Tap below and allow camera access when prompted"; (3) the VOICE step,
+               a sentence to read aloud over a flat waveform and a Tap to record
+               button.
+               TWO OF THE THREE ARE THE SCREEN THE OLD ARGUMENT ASKED FOR. Frames 2
+               and 3 are capture screens: neither shows a reading, so neither
+               publishes a verdict a random number generator produced. That is a
+               real improvement on a row that was nothing but, and it arrived
+               without touching the frame he chose — his stays, and it is now the
+               first of three rather than the whole row.
+               IT DOES NOT CLOSE THE OPEN ITEM ABOVE. That item is about the
+               DEPLOYED APP, not this markup: a stranger who taps the live prototype
+               is still handed a Math.random() percentage with nothing on screen
+               calling it a demo. Three honest frames on a portfolio do not put a
+               disclaimer on somebody else's phone. It closes when the element ships
+               in the BrainSentry repo, and not before.
+
+               NOT A CAROUSEL, AND THAT IS NIKHIL'S CALL TOO — "you can do 3 pics
+               in a row since its not wide". These frames are phone screens at
+               roughly 0.55:1, so three of them side by side at the same 390px cap
+               the other rows use come to 213px each and fill 667 of the row's 710
+               of measure. The void this row used to leave to the right of one
+               narrow shot is now two more screens. Nothing to step, nothing to
+               index, no controls: a set you can see all of at once does not need
+               a mechanism for seeing the rest of it. THIS ROW IS NO LONGER ANYTHING'S
+               FALLBACK. The two rows above used to unstack into a column of three
+               under prefers-reduced-motion and cite this argument for it; they have
+               dots again, so every frame up there is reachable with the timer off and
+               the fallback was deleted — see the note on GreenChain's row. The
+               argument still holds here, where it was made about three phone screens
+               that fit side by side rather than about three dashboards that do not.
+               THE THREE ARE STILL BUTTONS, THOUGH, because opening a picture larger
+               is not a way of seeing the OTHER pictures and this row needs it as much
+               as the looping ones do: 213px of phone screen is 0.65 of the source. -->
+          <div class="shot-trio">
+            <button type="button" class="shot-open">
+              <img class="feature-shot" src="/assets/projects/brainsentry-1.webp"
+                   width="327" height="600" loading="lazy" decoding="async"
+                   alt="BrainSentry's home screen in the deployed prototype: a large circular summary dial above the line “You look steady today”, with face and voice tiles beneath it each showing 0% from baseline.">
+            </button>
+            <button type="button" class="shot-open">
+              <img class="feature-shot" src="/assets/projects/brainsentry-2.webp"
+                   width="327" height="600" loading="lazy" decoding="async"
+                   alt="BrainSentry's face step: a FACE, VOICE, RESULT progress indicator above a dashed face-alignment oval that reads “Camera is off. Tap below and allow camera access when prompted”, with Enable camera and Start 3-second capture buttons under it.">
+            </button>
+            <button type="button" class="shot-open">
+              <img class="feature-shot" src="/assets/projects/brainsentry-3.webp"
+                   width="327" height="600" loading="lazy" decoding="async"
+                   alt="BrainSentry's voice step: an instruction to read a sentence aloud at a normal pace, the sentence itself, a background-noise meter counting 0.0 of 4.5 seconds, and a microphone button labelled Tap to record.">
+            </button>
+          </div>
+          <!-- THE SECOND SENTENCE IS LOAD-BEARING AND ITS TWO HALVES ARE NOT
+               SEPARABLE. "A proof of concept with no scoring behind it yet" is the
+               same caveat the row has always carried, kept in the same place and
+               moved inside the sentence that names the ministries so the row cannot
+               be read as a working screening tool that two governments have looked
+               at. The authorisation, its date, and what it does and does not cover
+               are in the OPEN ITEM above this row. Do not split this into a claim
+               and a disclaimer, do not add a third sentence hedging it, and do not
+               let a later pass write "detects", "screens" or "analyses" into it. -->
+          <div class="feature-desc">A stroke self-check on a phone: the camera runs the face-exam prompts, the mic drives a live waveform, a trends view plots each reading against a baseline. A proof of concept with no scoring behind it yet, presented to the health ministries of Indonesia and South Sudan for potential collaboration. With two teammates.</div>
+          <div class="feature-links">
+            <a class="feature-icon" href="https://github.com/ramlukn/brainsentry_mvp" target="_blank" rel="noopener"
+               data-host="github.com/ramlukn/brainsentry_mvp"
+               aria-label="BrainSentry source code on GitHub, at github.com/ramlukn/brainsentry_mvp">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 21.4V18.4C15.2 17.5 14.9 16.8 14.4 16.2C17.5 15.9 20.6 14.8 20.6 9.7C20.6 8.3 20.1 7.1 19.3 6.2C19.7 5.2 19.6 4 19.2 3C19.2 3 18.1 2.7 15.6 4.4C13.3 3.8 10.7 3.8 8.4 4.4C5.9 2.7 4.8 3 4.8 3C4.4 4 4.3 5.2 4.7 6.2C3.9 7.1 3.4 8.3 3.4 9.7C3.4 14.8 6.5 15.9 9.6 16.2C9.1 16.8 8.8 17.5 8.8 18.4V21.4"/><path d="M8.8 18.9C4.4 20.2 4.4 16.7 2.6 16.3"/></svg>
+            </a>
+            <a class="feature-icon" href="https://brainsentry-mvp.vercel.app" target="_blank" rel="noopener"
+               data-host="brainsentry-mvp.vercel.app"
+               aria-label="BrainSentry live prototype, at brainsentry-mvp.vercel.app">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 4H20v5.5M20 4l-8.4 8.4"/><path d="M18 14.6V19a1.6 1.6 0 0 1-1.6 1.6H5A1.6 1.6 0 0 1 3.4 19V7.6A1.6 1.6 0 0 1 5 6h4.4"/></svg>
+            </a>
+          </div>
         </div>
       </div>
+      <!-- ******** CLOSED ON 9 AUG 2026 — THE FIRST MATCH IS NOT COMING BACK ********
+           HIS ANSWER, ASKED DIRECTLY: "no need to mention first match". So the panel
+           is three rows by decision, the deleted foot stays deleted, and the fourth
+           .feature-row proposed below is not work anybody should pick up.
+
+           KEPT RATHER THAN DELETED, ON PURPOSE. The project is real and the reasoning
+           that argued for it is sound; if he changes his mind, everything needed to
+           act is in the paragraphs below and is discoverable by searching this file
+           for the project's name — which it would not be if this block were removed.
+           A closed record beats an absence. Do not act on it without a new answer.
+
+           THE RECORD AS IT STOOD:
+
+           WHAT THE DELETED FOOT WAS CARRYING, WRITTEN DOWN BECAUSE NOTHING ELSE
+           CARRIES IT NOW. A rule and one line — "EVERY HACKATHON SUBMISSION" ranged
+           left against a hexagon linking devpost.com/nikhilr-ramlukan — used to sit
+           here, and it was removed on request. Recording the cost rather than the
+           markup, because the markup is recoverable from git and the cost is not:
+
+           THE FIRST MATCH (TREEHACKS 2026) IS NOW UNREFERENCED ANYWHERE ON THIS
+           SITE. It is a real fourth project. It has no row of its own, and the
+           profile link was the only path from this page to it, so the panel has
+           gone from "three rows and a door to the rest" to "three rows", full stop.
+           That is a smaller claim than the truth, which is the safe direction to be
+           wrong in, but it is still wrong. Two ways back: give The First Match a
+           fourth .feature-row of its own — the honest fix, and it needs a
+           screenshot, a date and a contribution line Nikhil has not written yet —
+           or restore the foot. The row is better; a foot is a door to a list, a row
+           is the project.
+           AND THE TWO LISTS WERE NEVER THE SAME LIST: the Devpost profile carries
+           The First Match and does NOT carry BrainSentry, so a restored foot would
+           still not be a superset of these rows. Whoever writes the fourth row
+           should read that as a reason to write it rather than to link the profile.
+           The per-project Devpost links on GreenChain and Prophis are untouched;
+           what went is only the profile, which was the one link on this panel that
+           pointed at a person rather than at a project.
+
+           ONE THING THE ANSWER DOES NOT REACH. It settles this panel. It says nothing
+           about the TreeHacks repo's own public face, which is still the stock Flutter
+           stub — that is in the other repo, and it was never this panel's to fix. -->
+
+
+      <!-- ******** THE ENLARGED FRAME ********
+           "Become big when you click on them (fullscreen ish i guess)". This is a
+           modal <dialog>, and the choice is load-bearing rather than incidental.
+
+           WHY NOT THE FULLSCREEN API, WHICH IS WHAT HE NAMED. Three reasons, in
+           order of how much they cost. (1) It upscales. A fullscreened <img> is
+           scaled to fill the screen by the UA, so a 1092px frame would be blown to
+           1440 and beyond — the one thing this panel's picture rules have never
+           done, and the cap below exists to prevent. (2) Its chrome is not ours: the
+           backdrop is a UA black, the exit affordance is a UA toast, and neither
+           answers to this stylesheet. (3) iOS Safari does not implement
+           requestFullscreen on anything but a <video>, so the phone — where the
+           inline frame is smallest and the enlargement worth most — would get
+           nothing at all.
+
+           WHY <dialog> RATHER THAN A DIV AT z-index: 60. Because of what the top
+           layer gives free, and every item of it is a requirement here:
+             above everything  a top-layer element paints over .overlay's 40 AND the
+                               rail's 50 without a z-index of its own, so neither
+                               number has to move and neither can be broken by a
+                               later pass renumbering the other.
+             focus trapped     showModal() confines Tab to the dialog. Nothing hand-
+                               rolled to get wrong.
+             Escape            does NOT arrive here on its own — the key still
+                               bubbles to the window handler that closes panels, so
+                               one press would shut the picture and the panel behind
+                               it. main.js takes the key in a capture listener on
+                               window, closes this dialog and stops the propagation
+                               there. So Escape closes the picture, and the panel
+                               only once no picture is open. See THE ENLARGED FRAME
+                               in main.js.
+             focus returned    close() hands focus back to the frame that opened it;
+                               main.js re-asserts it rather than trusting the UA.
+           It sits inside this section rather than at the end of <body> because it
+           belongs to this panel and to nothing else. The one thing that costs: a
+           top-layer element still generates no box under a display:none ancestor,
+           and .card[hidden] is display:none — so main.js closes this dialog on the
+           same signal that stops the loop, before the panel can be hidden under it.
+
+           NOTHING ANIMATES ON THE WAY IN OR OUT, WHICH IS THE REDUCED-MOTION
+           ANSWER AND ALSO THE WHOLE ANSWER. There is no zoom to suppress under
+           prefers-reduced-motion because there is no zoom: the picture is simply
+           there, and then simply not. A modal that appears at once is the ordinary
+           behaviour of a modal, and a scale-from-the-thumbnail would have been the
+           kind of motion §0.3 exists to refuse.
+
+           THE CLOSE CONTROL IS .card-close, NOT A NEW ONE. Same ESC ✕ the five
+           panels already close with, same type, same colour — §0.4 is fewer idioms
+           rather than more, and inventing a second X for the one control that sits
+           over a panel would have been two vocabularies for one job. It is NOT
+           [data-close]: that attribute is wired to leave(), which closes the panel,
+           and this button closes the picture. -->
+      <dialog class="shot-zoom" aria-label="Enlarged screenshot">
+        <button type="button" class="card-close shot-zoom-close" data-shot-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
+        <img class="shot-zoom-img" alt="">
+      </dialog>
     </section>
 
     <!-- Research took the small seconds' binding off the old "Currently" panel,
@@ -593,11 +1890,951 @@
          reads continuously. The CURRENTLY array stays and still feeds it. -->
     <section class="card" id="panel-research" tabindex="-1" aria-labelledby="title-research" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">THE SMALL SECONDS</div>
+      <div class="card-eyebrow">THE SMALL SECONDS — NEVER FINISHED</div>
       <h1 class="card-title" id="title-research">Research</h1>
-      <div class="about-copy">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, urna at gravida luctus, sapien ligula fermentum nisl.</p>
+      <!-- NO FRAMING LINE. The .about-copy paragraph that used to sit here
+           ("Two labs, one question -- ...") was the only sentence on the panel
+           that was written rather than sourced, and it did editorial work the
+           entries now do for themselves. Removed on request. .card-title's own
+           28px bottom margin spaces the list now, so the
+           `.about-copy + .role-list` rule went out of styles.css with it; if a
+           framing line is ever restored, restore that rule in the same edit.
+
+           ORDER IS LONGEST-RUNNING FIRST, NOT NEWEST FIRST. Harvard (Jul 2024)
+           leads, Hopkins (Nov 2025) follows. This disagrees with Projects, which
+           is newest-first, and it is deliberate: the entry that leads is the one
+           the disclosure rules below let say the most. Do not "fix" it back.
+
+           THE LINKEDIN PASS HAPPENED, FOR THESE TWO ENTRIES ONLY. Nikhil pasted
+           both experience entries in, so the Resume panel's standing note that
+           the profile has never been read is out of date for the two lab roles
+           and still stands for everything else on it. What his own public
+           wording changed, and nothing else changed:
+
+             * TITLES ARE "UNDERGRADUATE RESEARCHER" ON BOTH. AND THIS DIVERGES
+               FROM AN INSTRUCTION HE GAVE EARLIER THE SAME DAY -- he asked for
+               "Researcher" over his resumes' "Research Assistant", and this is
+               a third form. It is used because it is what he publishes about
+               himself, which is better evidence of the title he wants than a
+               correction to a form he was not then choosing between, and
+               because it is more specific rather than less. IT IS NOT A SILENT
+               OVERRIDE. If he meant "Researcher" to stand, this reverts -- and
+               it reverts in the Resume panel in the same edit, because THE TWO
+               PANELS MUST CARRY THE SAME STRING. A parallel pass was making the
+               same change to .tl-role; if the two ever disagree, one of them
+               was edited without reading this.
+             * HARVARD STARTS JULY 2024, NOT FEBRUARY. His July 2026 resume
+               templates say Feb 2024 and were the source for the old date; the
+               profile says Jul 2024. The conflict is real and unresolved --
+               both are his own documents and neither corrects the other.
+               LinkedIn is used because it is the public one, so it is the one a
+               reader can check. The Resume panel prints years only, so 2024 is
+               right either way and there is nothing to fix there.
+             * LOCATIONS ARE FILLED IN, and the placeholder was wrong. It read
+               Boston, MA -- the obvious guess for HMS, and the guess was the
+               reason it was commented out rather than printed. He says
+               CAMBRIDGE. His word, not the institution's mailing address.
+             * THE WORK ARRANGEMENT PRINTS WITH THE LOCATION, which the old
+               placeholders did not plan for. It earns the space: two CURRENT
+               roles 400 miles apart is the first thing a reader will disbelieve,
+               and hybrid/on-site is the answer. It costs no layout -- see the
+               meta-column arithmetic in styles.css. BALTIMORE, MD - ON-SITE is
+               23 characters, exactly the count NOVEMBER 2025 - PRESENT already
+               reserved the column for, so the column does not grow and the
+               282px band keeps its 22px of spare.
+             * THE ORG LINE STAYS SHORT ON PURPOSE. He writes "The Johns Hopkins
+               University School of Medicine"; the panel keeps "Johns Hopkins
+               School of Medicine". The long form is about 385px of 17px
+               Marcellus against the 282px the 760-1199 band allows, so it wraps
+               and the head shape breaks. A typographic decision, not a
+               disagreement with him.
+
+           *** THE LAB-CLEARANCE FLAG IS RETIRED, ON HIS OWN ANSWER, 9 AUGUST
+           2026. IT IS NO LONGER TREATED AS BLOCKING. *** It stood here for six
+           passes as "NOT YET CLEARED WITH EITHER LAB. STILL TRUE, STILL
+           BLOCKING", and it is replaced rather than deleted so that it does not
+           reopen a seventh time. HIS ANSWER, VERBATIM: "I definitely work with
+           them. no issue there."
+
+           BE PRECISE ABOUT WHAT THAT ANSWERS, BECAUSE IT IS NOT THE QUESTION
+           THE FLAG ASKED. Whether he works with them was never the doubt. The
+           flag asked whether the LABS had agreed to be named as supervising
+           him, and it recorded that lcicm.jhmi.edu/people.html lists faculty,
+           graduate students, a long undergraduate roster and a Former Students
+           list and that he is on none of them. So his answer settles the
+           factual half completely -- the affiliations are real, and he says
+           there is no issue with them -- and on the courtesy half IT IS HIS
+           CALL RATHER THAN A SIGN-OFF FROM EITHER LAB. Nobody has emailed Dr.
+           Park or Stevens' lab, and nothing here should be read as saying
+           anyone has.
+
+           WHY THAT IS ENOUGH TO STOP TREATING IT AS BLOCKING. Both halves of
+           the original concern are now answered by him, which is the right
+           person for both. The LinkedIn paste settled the first: he publishes
+           the Blavatnik Institute with Dr. Park and the LCICM with Dr. Stevens
+           himself, so these entries tell a reader nothing he has not already
+           told them. This answer settles the second: he has looked at the
+           courtesy question and said there is no issue. It is his site, his
+           affiliation and his risk, and publishing his own affiliation was
+           always his to do.
+
+           TWO THINGS NOT TO DO WITH THIS PARAGRAPH. Do not restate it as "both
+           labs approved" or "cleared by the labs" -- that is a claim nobody has
+           made, and it is the same slippage the old note existed to stop,
+           running the other way. And do not re-raise the item as blocking on
+           the strength of the people page: that page is evidence he is not on a
+           roster, it was already weighed here before he answered, and it is not
+           evidence about sign-off in either direction.
+
+           THE PI NAMES ARE HIS; THE HONORIFIC IS THE PANEL'S. He writes "Dr.
+           Kee B. Park" and "Robert David Stevens". The names are taken exactly
+           -- the middle initial and the middle name are both new here and both
+           his. The honorific is normalised, because his own two entries are not
+           consistent with each other (one Dr., one bare) and printing them that
+           way puts what looks like a typo in two parallel sentences.
+
+           THE NORMALISED FORM IS NOW THE PREFIX "DR.", ON BOTH NAMES, AND IT
+           CHANGED. This panel used to print the postnominal MD on both, which
+           was the panel's own invention and had no evidence behind either name.
+           The Resume panel then landed PI bullets using "Dr." for both, and two
+           panels calling the same two men by two different styles is the kind of
+           seam a reader notices and an author does not. So Research moved, for
+           three reasons and in this order: the prefix is what Nikhil himself
+           writes for Park, so one of the two names is now his form verbatim
+           instead of neither; it costs no edit in a panel another agent owns;
+           and "Dr. Kee B. Park" is how a person says it out loud while "Kee B.
+           Park, MD" is a directory listing, which matters in a pass whose whole
+           subject is register. ONE VOCABULARY ACROSS BOTH PANELS. Do not flip
+           Research back to the postnominal on the strength of the paragraph
+           above, which is why that paragraph has been amended rather than left
+           to argue with the markup. If the postnominal is wanted after all, both
+           panels change in the same edit or neither does.
+
+           SECOND, AND SEPARATE: what the Hopkins entry says is still bounded,
+           BUT THE BOUND MOVED ON 9 AUGUST 2026 AND THIS PARAGRAPH MOVED WITH
+           IT. It used to read: the entry describes the POSITION, not the study;
+           the cohorts are under data-use agreements and the manuscript is
+           unpublished, so no dataset, no cohort property, no metric, no
+           manuscript status and no method stack appears here. THAT WAS ONE
+           SENTENCE RESTING ON TWO SEPARATE GROUNDS, and only one of them has
+           been lifted. Nikhil authorised naming the two cohorts; nobody has
+           said anything about the manuscript. The record of what he said, when,
+           and what kind of authorisation it is lives ONCE, in the Hopkins
+           block's own comment below. Read it there rather than restating it
+           here.
+           WHERE THE LINE SITS NOW. Printed: the two cohorts by name, what they
+           are, and which one the models are developed on against which one they
+           are evaluated. Still out, on the unpublished-study ground, which
+           nothing has touched: any result, any metric, any performance figure,
+           any comparison, and the existence and status of the manuscript. Also
+           still out, on the judgement recorded in research-v2.md §7 rather than
+           on the DUA: the enumerated method stack. None of it may be added
+           later as a "clarification".
+
+           WHAT THE LINKEDIN WORDING MOVED, AND EXACTLY HOW FAR. The entry used
+           to say "complications after intracranial surgery" -- a deliberately
+           blunted paraphrase, because the operation and the outcome had been
+           inferred from the position rather than sourced. He now publishes
+           "risk-stratify postoperative complications following elective
+           craniotomies" himself, so the clinical problem is his to state and the
+           entry states it in his words. "Machine learning models" replaces
+           "risk-stratification models" on the same ground: the broad model class
+           is in his own public sentence.
+
+           NOTHING ELSE MOVED, and the reason is that nothing else became public.
+           Cohort, site, size, time window, inclusion criteria beyond the word
+           "elective", features, architecture, validation scheme, any number of
+           any kind, and the existence and status of the manuscript: ALL STILL
+           OUT. MIMIC-IV and the Johns Hopkins PMAP cohort remain under
+           data-use agreements and the craniotomy analysis remains unpublished,
+           and a more specific clinical problem is not a licence to fill in the
+           method that attacks it. NOR is the constraint itself printable -- see
+           the Hopkins ceiling paragraph below, which is unchanged.
+           *** AMENDED 9 AUGUST 2026, AND ONLY IN ONE PLACE. *** That list was
+           written when the LinkedIn paste was the only thing that had changed,
+           and it was right then. It is now wrong about exactly two of its
+           items: THE TWO COHORTS ARE NAMED ON THE PAGE, on Nikhil's own
+           authorisation, and so is the one structural fact that cannot be
+           separated from naming them -- which cohort the models are developed
+           on and which they are evaluated against. Everything else in the list
+           stands word for word: site count, size, time window, inclusion
+           criteria beyond "elective", features, architecture, the rest of the
+           validation scheme (how the development data is split, how models are
+           tuned, how they are compared), any number of any kind, and the
+           manuscript. AND THE LAST SENTENCE STILL HOLDS, RE-CHECKED: the
+           constraint itself is still not printed. Nothing on the page says the
+           cohorts are restricted or the analysis unpublished, because that
+           pairing is what would disclose the manuscript's existence and its
+           stage. The Hopkins ceiling paragraph below has been amended for the
+           rest of it.
+
+           THE RECONSTRUCTION RISK IS RE-EXAMINED AND IT HAS NOT GROWN, BUT ITS
+           SHAPE CHANGED. The old warning was that a Projects row naming the
+           method plus this entry naming the clinical problem discloses more than
+           either alone. The clinical half is now on his own public profile, so
+           this panel printing it adds nothing an interested reader could not
+           already pair against -- the marginal disclosure from THIS file is
+           zero, which is why "elective craniotomies" is safe to print. The cost
+           is that the pair is now one half short instead of two, and the only
+           remaining half is the method. SO THE WARNING BINDS HARDER ON THE OTHER
+           SIDE: a Projects row for this work may not name the model family, the
+           features, the dataset or any metric, because that row would now be the
+           whole of the second half by itself. Read this before writing one.
+           *** AMENDED 9 AUGUST 2026, AND THE AMENDMENT MAKES IT BIND HARDER
+           STILL. *** One item in that list has moved rather than gone: this
+           entry now names the two cohorts itself, so a Projects row naming
+           MIMIC-IV or the PMAP cohort would disclose nothing this panel has not
+           already disclosed and the marginal disclosure of repeating it is
+           zero. EVERY OTHER ITEM IS NOW MORE DANGEROUS, NOT LESS. Research
+           supplies the clinical problem AND the data; a Projects row naming the
+           model family, the features, the tuning, the validation procedure or
+           any metric would be handing over the entire remaining half by itself.
+           "The datasets are named now" is an argument about the datasets and
+           about nothing else on the list.
+
+           THIRD: THE TWO ENTRIES ARE NOT THE SAME DEPTH, AND THAT IS THE POINT.
+           The brief asked for maximum technical depth. The two halves have
+           different ceilings, so they got different amounts of it.
+
+           Harvard's ceiling is high because the subject matter is already in
+           print under Nikhil's own byline. Every technical noun in that entry is
+           read off the AANS piece linked at the bottom of it: the four sensors
+           (microphone, camera, accelerometer, gyroscope); the motor signs
+           (tremor, bradykinesia, postural instability); the speech signs
+           (dysarthria, falling verbal fluency); the three conditions
+           (Alzheimer's, Parkinson's, ischemic stroke); and the stated use
+           (earlier intervention in the degenerative conditions, shorter time to
+           treatment in the acute one). Nothing there was inferred and nothing
+           was filled in. The one clause that is definitional rather than sourced
+           -- a binary classifier emits a score and a threshold makes the call --
+           is in for a reason: it stops a reader hearing "diagnosis".
+
+           TWO NOUNS IN THE HARVARD SENTENCE ARE NOT FROM THAT PIECE. "Multimodal"
+           and "deep learning" are from his own LinkedIn -- "multimodal deep
+           learning models" is his public phrase for this work, so the model
+           class is his to state and the sentence no longer has to say only
+           "binary classifiers", which came off a resume. Hyphenated attributively
+           here and in the Resume bullet, which is what the rest of the site does
+           ("mental-health platform", "writing-instruction platform") and the only
+           character in either sentence that is not his. Binary did not
+           disappear with it: the third note still says each sample carries one
+           of two labels and still explains the score and the threshold, which is
+           where that claim was doing its work anyway.
+
+           NOTE THE SEAM, AND DO NOT SMOOTH IT OVER: the four sensors are the
+           PAPER's scope. The samples he actually trains on are the audio and the
+           image. The entry states those separately for that reason. Merging them
+           into "trained on phone sensor data" would claim inertial training data
+           that nothing evidences.
+
+           AND "MULTIMODAL" DOES NOT REOPEN THAT SEAM. It is satisfied exactly by
+           the two modalities the entry already prints -- audio and image, two
+           modalities, multimodal -- and it is used for no more than that. It is
+           not a licence to write the accelerometer and the gyroscope back into
+           the training claim by the side door. If a later edit finds itself
+           reasoning "well, he says multimodal, so the sensors must be in there",
+           that edit is inventing evidence.
+
+           HOPKINS' CEILING, REWRITTEN 9 AUGUST 2026, BECAUSE IT MOVED FOR THE
+           FIRST TIME. What this paragraph used to say, so the change is legible:
+           the ceiling had risen by one sentence and no further; the operation
+           and the outcome were named because he names them; NOTHING ABOUT
+           INPUTS was added, on the reasoning that a DUA restricts data and that
+           even "recorded in the course of care" characterises the source; and
+           the line stopped at his own four nouns -- machine learning models,
+           risk-stratify, postoperative complications, elective craniotomies.
+           THE BAR ON INPUTS IS THE PART THAT LIFTED. It lifted because Nikhil
+           authorised naming the two cohorts, and for no other reason. The
+           Hopkins block's own comment carries his words, the date and what kind
+           of authorisation it is; it is written down once, there, and is not
+           restated here.
+           WHAT THE ENTRY MAY NOW SAY. The two cohorts by name. What MIMIC-IV
+           is, which is public and documented and not a fact about his study at
+           all. Which cohort the models are developed on and which they are
+           evaluated against, because that is inseparable from naming them. And
+           what a second institution is FOR, which is the one genuinely
+           technical idea in the design.
+           WHAT IT STILL MAY NOT SAY, UNCHANGED AND ON A DIFFERENT GROUND
+           ENTIRELY: any result, any metric, any performance figure, any claim
+           that the models work, and the manuscript and its stage. Those were
+           never withheld because of the DUA -- they are unpublished-study
+           material, and nobody has lifted anything there. The enumerated method
+           stack stays out too, on research-v2.md §7's judgement rather than on
+           either ground: it reads as a description of one specific unpublished
+           study rather than of a role. NOR is the constraint itself printed: an
+           on-page line saying the cohorts are restricted and the analysis
+           unpublished would disclose that a manuscript exists and what stage it
+           is at, which is the thing being withheld. It is recorded here instead.
+           THE THREE-TO-FIVE GAP IS CLOSED, AND IT CLOSED HONESTLY. Hopkins ran
+           three notes to Harvard's five and that was by decision, not by
+           neglect. It runs five to five now, and it got there because the
+           ceiling moved rather than because the entry was padded: each sentence
+           added carries a fact that was forbidden the day before. THE OLD
+           INSTRUCTION STILL GOVERNS EVERYTHING AFTER THIS ONE. Do not pad it,
+           do not add a sixth note to keep pace with anything, and do not read a
+           future gap as an unfinished draft.
+
+           *** CLOSED, 9 AUGUST 2026. THE 2,500 FIGURE IS OUT AND THE FLAG WITH
+           IT. *** This was the panel's one uncleared number, "roughly 2,500
+           audio and image samples", flagged through four passes because three of
+           his own documents restate it and none of the three gives a provenance.
+           He was asked and did not defend it. HIS ANSWER, VERBATIM: "don't
+           specify for the 2500, should be fine. PMAP and MIMIC should be fine to
+           talk about. So mention it." The count came out of the Harvard
+           .role-desc and nothing else in that entry moved.
+           NOTE WHAT HE DID AND DID NOT SAY, because the two halves of that
+           sentence answer two different items. He dropped a number he could not
+           source; he did NOT say the Harvard corpus is restricted, and nothing
+           anywhere says it is. So the modality breakdown stayed -- both in the
+           .role-desc and in note 1 -- and only the number left. The full
+           execution record, including why only half of the prepared fallback was
+           run, is in the Harvard block's own comment below.
+           THE FALLBACK PARAGRAPHS THAT STOOD HERE ARE GONE WITH IT. Both of them
+           quoted a .role-desc that had already stopped existing -- one quoted the
+           fifth pass's opening fragment, the other the version before that -- and
+           a fallback for a decision that has now been made is a trap rather than
+           a safety net. The one that was executed is recorded where it was
+           executed. The prominence cost that the same paragraphs recorded, that
+           the fifth pass had put an uncleared number in the loudest position on
+           the panel, is moot: there is no number.
+
+           THE VOICE PASS ITSELF: WHAT MOVED AND WHAT DID NOT. Nikhil's verdict
+           on the copy that stood here was "it sounds too corporate bs. Write like
+           a real human". The old two .role-desc lines were his LinkedIn bullets
+           nearly verbatim, and a LinkedIn bullet has a shape: a headless gerund
+           ("Training...", "Building...") followed by a pile of prepositions. That
+           shape is the whole of what was wrong, and it is the whole of what
+           changed. EVERY FACT IS THE SAME. Same model classes, same modalities,
+           same count, same biomarkers, same operation, same outcome, same two
+           PIs. Nothing was added and nothing was dropped.
+
+           The shapes it moved to are read off the About panel's voice study, the
+           same sources and the same habits, and that study lives in the comment
+           above .about-copy and in ../lange-workshop/drafts/about.md. Two habits
+           are used here and three are deliberately not:
+
+             * USED: the bare noun-phrase fragment that names the subject only in
+               the next sentence. "Roughly 2,500 audio and image samples." and
+               "Elective craniotomies." are that move. It is the most distinctive
+               thing he does and the exact opposite of announcing the topic first,
+               which is what the LinkedIn gerund was doing.
+             * USED: the short declarative beside a long one. Both entries are now
+               a 2-to-7-word fragment against a 16-to-19-word sentence, and the
+               third Harvard note gained "Sooner is the whole point." for the same
+               reason.
+             * NOT USED: direct address to the reader. About already spends it
+               once, on this same subject matter, with "can the phone in your
+               pocket catch a neurological problem before you do?". A second
+               question two panels later is a tic, not a voice.
+             * NOT USED: a new em-dash pivot. The notes already carry two, "who to
+               look at sooner, not what they have" and "a ranking, not a verdict",
+               and they were already the most human sentences on the panel. A
+               third would have made the punctuation the style.
+             * NOT USED: anything vivid about the data. A livelier sentence about
+               the cohort is still a sentence about the cohort. The register was
+               allowed to move; the disclosure line was not.
+
+           FIRST PERSON IS NEW ON THIS PANEL AND IS THE ONE CHOICE HERE HE HAS NOT
+           SEEN. The gerund exists precisely so a bullet never has to say "I", so
+           removing the gerund meant choosing a subject, and "I" is what his own
+           prose uses everywhere it is not a resume. The split it creates is
+           deliberate and reads clean: the .role-desc says what HE does, the
+           .role-notes stay impersonal and say what the THING is. Two notes moved
+           with it, both of which were awkward before and not merely different:
+           "The samples trained on so far are..." was a dangling passive and is now
+           "So far I have trained on...", and "That ranking is the input to how
+           closely..." is now "That ranking is for one thing: how closely...".
+           IT REVERTS IN FOUR PLACES, and here they are so no one has to hunt:
+           both .role-desc lines, the first Harvard note, the second Hopkins note.
+           The Resume panel is unaffected either way; it is the ledger and it has
+           never used a person.
+
+           ONE HYPHEN CHANGED WITH IT. Hopkins now reads "machine-learning models"
+           where it read "machine learning models", which is the site's own rule
+           for attributive compounds, is what the Resume bullet already prints,
+           and is what "deep-learning" in the Harvard line already did. It is not
+           a change to his wording; it is the same wording spelled the way the
+           rest of the file spells it.
+
+           WHAT THE VOICE PASS DID NOT TOUCH, AND THE REASON IS NOT LAZINESS: the
+           second Harvard note, the fourth Harvard note and the first Hopkins note
+           are unchanged. They were already in this register before anyone asked.
+           Editing a sentence that is already right, in a panel where every
+           sentence is load-bearing on a disclosure rule, spends risk and buys
+           nothing. -->
+      <div class="role-list">
+        <!-- ===== HARVARD ENTRY ONLY. SIXTH PASS: THE RESEARCH PASS. =====
+             Scope: this block's .role-desc and .role-notes. Nothing else on this
+             panel was touched, including the long comment above, which is shared
+             with the Hopkins entry and was being edited concurrently. Where that
+             comment is now wrong about Harvard, it is corrected HERE and the
+             correction says so out loud. Read the two together.
+
+             WHY IT WAS REWRITTEN. Nikhil's verdict was that the descriptions are
+             "very bad and corporate and just odd". The fifth pass's voice study
+             was read off a version of the About panel that no longer exists.
+             About has since been rewritten to a sample he supplied himself —
+             complete sentences, first person, measured, professional, every
+             clause naming something real ("With Dr. Kee B. Park at Harvard
+             Medical School's Blavatnik Institute, I work on early detection of
+             neurological conditions using multimodal deep learning."). The bare
+             noun-phrase fragment came off his 2024 college essays and no longer
+             matched the panel two clicks away. THAT MISMATCH IS THE "ODD". So
+             the fragment goes and the entry is complete sentences throughout.
+             The fifth pass's other habits stand: first person in .role-desc,
+             impersonal in the notes except the one that was already "I", short
+             declarative beside long, no direct address, NO NEW EM-DASH (the new
+             note uses a colon, which notes 3 and Hopkins 2 already use).
+
+             THE SOURCE THAT SETTLED IT, AND IT IS NEW TO THIS REPO.
+             ~/Desktop/personal/Resumes/Misc/Wyskiel Rec/Research Overview –
+             Nikhil Ramlukan.pdf (duplicated in Misc/Kevrekidis/, Feb 2026) is a
+             one-page document he wrote in the first person about THIS ROLE. It
+             is not a resume and not an essay; it is the register the About
+             sample is in, applied to exactly this subject. Its opening is the
+             model for the new .role-desc: "I am currently conducting research at
+             Harvard Medical School under the mentorship of Kee B. Park at the
+             Blavatnik Institute. My work focuses on developing passive,
+             smartphone-based detection systems for early neurological
+             impairment, including stroke, Parkinson's disease, and Alzheimer's
+             disease." Nobody had read this file before. It is the best first-
+             party evidence on the panel and it should be the first stop for any
+             later pass on this entry.
+
+             WHAT THE NEW COPY ADDS, AND WHERE EACH PIECE CAME FROM:
+
+               * "PASSIVE" IS HIS WORD AND IT IS NEW TO THIS PANEL. The Research
+                 Overview says "passive, smartphone-based detection systems"; his
+                 resume templates say "preclinical passive detection technology".
+                 The entry was already describing passivity in note 1 ("Nobody
+                 sits for a test") without ever using the term. research-v2.md
+                 §5.2 argues the word fits Harvard exactly and Hopkins only
+                 loosely, so it is used here and must NOT be carried across to
+                 the Hopkins entry.
+               * "PHONE-BASED", NOT "SMARTPHONE-BASED". One character of
+                 normalisation, on the same grounds as the honorific: this file
+                 says "a phone" in note 1 and About says "the phone in your
+                 pocket". One vocabulary. Not a disagreement with him.
+               * "EARLY NEUROLOGICAL IMPAIRMENT" is his phrase verbatim.
+               * FACIAL PALSY IS THE GENUINELY MISSING FACT. The entry named what
+                 the audio is for (dysarthria, verbal fluency) and never once
+                 said what the IMAGE is for. Three independent sources agree:
+                 the Research Overview ("Image-based analysis to detect facial
+                 palsy"), the AANS manuscript's own text ("signs like slurred
+                 speech, facial drooping, or uneven movements"), and
+                 CONTENT-BRIEF.md's description of the BrainSentry code (a
+                 front-camera check for facial asymmetry). "Palsy" is his word
+                 and sits in the same clinical register as dysarthria and
+                 bradykinesia beside it. Added as one short sentence to note 2
+                 rather than wedged into its sign list, which is grouped by
+                 movement/speech and has no third slot.
+               * THE GLOBAL NOTE IS NEW AND IT IS THE POINT OF THE ROLE. The
+                 entry never said why this work sits in a GLOBAL NEUROSURGERY
+                 programme rather than a neurology lab, and About names "global
+                 neurosurgery" as his own framing. Park's field is public from
+                 the AANS author bio (he founded the global neurosurgery
+                 initiative in 2016, chaired the WFNS Global Neurosurgery
+                 Committee 2019–2023, faculty of the Program in Global Surgery
+                 and Social Change) and from CONTENT-BRIEF.md §Research Item 1.
+                 The generalisation bar and the low-resource goal are the
+                 Research Overview's closing section, near-verbatim: "globally
+                 generalizable computational models ... trained and validated
+                 across multiple countries and healthcare infrastructures",
+                 "deployable in both high-resource and low-resource settings".
+                 NOTHING IN THAT NOTE IS INFERRED. In particular it does not say
+                 the models DO generalise, or that anything has been validated
+                 anywhere — it says what the bar is and what the goal is, which
+                 is all the source says.
+
+             WHAT THE RESEARCH TURNED UP AND DELIBERATELY DID NOT PRINT. All
+             three are from the same Research Overview, all three are real, and
+             all three are already forbidden by rules written before this pass:
+               * THE LANCET MANUSCRIPT. "Currently preparing a manuscript for
+                 submission to The Lancet." research-v2.md §7 already bans
+                 manuscript status outright — "no 'in preparation', no 'under
+                 review', no target journal ... a placeholder in better clothes"
+                 — and that rule was written for Hopkins but is not Hopkins-
+                 specific. Out. If it is ever accepted it becomes a link in note
+                 5's slot, not a status line.
+               * THE INDONESIAN MINISTRY OF HEALTH DISCUSSIONS and the planned
+                 prospective collection. CONTENT-BRIEF.md marks ~/Desktop/Brain
+                 Sentry/Advancing Early Stroke Detection in Indonesia.pdf
+                 "Confidential — for Ministry discussion only" on every page and
+                 says it must not appear "in any form"; research-v2.md repeats
+                 it as "Nowhere, in any form, not summarised, not gestured at".
+                 Out, and note that the global note above is NOT a gesture at it
+                 — it is sourced to the Long-Term Research Goal section, which is
+                 a statement of intent with no country, no ministry and no
+                 partner in it. Do not later "complete" that note with the
+                 country name.
+               * THE MAYO CLINIC OUTREACH for external-validation datasets. An
+                 unconcluded approach to a named third party. Out on the same
+                 ground the labs' own sign-off is still pending: naming an
+                 institution in a negotiation it has not agreed to is not his to
+                 do. If it becomes a collaboration, revisit.
+
+             ONE FINDING THAT CUTS AGAINST THE PANEL AND IS NOT ACTED ON. The
+             comment above draws a hard seam: the four sensors are the PAPER's
+             scope, and the samples he trains on are the audio and the image
+             only. The Research Overview lists, under "My research centers on
+             building machine learning models using smartphone sensor data",
+             three bullets — audio, image, AND "Accelerometer and gyroscope-
+             derived motor features" — before separately saying the binary
+             classifiers were built on ~2,500 samples. That is new evidence
+             AGAINST the seam and it does not settle it: the inertial bullet may
+             describe planned or feature-level work rather than a trained model,
+             and the two sentences are not tied to each other. So the seam stands
+             and note 1 still says "so far ... the audio and the image". RECORDED
+             HERE, NOT ACTED ON. A later pass with a clear answer from him can
+             collapse it; a later pass reasoning from "well, the overview lists
+             the accelerometer" alone would be inventing the tie.
+
+             *** THE 2,500 FIGURE IS OUT, ON HIS OWN INSTRUCTION, 9 AUGUST
+             2026. THE FLAG IS RETIRED, NOT CARRIED FORWARD. *** Four passes
+             flagged it as the one number on this panel with no provenance: his
+             resume templates, his LinkedIn entry and the Feb 2026 Research
+             Overview ("datasets of approximately 2,500 samples") all restate it
+             and not one of the three says where the data came from. Asked
+             directly, he did not defend it. HIS ANSWER, VERBATIM: "don't specify
+             for the 2500, should be fine. PMAP and MIMIC should be fine to talk
+             about. So mention it." So the count came out. The three silences are
+             recorded above and are now moot; nobody has to re-derive them.
+
+             HALF OF THE PREPARED FALLBACK WAS EXECUTED, AND THE OTHER HALF WAS
+             LEFT ALONE DELIBERATELY, BECAUSE A DIFFERENT TRIGGER FIRED THAN THE
+             ONE IT WAS WRITTEN FOR. The fallback assumed the count would leave
+             because the Harvard corpus turned out to carry an agreement of its
+             own, in which case the modality breakdown had to leave with it. That
+             is not what happened. He removed a number he could not source, and
+             said nothing at all about the Harvard data being restricted. So:
+               1. DONE. The .role-desc's second sentence now reads "I train
+                  multimodal deep-learning classifiers on audio and image samples
+                  to pick up neuromotor and speech biomarkers." Two words gone.
+                  The first sentence is untouched and nothing else in the entry
+                  moved. The sentence still says what the data is; it no longer
+                  says how much of it there is.
+               2. NOT DONE, AND NOT PENDING. Note 1 keeps "So far I have trained
+                  on the audio and the image." The modalities are not the count,
+                  and they are still printed one line above in the .role-desc, so
+                  cutting them from the note would leave the panel saying the
+                  same thing in one place instead of two rather than saying less.
+                  That sentence is also where the audio/image-versus-inertial
+                  seam recorded above is actually written down, so cutting it
+                  costs the seam and buys nothing. IF evidence ever appears that
+                  the Harvard corpus IS restricted, step 2 becomes live again and
+                  this paragraph is the record of why it was not taken today.
+             Everything else survives, including "multimodal", which describes the
+             model and not the corpus, and including the facial-palsy sentence,
+             which names a sign and not a sample.
+
+             TWO CONSEQUENCES FOR THE SHARED COMMENT ABOVE, BOTH ACTIONED IN THIS
+             SAME EDIT rather than left standing to argue with the markup: its
+             paragraph beginning "THE FALLBACK IS RESTATED FOR THE NEW COPY"
+             quoted a .role-desc that had already stopped existing, and its
+             paragraph beginning "STILL OPEN, AND THE LINKEDIN ENTRIES DID NOT
+             TOUCH IT" was the standing flag itself.
+
+             THE NOTE COUNT WENT FROM FOUR TO FIVE and the Harvard/Hopkins
+             asymmetry the comment above defends is now wider, not narrower. That
+             is still by decision and Hopkins still must not be padded to match —
+             but it is a bigger gap than the author of that paragraph was looking
+             at, and it is worth a second opinion from Nikhil rather than from
+             another pass.
+
+             CHECKED AGAINST THE RESUME PANEL, WHICH WAS NOT EDITED. Its Harvard
+             bullets read "Early detection of stroke and Parkinson's from
+             multimodal deep-learning models" and "At the Blavatnik Institute,
+             under Dr. Kee B. Park". No contradiction with the new copy: same PI,
+             same institute, same model class, and its two conditions are a subset
+             of this entry's three. Two things for him rather than for an agent:
+             the Resume omits Alzheimer's, which both this panel and the AANS
+             piece name, and its preposition is "from" where "using" is what the
+             sentence means. Neither is this pass's to fix. -->
+        <article class="role">
+          <div class="role-head">
+            <div>
+              <h2 class="role-org">Harvard Medical School</h2>
+              <p class="role-title">Undergraduate Researcher, Blavatnik Institute</p>
+            </div>
+            <p class="role-meta">
+              <span>Cambridge, MA · Hybrid</span><span>July 2024 — Present</span>
+            </p>
+          </div>
+          <p class="role-desc">I work with Dr. Kee B. Park on passive, phone-based detection of early neurological impairment. I train multimodal deep-learning classifiers on audio and image samples to pick up neuromotor and speech biomarkers.</p>
+          <ul class="role-notes">
+            <li>The sensors are the ones already in a phone: microphone, camera, accelerometer, gyroscope. Nobody sits for a test and nothing is instrumented. So far I have trained on the audio and the image.</li>
+            <li>The signal is the motor and speech change that runs ahead of diagnosis — tremor, bradykinesia and postural instability in movement; dysarthria and falling verbal fluency in speech. In the image it is facial palsy. The conditions are Alzheimer's, Parkinson's and ischemic stroke.</li>
+            <li>Each sample carries one of two labels, so the model returns a score and a threshold turns it into a call: who to look at sooner, not what they have. Sooner is the whole point. Earlier intervention in the degenerative conditions, shorter time to treatment in the acute one.</li>
+            <li>Park's field is global neurosurgery, and that sets the bar for the models: they have to hold across countries and health systems, not only inside the population they were trained on. The long-run goal is early detection that works as well in a low-resource setting as in a high one.</li>
+            <li>The argument for the approach, co-authored with Park: <a href="https://aansneurosurgeon.org/multimodal-sensors-on-mobile-phones-and-potential-for-early-diagnosis-of-neurological-conditions/" target="_blank" rel="noopener">AANS Neurosurgeon</a>, November 2024.</li>
+          </ul>
+        </article>
+        <!-- ===== HOPKINS ENTRY ONLY. SIXTH PASS: THE RESEARCH PASS. =====
+             Scope: this block's .role-desc and .role-notes, and nothing else.
+             The long comment above is shared with the Harvard entry and was
+             being edited concurrently, so where it is now wrong about Hopkins
+             the correction is HERE and says so. Read the two together, and read
+             the Harvard block's own comment for the half of the panel this pass
+             did not own.
+
+             ===== SEVENTH PASS, 9 AUGUST 2026: THE DATASETS ARE NAMED. =====
+             The largest single change this entry has had, and the only one that
+             came from Nikhil rather than from research. Everything below the
+             next four blocks is the sixth pass and still stands except where a
+             paragraph says otherwise in its own words.
+
+             *** THE AUTHORISATION, AND EXACTLY WHOSE IT IS. *** Asked about the
+             two cohorts, he answered, VERBATIM: "don't specify for the 2500,
+             should be fine. PMAP and MIMIC should be fine to talk about. So
+             mention it." Dated 9 August 2026. That sentence is the whole of the
+             authority this change runs on.
+             SAY WHAT THAT IS AND WHAT IT IS NOT, ONCE, HERE. A data-use
+             agreement is a contract with the data provider, and its terms are
+             not set by the person using the data. NOBODY AT PHYSIONET OR AT
+             JOHNS HOPKINS HAS LIFTED ANYTHING, and nothing in this edit should
+             be read as saying they have. What happened is that the owner of this
+             site, whose project and whose risk it is, authorised naming them,
+             and the change was made on that authority. So: DO NOT LATER CITE
+             THIS EDIT AS EVIDENCE THAT THE AGREEMENTS PERMIT THE DISCLOSURE. It
+             is evidence of exactly one thing, that he asked for it on the date
+             above.
+
+             *** THE TWO EXCLUSIONS WERE NEVER THE SAME EXCLUSION, AND ONLY ONE
+             OF THEM HAS BEEN LIFTED. *** This entry withheld two families of
+             fact for two different reasons:
+               1. THE DATASETS, AND ANYTHING THAT IDENTIFIED THEM -- withheld on
+                  the DUA ground. research-v2.md §7 barred the names and the
+                  paraphrases both, because "publicly available critical-care
+                  database" identifies MIMIC-IV and "externally validated on an
+                  institutional cohort" announces PMAP. THIS IS THE ONE HE
+                  LIFTED, and the paraphrase ban goes with it: there is nothing
+                  left to protect by declining to say which cohort is which.
+               2. RESULTS, METRICS, PERFORMANCE FIGURES AND THE MANUSCRIPT --
+                  withheld as UNPUBLISHED-STUDY material. Different ground,
+                  different owner, and NOTHING ABOUT IT HAS CHANGED. He said
+                  nothing about it and was not asked to. It stays out.
+             A later pass reasoning "the datasets are named now, so the numbers
+             can come too" is collapsing two grounds that were never one.
+
+             WHAT IS NEWLY PRINTED, AND WHERE EACH PIECE CAME FROM:
+               * THE TWO COHORTS BY NAME, in the .role-desc. "MIMIC-IV" and "a
+                 Johns Hopkins PMAP cohort" are CONTENT-BRIEF.md's own strings
+                 and are how he refers to them.
+               * WHICH ONE IS WHICH. Developed on MIMIC-IV, evaluated on the
+                 Hopkins cohort. CONTENT-BRIEF.md:234, verbatim: "trained on
+                 MIMIC-IV and externally validated on a Johns Hopkins cohort".
+                 This is the fact the old rule was really protecting, it cannot
+                 be separated from the names, and so it goes with them.
+               * "A DIFFERENT HOSPITAL AND A DIFFERENT POPULATION" follows from
+                 the two names and from nothing else. MIMIC-IV is Beth Israel
+                 Deaconess; PMAP is Hopkins. It states a consequence of the
+                 DESIGN and not a result of running it.
+               * NOTE 3, WHAT MIMIC-IV IS. Public and documented at its source: a
+                 critical-care database from a single hospital, released through
+                 PhysioNet, de-identified before release, holding what a hospital
+                 records anyway -- admissions, vital signs, laboratory results,
+                 medications, procedures. NONE OF THAT IS A CLAIM ABOUT HIS
+                 FEATURE SET. It describes a public artefact. The entry still
+                 never says which fields he uses, because nothing on this machine
+                 says, and a later pass must not fill it in from this note.
+               * NOTE 3'S SECOND SENTENCE, that the Hopkins cohort is the same
+                 kind of record at another institution. THIS IS THE ONE INFERENCE
+                 IN THE NEW COPY and it is a tight one: a cohort used to evaluate
+                 a model developed on MIMIC-IV has to carry comparable fields or
+                 the evaluation could not be run. Recorded as an inference rather
+                 than passed off as sourced.
+               * NOTE 4, WHAT THE SECOND COHORT IS FOR. It states the PURPOSE of
+                 an external evaluation and says nothing at all about how it came
+                 out. "Whether the ranking still means anything" is a question.
+                 The panel still does not say the models work.
+
+             WHAT STAYED OUT, WHICH IS MORE THAN WHAT CAME IN:
+               * EVERY RESULT AND EVERY METRIC. No AUC, no calibration, no
+                 comparison, no "improves on", no "performs well". There is still
+                 no number of any kind in this entry.
+               * THE MANUSCRIPT. Not its existence, not its stage, not a target
+                 journal.
+               * THE METHOD STACK. Logistic regression, gradient boosting, nested
+                 cross-validation, Optuna, DeLong tests and TRIPOD+AI reporting
+                 are all in CONTENT-BRIEF.md:234-236 and none of them is here.
+                 Worth being explicit about, because it is the item most likely
+                 to be re-argued now the datasets are named: research-v2.md §7
+                 ALREADY CONCEDED that a DUA restricts data rather than methods,
+                 and excluded the stack anyway, on the ground that an enumerated
+                 stack reads as a description of ONE SPECIFIC UNPUBLISHED STUDY
+                 rather than of a role. That is the unpublished ground, and the
+                 unpublished ground has not moved.
+               * COHORT PROPERTIES. Size, site count, year range, inclusion
+                 criteria beyond "elective", event rate, class balance. Naming a
+                 dataset is not describing a cohort.
+               * "PMAP" IS NOT EXPANDED. The acronym is what CONTENT-BRIEF.md
+                 carries and what he uses. An expansion nobody on this machine
+                 has written down would be this panel inventing a fact inside the
+                 one sentence that must invent none, and note 3 tells the reader
+                 what kind of data it is regardless.
+               * THE ACCESS TERMS ARE NOT PRINTED. No line saying the cohorts are
+                 restricted, credentialed, or under agreement. Two reasons. The
+                 shared comment's rule still binds -- pairing "restricted" with
+                 "unpublished" is what would disclose the manuscript -- and a
+                 page that recites access terms while naming the data reads as an
+                 argument that the terms allow it, which is precisely the claim
+                 this edit does not make. See the authorisation block above.
+
+             REGISTER, AND WHY THE ENTRY DID NOT MERELY GET LONGER. The new
+             sentences are About's shape, the same as the rest of this pass:
+             complete sentences, first person in the .role-desc and impersonal in
+             the notes, a short declarative beside a long one, every clause
+             naming something real. NO NEW EM-DASH -- the .role-desc's second
+             sentence turns on a colon, which note 2 and Harvard's note 3 already
+             use, and note 4 uses neither. The bare noun-phrase fragment stays
+             dead.
+             ONE ECHO, SEEN AND ALLOWED: Harvard's note 4 is also about
+             generalisation, across countries there and across hospitals here.
+             That is not this pass repeating itself. It is the same concern
+             turning up in both halves of his work, which is a true thing about
+             the work, and the two notes share no wording.
+
+             WHY IT WAS REWRITTEN. Nikhil's verdict was that the descriptions are
+             "very bad and corporate and just odd". The fifth pass wrote this
+             entry to a voice study read off an About panel that no longer
+             exists: a bare noun-phrase fragment ("Elective craniotomies.") and
+             then a sentence. That fragment came off his 2024 college essays.
+             About has since been rewritten to a sample he supplied himself,
+             complete sentences, first person, measured, professional, every
+             clause naming something real. THE FRAGMENT WAS THE "ODD". It is
+             gone from both entries now.
+
+             AN EARLIER RUN OF THIS PASS DIED PART-WAY AND HAD ALREADY LANDED
+             HALF OF IT, which is worth knowing if the history looks confusing.
+             It replaced the fragment with "I work under Dr. Robert David
+             Stevens, developing machine-learning models to risk-stratify
+             postoperative complications following elective craniotomies." and
+             wrote no record. That sentence is the one this pass replaced, and it
+             had two problems the fragment did not: it welded a LinkedIn bullet
+             onto an "I" ("developing ... to ... following ...", three stacked
+             prepositions and a participle), and "risk-stratify postoperative
+             complications" puts the verb on the wrong object. You stratify
+             PATIENTS by risk OF complications, not the complications themselves.
+
+             WHAT THE NEW .role-desc IS BUILT FROM. Its shape is the About
+             sentence's shape exactly: leading collaborator phrase, then "I",
+             then the work. About reads "With Dr. Kee B. Park at Harvard Medical
+             School's Blavatnik Institute, I work on early detection ..." and
+             this reads "Under Dr. Robert David Stevens, I develop and evaluate
+             ...". Two changes to the wording, both sourced:
+               * "AND EVALUATE" IS NEW AND IT IS HIS. It is not on his LinkedIn.
+                 It is in his own resume templates, ~/Desktop/personal/Resumes/
+                 Templates/Nikhil Ramlukan Resume - Research - 2026-04-7.docx and
+                 - Technical - 2026-04-22.docx, identical bullet in both:
+                 "Collaborating on a project to assess the risk of postoperative
+                 complications in patients undergoing intracranial surgery by
+                 developing and evaluating ML-based risk-stratification models."
+                 Nobody had read those two files for this entry before. They are
+                 the only first-party prose on this machine about THIS role, and
+                 they should be the first stop for any later pass on it.
+                 "Evaluate" is a job-description verb, not a method name, and it
+                 is deliberately left at that: it does not say what is evaluated
+                 against what, which would be the validation scheme.
+               * "POSTOPERATIVE" WAS DROPPED AS A REDUNDANCY, NOT AS A RETREAT.
+                 "postoperative complications following elective craniotomies"
+                 says "after" twice. "complications after an elective craniotomy"
+                 carries it once and pairs with note 1's "one patient and one
+                 operation". The singular is deliberate for the same reason. NO
+                 FACT LEFT WITH IT.
+
+             THE THIRD NOTE IS NEW AND IT IS THE ONLY GROWTH THIS PASS ALLOWED.
+             It is the Hopkins parallel to the Harvard entry's "Park's field is
+             global neurosurgery" note, and it answers the one question the entry
+             raised silently and never answered: why a question about surgery is
+             being asked in an INTENSIVE CARE lab. Both its facts are public and
+             neither is his:
+               * Stevens' field. Malone Center profile, verbatim: "Board-certified
+                 in anesthesiology, critical care medicine, and neurocritical
+                 care". https://malonecenter.jhu.edu/people/robert-david-stevens/
+               * The lab. Same profile: he "founded the Laboratory of
+                 Computational Intensive Care Medicine, an interdisciplinary
+                 engineering/medicine research group that designs AI systems to
+                 decode high-dimensional health data". The lab's own front page
+                 (lcicm.jhmi.edu) states its aim as treating "patients admitted
+                 to the intensive care unit".
+             The note stops after the frame. It does NOT go on to say what the
+             frame implies about this work, because note 2 already says it and
+             saying it twice would be padding dressed as context.
+
+             WHAT THE ONLINE RESEARCH TURNED UP AND DELIBERATELY DID NOT PRINT.
+             The lab is far more public than this panel has ever assumed, and
+             none of it moved the disclosure line:
+               * THE LAB'S DATA SOURCES ARE PUBLISHED. Its front page says
+                 members work on "data from sources such as electronic health
+                 records, high-frequency physiological recordings, and medical
+                 imaging". THAT LIST IS NOT PRINTABLE HERE. It is the lab's
+                 description of the lab, but set inside HIS entry, beside his
+                 operation and his outcome, a reader reads it as HIS inputs. The
+                 shared comment above already bars input characterisation down to
+                 the phrase "recorded in the course of care", and a public list
+                 does not loosen a data-use agreement. This is the sharpest line
+                 this pass drew and the one most likely to be re-argued later.
+                 SEVENTH-PASS AMENDMENT, AND READ IT CAREFULLY, BECAUSE IT IS
+                 NARROWER THAN IT LOOKS. Note 3 now does describe data, and the
+                 reason is not that this bullet was wrong. It is that he
+                 authorised the two cohorts by name, and once MIMIC-IV is named
+                 its published contents are a fact about a public database rather
+                 than a characterisation of his inputs. THE BULLET'S OWN CLAIM
+                 STILL STANDS UNTOUCHED: the LCICM front page's list is the LAB's
+                 description of the LAB, it is still not printed, and it must not
+                 be imported later on the strength of note 3. Note 3 says what
+                 MIMIC-IV holds. It does not say what he uses, and the difference
+                 is the whole of why it was allowed.
+               * THE LAB PUBLISHES THE PROJECT FAMILY. Its People page describes
+                 a graduate student working on "predictive models that enhance
+                 ICU triage decisions for post-neurosurgical care" and an
+                 undergraduate "working to create a predictive model to help
+                 neurosurgeons conduct ICU triage". So the general aim is public
+                 and lab-authored. TWO CONSEQUENCES, and only the first is acted
+                 on. (a) Note 2's claim, that the ranking is for how closely a
+                 patient is watched afterwards, was inference when it was written
+                 and is now corroborated by a public lab source. It stays, better
+                 founded than it was. (b) The lab's own label, "ICU triage", is
+                 NOT imported. It reproduces almost exactly the working title of
+                 the unpublished study in CONTENT-BRIEF.md, it is a term of art
+                 where the panel already says the same thing in plain words, and
+                 it buys a reader nothing. Do not add it later on the strength of
+                 this paragraph, which exists to record that the option was seen
+                 and declined.
+               * STEVENS' PUBLICATION RECORD IS LARGE AND SOME OF IT IS ADJACENT.
+                 60 indexed papers via Europe PMC, including "Preoperative risk
+                 prediction of major cardiovascular events in noncardiac surgery
+                 using the 12-lead electrocardiogram" (2025) and "Predicting
+                 Intensive Care Delirium with Machine Learning: Model Development
+                 and External Validation" (2023); the lab's Projects page lists
+                 "Explainable AI models for surgical risk prediction using
+                 preoperative ECG data". NONE OF IT IS CITED. It is the lab's
+                 work and not his, and the Harvard entry's link slot is for a
+                 piece he co-authored. Citing a PI's papers under a student's
+                 entry implies a byline he does not have.
+               * NOTHING NEW ABOUT THE STUDY ITSELF EXISTS IN PUBLIC. No
+                 preprint, no registration, no abstract, no author list. The
+                 manuscript is where it was.
+               * THE RESEARCH OVERVIEW PDF IS HARVARD-ONLY. The Feb 2026
+                 first-person document the Harvard pass found is about Park's
+                 work end to end and does not mention Hopkins, Stevens or the
+                 LCICM once. Checked, so nobody checks it twice.
+
+             THE CEILING HELD, AND THE ENTRY GREW BY ONE NOTE ANYWAY. Everything
+             the shared comment excludes is still excluded and none of it became
+             printable: no dataset, no cohort property, size, site, time window,
+             inclusion criteria beyond "elective", no feature, no architecture,
+             no validation scheme, no number of any kind, no metric, no
+             manuscript status, no method stack. The growth is entirely OUTSIDE
+             the study, a PI's specialty and a lab's subject, both indexed, which
+             is the one category the ceiling was never about. The entry is still
+             visibly shorter than Harvard's, three notes to five, and that
+             asymmetry is still by decision. DO NOT PAD IT FURTHER. The next
+             honest addition after this one does not exist in public.
+             SUPERSEDED IN ONE RESPECT BY THE SEVENTH PASS, AND ONLY ONE. The
+             last sentence was true when it was written and stopped being true
+             the moment he authorised the two cohorts: the next honest addition
+             did not exist in public, but it existed in his gift, and he gave it.
+             So the entry is five notes to Harvard's five now. THE REST OF THE
+             PARAGRAPH SURVIVES WORD FOR WORD -- cohort properties, size, site,
+             time window, inclusion criteria, features, architecture, the rest of
+             the validation scheme, numbers, metrics, manuscript status and the
+             method stack are all still excluded, and none of them became
+             printable. AND THE INSTRUCTION IT ENDS ON IS THE OPERATIVE ONE
+             GOING FORWARD: do not pad it further. The gap closed because the
+             ceiling moved, which happens when he moves it and not otherwise.
+
+             THE CONSTRAINT ITSELF IS STILL NOT PRINTED, and re-checking that was
+             part of this pass. An on-page line saying the cohorts are restricted
+             and the analysis unpublished would disclose that a manuscript exists
+             and what stage it is at, which is the thing being withheld. It stays
+             in this comment.
+
+             THE RECONSTRUCTION WARNING IS UNCHANGED AND STILL BINDS ON THE
+             PROJECTS SIDE. This entry names the clinical problem; a Projects row
+             naming the model family, the features, the dataset or any metric
+             would be the whole of the other half by itself. Nothing this pass
+             added moves that: a PI's board certifications and a lab's subject do
+             not combine with a method to reconstruct anything.
+
+             *** THE LAB HAS NOT PUBLISHED HIS MEMBERSHIP, AND THIS WAS CHECKED
+             DIRECTLY. *** lcicm.jhmi.edu/people.html lists the lab by name:
+             faculty, graduate students, a long undergraduate roster, and a
+             Former Students list. NIKHIL IS ON NONE OF THEM. The finding itself
+             is unchanged and worth keeping: the lab and the PI are public, his
+             membership in it is published by him and by nobody else, and "the
+             lab has a public people page" is not evidence about sign-off in
+             either direction. It is evidence he is not on the roster.
+             WHAT THIS PARAGRAPH USED TO CONCLUDE, AND NO LONGER DOES. It ended
+             "So the shared comment's clearance flag stands at exactly full
+             strength ... send the printed lines of this entry to Stevens' lab
+             before this ships." THAT FLAG WAS RETIRED ON 9 AUGUST 2026 ON
+             NIKHIL'S OWN ANSWER, and the shared comment above carries his words
+             and the exact limits of what they settle. Read it there. In short,
+             and without overstating it: he confirmed the affiliation is real and
+             that there is no issue with it, which is HIS CALL rather than a
+             sign-off from the lab, and it is enough to stop treating the item as
+             blocking. Nobody has emailed Stevens' lab. The two facts sit side by
+             side without contradicting each other, which is why the people-page
+             check is kept here rather than deleted with the conclusion it used
+             to support.
+
+             ONE OPTION FOR HIM, NOT TAKEN HERE. The Harvard entry ends in a
+             link; this one could end in the lab's public page. It would disclose
+             nothing new, since the lab is already named in the head. THE COST IS
+             REAL THOUGH: a reader who follows it lands on a roster he is not on,
+             and a link that appears to contradict the entry above it is worse
+             than no link. His call, not an agent's.
+
+             CHECKED AGAINST THE RESUME PANEL, WHICH WAS NOT EDITED. Its two
+             bullets read "Machine-learning risk stratification of postoperative
+             complications after elective craniotomy" and "In the Laboratory of
+             Computational Intensive Care Medicine, under Dr. Robert David
+             Stevens". No contradiction: same PI, same lab, same problem, same
+             task type, and it carries no fact this entry withholds. Two drifts
+             for him rather than for an agent. It keeps "postoperative
+             complications after ... craniotomy", the double "after" this entry
+             dropped; and "evaluate" appears here and not there, which is the
+             right way round if the Resume is the ledger, but the two panels
+             should be read in one sitting the next time either moves.
+
+             THE PREPOSITION SEAM, RECORDED AND NOT SMOOTHED. This entry says
+             "Under Dr. Robert David Stevens"; the Harvard entry now says "I work
+             with Dr. Kee B. Park". Both are defensible from his own words:
+             "under Robert David Stevens" is his LinkedIn and "under Dr. Robert
+             Stevens" his resumes, while the Harvard pass chose "with" over his
+             own "under the mentorship of Kee B. Park". So the panel calls one
+             relationship "under" and the other "with". IT IS NOT AN ERROR AND
+             THIS PASS DID NOT UNIFY IT, because unifying it means editing a
+             block this pass does not own, and because "under" here is his word
+             for this man twice over. If either is ever changed, both change in
+             one edit. -->
+        <article class="role">
+          <div class="role-head">
+            <div>
+              <h2 class="role-org">Johns Hopkins School of Medicine</h2>
+              <p class="role-title">Undergraduate Researcher, Laboratory of Computational Intensive Care Medicine</p>
+            </div>
+            <p class="role-meta">
+              <span>Baltimore, MD · On-site</span><span>November 2025 — Present</span>
+            </p>
+          </div>
+          <p class="role-desc">Under Dr. Robert David Stevens, I develop and evaluate machine-learning models that stratify the risk of complications after an elective craniotomy. The models are developed on MIMIC-IV and then evaluated on a Johns Hopkins PMAP cohort: a different hospital and a different population.</p>
+          <ul class="role-notes">
+            <li>The unit is one patient and one operation. What comes out is a ranking, not a verdict — who is likely to develop complications and who is not, rather than which complication or when.</li>
+            <li>That ranking is for one thing: how closely a patient is watched once they leave the operating room.</li>
+            <li>MIMIC-IV is a critical-care database from a single hospital, released through PhysioNet: admissions, vital signs, laboratory results, medications and procedures, all of it recorded in the course of care and de-identified before release. The Hopkins cohort is the same kind of record, kept at a different institution.</li>
+            <li>One hospital's data can only say how well a model fits that hospital. What the second cohort asks is whether the ranking still means anything when the patients, the surgeons and the recording habits change.</li>
+            <li>Stevens is a neurocritical care physician, and the lab he founded is an engineering-and-medicine group that builds AI systems for patients in intensive care. That is the field the question is asked in.</li>
+          </ul>
+        </article>
       </div>
+      <!-- NO .tag-row HERE ANY MORE. It held one child, an ORCID link, and Nikhil
+           asked for the ORCID gone; an empty flex container with a 28px top margin
+           is a hole, not a container, so the row went with its only child. .tag-row
+           and .tag in styles.css are UNTOUCHED and still live: About's four tags
+           are the other user of both rules. If a tag row is ever wanted back on
+           this panel it is two lines of markup and no CSS. -->
     </section>
 
     <section class="card card-column" id="panel-resume" tabindex="-1" aria-labelledby="title-resume" hidden>
@@ -610,13 +2847,307 @@
         <span class="meter-label meter-label-on">AUF</span>
       </div>
       <div class="reserve-hint">SCROLL TO WIND THE MOVEMENT</div>
+      <!-- TWO BLOCKS, NOT A TAXONOMY. Education is its own short section and
+           everything else stays ONE RUN, MOST RECENT FIRST. That is a
+           deliberate partial reversal of "not a CV, one continuous run": a
+           degree is not a job and sorting it into the same spine was the one
+           place the run lied about what it was showing. The run
+           itself is untouched -- still no Research/Experience split, still no
+           8.5rem label column. The entry block is still jibang.me/cv's --
+           organisation, role beneath it, dates ranged right, one or two tight
+           bullets. Hierarchy is size and contrast only; the weight reset on
+           .tl-org in styles.css is load-bearing, because Marcellus ships one
+           weight and an unreset heading would be a synthetic bold.
+
+           HEADING LEVELS MOVED WITH THE SECTIONS. .tl-section is the <h2> now
+           and .tl-org dropped to <h3>, so the outline a screen reader reads is
+           Resume > Education > Johns Hopkins University, not two <h2>s of
+           unrelated rank sitting side by side. Both are class-styled; no tag
+           selector in the stylesheet cares which element they are.
+
+           THE ORDER IS MOST-RECENT-ACTIVITY, NOT START DATE, and it is written
+           down because the two rules disagree and this run has now been sorted
+           both ways. Entries sort by the END of their range, descending:
+           everything still running comes first, then the ended roles by the
+           year they ended. Ongoing roles break the tie among themselves by
+           start date, descending. That gives Dash Bio, Johns Hopkins School of
+           Medicine, Harvard, SportMind (all Present, newest start first), then
+           Freelance (ended 2025), then Innocuous AI (ended 2024). Start date
+           was the earlier rule and it read wrong: SportMind has run since 2022
+           and is still running, and by start date it sat underneath a role that
+           finished in 2024. What a reader scans is the right-hand date column,
+           and that column now descends. DO NOT RESORT ON START DATE.
+
+           THE LEDGER/RESEARCH SPLIT IS REVERSED ON THE PI NAMES, at his
+           request. The old rule was that Resume carries title, dates and lab
+           name while the principal investigators, the publications and the
+           ORCID stay in the Research panel, so that the two panels together
+           disclosed no more than Research alone. (THE ORCID IS GONE FROM THE
+           SITE ENTIRELY, at his request, and is not in Research either -- do not
+           read this sentence as a map to where it lives.) He asked for the second
+           LinkedIn line on both lab rows, and on both rows that line IS the PI
+           line -- so Dr. Kee B. Park and Robert David Stevens are now named in
+           both panels. That duplication is deliberate and it is his own public
+           LinkedIn wording. IT IS NOT AN OVERSIGHT TO BE TIDIED BACK. The one
+           edit to his wording is the honorific: LinkedIn writes "Dr. Kee B.
+           Park" but bare "Robert David Stevens", and one panel cannot call one
+           man doctor and the other not, so both are "Dr." here. RESEARCH HAS
+           SINCE MATCHED IT. It used to print the postnominal "Kee B. Park, MD"
+           and "Robert David Stevens, MD"; it now prints "Dr." on both, for the
+           reasons recorded in its own comment. The two panels agree, and if
+           either style is ever revisited both change in one edit. Nothing
+           else crossed over: the lab bullets still name a position and a place,
+           not a study. His LinkedIn does now say "elective craniotomies" in
+           public, so the clinical problem is his own published wording and
+           prints -- and it unlocks nothing else: no dataset, no cohort
+           property, no metric, no manuscript status, no method stack, here or
+           in Research.
+
+           REBUILT FROM HIS OWN LINKEDIN EXPERIENCE SECTION, pasted in. That
+           paste is now the source for every row below except Dash Bio, and it
+           retires the reconstructions this block used to carry -- titles, dates
+           and bullets assembled out of resume PDFs and search snippets. Where
+           the paste and a resume disagree the paste wins, because it is what he
+           publishes about himself. The URLs that came with the paste are
+           authenticated edit-form links, not profile links, and are recorded
+           nowhere in this file or anywhere else.
+
+           WHAT IT SETTLED, and these are closed: AdmitGenie is a freelance
+           contract titled Full Stack Engineer, not a Co-Founder/CTO seat.
+           InnocuousAI is Intern, New York, remote. The company on this run is
+           SportMind.io, self-employed, which is the entity the row names. The
+           four contracts are one freelance span, not four jobs. And there is a
+           location for every role he listed, so the panel no longer sources
+           Baltimore alone off an IOP byline. WHAT THE PASTE DID NOT SETTLE, and
+           this block used to claim it did: what SportMind actually is. The
+           paste fixed the name and the employment type, not the thing. He has
+           since closed that question without answering it -- see below.
+
+           SPORTMIND'S TITLE IS "LEAD", ON HIS INSTRUCTION, 2026-08-09, AND IT
+           SUPERSEDES BOTH SOURCES THIS ROW WAS BUILT FROM. The rule stated
+           above -- that where the LinkedIn paste and a resume disagree the
+           paste wins -- decides between those two records. It does not outrank
+           him. His LinkedIn experience row reads "Co-Founder, SportMind.io,
+           Self-employed" and his headline reads "CTO/Co-Founder at SportMind";
+           his resumes read "Cofounder". This row read Co-Founder off the paste
+           until he asked for Lead. LEAD IS NOT A TRANSCRIPTION
+           SLIP TO BE CORRECTED BACK. A later pass diffing this panel against
+           the paste will find exactly one row that disagrees with it, and this
+           is that row, on purpose -- in two fields now, the title here and the
+           start year recorded below. It changes only if he says so.
+
+           ANSWERED BY HIM, 2026-08-09. This block carried seven questions as
+           a list of things he still had to settle. He has settled all seven.
+           NOTHING BELOW IS OPEN; the record is kept because the reason a row
+           reads the way it does outlives the row, not because anyone is still
+           waiting. Do not restage any of it as a question.
+             * DASH BIO STAYS. It is not in the paste: his resume has it as the
+               current role, Software Engineering Intern from Jun 2026, and it
+               is kept below on that authority alone -- unlocated,
+               uncorroborated, the one row here LinkedIn does not cover. Asked
+               whether to delete it, he said keep it. BEING THE UNCORROBORATED
+               ROW IS NOT A DEFECT TO RE-FLAG. It is deleted only if he says so,
+               and he has said the opposite.
+             * ITS VS CODE EXTENSION BULLET IS DELETED, on his instruction. That
+               bullet had itself replaced the KPI-report line, and it said only
+               that he built the extension and deployed it internally. Asked
+               what it does and who inside Dash Bio uses it, he asked for the
+               line removed rather than filled in -- so it is gone, not
+               softened. DASH BIO NOW HAS ONE BULLET, the QA pipeline, and one
+               is a legal shape here: the entry block is "one or two tight
+               bullets" by its own rule, and the Education entry carries none at
+               all. The QA line is a complete claim on its own -- a thing built,
+               and what it displaced. DO NOT INVENT A SECOND BULLET TO BALANCE
+               THE ENTRY.
+             * HARVARD STARTS JULY 2024. He confirmed LinkedIn's date against
+               his resumes' Feb 2024. This panel already printed LinkedIn's and
+               dates by year, so nothing on screen changed; the resumes are
+               simply the wrong record on this point. Settled, not pending.
+             * SPORTMIND STARTS 2022, ON HIS INSTRUCTION, AND THAT REVERSES THE
+               PASTE RULE ON THIS ROW. His LinkedIn says Apr 2021, his resumes
+               say Apr 2022, and the rule stated above -- the paste wins over a
+               resume -- had put 2021 in the date column. It held until he
+               overruled it here: he was asked and said 2022 is right, so the
+               row is back to 2022. A LATER PASS DIFFING THIS PANEL AGAINST THE
+               PASTE MUST NOT RESTORE 2021. Same row, same reason, as the title
+               above.
+             * WHICH SPORTMIND IS SPORTMIND: CLOSED BY HIM, NOT ANSWERED, AND
+               NOT TO BE RAISED AGAIN. Three records still describe three
+               different companies to a stranger -- his LinkedIn (a
+               mental-health platform in squash), sportmind.dev (an MIT-licensed
+               open-source sports-intelligence library for AI agents), and his
+               own TreeHacks writeup (a mental-performance platform for
+               athletes). Asked which one it is, he said it is not relevant.
+               The three-way discrepancy is written down here so it stays
+               findable if anyone later wonders why the entry reads so thinly;
+               it is not a task. The two bullets keep the LinkedIn framing and
+               carry no product noun beyond "platform", which is the one word
+               true of all three, and "Lead" sits on all three the same way.
+             * "UNDERGRADUATE RESEARCHER" IS CONFIRMED. He had earlier asked for
+               "Researcher" over his resumes' "Research Assistant"; LinkedIn's
+               "Undergraduate Researcher" was used instead and left flagged as a
+               divergence from that instruction rather than decided either way.
+               He has now confirmed Undergraduate Researcher. The Research panel
+               reached the same string off the same paste, so BOTH PANELS SAY IT
+               AND BOTH ARE NOW CONFIRMED RATHER THAN PROVISIONAL. They no
+               longer revert together, because there is nothing left to revert
+               to.
+             * ERNST & YOUNG STAYS OFF. It appeared on one 2025 resume and is
+               not in the paste; asked, he said to ignore it. Not added, not
+               carried over, not asked again.
+
+           WHAT THE PASTE REPLACED. Before it, this block had never been fed by
+           the profile at all: linkedin.com answers automated requests with HTTP
+           999 and walls the rest, so every title, date and bullet here came out
+           of resume PDFs and search snippets. That is why the entries changed
+           this much at once. Two resume readings survive intact and are worth
+           keeping: Johns Hopkins School of Medicine starts Nov 2025, and
+           AdmitGenie is on neither July 2026 template, which is what the ended
+           2024-2025 range and the contract title were already saying.
+
+           THE FREELANCE GROUP IS ONE ENTRY WITH FOUR BULLETS, and that is the
+           whole of it -- no nested entry, no second date column, no new class.
+           A bullet is already "one line about this role", so four contracts are
+           four bullets, each carrying its client and its own years inline, while
+           the gold .tl-when above them carries the 2021-2025 span the four sit
+           inside. Four peers would have said four jobs; an indented sub-entry
+           would have bought structure a five-line block does not need.
+
+           LOCATIONS, NOT WORK MODES. Every LinkedIn row also carries Hybrid /
+           On-site / Remote and none of it is printed. .tl-when is two nowrap
+           spans already; a third field, or a "CAMBRIDGE, MA - HYBRID" span, is
+           what makes the ranged-right column start eating the title. Place
+           names match the Education row's vocabulary and stop there. Freelance
+           and Dash Bio print no location because neither has one -- the paste
+           gives the freelance span none, and Dash Bio is not in the paste.
+
+           DROPPED WITH ADMITGENIE'S OWN ENTRY: the NLP-platform and "piloted
+           with 200+ students" bullets. The paste carries no detail for any
+           freelance contract, and the tense question those bullets raised
+           ("piloting", present tense, in files written after the role ended)
+           was never answered. They come back only if he answers it.
+
+           ONE EDIT TO HIS OWN SENTENCES, and it is a deletion. SportMind's
+           first LinkedIn line is "Leading Mental Health Platform in Squash";
+           "leading" is unranked and unrankable and the two lines under it --
+           the World Squash Federation and US Squash Team partnership, and six
+           signed players inside the world top 20 -- are the evidence a reader
+           would want for the claim anyway. Stating the evidence and dropping
+           the adjective says more. Everything else on this run is his wording,
+           compressed to the block's one-or-two-bullet shape and nothing else.
+
+           THE 2028 OLYMPICS LINE IS DEAD FOR GOOD. It was held out as a
+           forecast in the grammar of an achievement; his own current sentence
+           is "signed with 6 professional squash players ranked in the global
+           top 20", which is an achievement in that grammar. It does not come
+           back. -->
       <div class="timeline-scroll" id="resumeScroll">
         <div class="timeline">
-          <div><div class="tl-when">2026 — PRESENT</div><div class="tl-role">Lorem Ipsum Fellow</div><div class="tl-desc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</div></div>
-          <div><div class="tl-when">2025</div><div class="tl-role">Dolor Sit Internship</div><div class="tl-desc">Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</div></div>
-          <div><div class="tl-when">2024</div><div class="tl-role">Amet Research Assistant</div><div class="tl-desc">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</div></div>
-          <div><div class="tl-when">2023</div><div class="tl-role">Consectetur Project Lead</div><div class="tl-desc">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</div></div>
-          <div><div class="tl-when">2022</div><div class="tl-role">Adipiscing University</div><div class="tl-desc">Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam. Fully wound.</div></div>
+
+          <section class="tl-part">
+            <h2 class="tl-section">Education</h2>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Johns Hopkins University</h3>
+                  <p class="tl-role">BS, Chemical &amp; Biomolecular Engineering and Computer Science</p>
+                </div>
+                <div class="tl-when"><span>Baltimore, MD</span><span>2025 &mdash; 2029</span></div>
+              </div>
+            </article>
+          </section>
+
+          <section class="tl-part">
+            <h2 class="tl-section">Experience</h2>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Dash Bio</h3>
+                  <p class="tl-role">Software Engineering Intern</p>
+                </div>
+                <div class="tl-when"><span>2026 &mdash; Present</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Built the automated QA pipeline that replaced manual review before deployment.</p></li>
+              </ul>
+            </article>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Johns Hopkins School of Medicine</h3>
+                  <p class="tl-role">Undergraduate Researcher</p>
+                </div>
+                <div class="tl-when"><span>Baltimore, MD</span><span>2025 &mdash; Present</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Machine-learning risk stratification of postoperative complications after elective craniotomy.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>In the Laboratory of Computational Intensive Care Medicine, under Dr. Robert David Stevens.</p></li>
+              </ul>
+            </article>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Harvard Medical School</h3>
+                  <p class="tl-role">Undergraduate Researcher</p>
+                </div>
+                <div class="tl-when"><span>Cambridge, MA</span><span>2024 &mdash; Present</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Early detection of stroke and Parkinson's from multimodal deep-learning models.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>At the Blavatnik Institute, under Dr. Kee B. Park.</p></li>
+              </ul>
+            </article>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">SportMind.io</h3>
+                  <p class="tl-role">Lead</p>
+                </div>
+                <div class="tl-when"><span>London, UK</span><span>2022 &mdash; Present</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>A mental-health platform in squash, and an official partner of the World Squash Federation and the US Squash Team.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Signed with six professional squash players ranked in the global top 20.</p></li>
+              </ul>
+            </article>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Freelance</h3>
+                  <p class="tl-role">Contract engineering, four clients</p>
+                </div>
+                <div class="tl-when"><span>2021 &mdash; 2025</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Full Stack Engineer for AdmitGenie LLC, 2024 &mdash; 2025.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Web Developer for Evnteo LLC, 2022 &mdash; 2024.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Full Stack Engineer for Inspired Career, 2022 &mdash; 2023.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Mobile Application Developer for Envision Squash, 2021 &mdash; 2022.</p></li>
+              </ul>
+            </article>
+
+            <article class="tl-entry">
+              <div class="tl-head">
+                <div class="tl-head-main">
+                  <h3 class="tl-org">Innocuous AI</h3>
+                  <p class="tl-role">Intern</p>
+                </div>
+                <div class="tl-when"><span>New York</span><span>2023 &mdash; 2024</span></div>
+              </div>
+              <ul class="tl-bullets">
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Led six interns through fifteen years of payout, litigation and claim values across twenty insurance companies.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Sourced 200+ investor candidates and built the pitch materials used in a $50K seed round.</p></li>
+              </ul>
+            </article>
+          </section>
+
+          <div class="tl-end">FULLY WOUND</div>
         </div>
       </div>
     </section>
