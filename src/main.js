@@ -245,6 +245,68 @@ const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 //
 const NARROW = matchMedia('(max-width: 1199px)');
 
+// THE GATE'S SECOND LOCK.
+// Him, 10 Aug 2026: "stop mobile view or a rly thin browser dimension so the
+// layout doesnt get messed up. It should tell the user to view on desktop".
+//
+// Him, 11 Aug 2026, verbatim, and this is the trigger that ships: "Forget about
+// browser size. Only fail on a mobile device". No width, no height, no aspect
+// ratio: a desktop window is never gated at any shape. The size and aspect
+// derivations are kept in THE GATE in styles.css as history -- abandoned by his
+// decision, not found wrong -- and they drive nothing, here or there.
+//
+// Him again, 11 Aug 2026, verbatim: "prevent the mobile viewing". THIS BLOCK IS
+// A RESTORATION. It was written and verified earlier the same day and was then
+// lost in a revert aimed at a separate round of aspect-ratio experiments he had
+// rejected -- one of which briefly gave NARROW above a second, ratio-based arm
+// at 1.45 and flipped the rail to a top bar on his square monitor. NARROW is
+// width-only and stays width-only; the gate below is the only thing restored.
+//
+// The gate itself is CSS and is NOT here: THE GATE in styles.css swaps .stage
+// for the message with `display: none` when the primary pointer is a fingertip
+// that cannot hover, which cannot be undone from inside the subtree and does
+// not wait for this module to parse. This is only the second turn of
+// the key, and it is worth turning for one reason: display:none is a property,
+// and a property is a thing a later hand can override at higher specificity
+// while believing it is un-hiding one element. `inert` is the primitive the
+// rest of this file already uses for exactly this -- el.back.inert on the face
+// of the watch, el.rail.inert during the intro -- and it is inherited and
+// cannot be refused by a descendant. If .stage is ever visible under the gate,
+// it is still not focusable, not clickable and not read.
+//
+// Nothing else is done here. The gate does not need to stop the clock or the
+// rig: both are inside a display:none subtree, where Chrome runs no animation
+// and paints nothing.
+//
+// THE STRING IS THE STYLESHEET'S, CHARACTER FOR CHARACTER. It is the one place
+// the condition is written twice, and it has to be: there is no way to hand a
+// media condition from CSS to script (`(max-width: var(--x))` is returned
+// unparsed by matchMedia and never matches -- verified in Chrome, not assumed).
+// Copy it from THE GATE in styles.css if it ever changes; the two must not be
+// able to disagree about whether the gate is up.
+//
+// AND navigator.userAgentData.mobile IS NOT IN THE CONDITION, deliberately. It
+// is the one honest device boolean -- browser-provided, not a UA string parsed
+// by us -- but it is Chromium-only: Firefox and Safari have no navigator
+// .userAgentData at all, so a gate that consulted it would behave differently
+// in three browsers on the same phone. Worse, if it were OR'd or AND'd in here
+// it could put .stage inert while CSS left it visible, or the reverse, and a
+// gate whose two locks disagree is not a gate. So CSS IS THE SOURCE OF TRUTH
+// AND THIS LINE ONLY EVER READS IT. The boolean is used for exactly one thing
+// below: it warns, once, if the browser's own claim and the query disagree. It
+// cannot raise or lower the gate. Support is tested before it is read -- the
+// optional chain covers Firefox and Safari, where `mobile` is undefined and the
+// `=== true` comparison is simply false, so nothing warns and the query stands
+// alone. That is the fallback, and it is the normal case in two of three
+// engines.
+const GATED = matchMedia('(pointer: coarse) and (hover: none)');
+const applyGate = () => { document.querySelector('.stage').inert = GATED.matches; };
+GATED.addEventListener('change', applyGate);
+applyGate();
+if (navigator.userAgentData?.mobile === true && !GATED.matches) {
+  console.warn('gate: userAgentData.mobile is true but (pointer: coarse) and (hover: none) does not match; CSS decides, the gate is down');
+}
+
 // GAP_VH is the air left between the bottom of the watch and the top of the
 // card, at each end of the band. Small, because the band is the scarce thing.
 const GAP_VH = 1.6;

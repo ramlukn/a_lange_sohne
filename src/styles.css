@@ -7159,3 +7159,336 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      those -- there is one HTML document -- and docs/SITE-DIRECTION.md 7.1 is
      explicit that real addresses are a later phase, to be paid for only when a
      single piece of writing deserves its own preview card. */
+
+/* ===================== THE GATE =====================
+   HIM, 10 AUG 2026, VERBATIM: "stop mobile view or a rly thin browser dimension
+   so the layout doesnt get messed up. It should tell the user to view on
+   desktop"
+
+   HIM AGAIN, 10 AUG 2026, VERBATIM: "Dont do the gate based on px, but instead
+   aspect. So when its thin it fails"
+
+   HIM, 11 AUG 2026, VERBATIM, AND THIS ONE SUPERSEDES BOTH OF THE ABOVE:
+   "Forget about browser size. Only fail on a mobile device"
+
+   HIM, 11 AUG 2026, VERBATIM, AND THIS IS WHY THE BLOCK IS HERE TWICE:
+   "prevent the mobile viewing". THIS IS A RESTORATION, NOT A NEW DESIGN. The
+   device gate below was written, verified and good earlier on 11 Aug 2026, and
+   was then lost in a wholesale revert that was aimed at something else -- a
+   round of size and aspect-ratio experiments he had rejected the same day,
+   after ratio-based terms at 1.45 flipped the nav rail to a top bar on his
+   square monitor. The gate went out with them by accident. It is put back here
+   unchanged. THE ASPECT TERMS ARE NOT PUT BACK, anywhere, ever: the rail,
+   .overlay and the :root/.card tiers in NARROW SCREENS are width-only and stay
+   width-only, and no media query outside this block gains a term.
+
+   SO THE GATE IS A DEVICE TEST AND NO LONGER A LAYOUT TEST. Every size- and
+   shape-based term is gone from it: no width, no height, no aspect ratio. A
+   desktop browser window is never gated, whatever shape it is dragged into. The
+   one condition is `(pointer: coarse) and (hover: none)` -- the primary input is
+   touch and cannot hover -- which is phones and tablets and nothing else.
+
+   BOTH ARMS ARE LOAD-BEARING, and neither works alone:
+     - `(pointer: coarse)` alone matches a touch-capable desktop, whose screen
+       accepts a fingertip. That machine renders this site perfectly.
+     - `(hover: none)` alone is the weaker half of the same statement and is
+       reported inconsistently by desktop browsers under emulation.
+   Together they describe the PRIMARY pointer, which is what the spec defines
+   these to be about. A touch laptop and a Surface report `fine`/`hover` for
+   their trackpad and pass; an iPhone and an iPad report `coarse`/`none` and are
+   gated. This is the standard test, not a heuristic.
+
+   NOT THE USER AGENT STRING. The one device signal that is not sniffing is
+   `navigator.userAgentData.mobile`, a browser-provided boolean -- and it is used
+   only as corroboration for the JS lock, never as an independent trigger; see
+   THE GATE'S SECOND LOCK in main.js for why it can only ever agree with the
+   query below and not disagree with it.
+
+   ABANDONED BY HIS DECISION, NOT FOUND WRONG. Everything below this line is the
+   size and shape work, kept intact because the measurements are true and still
+   explain how this layout behaves. NONE OF IT TRIGGERS ANYTHING ANY MORE, here
+   or anywhere else in this file. Do not reinstate a gate from these numbers, and
+   do not move them into a media query either: they were retired by the
+   instruction of 11 Aug 2026, not by a fault in the arithmetic, and the one
+   attempt to give 1.45 a second life as a POSE switch was reverted the same day
+   for turning his square monitor's rail into a top bar. The pose is chosen by
+   width alone -- see NARROW SCREENS.
+
+   ---- HISTORY: 1.45 WAS MEASURED, AND WHAT IT MEASURED WAS THE CASE HITTING
+        THE EDGE. It was the gate's trigger from 10 to 11 Aug 2026 and now
+        triggers nothing at all. ----
+   The composition is a round dial BESIDE a sliding panel, which is a demand for
+   width relative to height and not for pixels. In the side-by-side pose the card
+   is a fixed 706px box pinned to the right (`width: min(600px, 92vw)` plus 72px
+   of padding at content-box) while the dial is 86vmin scaled .72 -- so the dial
+   grows with the SHORTER side and the card does not shrink at all. Squeeze the
+   ratio and the dial is pushed left until the case leaves the viewport.
+
+   Swept in real Chrome against this dev server with Field Notes open, bisecting
+   the height at each of four widths. Left edge of .watch-pose, px, positive is
+   clear of the viewport:
+
+     ratio      1280 wide    1400 wide    1920 wide    2560 wide
+     1.50          +14.6        +18.6        +26.5        +35.3
+     1.45           +8.2         +8.9        +12.5        +16.5
+     1.4128         +1.1         +2.1         +2.0         +2.2
+     1.4066         -0.1         -0.4         +0.1         -0.3   <- crossing
+     1.40           -1.4         -1.6         -1.7         -2.8
+     1.30           -32.6 (measured at 1400) ... the case is cut through the IX
+     1.10          -125.4 (measured at 1400) ... and the rail's CONTACT sits on
+                                                  the bright case ring
+
+   ZERO IS AT 1.4075, AND IT IS THE SAME NUMBER AT EVERY SIZE. Across a 2x range
+   of width the crossings land at 1.4066, 1.4085, 1.4077 and 1.4068 -- a spread
+   of .0019. That was the test the 10 Aug brief asked for and it passed: the
+   failure tracked the SHAPE of the window and not how big it was, because both
+   terms of the squeeze are proportional except the card, and the card only sets
+   where the crossing sits, not whether it moves with size.
+
+   SO THE THRESHOLD WAS SET AT 1.45, one round step above the measured crossing,
+   the same way 500 was one round step above 484. What that step bought, in the
+   site's own currency: 8.2px of clearance at 1280 wide, which is THE EYEBROW'S
+   GUTTER's 8.4px to within .2px -- the minimum this file already says it accepts
+   between ink and an edge -- rising to 16.5px at 2560. Below 1.45 the dial is
+   inside its own last acceptable margin and on its way out of the window.
+
+   1.45 AND NOT 1.5: 3:2 is a real screen ratio and gating it would have taken a
+   1440x960 window that is not clipped and is not close to it (+18.6px at 1400
+   wide). 1.45 was the first round step that was honestly on the safe side of a
+   measurement rather than a taste. It is now a number in a comment.
+
+   WHAT IT USED TO PASS AND TURN AWAY, kept because it is the record of what a
+   shape gate costs. A maximised browser on any mainstream display is 1.7 or
+   wider and never saw it. A half-screen split on a 16:9 display is .89 and was
+   gated. A phone in portrait is .46, gated; in landscape 2.16, and it stayed on
+   the site. A tablet in landscape was the honest near-miss: iPad 11" is
+   1194x834 = 1.4317, 3.3px clear of the case and gated by 1.45 with 1.7px to
+   spare. NONE OF THOSE OUTCOMES HOLD ANY MORE -- the split window and the square
+   monitor now get the whole site, in whichever pose their WIDTH selects; the
+   phone is gated in BOTH orientations, because a phone is a phone at 2.16 as
+   much as at .46.
+
+   ---- WHERE THE RATIO WAS NOT THE WHOLE TRUTH, RECORDED RATHER THAN ARGUED ----
+   Two things that trigger did not describe, both measured, both his call. The
+   first is why the ratio was never a complete account of the failure; the
+   second is now an OPEN DEFECT and is restated as one further down:
+
+   1. THE FAILURE IS ONLY RATIO-DRIVEN ABOVE THE RAIL'S 1199px FLIP. Below it the
+      panel stops sitting beside the dial and drops to the bottom (NARROW
+      SCREENS), and measureNarrowPose() then FITS the dial into the band that is
+      left -- so nothing clips at any ratio. Measured with Field Notes open at
+      1000x1000 (1.00), 900x1200 (.75), 700x1400 (.50) and 520x1800 (.29):
+      clipping top, bottom, left and right is 0.0px throughout, and the dial gets
+      BIGGER as the window gets thinner (scale .39 -> .72) until it hits the .72
+      cap around ratio .47, after which the band simply has slack. An aspect-only
+      gate would therefore have taken the whole 500-1199px band at ratios under
+      1.45 -- a 1024x768 monitor at 1.33, for instance -- and that band does not
+      clip. It would have been gated for the shape it is, not for a fault it has.
+
+   2. SMALL BUT WIDE GOT THROUGH even then. 500x220 is ratio 2.27, passed, and
+      measures 33.0px of eyebrow-to-close clearance with no horizontal scroll --
+      tight but intact. It fails below 474.5px of width at ANY ratio. That hole
+      was narrow under the aspect gate; with no size gate at all it is simply the
+      whole of the sub-475px range. See THE 474.5px EYEBROW COLLISION below.
+
+   ---- WHAT 500 WAS, AND WHY IT IS THE OPEN DEFECT NOW ----
+   Swept 1199 -> 320px in real Chrome against this dev server, 812px tall, every
+   panel opened in turn, plus the caseback, the contact drawer and the enlarged
+   screenshot frame. Almost nothing fails. There is no horizontal scroll at any
+   width down to 344; no panel has a descendant that leaves its card at ANY
+   width down to 320 (measured as max(child.right - card.right, card.left -
+   child.left) over every visible element in the open card: 0.0px throughout);
+   the watch never ends up behind the card; the Field Notes tab row stays on one
+   row and never overflows.
+
+   ONE THING FAILS, AND IT FAILS FIRST BY 130px: .card-eyebrow reaching the
+   .card-close control. The eyebrow is a full-width line sitting on the same row
+   as the exit pinned in the card's top-right corner, so as the card narrows the
+   line's right end walks into the button. Longest eyebrow on the site is Field
+   Notes' -- THE MOONPHASE - REFLECTIVE & TIMELESS, 37 characters -- and it is
+   the one that arrives first. Measured clearance from the end of its ink to the
+   button's left edge, fine pointer (a narrow DESKTOP window, which is the worst
+   case: with a coarse pointer THE ONE WAY OUT above swaps the label for a
+   44px block further right and buys about 35px):
+
+     560px   76.8px clear
+     500px   22.9px clear
+     484px    8.4px clear     <- the site's own stated gutter, reached
+     475px    0.0px clear     <- ink touches the control
+     460px  -13.0px           <- the line runs under it
+
+   0.8975px of clearance per px of viewport, so zero is at 474.5px. The 8.4 is
+   not a taste: THE EYEBROW'S GUTTER above derives it as the minimum this site
+   accepts between this line and this button, "because text touching a hit
+   target reads as text under it". By that standard the layout stops holding at
+   484px. The other four panels follow it down -- Resume and Research at 440,
+   About and Projects at 382 -- and the known 375px collision the phone tier
+   already carries is the tail of the same failure, not a separate one.
+
+   That put the gate at 500 for one day, one round step above the site's own
+   last good width, leaving 22.9px of measured clearance.
+
+   THE 474.5px EYEBROW COLLISION IS A KNOWN OPEN DEFECT, 11 Aug 2026, AND A
+   DEVICE GATE DOES NOT COVER IT. It was closed by the px gate, half-open under
+   the aspect gate, and is now fully open: NOTHING gates a desktop window by
+   size, so a reader who drags one below about 475px wide sees the Field Notes
+   eyebrow run under the .card-close control -- zero clearance at 474.5px against
+   this file's own stated 8.4px gutter, and at 460px the line is 13.0px beneath
+   the button. It is a real fault, it is reachable from a real desktop browser,
+   and it is deliberately NOT fixed here: A WIDTH FLOOR IS NOT THE FIX, because
+   he rejected size-based gating outright. Two fixes exist and neither has been
+   taken because neither was asked for: shorten the eyebrow copy so the longest
+   line (37 characters) clears the button at 375px, or reserve the corner --
+   give .card-eyebrow a right padding equal to the control's width plus the
+   8.4px gutter, so the line wraps or truncates instead of walking into it. The
+   second is the general fix and survives new eyebrows; the first is cheaper and
+   has to be re-measured every time a panel is retitled. If the eyebrows are ever
+   shortened or the exit moves, the 474.5 is re-measured from the Field Notes
+   eyebrow.
+
+   ---- THE 1199px AND 760px TIERS ARE LIVE CODE. THIS RECORD WAS INVERTED ----
+   Until 11 Aug 2026 this block said those tiers were unreachable below the gate
+   and warned against deleting them anyway. THAT IS NOW BACKWARDS AND THE
+   CORRECTION MATTERS: with no size gate at all, NARROW SCREENS' 1199px block
+   and its 760px block are on the ordinary desktop path. Any window narrow enough
+   to match them matches them, and it is served -- 1000x700, 700x400, a
+   half-screen split, a portrait-shaped window, all of them now render the site
+   through those tiers rather than being turned away.  They are working code with
+   live traffic, not a dormant record.
+
+   Two consequences, both verified rather than assumed:
+
+     - PORTRAIT DESKTOP WINDOWS RUN THE FULL STACK. The rail row's
+       `word-spacing: -4px` and its 10px/1px tier (THE ROW IS ITS OWN
+       DERIVATION), the 375px project-row sizes, #panel-projects' 34px eyebrow
+       gutter, the 390px floor and --sheet-vh's stacked pose are all reachable in
+       a desktop browser and are the reason a 500x900 window is not a mess. They
+       were measured on a phone; they now earn their place on the desktop.
+     - THE LEGIBILITY BLOCK'S `(max-height: 640px)` CLAUSE IS UNTOUCHED and gets
+       more traffic still: a short wide window is now never gated by anything.
+
+   NONE OF IT IS DELETED and none of it should be, and the reason is no longer
+   "it is history worth keeping" -- it is that the site would break without it.
+
+   ---- SHAPE IS NOT THE TRIGGER, AND WHY THE OLD ARGUMENT AGAINST POINTER FELL
+        RATHER THAN WAS REFUTED ----
+   The 10 Aug reasoning against `(pointer: coarse)` was that a touch laptop
+   renders this site perfectly and would be shut out, while a 400px desktop
+   window has the fault being gated. Half of that still stands and is why the
+   query is `(pointer: coarse) and (hover: none)` and not the bare pointer test:
+   the touch laptop's PRIMARY pointer is its trackpad, `fine`/`hover`, so it
+   passes. The other half -- the 400px desktop window -- was answered by his
+   instruction and not by a measurement: he was told the eyebrow collides there
+   and said forget about browser size. It is recorded above as an open defect
+   instead of being gated.
+
+   ---- display: none, AND WHY IT IS NOT AN OPAQUE BOX ON TOP ----
+   The requirement is that nothing behind the gate is reachable -- not paintable
+   over, but out of the tab order and out of the accessibility tree. Three
+   candidates, and only one of them holds:
+
+     an opaque .gate over a live .stage   every control behind it is still a tab
+                                          stop and still read out; the reader
+                                          simply cannot see what it is talking
+                                          about. Not a gate, a curtain.
+     visibility: hidden on .stage         removes it from both trees, and a
+                                          DESCENDANT CAN UNDO IT. This file has
+                                          one that does: .copy-mark.is-on sets
+                                          `visibility: visible`, so the copy
+                                          confirmation would come back to life
+                                          inside a hidden stage.
+     display: none on .stage              cannot be undone from inside the
+                                          subtree at any specificity. Nothing in
+                                          it lays out, paints, focuses or is
+                                          announced.
+
+   So the gate is a swap and not a cover: .stage goes, .gate arrives. `inert` on
+   .stage in main.js -- see THE GATE'S SECOND LOCK there -- is the second turn of
+   the same key and is deliberately NOT the first: it is JavaScript, and a gate
+   that needs a module to load is a gate that can be raced by a slow bundle or
+   skipped entirely. Everything here works with scripting off.
+
+   ---- IT NO LONGER MOVES UNDER A RESIZE, AND THAT IS THE POINT ----
+   A media query still, so nothing is one-shot at load: pointer and hover are
+   live media features and a device that changes its primary input -- a tablet
+   docked to a keyboard and trackpad -- swaps at style recalc with no reload.
+   But resizing a desktop window no longer crosses this query on either axis,
+   which is exactly what he asked for. What DOES change on resize is the pose,
+   and that is NARROW SCREENS' job now. */
+.gate { display: none; }
+
+/* THE ONE CONDITION. It is restated once, in THE GATE'S SECOND LOCK in main.js,
+   which needs the identical string for matchMedia -- CSS has no way to hand a
+   media condition to script, and `(max-width: var(--x))` does not resolve
+   (verified in Chrome: matchMedia returns the text unparsed and never matches).
+   If it changes, it changes in those two places and nowhere else, and CSS is
+   the source of truth: main.js copies this string and corroborates it, it does
+   not decide anything on its own. */
+@media (pointer: coarse) and (hover: none) {
+  /* `and`, not a comma. A comma is a union and would gate every touch-capable
+     desktop on the coarse arm alone; the conjunction is the statement that the
+     PRIMARY pointer is a fingertip. Both are Media Queries Level 4 interaction
+     features, supported everywhere this site runs, and a browser
+     that knows neither reports `none`/`hover` for pointer/hover and passes --
+     the safe default, since an unknown agent is far likelier to be a desktop
+     than a phone. */
+  .stage { display: none; }
+
+  .gate {
+    display: flex;
+    /* Fixed rather than a 100vh block: the gate must not be scrollable away,
+       and .stage's own `min-height: 100vh` is gone with it. */
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* 10px between the two lines, against 15.7px of leading inside each: the
+       pair reads as one stamp with a break in it rather than as two sentences.
+       Same relation the loader has between its name and its sub. */
+    gap: 10px;
+    padding: 0 24px;
+    /* The last stop of .stage's radial, which is what fills the corners of the
+       page the gate is replacing. The page does not change colour when the
+       watch goes -- it just empties. */
+    background: #030509;
+    text-align: center;
+
+    /* THE MESSAGE HAS ITS OWN FLOOR, AND 320 IS NOT IT. At 320px -- the
+       narrowest viewport anyone still ships -- the 24px padding leaves 272px of
+       measure, and line one sets in two lines of 19 and 18 characters there,
+       which is a shape and not a shred. Below about 280 it would start breaking
+       words. min-width holds the page at 272px of measure and lets the viewport
+       scroll under it instead, because a message about the window being too
+       narrow must not itself be the thing that falls apart in a narrow window. */
+    min-width: 272px;
+    box-sizing: border-box;
+  }
+
+  /* Mono, uppercase, tracked: the caption's voice and the loader's, which is the
+     only register this site uses to speak to the reader in its own person. 11px
+     is one step above the 10px floor `legibility floor` sets for chrome type,
+     and it is a step this line can afford -- it is the only type on the screen
+     and has no watch to sit against. */
+  .gate-line,
+  .gate-sub {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    line-height: 1.43;
+    text-transform: uppercase;
+    /* Only line one ever wraps, and only at 360px and below, where its 317.6px
+       of ink no longer fits the 312px of measure. Left to greedy wrapping it
+       breaks 31 + 6 and strands SCREEN alone on line two; balanced it breaks
+       20 + 17, measured at 320. Ignored by browsers that do not have it, which
+       costs the greedy break and nothing else. */
+    text-wrap: balance;
+  }
+  /* Measured against the painted background at 320px: --ivory on #030509 is
+     17.66:1. The instruction is the quieter of the two at --muted, 6.63:1,
+     which clears AA for body text with room over -- the site is dark and this
+     line still has to be readable at arm's length on a phone. */
+  .gate-line { color: var(--ivory); }
+  .gate-sub { color: var(--muted); }
+}

@@ -5752,12 +5752,29 @@
                that he built the extension and deployed it internally. Asked
                what it does and who inside Dash Bio uses it, he asked for the
                line removed rather than filled in -- so it is gone, not
-               softened. DASH BIO NOW HAS ONE BULLET, the QA pipeline, and one
-               is a legal shape here: the entry block is "one or two tight
+               softened. DASH BIO THEN HAD ONE BULLET, the QA pipeline, and one
+               was a legal shape here: the entry block is "one or two tight
                bullets" by its own rule, and the Education entry carries none at
                all. The QA line is a complete claim on its own -- a thing built,
                and what it displaced. DO NOT INVENT A SECOND BULLET TO BALANCE
                THE ENTRY.
+               IT HAS TWO NOW, AND THAT BAN IS INTACT RATHER THAN BROKEN. Nikhil,
+               11 Aug 2026, verbatim: "add in how like i built this pipeline to
+               format and move SRS and E2E tests to github and then to a QA
+               platform along with test results from automated tests". The ban
+               above is on INVENTING a bullet to balance the entry, and this one
+               is not invented -- it is his own account of what the pipeline
+               does, supplied unprompted, and it is the answer to the question
+               the VS Code line was deleted for failing: what does the thing
+               actually do. The ban stands for the next pass; the entry is now
+               at the top of its "one or two" range and a third bullet would be
+               padding again.
+               WHAT IT DOES NOT SAY, ON PURPOSE. The QA platform is not named
+               because he did not name it, and nothing here counts tests, names
+               a repository, or claims a result -- the same reason the row's
+               dates and location stay thin. SRS stands unexpanded: it is the
+               standard term for the document and this site does not gloss terms
+               it uses, which is the rule the Research panel states outright.
              * HARVARD STARTS JULY 2024. He confirmed LinkedIn's date against
                his resumes' Feb 2024. This panel already printed LinkedIn's and
                dates by year, so nothing on screen changed; the resumes are
@@ -5875,6 +5892,7 @@
               </div>
               <ul class="tl-bullets">
                 <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Built the automated QA pipeline that replaced manual review before deployment.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>It formats SRS and end-to-end tests, moves them into GitHub and on to the QA platform, and carries the results of each automated run with them.</p></li>
               </ul>
             </article>
 
@@ -6444,6 +6462,48 @@
       </div>
     </section>
   </div>
+</div>
+
+<!-- ===================== THE GATE =====================
+     HIM, 10 AUG 2026, VERBATIM: "stop mobile view or a rly thin browser
+     dimension so the layout doesnt get messed up. It should tell the user to
+     view on desktop"
+
+     HIM AGAIN, SAME DAY, VERBATIM: "Dont do the gate based on px, but instead
+     aspect. So when its thin it fails"
+
+     HIM, 11 AUG 2026, VERBATIM, AND THIS IS THE TRIGGER THAT SHIPS: "Forget
+     about browser size. Only fail on a mobile device"
+
+     HIM, 11 AUG 2026, VERBATIM: "prevent the mobile viewing". RESTORED, NOT
+     REDESIGNED -- this markup and its stylesheet and script halves were written
+     and verified earlier the same day, then lost in a revert aimed at a
+     separate round of aspect-ratio experiments he had rejected. It is put back
+     as it stood. The aspect terms are not.
+
+     So this replaces the site on a phone or tablet -- primary pointer coarse,
+     cannot hover -- and NEVER on a desktop window, at any width or shape. It is
+     a sibling of .stage rather than a child of it because the rule that raises
+     it is the same rule that takes .stage out of the document -- see THE GATE in
+     src/styles.css for the query, for the size and aspect measurements that are
+     kept there as history and no longer trigger anything, and for why
+     display:none is the primitive and not an opaque box on top.
+
+     IT IS PLAIN MARKUP AND CARRIES NO ROLE. No role="alert" and no aria-live:
+     when the gate is up the gate IS the document -- .stage is display:none, so
+     there is nothing else for a screen reader to reach and nothing to interrupt.
+     An alert would also have fired again on every resize that crossed the old
+     ratio, which is a notification about a layout change rather than a page.
+     That can no longer happen at all: no resize crosses this trigger.
+
+     TWO LINES, AND THE SECOND ONE IS THE INSTRUCTION. The register is the
+     caption's -- "CLICK THE CROWN TO TURN BACK" -- and the loader's two-line
+     shape, name over instruction. It states the constraint and then what to do
+     about it, in that order, and nothing else: there is no way past it, so a
+     third line would be the site apologising. -->
+<div class="gate">
+  <p class="gate-line">THIS SITE IS BUILT FOR A LARGER SCREEN</p>
+  <p class="gate-sub">OPEN IT ON A DESKTOP</p>
 </div>
 
 <script type="module" src="/src/main.js"></script>
