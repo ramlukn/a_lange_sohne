@@ -684,6 +684,47 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   user-select: none;
 }
 
+/* ===================== LETTERING IS NOT COPY =====================
+   "make the dial text and the case text no highlightable with the cursor of
+   cmd a" -- Nikhil, 10 Aug 2026. The printing on this dial and the engraving on
+   the band are marks on an object, not prose. Dragging a cursor across the
+   maker's name and watching it go blue is the same category error as
+   highlighting the Roman numerals would be -- and those are pixels, so they
+   never could. This extends the hygiene .dial-art and .sprite-art already carry
+   two rules above, from the rendered art to the live text left on the watch.
+
+   THE BOUNDARY IS THE WATCH AND ONLY THE WATCH. Panel copy -- Projects,
+   Research, About, Resume, Field Notes, Contact, every entry, date, org name and
+   URL, and the .rail's own words, which are navigation and not engraving --
+   stays selectable, because a reader has a real reason to copy it. Do NOT lift
+   this onto body, .stage, .face-front or a card container to save a selector:
+   on an ancestor it silently takes the panel prose with it.
+
+   IT IS A SELECTION RULE AND NOTHING ELSE. The text stays in the DOM, in the
+   accessibility tree, and findable by find-in-page. Do NOT "tidy" it into
+   aria-hidden or role="presentation" -- that would trade a cosmetic win for
+   making the site's own name invisible to a screen reader. pointer-events: none
+   is the other wrong tool: .date-digit sits inside the .date-window button and
+   .cb-engraved on the live caseback band, and it would take hover and clicks
+   with it.
+
+   WHAT IS LISTED IS ALL THERE IS. Every other piece of lettering on this watch
+   is raster and needs no rule: the numerals, minute tracks and AUF/AB are baked
+   by tools/build-dial-art.py, and on the back N ROSHAN RAMLUKAN, GLASHUETTE,
+   VIERZIG (40) RUBINE and N° 58669 are baked into the caseback overlay art.
+   Do not add selectors for those -- there is no markup to target. */
+.loader-name, .loader-sub,   /* the title card, selectable for its first 1.07s
+                                until loaderGone display:none's the subtree */
+.maker-name, .maker-calibre, /* printed in the wedge at 12 */
+.date-digit,                 /* the outsize date's ink, on the discs */
+.cb-engraved {               /* engraved on the band. SVG <text> needs the
+                                property ON the element -- a rule on an HTML
+                                ancestor does not reliably reach into SVG. */
+  -webkit-user-select: none; /* Safari and iOS still want the prefix, and this
+                                page is read on phones. */
+  user-select: none;
+}
+
 /* The printing sits in the wedge at 12, and its two tightest neighbours set the
    tops below. Above: the dial plate is inset 5.15%, so its edge is the circle
    r 44.85 about (50,50) -- over the ends of the name's ink (x 31.88 / 68.11)
@@ -954,7 +995,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      .moon          (two invariants -- see the comment above that rule)
    plus, outside this file:
      SECTIONS research.origin = the subdial centre      (src/main.js)
-     SECTIONS miscellany.origin = the .moon box centre    (src/main.js)
+     SECTIONS field-notes.origin = the .moon box centre   (src/main.js)
      two .hint-mark shapes -- the seconds circle and the
        moon aperture path -- in .hint-index            (index.html)
    Move the subdial and all five must follow by the same (dx, dy).
@@ -1497,7 +1538,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
                                         frame's own casting
        research   199 ->  426   x1.93   the half of the rim band lying on the
                                         plate; the other half falls off it
-       miscellany   7 ->  282   x36  <- the whole mark. Its aperture is the one
+       field-notes  7 ->  282   x36  <- the whole mark. Its aperture is the one
                                         outline entirely inside the plate.
    The moon now sits with the group it was calibrated into -- 282 against the
    date frame's 281 -- instead of two orders of magnitude below it. Nothing
@@ -1675,8 +1716,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      shipped, with the outline each mark is stroked along:
          about    540   159 units @ .3      projects  281    66 units @ .55
          resume   342    69 units @ .45     research  271    85 units @ .35
-                                            miscellany 282  60 units @ .55
-     Only projects and miscellany are left at .55, and they land on 281 and 282
+                                            field-notes 282 60 units @ .55
+     Only projects and field-notes are left at .55, and they land on 281 and 282
      -- one number, because their outlines are within a tenth of each other at
      66 and 60 units. research is the one that used to break that: at .55 its
      85-unit rim measured 426, which is 1.5x the pair it encircles, and outline
@@ -1922,7 +1963,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .watch-flip[data-hover="projects"] .pulse-mark[data-part="projects"],
   .watch-flip[data-hover="resume"]   .pulse-mark[data-part="resume"],
   .watch-flip[data-hover="research"] .pulse-mark[data-part="research"],
-  .watch-flip[data-hover="miscellany"]    .pulse-mark[data-part="miscellany"],
+  .watch-flip[data-hover="field-notes"] .pulse-mark[data-part="field-notes"],
   .watch-flip[data-hover="crown"]    .pulse-mark[data-part="crown"],
   .watch-flip[data-hover="pusher"]   .pulse-mark[data-part="pusher"] {
     /* The state, declared outright -- there is nothing else to it. */
@@ -2217,23 +2258,66 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    SCREEN, measured in the browser off getBoundingClientRect and converted back
    into the render's 1254px space:
        linkedin  centre (655.5, 422.8)  tip r 62.700  aperture clearance 149.8
-       github    centre (485.0, 417.0)  tip r 52.800  aperture clearance 121.5
+       github    centre (582.8, 508.2)  tip r 52.800  aperture clearance 246.7
        gmail     centre (763.1, 413.1)  tip r 48.675  aperture clearance 106.8
    Nothing is clipped, and the tight one against that wall is Gmail now. GitHub
    held that title for most of this file's history -- 14.4px, then 19.5, then
    67.1, then 71.9, then 53.6 -- and it lost it by leaving the band: the move up
    to the jewel arm took it 121.5 clear, past Gmail's 106.8 and into second
-   place. Gmail's 106.8 is the number to watch now.
-   THE EMPTY BAND IS EMPTY. GitHub was the last wheel in it, and it has crossed
-   to (485.0, 417.0), a plate bay west of the jewel arm's left lobe, with 14.1%
-   of its tip ellipse behind that lobe -- see THE GITHUB WHEEL GOES UNDER below.
-   Nothing authored here now lies left of x 432.
-   THE NEAREST MOVING PART TO GITHUB IS THE RIG'S CENTRE WHEEL, (560, 552)
-   r 87, 14.6 render px from its tooth tips by that circle and 13.6 measured
-   against the part's own visible pixels in an offline composite. The seconds
-   wheel, which used to be the near one at 14.2, is 67.7 away now. So both link
-   wheels in this half of the movement are held off the same centre wheel, and
-   the two figures to watch are LinkedIn's 10.0 and GitHub's 13.6.
+   place, and the moves of 10 Aug 2026 took it to 252.9, 204.4, 214.4, 258.5,
+   224.6, 266.3, 253.4 and 246.7 where it now stands -- further from that
+   wall than any wheel here has ever been. It is in the middle of the
+   disc, not near its edge, which is why this figure has stopped being
+   interesting for GitHub. Gmail's 106.8
+   is the number to watch on that wall now.
+   THE EMPTY BAND IS EMPTY. GitHub was the last wheel in it; it crossed to
+   (485.0, 417.0), a plate bay west of the jewel arm's left lobe, with 14.1% of
+   its tip ellipse behind that lobe, and after six moves that day -- two of
+   them withdrawn, one of them broken and corrected -- it is at
+   (582.8, 508.2), IN MESH WITH LINKEDIN AND ON ITS LEFT -- on screen as well as
+   in the markup; an earlier revision claimed the caseback renders mirrored and
+   it does not, see THE GITHUB WHEEL below. Nothing authored here
+   now lies left of x 530.0, the GitHub wheel's leftmost tooth.
+   ALL THREE WHEELS ARE IN MESH, IN ONE CHAIN. Every adjacent pair is at the sum
+   of its pitch radii, measured against an offline composite of base +
+   every rig part + every rig cutout + all three wheels + all four cuts:
+       linkedin-gmail   centres 108.070 against 47.025 + 61.05 = 108.075.
+                        Tip circles overlap 3.30 px, which is 2m
+       linkedin-github  centres 112.2004 against 51.15 + 61.05 = 112.20.
+                        Tip circles overlap 3.2993 px, the same 2m
+   github-gmail is not a pair and is not meant to be: they are the two ends of a
+   train that now straddles LinkedIn, 203.89 apart with 102.41 px of daylight
+   tip to tip. Of the
+   GitHub sprite's 5072 opaque pixels, 1.04% touch LinkedIn's (0.82% of
+   LinkedIn's own) -- THE MESH LENS, which is what a mesh looks like in a
+   composite, against Gmail's 0.65% at its own pitch point.
+   NOTHING THE RIG EMITS IS CROSSED BY A LINK WHEEL ANYWHERE ON THE CASEBACK --
+   FALSE SINCE 10 AUG 2026, AND FALSE BY HIS DECISION. That sentence flipped
+   five times that day as this wheel was moved and has stayed false since; this
+   is the one place in this
+   block it is stated and it is stated false, rather than carrying another layer
+   of qualification. THE GITHUB SPRITE LIES 17.27% OVER THE RIG'S TURNING CENTRE
+   WHEEL where that wheel is visible -- the part no cut can take. He was given
+   the measured cost
+   of the clearance constraints twice that day and answered "Ignore any rules",
+   so this is an override and not an oversight -- A LATER PASS MUST NOT REPAIR
+   IT AS AN ACCIDENT. Everything else holds: 0.00% on the FOURTH wheel (which
+   the previous seat was crossing and the 10% rise cleared), the seconds wheel,
+   the
+   third wheel, the balance, the balance cock, the Gmail wheel and all four cut
+   plates. The history is in THE GITHUB WHEEL below, in one
+   list, rather than as a chain of annotations here. LinkedIn's 10.0 px off the
+   centre wheel is still the only positive clearance either link wheel has
+   against
+   that part; GitHub's is -90.46.
+   WHAT IT COSTS, AND WHAT THE CUT OF 10 AUG 2026 TOOK BACK: 43.04% of the
+   GitHub wheel lies on the name bridge and 41.15% of it is now COVERED by
+   static-plate-github.webp, so that portion reads as running UNDER the bridge.
+   17.27% lies on the turning centre wheel and NO CUT CAN TAKE IT -- the
+   occluders in this layer are copies lifted from a
+   still base.webp, which can hide teeth under a bridge but would freeze a part
+   that moves. 39.69% is bare plate, where a link wheel belongs. See THE MESH
+   CIRCLE WAS ONLY HALF SWEPT below.
    LINKEDIN IS NOT IN THE BAND, AND IS NO LONGER LOOSE. It
    crossed the movement to (647.5, 455.8) -- a pocket of plate walled above by
    the raised arm that carries VIERZIG (40) RUBINE and its two ruby bosses, and
@@ -2250,13 +2334,31 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    clear, but 10.0 is the number to watch on this wheel now, and another 10%
    would put teeth back across the movement's own. The sums are in THE LINKEDIN
    WHEEL GOES UNDER below.
-   Centre distances are now 108.07 (linkedin-gmail, which is a mesh -- see
-   GMAIL MESHES WITH LINKEDIN below), 170.60 (linkedin-github) and 278.12
-   (github-gmail). The last two were 380.9 and 482.7 before GitHub crossed the
+   Centre distances are now 108.07 (linkedin-gmail, a mesh -- see
+   GMAIL MESHES WITH LINKEDIN below), 112.2004 (linkedin-github, ALSO A MESH as
+   of 10 Aug 2026 -- see THE MESH CIRCLE WAS ONLY HALF SWEPT) and 203.89
+   (github-gmail, the two ends of the train, which straddle LinkedIn now and are
+   not a pair). The last two read 112.2032 and 200.58 one seat back, 112.2012
+   and 191.37 at the mirror seat;
+   112.1987 and 125.82 at the meshed
+   maximum-left;
+   98.8021 and 167.28 for one revision, when a literal 3/4-length step left took
+   GitHub off the mesh circle; 112.1989 and 117.34 at the first mesh seat;
+   102.69 and 206.83 at a withdrawn position, 135.27 and 227.05 before that,
+   170.60 and 278.12 before GitHub fell off
+   the lobe, 380.9 and 482.7 before it crossed the
    movement, and 136.0 and 119.0 when this was a train -- see THE MODULE WAS
    NORMALISED below for what that cost. Tip to tip, the three now read
-   -3.30 / 55.10 / 176.65: a mesh, then 55 px of bare plate, then the far side
-   of the movement.
+   -3.30 / -3.2993 / +102.41: TWO MESHES AND A WIDE GAP. Both negative numbers
+   are 2m,
+   the overlap two wheels at the sum of their pitch radii are supposed to have,
+   and both were solved to it rather than stumbled into -- the second four times
+   over now, since every GitHub seat since the mesh was asked for has been the
+   solution of that same sum. The number to keep in
+   mind for contrast is -16.6975, which is what linkedin-github read off the
+   circle: 10.1m at a centre distance 13.40 px too CLOSE, teeth interpenetrating
+   rather than engaging, and no tooth phase hides that. THE DIFFERENCE BETWEEN
+   -3.30 AND -16.70 IS THE WHOLE OF WHAT THIS FILE MEANS BY A MESH.
    Those are BOX centres, and the box is 1.2-1.8% taller than it is
    wide: only `width` is set here, so the height comes off the sprite's own
    raster (506x512, 503x512, 508x512) and each `top` is the centre less half of
@@ -2271,19 +2373,49 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    stay registered to the plate at every viewport without a second copy of that
    transform living here.
 
-   THE TRAIN CLIMBED, AND NOW IT LIES FLAT. The LinkedIn
+   THE TRAIN CLIMBED, LAY FLAT, AND IS NOW A TRAIN IN THE SENSE THE WORD MEANS.
+   The LinkedIn
    wheel was the low one because it was the one that had to reach a bridge: see
    THE LOW WHEEL GOES UNDER below, which is now the record of a thing that
-   stopped happening to that wheel and started happening to all three. Read top
-   to bottom the wheels now run gmail 413.1, github 417.0, linkedin 422.8 --
-   9.7 render px from highest to lowest, where a week ago GitHub sat 185 below
-   the other two. There is no climb left to read; what there is instead is a
-   ROW, github-linkedin-gmail left to right, one pair of it in mesh and the
-   other pair 55.10 px of bare plate apart.
-   What every wheel does now is reach a bridge, and it is the same bridge: the
-   arm carrying VIERZIG (40) RUBINE, taken under its left lobe, its crest and
-   its right-hand end respectively. That is the half of the original reasoning
-   that survived, and it is the only half that ever mattered. Document order in
+   stopped happening to that wheel, started happening to all three, and has
+   stopped again for one of them. Read top
+   to bottom the wheels run gmail 413.1, linkedin 422.8, github 524.1, but the
+   heights are no longer the point and this sentence was rewritten four
+   times in one day chasing them before the point changed. It read "gmail 413.1,
+   github 417.0,
+   linkedin 422.8 -- 9.7 render px from highest to lowest" until
+   10 Aug 2026, then "github 522.6 ... 99.8 below" after "move the github gear
+   3/4 its length to the right and 1 down", then "github 469.8 ... 47.0 below"
+   after "move the github gear up 1/2 of its length". ALL OF THOSE MOVES WERE
+   THEN WITHDRAWN, by "Have its teeth mesh with the linkedin gear. Thats the
+   only thing. Ignore other commands", and the wheel's height stopped being
+   something anyone sets: it is whatever the bearing on the 112.20 circle makes
+   it. It was 519.2 at theta 59.20; "move the github gear 3/4 lengths to the
+   left" then took 79.200 px of `left` and no `top` at all, which kept that y
+   and lost the mesh; he answered that by taking THE MESHED MAXIMUM-LEFT,
+   theta 64.50, where the height is 524.1; and then, with "Keep the same
+   height", he MADE THE HEIGHT A CONSTRAINT RATHER THAN AN OUTPUT and asked for
+   the left side of LinkedIn. That is theta 115.50, the mirror of 64.50, and
+   524.1 is preserved exactly. THEN THE HEIGHT BECAME AN INPUT AGAIN: "move the
+   github gear up 10% of its length and then left until it matches the mesh"
+   sets cy by a translation -- 10.5599 px up, to 513.5 -- and then SOLVES for
+   the cx where the 112.20 circle crosses that height going left. Height given,
+   width derived; the reverse of every move before it.
+   So there is a THREE-WHEEL TRAIN, github-linkedin-gmail, with
+   both adjacent pairs at the sum of their pitch radii and the outer two turning
+   together against the middle one -- and the two outer wheels now sit on
+   OPPOSITE sides of the middle one, which is the shape he
+   asked for in as many words.
+   What two of the three wheels do is reach a bridge, and it is the same bridge:
+   the
+   arm carrying VIERZIG (40) RUBINE, taken under its crest and
+   its right-hand end. GitHub took its left lobe until it left, and reaches
+   nothing now: 26.48 px clear of that lobe, 53.12% of the sprite ON the name
+   bridge with no cut over any of it, and 26.32% of it over the rig's own
+   centre wheel. That is the half of the original reasoning
+   the mesh cost and the moves since have spent again, and it is the half that
+   mattered: see THE GITHUB WHEEL below, which measures it rather than
+   arguing with the instruction. Document order in
    index.html is unchanged -- linkedin, github, email -- so the tab order is
    still the order of the links and not the order they sit in.
 
@@ -2315,48 +2447,118 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
        linkedin  N 74   m 1.65   tip r 62.700  pitch r 61.05
        github    N 62   m 1.65   tip r 52.800  pitch r 51.15
        gmail     N 57   m 1.65   tip r 48.675  pitch r 47.025
-   ONE module across three wheels. Two of them are also set at the sum of their
-   pitch radii, 61.05 + 47.025 = 108.075 against 108.07 measured, so
-   linkedin-gmail is a mesh in the only sense that means anything. GitHub is
-   not, and the reason is the plate and no longer the teeth: its centre stands
-   170.60 from LinkedIn against the 112.20 that sum would need, 58.40 too far.
-   The teeth would now interleave if the two were ever brought together -- same
-   module, same 2.0 s per tooth -- and what stops it is that there is nowhere on
-   the 112.20 circle to put the wheel. See THE MESH CIRCLE IS FULL below, which
-   is the sweep rather than an opinion. This block once
-   claimed a meshing train after that stopped being true, which is exactly the
-   failure a file that measures everything is supposed to catch; what is true
-   now is a meshing PAIR and a third wheel drawn to join it, and it is written
-   that way.
+   ONE module across three wheels, AND SINCE 10 AUG 2026 BOTH ADJACENT PAIRS ARE
+   SET AT THE SUM OF THEIR PITCH RADII: 61.05 + 47.025 = 108.075 against
+   108.070 measured for linkedin-gmail, and
+   61.05 + 51.15 = 112.20 against 112.2032 for
+   linkedin-github. The
+   counts were re-verified off the sprites for that second mesh
+   rather than taken from this table -- mean-crossings of the alpha radius
+   over 7200 rays give 74 / 62 / 57 -- because a mesh derived from a wrong tooth
+   count is a decal with arithmetic on it. The module has not been touched all
+   day; every position the wheel has held was one `left`/`top` pair away from
+   this state, which is exactly what the size step bought.
+   THE PREDICTION IN THIS BLOCK WAS COLLECTED ON. It used to end "The teeth
+   would now interleave if the two were ever brought together -- same module,
+   same 2.0 s per tooth -- and what stops it is that there is nowhere on the
+   112.20 circle to put the wheel." The first half was right and is why the mesh
+   took one edit. The second half was wrong, and not by a little: there are
+   18.25 degrees of that circle standing free, and the sweep that said otherwise
+   stopped at 68 degrees. See THE MESH CIRCLE WAS ONLY HALF SWEPT below, which
+   is now the corrected sweep and the record of how the old one failed. This
+   block once
+   claimed a meshing train before it was true, which is exactly the
+   failure a file that measures everything is supposed to catch; it then spent
+   a long time proving a mesh impossible that was not; and on 10 Aug 2026 it
+   held a real three-wheel chain, lost it to a literal reading of a leftward
+   step, and got it back at the leftmost bearing that still engages. What is
+   true now is a meshing CHAIN OF THREE, and every one of those states was
+   written down in the same pass that made it so -- which is the only discipline
+   that has ever kept this file worth reading.
 
-   SO WHAT DOES GITHUB'S SIZE MEAN NOW. It means the wheel is one edit away from
-   a mesh instead of two. Every radius is still (N + 2) * m / 2 taken off a
+   SO WHAT DOES GITHUB'S SIZE MEAN NOW. It means the mesh cost one edit instead
+   of a redraw, which is exactly what the 8.726% -> 8.421% step was bought for
+   and the reason that step is the most load-bearing number in this file. Every
+   radius is still (N + 2) * m / 2 taken off a
    real tooth count, so each wheel is in true proportion to its own teeth; the
    size ORDER is still strict, 62.700 > 52.800 > 48.675, where it read
    62.7 > 54.7 > 48.7 before and 62.7 > 48.7 > 45.6 before that; and the one
-   thing that used to be missing -- a shared tooth size -- is no longer missing.
-   If the wheel is ever wanted in engagement the route is now the plate, not the
-   art: find 112.20 px of clear centre distance, or move what is standing in the
-   112.20 circle, which is the rig's centre wheel and a ruby.
+   thing that used to be missing -- a shared tooth size -- is what made the
+   whole of 10 Aug 2026 possible. The remaining cost is not in the art and not
+   in the distance: it is that the only free arc of the 112.20 circle lies over
+   the name bridge with no edge to tuck under, so the wheel that meshes is the
+   one wheel of the three with no bridgework across its teeth.
 
    THE RATIOS ARE THE TOOTH COUNTS, INVERTED, which is the one thing a gear train
    on a watchmaker's site cannot get wrong. A wheel of N teeth driven by one of M
    turns M/N times as fast, and meshed wheels turn in OPPOSITE directions. So the
    periods are proportional to the counts -- 148s, 124s, 114s for 74, 62, 57 --
    and the directions alternate down the chain. Three wheels turning the same way
-   at the same speed would be a decal, not a train. THE PERIODS ARE UNCHANGED,
-   and for the meshing pair they are now a consequence of the geometry again
-   rather than a claim about it: 148/74 and 114/57 are both exactly 2.0 seconds
-   per tooth, which is what keeps LinkedIn and Gmail in step for as long as the
-   back is showing. The alternation had to be re-cut for that pair, though --
+   at the same speed would be a decal, not a train. THE PERIODS ARE UNCHANGED
+   AND ARE NOW A CONSEQUENCE OF THE GEOMETRY FOR ALL THREE: 148/74, 124/62 and
+   114/57 are each exactly 2.0 seconds
+   per tooth, so every pair's rates are inverse to its tooth counts, which is
+   what keeps the chain in step for as long as the
+   back is showing. The alternation had to be re-cut once --
    the email wheel used to turn the same way as LinkedIn, which two wheels in
    mesh cannot do, so it is `animation-direction: reverse` below. GitHub keeps
-   its own reverse and its 124s, and now that it is LinkedIn's left-hand
-   neighbour that is the RIGHT direction rather than an accident: in a train
+   its own reverse and its 124s, and since 10 Aug 2026 that is a
+   REQUIREMENT rather than a lucky habit: it is in mesh with LinkedIn, and in
+   the train
    github-linkedin-gmail the two outer wheels turn together and the middle one
-   against them, which is exactly reverse / forward / reverse as written. 124/62
-   is 2.0 s per tooth, the same as the other two, so if the gap ever closed the
-   three would already be in step.
+   against them, which is exactly reverse / forward / reverse as written. For a
+   few hours that day the mesh was displaced by a literal reading of "move the
+   github gear 3/4 lengths to the left" and these rates described a relationship
+   that was not there; the wheel was then seated at the meshed maximum-left and
+   they describe a real one again. NOT ONE CHARACTER OF THEM CHANGED THROUGHOUT.
+   THIS PARAGRAPH USED TO END "so if the gap ever closed the three would already
+   be in step", written as a hope. The gap closed and the prediction paid: not
+   one character of the animation rules had to change to turn a drawn train into
+   a turning one. The tooth counts behind it were re-verified off the sprites
+   for the mesh rather than trusted -- mean-crossings of the alpha radius over
+   7200 rays give 74 / 62 / 57 -- because a period derived from a wrong count is
+   a decal with arithmetic on it.
+   THE TOOTH PHASE, AND THE STANDARD IT IS NO LONGER HELD TO. Both sprites
+   rasterised at
+   6x and the pixels opaque in both counted, sampled 24 times across a full
+   tooth cycle -- LinkedIn forward 4.8649 deg per tooth, GitHub back 5.8065.
+   At the seat the wheel now holds, theta 130.41: rest 16.97 px^2, mean 16.63,
+   peak 17.33, floor 16.08. The spread is narrow because equal
+   seconds-per-tooth means the relative tooth alignment
+   repeats every 2.0s and never drifts -- the pair is stable, it is simply
+   stable in a poor phase. GMAIL MESHES WITH LINKEDIN records 2.25
+   at rest, mean 10.6, peak 20.8, and the clean seats read rest 14.56 / mean
+   14.87 / peak 15.44 at theta 59.20 and rest 18.25 / mean 18.60 / peak 19.14 at
+   64.50. THE FULL SERIES, since this is the one figure that varies while the
+   mesh distance stays exact:
+       theta  59.20   peak 15.44   clean seat
+       theta  64.50   peak 19.14   clean seat
+       theta 115.50   peak 40.25   the mirror
+       theta 126.06   peak 33.39   an improvement on the mirror
+       theta 130.41   peak 17.33   CURRENT -- back under Gmail's worst
+   SO THIS PAIR IS BACK UNDER THE EXISTING MESH'S WORST at every phase of the
+   turn, having been at 1.9x it two seats ago. THE STANDARD IS MET AGAIN --
+   "never worse over a full cycle than the existing mesh at its worst" -- for
+   the first time since 64.50, and by a wider margin than 64.50 itself managed.
+   Nothing was done to the phase directly: the 5% rise turned the bearing
+   4.35 deg and the crossing fell from 33.39 to 17.33. That is the whole
+   mechanism, and it is
+   a consequence of the bearing and not of the centre distance, which is exact:
+   the crossing oscillates with bearing on a period of about 2.8 deg and runs to
+   46.00 px^2 at the worst bearing on this circle. The phase is normally bought
+   by choosing the bearing -- the same
+   mechanism Gmail's mesh uses -- and on the last three seats the bearing has
+   been fixed by the instruction with no freedom left, so this improvement was
+   luck rather than design. It should not be assumed to survive the next move.
+   THE ONE REMAINING LEVER IS STILL NOT PULLED. A rotation offset on this wheel
+   alone
+   -- its own keyframe starting at rotate(-X) instead of the shared linkGear --
+   would move the phase without moving the wheel. It would also change an
+   animation rule nobody asked to change, and at 17.33 there is nothing to fix,
+   so it is recorded here as available
+   and left alone. The sprites are
+   ellipses, 503x512 against 506x512, so a perfect phase is not available at
+   every bearing and this file has never claimed one.
 
    THEY TURN ONLY WHILE THE BACK IS SHOWING. Gated on .is-flipped for the reason
    rigStop() exists: an animation on a face nobody is looking at is work the
@@ -2412,15 +2614,22 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    LinkedIn wheel has been moved off the bridge and up under the jewel arm at
    (655.5, 422.8) -- it goes under bridgework again, but a different piece of it,
    cut in THE LINKEDIN WHEEL GOES UNDER below. GitHub was the wheel nearest to
-   coming back down, at y 653.7 and 62.3px of daylight from this cut; it has
-   since gone the other way, up to (485.0, 417.0) under the jewel arm's left
-   lobe, so its lowest teeth are at y 470.7 and the LOWEST TEETH OF ANY LINK
-   WHEEL are LinkedIn's, at y 486.2 -- 229.8px above this cut's alpha bbox,
-   which begins at y 716. Measured in the
-   browser: its rect intersects no .cb-gear and no part the rig emits -- zero
-   hits. The daylight was 84px when this was written, closed to 62.3 by
-   GitHub's move to the recess wall, and is 229.8 now that every wheel has left
-   the lower half of the plate. Combine that with the paragraph above and the
+   coming back down, at y 653.7 and 62.3px of daylight from this cut; it went
+   the other way, up to (485.0, 417.0) under the jewel arm's left
+   lobe, and on 10 Aug 2026 it came back down again -- not onto this bridge but
+   onto the rig's centre wheel, at (564.2, 522.6) -- and then half a length back
+   up, to (564.2, 469.8) -- both withdrawn -- and finally across the movement
+   into mesh with LinkedIn at (712.9, 519.2). So the LOWEST TEETH OF ANY
+   LINK WHEEL are GitHub's once more, at y 572.9 -- 143.1px above this cut's
+   alpha bbox, which begins at y 716, and 161px clear of it sideways as well,
+   since the wheel spans x 660..766 and the bbox x 289..499. The figure read
+   139.7px and then 192.5px at the two withdrawn positions. Measured in the
+   browser at the previous position: its rect intersected no .cb-gear and no
+   part the rig emits -- zero hits. Re-checked against an offline composite at
+   this one: zero pixels of this cut fall on any wheel. The daylight was 84px
+   when this was written, closed to 62.3 by
+   GitHub's move to the recess wall, opened to 229.8 when every wheel had left
+   the lower half of the plate, and is 139.7 now that one has come back into it. Combine that with the paragraph above and the
    element is not merely
    unseen, it changes no pixel at all: a fetch, a decode and a paint for nothing.
    It is left in the DOM and flagged here rather than quietly deleted, because
@@ -2428,32 +2637,77 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    is what the 16.8% bite above was worth, or drop the asset and this block with
    it -- and choosing between them is a design decision, not a cleanup. What is
    not acceptable is leaving it undocumented and having the next reader believe
-   the bite is still on screen. The case for dropping it is stronger than it has
-   ever been: all three wheels are now in a row along the top of the movement
-   and none of them is a candidate to come back down. */
+   the bite is still on screen. The case for dropping it was strongest when all
+   three wheels lay in a row along the top of the movement; it is weaker now.
+   GitHub fell 105.6px back toward the lower half of the plate, took 52.8 of
+   that back, and then crossed the movement into mesh; it stands
+   143.1 above this cut, unchanged by the move that followed since that move
+   touched only `left`. A wheel coming down onto this bridge is a live
+   option again -- and it is the shape of the fix the mesh seat needs, since a
+   bridge over the teeth is exactly what the GitHub wheel lost when it left the
+   lobe and did not get back. This is the one piece of bridgework on the
+   caseback with a cut already made for it and no wheel under it. */
 .cb-links-static {
   position: absolute;
   display: block;
   pointer-events: none;
 }
 
-/* THE GITHUB WHEEL GOES UNDER, AND THIS ONE IS PRESENT TENSE. Everything the
-   block above describes in the past -- an occluder last in .cb-links, cut from
-   the floor the rig itself draws, hiding a wheel by DOM order and nothing else
-   -- is done again here for the GitHub wheel, and this time it is on screen.
+/* THE GITHUB WHEEL WENT UNDER, CAME BACK OUT, WENT INTO MESH ON 10 AUG 2026
+   AND WAS MOVED OFF IT THE SAME DAY. Everything
+   the block above describes in the past -- an occluder last in .cb-links, cut
+   from the floor the rig itself draws, hiding a wheel by DOM order and nothing
+   else -- was done again here for the GitHub wheel, and it was on screen until
+   that date. Five moves that day ended with the wheel across the movement,
+   79.200 px off the mesh circle, and the cut left where it was: it covered
+   15.89% of the
+   wheel, then 0.00%, then 3.20%, then 0.00% at the mesh seat and 0.00% now,
+   without the file being
+   touched once. The block is re-tensed and
+   annotated rather than
+   rewritten, because every radius, edge trace and provenance figure in it is
+   still correct about the file and about the plate. What changed is where the
+   wheel is.
 
-   WHAT WAS ASKED FOR: put this wheel on the LEFT of the LinkedIn wheel, in the
+   WHAT WAS ASKED FOR, AND WHAT SURVIVED THE ASKING. First: put this wheel on
+   the LEFT of the
+   LinkedIn
+   wheel, in the
    pocket between the two pieces of bridgework LinkedIn sits between, and change
    its size as needed. The size was changed, the wheel was moved to LinkedIn's
    left, and the pocket itself could not take it -- there is no plate in there.
-   The sweep that establishes that is THE MESH CIRCLE IS FULL below, and it is
-   the reason this block does NOT claim a mesh.
+   The sweep is THE MESH CIRCLE WAS ONLY HALF SWEPT below, and it is where that
+   sweep's failure is recorded as well as its findings.
+   Then, on 10 Aug 2026, three positional instructions in a row: "move the
+   github gear 3/4 its length to the right and 1 down" -- 0.75 and 1.00 of
+   `width` 8.421% = 105.599 render px, so right 79.200 and down 105.599, to
+   (564.2, 522.6); then "move the github gear up 1/2 of its length" -- 52.800
+   taken off the wheel where it then stood, to (564.2, 469.8); and then the one
+   that cancelled both:
+       "Have its teeth mesh with the linkedin gear. Thats the only thing.
+        Ignore other commands"
+   THAT LAST CLAUSE IS AN INSTRUCTION AND IT IS TREATED AS ONE. It withdraws the
+   two positional moves above -- they are not abandoned, they are void by his
+   word -- and it converts the wheel's position from an input into an OUTPUT.
+   The two withdrawn moves are kept in this block, and their arithmetic with
+   them, for two reasons: each was the input to the next and cannot be read
+   alone, and the vertical sweeps they forced are what established that a
+   fixed-x search cannot find a mesh, which is the observation that sent the
+   next search to a circle. Their measured cost is in the tables below, kept as
+   the record of a road not taken rather than deleted as a mistake.
 
-   THE MOVE, IN THE RENDER'S OWN 1254px SPACE. Centre (317.3, 598.0) on the
+   THE MOVES, IN THE RENDER'S OWN 1254px SPACE. Centre (317.3, 598.0) on the
    recessed field at the far left to (485.0, 417.0) on the plate bay west of the
    jewel arm's left lobe: right 167.7, up 181.0, 246.6 in a straight line. That
-   is the longest single move any wheel here has made, and it takes the last
-   wheel out of the empty band.
+   is the longest single move any wheel here has made, and it took the last
+   wheel out of the empty band. Then (485.0, 417.0) to (564.2, 522.6): right
+   79.2, down 105.6, 131.9 in a straight line, 53.1 degrees below the
+   horizontal. Then (564.2, 522.6) to (564.2, 469.8): straight up 52.8, no
+   change to `left` or `width`. Both of those are WITHDRAWN. Then, from
+   (485.0, 417.0) as if neither had happened, to (712.9, 519.2): right 227.9,
+   down 102.2, 249.8 in a straight line, which is now the longest single move
+   any wheel here has made. It is the only one that was not a direction and a
+   distance but the solution of an equation -- see below.
 
    AND IT CAME DOWN 3.5% ON THE WAY, WHICH IS THE POINT OF THE SIZE CHANGE.
    `width` 8.726% -> 8.421%, so rx 54.71 -> 52.7997 and ry 55.69 -> 53.7444,
@@ -2474,14 +2728,164 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
        top  = 417.00 - 53.7444 = 363.256 -> 28.968%   -> centre y 417.003
    Three decimals of percentage is 0.01254 render px, and both land inside that.
 
-   THE MESH CIRCLE IS FULL, AND THAT IS WHY THERE IS NO MESH. Gmail engages
-   LinkedIn on the right; the obvious prize was to engage it on the LEFT and
-   make the three a real train again. Same module now, so the only remaining
+   THE FALL IS THAT SAME SUM ROUND A NEW CENTRE, AND ITS VERTICAL HALF IS THE
+   ONE THAT CAN BE GOT WRONG. `left` and `width` are percentages of the box's
+   WIDTH and `top` of its HEIGHT, so "one length down" is one wheel-WIDTH of
+   travel expressed against the HEIGHT basis, and writing 28.968 + 8.421 would
+   be right only by luck. It is right here, and the reason is worth stating
+   rather than assuming: .cb-links is inset:0 in .cb-movement, which is inset:0
+   in .cb-aperture, which is inset:12% of a square, border-radius:50% face -- so
+   the percentage box is SQUARE, 1254 x 1254 in the render's own space, and both
+   bases are the same 1254. The non-square correction that does exist here is
+   the SPRITE's, 503x512, and it lives in ry, never in the basis. So
+   105.599 / 1254 = 8.421 points of `top` and 79.200 / 1254 = 6.315 of `left`.
+   The size did not change, so rx and ry are the same numbers as above:
+       left = 564.200 - 52.7997 = 511.400 -> 40.781%   -> centre x 564.193
+       top  = 522.599 - 53.7444 = 468.855 -> 37.389%   -> centre y 522.602
+   Inside the 0.01254 px a third decimal is worth: 0.006 out in x, 0.003 in y.
+
+   AND THE RISE AFTER IT WAS THE SAME ARITHMETIC WITH ONE OFFSET TOUCHED. Half a
+   length up is 52.800, which on a square 1254 box is 4.211 points of `top` --
+   the same conversion as above, half of it, and again free of the width/height
+   trap only because the box is square. `left` and `width` untouched, so
+   cx stayed where the fall put it:
+       left  unchanged                       511.400 -> 40.781%   -> cx 564.193
+       top = 469.797 - 53.7444 =             416.058 -> 33.178%   -> cy 469.797
+   Both of those percentage pairs are WITHDRAWN and are kept only as the chain
+   the next number is measured against.
+
+   THE MESH SEAT WAS NOT A DIRECTION, IT WAS THE ANSWER TO ONE EQUATION. Centre
+   distance = the two PITCH radii added = 51.15 + 61.05 = 112.20. That fixes the
+   centre to a circle round LinkedIn's (655.5, 422.8) and leaves the bearing as
+   the only free variable; the sweep below leaves one arc of it, 49.75..68.00,
+   and 59.20 is the bearing on that arc with the largest clearance to everything
+   else and a local minimum of the tooth crossing:
+       cx = 655.5 + 112.20 * cos(59.20)      = 712.951
+       cy = 422.8 + 112.20 * sin(59.20)      = 519.175
+       left = 712.951 - 52.7997 = 660.151 -> 52.643%   -> cx 712.935
+       top  = 519.175 - 53.7444 = 465.431 -> 37.116%   -> cy 519.180
+   Rounded to the file's three decimals that pair sat 112.1989 from LinkedIn,
+   0.0011 render px off the required 112.20 -- against the 0.005 the Gmail mesh
+   was accepted at, and well inside the 0.01254 px that a third decimal of
+   percentage is worth.
+
+   THEN IT WAS MOVED OFF THE CIRCLE, AND THEN BACK ONTO IT FURTHER LEFT.
+   "move the github gear 3/4 lengths to the left", 10 Aug 2026, taken literally
+   against the wheel where it stood: 0.75 of its own length is
+   0.75 * 105.599 = 79.200 render px, `top` untouched.
+       cx = 712.951 - 79.200 = 633.751,  cy unchanged 519.175
+       left = 633.751 - 52.7997 = 580.951 -> 46.328%   -> cx 633.753
+   A TRANSLATION OF 79.200 OFF A CIRCLE OF RADIUS 112.20
+   CANNOT STAY ON IT, and that one did not: the centres fell to 98.8021, which
+   is 13.40 INSIDE the meshing distance, and tip to tip -16.6975 against the
+   -3.30 signature. The wheel also re-entered the 68..162 band the sweep gives
+   to the rig's centre wheel -- theta 102.72 from LinkedIn -- and picked up the
+   FOURTH wheel as well, which no position that day had touched.
+   HE ANSWERED THAT BY TAKING THE MESHED MAXIMUM-LEFT, which is what the
+   leftward step was reaching for: seat the wheel at the largest theta on the
+   free arc that still engages AND still clears everything that turns. That is
+   theta 64.50.
+       cx = 655.5 + 112.20 * cos(64.50)      = 703.8033
+       cy = 422.8 + 112.20 * sin(64.50)      = 524.0701
+       left = 703.8033 - 52.7997 = 651.004 -> 51.914%   -> cx 703.801
+       top  = 524.0701 - 53.7444 = 470.326 -> 37.506%   -> cy 524.070
+   BOTH offsets moved; the step before it was `left` alone, so the vertical
+   could not be carried over. 112.1987 measured, 0.0013 render px off the
+   required 112.20, tip lens -3.3010 against -3.30.
+
+   AND THEN HE SENT IT ROUND TO THE OTHER SIDE. "basically move the github gear
+   to the left side of the linkedin gear while still meshing. Keep the same
+   height. Ignore any rules" -- 10 Aug 2026. THREE CONSTRAINTS THAT LEAVE NO
+   FREE VARIABLE: still meshing fixes the centre to the 112.20 circle, the same
+   height fixes cy at the 524.0696 the previous seat rendered, and left of
+   LinkedIn picks between the two bearings that satisfy both.
+       sin(theta) = (524.0696 - 422.8) / 112.20 = 0.902581
+       theta = 64.4995  (where it was)  or  115.5005  (the mirror)
+   The left-hand root is the answer, and it is the EXACT REFLECTION of the
+   previous seat across the vertical through LinkedIn's centre -- which is why
+   the mesh distance survives by construction rather than by luck.
+       cx = 655.5 + 112.20 * cos(115.50) = 655.5 - 48.3033 = 607.1967
+       cy unchanged, as instructed                          = 524.0696
+       left = 607.1967 - 52.7997 = 554.397 -> 44.210%   -> cx 607.193
+       top  unchanged                         37.506%   -> cy 524.070
+   112.2012 measured, 0.0012 render px off the required 112.20, tip lens
+   -3.2985 against -3.30. `top` DID NOT MOVE: "keep the same height" is a
+   constraint on cy and it is honoured to the last decimal the file carries.
+
+   AND THEN A RISE AND A SOLVE, WHICH IS THE CURRENT SEAT. "move the github gear
+   up 10% of its length and then left until it matches the mesh" -- 10 Aug 2026.
+   TWO OPERATIONS OF DIFFERENT KINDS. Step one is a translation: 0.10 of the
+   wheel's own length is 0.10 * 105.599 = 10.5599 px, cy 524.0696 -> 513.5097,
+   `left` untouched. Step two holds that cy and asks where the 112.20 circle
+   crosses it going left -- "until it matches the mesh" is a stopping CONDITION,
+   not a distance:
+       dy = 513.5097 - 422.8 = 90.7097
+       dx = sqrt(112.20^2 - 90.7097^2) = sqrt(4360.59) = 66.0348
+       cx = 655.5 - 66.0348 = 589.4652        (the leftward root)
+   THE INSTRUCTION IS SELF-CONSISTENT AND THE DIRECTION CHECKS OUT: at the old
+   cx 607.193 with the new cy the centres stand 102.7707 apart, which is TOO
+   CLOSE, so travelling left INCREASES the distance and it reaches 112.20 after
+   17.7278 px. Had the rise put the wheel on the other side of the circle,
+   "left" would have closed the gap and there would have been no solution in
+   that direction.
+       left = 589.4652 - 52.7997 = 536.666 -> 42.796%   -> cx 589.462
+       top  = 513.5097 - 53.7444 = 459.765 -> 36.664%   -> cy 513.511
+   112.2032 measured, 0.0032 render px off, tip lens -3.2965. Each offset is
+   rounded independently from the centre, per this file's convention; the rise
+   lands 10.5586 against the 10.5599 asked, 0.0013 px short. A pair rounding to
+   42.795 / 36.663 would hit the mesh distance 0.0005 out instead of 0.0032 but
+   the rise 0.0113 out instead of 0.0013; both sit inside the 0.01254 px a third
+   decimal is worth, and the convention decided it.
+   THE OTHER ROOT, WORKED OUT AND NOT TAKEN. At the current rise the same cy
+   meets the circle again
+   at cx 655.5 + 72.7350 = 728.2350 -- `left` 53.862%, `top` 36.243%,
+   theta 49.59, 112.1967 measured. It clears every rig part and sits 100% on the
+   name bridge, but ITS PHASE IS NOW THE WORSE OF THE TWO: tooth crossing 27.33
+   px^2 at rest against the near root's 16.97. One seat earlier that comparison
+   ran the other way, 12.69 against 33.39, so the argument from phase was never
+   stable and should not be leaned on. AN EARLIER REVISION SAID THE CASEBACK
+   RENDERS MIRRORED AND THAT THIS ROOT IS THE ONE THAT APPEARS TO THE LEFT ON
+   SCREEN. THAT WAS WRONG -- see THE CASEBACK IS NOT MIRRORED in index.html.
+   Authored-left is screen-left, so the near root is what "left" means on the
+   page as well as in the markup. It was also not taken because it is a 145 px
+   jump across the LinkedIn wheel where the near root is 6.70 px and continues
+   the previous move. The pair stays documented and the choice is his; the
+   change would be one `left` value.
+   THE OFFSET HISTORY, IN ONE PLACE SO IT IS NOT A CHAIN OF ANNOTATIONS:
+       lobe seat        left 34.466%  top 28.968%
+       fell (withdrawn) left 40.781%  top 37.389%
+       rose (withdrawn) left 40.781%  top 33.178%
+       mesh at 59.20    left 52.643%  top 37.116%
+       3/4 left         left 46.328%  top 37.116%   -- broke the mesh
+       mesh at 64.50    left 51.914%  top 37.506%
+       mesh at 115.50   left 44.210%  top 37.506%   -- the mirror of 64.50
+       MESH AT 126.06   left 42.796%  top 36.664%   <- CURRENT
+   The tip ellipse now spans x 536.7..642.3, y 459.8..567.3.
+
+   THE MESH CIRCLE WAS ONLY HALF SWEPT, AND THE OTHER HALF HAD A SEAT IN IT.
+   THIS BLOCK USED TO BE HEADED "THE MESH CIRCLE IS FULL, AND THAT IS WHY THERE
+   IS NO MESH", and the commit that carried it is called "Bring the GitHub wheel
+   up beside the other two, and prove the mesh is impossible". On 10 Aug 2026
+   Nikhil asked for the mesh anyway -- "Have its teeth mesh with the linkedin
+   gear. Thats the only thing. Ignore other commands" -- and it turned out to be
+   available. THE VERDICT ON THE OLD PROOF IS: NARROW, NOT WRONG. Every
+   measurement below is correct and none has been re-taken. What was wrong was
+   one sentence of coverage -- "There is no fourth option: theta below 68 is the
+   far side of LinkedIn, where Gmail already is" -- which dismissed 68 degrees of
+   arc on an assumption instead of sweeping it. Gmail is at theta 354.85, not
+   below 68; the band 49.75..68.00 is free, and the wheel is in it now at
+   theta 59.20. The old sweep also ran only 68..270, so it never looked at
+   270..360 either. A sweep that stops early is not a proof, and this block is
+   left standing with its result corrected rather than deleted, because its
+   measurements are what made the new sweep cheap.
+   THE ORIGINAL QUESTION AND THE ORIGINAL FINDINGS. Gmail engages
+   LinkedIn on the right; the prize was to engage it on the LEFT and
+   make the three a real train again. Same module, so the only remaining
    condition is one distance: centres at the two pitch radii added,
    51.15 + 61.05 = 112.20. That is a circle round LinkedIn's centre, and it was
-   swept degree by degree against an offline composite of the rig -- base, every
+   swept against an offline composite of the rig -- base, every
    part, every cutout -- with the wheel's tip ellipse and its enamel hub tested
-   at each point. Nothing on the left half of it is free:
+   at each point. Nothing on the LEFT of it is free, and that much holds:
        theta 68..185 deg   the rig's own CENTRE WHEEL, (560, 552) r 87. Dead
                            left of LinkedIn, theta 180, the wheel would stand
                            at (543.3, 422.8) and its tip circle would lie
@@ -2499,8 +2903,30 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
        theta 220..270 deg  the VIERZIG (40) RUBINE engraving, whose glyphs run
                            x 546..719 over y 280..354. The hub lands on RUB,
                            then UBIN, then BINE
-   There is no fourth option: theta below 68 is the far side of LinkedIn, where
-   Gmail already is. The pocket the brief calls "between the two plates" holds
+   THE SENTENCE THAT USED TO STAND HERE said "There is no fourth option: theta
+   below 68 is the far side of LinkedIn, where Gmail already is." It is the only
+   false thing in this block and it is kept, struck, so that the failure is
+   legible: it treats "the far side of LinkedIn" as one place and hands all
+   68 degrees of it to a wheel that occupies 45 of them. HERE IS THE WHOLE
+   CIRCLE, swept at 0.25 deg against the same composite, with the tip ellipse
+   tested against every rig part and every link wheel and the hub against every
+   stone and glyph:
+       theta   0.00.. 49.50   the GMAIL wheel, (763.1, 413.1) tip r 48.675.
+                              Tangency needs 48.675 + 52.800 = 101.475
+       theta  49.75.. 68.00   FREE. 18.25 degrees, and the only free arc on the
+                              circle. THIS IS WHERE THE WHEEL IS
+       theta  68.25..162.00   the rig's own CENTRE WHEEL, needing 139.80, with
+                              the FOURTH WHEEL (631, 639) r 73 also blocking
+                              71.25..121.75
+       theta 162.25..206.75   the jewel arm's LEFT LOBE against the HUB, and the
+                              ruby itself from 177.75; the centre wheel overlaps
+                              this band to 184.75
+       theta 207.00..233.25   the VIERZIG (40) RUBINE engraving against the hub,
+                              overlapping the lobe to 233.25
+       theta 233.50..300.00   the engraving alone
+       theta 300.25..359.75   the GMAIL wheel again, with the engraving to 316.50
+   341.75 degrees blocked, 18.25 free, and the free arc is the one the old
+   sentence gave away. The pocket the brief calls "between the two plates" holds
    exactly one wheel, and the proof is shorter than the sweep. Traced along the
    line from the lobe's centre (553, 390) to LinkedIn's (655.5, 422.8), the
    arm's edge stands at r 53.50 and the centres are 107.62 apart, so with
@@ -2509,12 +2935,74 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    block records. From 0 to 40 degrees off that line the traced edge lies
    INSIDE LinkedIn's tip circle. There is no plate in that pocket to put a
    wheel on, at any size.
-   So the wheel was placed as near to LinkedIn on its left as the plate allows
-   -- 170.60 centre to centre, 55.10 tip to tip, against 263.5 tip to tip before
-   -- and the size step was still worth taking, because it is what leaves the
-   mesh one distance away instead of a distance and a redraw.
+   So the wheel was placed as near to LinkedIn on its LEFT as the plate allows
+   -- 170.60 centre to centre, 55.10 tip to tip -- and that placement is what
+   the old conclusion was for. It stands as a fact about the left. It was never
+   a fact about the circle.
+   WHICH POINT ON THE FREE ARC, AND WHY 59.20. Two figures were computed at
+   every 0.05 deg across 49.75..68.00. The first is the smallest tip-to-tip
+   clearance to anything else on the caseback, which peaks near the middle of
+   the arc: 15.86 px at 59.20, against 0.12 at the arc's lower end where Gmail
+   closes in and 0.49 at the upper end where the centre wheel does. The second
+   is the TOOTH CROSSING, both sprites rasterised at 6x and the pixels opaque in
+   both counted; it oscillates with a period of about 2.8 deg as the teeth walk
+   in and out of phase, running from 13.50 px^2 at the arc's best to 46.00 at
+   its worst. 59.20 is a local minimum of the second, 14.56 px^2, at the maximum
+   of the first. The alternative was 56.65 -- crossing 13.50, clearance 11.68 --
+   and 1 px^2 of crossing is invisible where 4 px of clearance is not, so the
+   clearance won. The chosen seat is
+       cx = 655.5 + 112.20 * cos(59.20) = 712.951
+       cy = 422.8 + 112.20 * sin(59.20) = 519.175
+   and it is below and to the RIGHT of LinkedIn, in the bay under the name
+   bridge -- the opposite side of the wheel from where six months of this block
+   went looking.
 
-   THE EDGE IS THE JEWEL ARM'S LEFT LOBE, AND IT IS A DISC RATHER THAN A WALL.
+   HOW FAR LEFT A MESH CAN GO, WHICH IS THE QUESTION THE NEXT INSTRUCTION ASKED.
+   "move the github gear 3/4 lengths to the left" wanted 79.200 px of leftward
+   travel and took it, off the circle. cx = 655.5 + 112.20*cos(theta) falls as
+   theta rises, so the leftmost seat that is still a mesh is the top of the free
+   arc, and the arc ends at 68.00 because the rig's centre wheel begins there:
+       theta 68.00   cx 697.531  cy 526.830   15.42 px left of the mesh seat
+                     centre-wheel margin 0.02 px, crossing 37.31 px^2
+       theta 65.00   cx 702.918  cy 524.488   10.03 px left
+                     margin 5.74, crossing 24.64
+       theta 64.50   cx 703.803  cy 524.070    9.15 px left
+                     margin 6.69, crossing 18.25  <- TAKEN. THE USABLE LIMIT
+       theta 62.00   cx 708.175  cy 521.867    4.78 px left
+                     margin 11.41, crossing 16.33
+   THE LEFTWARD TRAVEL AVAILABLE ON THE MESH CIRCLE WITHOUT CROSSING ANYTHING
+   THAT TURNS IS 9.15 PX, NOT 15.42, AND
+   THE DIFFERENCE MATTERS ENOUGH TO STATE TWICE. 68.00 is where the arc ends
+   arithmetically, and it is not a seat: 0.02 px of clearance to a
+   turning wheel is a tangency, and its tooth crossing is 37.31 px^2
+   against the 20.8 that is Gmail's worst. A first pass reported 15.42 as the
+   budget; THAT WAS THE ARITHMETIC LIMIT MISTAKEN FOR A USABLE ONE and it is
+   corrected here. The clean answer is theta 64.50 --
+   `left` 51.914%, `top` 37.506%, 9.15 px left of the 59.20 seat, 6.69 px clear
+   of the centre wheel, crossing 18.25 and under Gmail's worst throughout the
+   cycle. Every one of these seats is still 100% on the
+   name bridge with
+   no cut: moving left along this arc does not buy an edge either.
+   AND THEN THE ARC WAS LEFT BEHIND ALTOGETHER. "basically move the github gear
+   to the left side of the linkedin gear while still meshing. Keep the same
+   height. Ignore any rules" put the wheel at theta 115.50, which is 96.61 px
+   left of the 64.50 seat rather than 9.15 -- ten times the budget -- and
+   "move the github gear up 10% of its length and then left until it matches the
+   mesh" has since taken it on to theta 126.06. Both are
+   deep inside the band this sweep gives to the rig's centre wheel (68.25..162);
+   115.50 was also inside the fourth wheel's (71.25..121.75) and 126.06 has
+   cleared it. THE PREDICTIONS CAME TRUE AND
+   ARE MEASURED IN THE GITHUB WHEEL BELOW: at 115.50, 36.51% of the sprite over
+   the centre wheel and 2.72% over the fourth; at 126.06, 26.32% over the centre
+   wheel and 0.00% over the fourth. THE SWEEP IS NOT WRONG AND IS NOT
+   SUPERSEDED --
+   IT IS BEING KNOWINGLY DISOBEYED, which is what "Ignore any rules" instructed
+   and a different thing entirely. It is left here intact because it is exactly
+   what a reader needs in order to understand the price of the current seat, and
+   because if the wheel is ever brought back inside the constraints, 64.50 and
+   59.20 are the two seats waiting.
+
+   THE EDGE WAS THE JEWEL ARM'S LEFT LOBE, AND IT IS A DISC RATHER THAN A WALL.
    The arm that carries VIERZIG (40) RUBINE ends on the left in a raised round
    lobe with a ruby in a gold chaton at its middle and three blue screws round
    it. Its undercut was traced off rig/base.webp per degree, as the darkest
@@ -2528,14 +3016,36 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    pixels. The minimum is the edge used here and in the cut.) The wheel meets
    that edge across its lower-left quadrant, at 158.34 deg from the lobe's
    centre, where the edge stands at r 46.28 and the wheel's centre is 73.16
-   away -- so the tip circle reaches 25.9 px past it and the lobe takes the
-   rest. That is the whole of the joint: the visible right-hand outline of the
-   wheel is the lobe's edge, not the wheel.
+   away -- so the tip circle reached 25.9 px past it and the lobe took the
+   rest. That was the whole of the joint: the visible right-hand outline of the
+   wheel was the lobe's edge, not the wheel.
 
-   WHAT IT COSTS AND WHAT IT BUYS. Every figure is in the render's 1254px space
+   THE JOINT OPENED AND THEN CLOSED FROM THE WRONG SIDE. After the fall the
+   wheel's centre was 133.07 from the
+   lobe's, bearing 85.2 deg -- near enough straight below it, where the traced
+   edge stands at r 49.5 -- and the tip ellipse's radius along that ray is ry,
+   53.74. So there were 29.8 render px of bare plate between the teeth and that
+   edge where there had been -25.9 of tuck: the wheel was under nothing.
+   The rise of half a length took it back INTO the lobe from underneath --
+   centres 80.58, tip to tip -21.72, 13.09% of the sprite inside the traced edge
+   with only 161 of those 678 px covered by the cut, so 9.98% of the wheel was
+   teeth drawn ON TOP of a ruby lobe. Then the mesh took it off the lobe
+   entirely: the seat at (712.9, 519.2) is 205.59 from the lobe's centre and
+   103.29 px clear of its edge, on the far side of LinkedIn. THE LOBE IS NO
+   LONGER THIS WHEEL'S EDGE AND NO LONGER ITS HAZARD. The trace above is kept
+   unchanged because it is the
+   measurement of a real edge, it is what the cut below is made to, and it is
+   where the wheel would return if the mesh were ever given up; nothing in it
+   has been re-measured or is in doubt.
+
+   WHAT IT COST AND WHAT IT BOUGHT AT THE LOBE. Every figure is in the render's
+   1254px space
    and every one was measured against an offline composite, not scaled from the
    old position: `now` is the wheel at (485.0, 417.0) tip rx 52.80, `was` the
-   same wheel at (317.3, 598.0) tip rx 54.71 under the recess step.
+   same wheel at (317.3, 598.0) tip rx 54.71 under the recess step. READ THIS
+   TABLE AS HISTORY -- its `now` is the position the wheel left on 10 Aug 2026.
+   What it reads at the two withdrawn positions and at the mesh seat is the
+   second table, below it.
        hidden behind the lobe   14.12% of the tip ellipse, was 15.0% behind the
                                 step. Measured by rasterising the tip ellipse at
                                 1000x1000 and counting samples inside the traced
@@ -2590,22 +3100,186 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    bridgework and 13.60 px of tooth to a turning wheel; those are the two to
    bring to the next size step.
 
-   WHAT IS UNDERNEATH IT NOW. Flat plate and nothing else: the bay between the
+   AND WHAT THE TWO MOVES OF 10 AUG 2026 COST. Same space, same method -- an
+   offline composite of base + every rig part + every rig cutout + all three
+   wheels + all four cuts, rebuilt at each position -- with tip rx 52.80
+   unchanged throughout, since neither move touched `width`.
+   THE TABLE THAT USED TO LIVE HERE HAD SIX COLUMNS AND WAS UNREADABLE, so it is
+   split: the CURRENT state in full first, then the earlier positions as a short
+   itinerary. Six side-by-side columns of six-figure numbers made the one column
+   that describes the screen impossible to find, which defeats the point of
+   measuring anything.
+
+   WHERE IT IS: (582.765, 508.232), theta 130.41 on the 112.20 circle -- ON
+   LINKEDIN'S LEFT, on screen as well as in the markup --
+   `left` 42.262% `top` 36.243%, tip ellipse
+   x 530.0..635.6 y 454.5..562.0. Composited
+   against base + every rig part + every rig cutout + all three wheels + all
+   four cuts; percentages are of the sprite's 5072 opaque pixels.
+       linkedin      centres 112.2004 vs 112.20 required -> 0.0004 off, the
+                     closest any seat has come
+                     tip to tip -3.2993 vs -3.30 = 2m -> A MESH
+                     lens 1.04% of this sprite, 0.82% of LinkedIn's
+       name bridge   43.04% of the sprite lies on it, and 41.15% is COVERED by
+                     static-plate-github.webp -> reads as running UNDER it
+       rig centre wh 17.27% of this sprite lies over the VISIBLE part of it.
+                     Centres 49.33, tip to tip -90.46. NOT COVERABLE -- a still
+                     cut cannot hide a turning part
+       bare plate    39.69%, which is where a link wheel belongs
+       rig fourth wh +13.58 tip to tip -- CLEAR, as it has been since the 10%
+                     rise two seats ago
+       rig seconds   +20.12
+       jewel lobe    +19.62
+       gmail wheel   +102.41
+       rig third wh  +139.57
+       rig balance   +182.32
+       aperture      246.65 clear
+       gmail wheel, fourth, seconds, third, balance and the balance cock --
+       0.00% of the sprite
+   ONE OF THOSE LINES IS AN OVERLAP WITH A PART THAT TURNS, and it is here by
+   his instruction: "Ignore any rules", 10 Aug 2026, given after the cost had
+   been measured and reported to him twice the same day. This is an override,
+   not an oversight. It was two such lines two seats ago, and the cut asked for
+   on the same day has taken the bridge portion out of the problem entirely.
+
+   WHERE IT HAS BEEN, on 10 Aug 2026, with the fault each position carried:
+       lobe   (485.0, 417.0)  under the jewel lobe, 15.89% behind its own cut.
+                              Clean, and the position the cut still fits
+       fell   (564.2, 522.6)  WITHDRAWN. Tip circle wholly inside the rig's
+                              centre wheel, 41.14% over it
+       rose   (564.2, 469.8)  WITHDRAWN. 18.26% over the centre wheel, 7.41%
+                              over the LinkedIn WHEEL, 9.98% of teeth on an
+                              uncut ruby lobe
+       mesh   (712.9, 519.2)  theta 59.20. A real mesh, 112.1989 / -3.3007,
+                              lens 0.99%. 100% on the bridge, uncut
+       3/4 L  (633.8, 519.2)  BROKE IT. 98.8021 centres -- 13.40 px INSIDE the
+                              mesh, tip to tip -16.6975 -- with 18.67% over the
+                              centre wheel and 1.20% over the fourth
+       64.50  (703.8, 524.1)  the meshed maximum-left. A real mesh,
+                              112.1987 / -3.3010, and the LAST POSITION THAT
+                              CLEARED EVERYTHING THAT TURNS
+       115.50 (607.2, 524.1)  the exact mirror of 64.50. Mesh
+                              intact, 36.51% over the centre wheel and 2.72%
+                              over the fourth. Tooth crossing peak 40.25
+       126.06 (589.5, 513.5)  a 10.56 px rise and a
+                              17.73 px leftward solve. Mesh intact,
+                              112.2032 / -3.2965; 26.32% over the centre wheel,
+                              fourth wheel clear, crossing peak 33.39
+       NOW    (582.8, 508.2)  theta 130.41, a 5.28 px rise and a 6.70 px
+                              leftward solve. Mesh 112.2004 / -3.2993, the
+                              closest of any seat; 17.27% over the visible
+                              centre wheel; crossing peak 17.33, BACK UNDER
+                              GMAIL'S WORST; and the first seat to carry a cut
+                              made for it -- 41.15% of the wheel runs under the
+                              name bridge
+   Every one of those was his instruction, in that order. The two withdrawn
+   positions are kept because each was the input to the next; `3/4 L` is kept
+   because 64.50 is the correction of it; 64.50 is kept because it is the
+   one seat that satisfied every constraint at once, which is what a reader
+   needs if the current position is ever revisited; and the last two are kept
+   because each is measured from the one before.
+   WHY A FIXED-x SEARCH COULD NEVER HAVE FOUND THIS, which is the one piece of
+   the withdrawn moves worth keeping. Take the
+   horizontal half of the first one as given -- cx 564.19, the 3/4-length step
+   right -- and ask what `cy` is free in that column. Three circles rule it:
+       rig centre wheel  (560, 552) r 87, needs 139.80 -> cy <= 412.26 or >= 691.74
+       linkedin wheel    (655.5, 422.8) r 62.70, needs 115.50 -> cy <= 352.06 or >= 493.54
+       rig seconds wheel (471, 624) r 88, needs 140.80 -> cy <= 518.46 or >= 729.54
+   The intersection is cy <= 352.06 or cy >= 729.54. 522.60 was in one forbidden
+   band, 469.80 in two, and 417.00 -- where the wheel started -- in two as
+   well, because the 3/4-length
+   step RIGHT is on its own enough to put the teeth 4.73 px inside the centre
+   wheel and 24.02 px inside LinkedIn's. THE COLUMN WAS THE PROBLEM, NOT THE
+   HEIGHT, and no vertical nudge of any size between
+   352.06 and 729.54 would have cleared both circles. A VERTICAL SWEEP AT FIXED
+   x CANNOT FIND A POINT ON A CIRCLE EXCEPT BY ACCIDENT. That is why the search
+   that found the mesh was run round the 112.20 circle instead, and it is the
+   whole return on the two withdrawn moves.
+
+   WHAT IS UNDERNEATH IT NOW, AND WHAT THE CUT TAKES BACK. The N ROSHAN
+   RAMLUKAN bridge for 43.04% of the sprite, the rig's visible turning CENTRE
+   WHEEL for 17.27%, and bare plate for 39.69%. Zero pixels on the fourth,
+   seconds and third wheels, the balance, the balance cock and the Gmail wheel;
+   the only contact with the LinkedIn wheel is the 1.04% mesh lens.
+   THE CUT WAS ASKED FOR ON 10 AUG 2026 -- "And then create a cutoff region for
+   the plate below it" -- AND IT IS static-plate-github.webp, RE-CUT IN PLACE.
+   Every occluder in this layer is a copy
+   lifted from rig/base.webp -- a STILL frame of the movement at rest -- laid
+   after the wheel so the teeth pass under it. That works over a bridge, which
+   does not move. IT CANNOT WORK OVER THE CENTRE WHEEL: a
+   still copy of a turning part, pinned over the turning part, would freeze what
+   it covers and drift out of register within a second. THAT IS WHY THE ALPHA IS
+   THE BRIDGE'S OWN SHAPE AND NOTHING ELSE -- taken from the rig's
+   static-bridges alpha placed in the same 1254 space, so the cut's edge IS the
+   bridge's edge and no seam is possible between them.
+       box            x 526..644, y 446..569 (118x123), lifted from base.webp
+       alpha          static-bridges alpha, MINUS LinkedIn's tip circle
+                      (r 62.700 about (655.5, 422.8) plus 0.8 margin),
+                      feathered 0.7px as the other three are
+       provenance     max channel difference 0 against base.webp over every
+                      pixel whose alpha is above zero
+       covers         41.15% of the GitHub sprite
+       cannot cover   17.27%, the visible centre wheel. 0 px above alpha 127
+                      fall on it -- verified, not assumed
+   THE LINKEDIN SUBTRACTION IS LOAD-BEARING AND ITS SHAPE MATTERS. This plate is
+   drawn after the GitHub wheel but the LinkedIn wheel is drawn BEFORE it, so
+   without the subtraction the plate would bite LinkedIn by 378 measured pixels.
+   The tip CIRCLE is subtracted rather than LinkedIn's sprite because that wheel
+   TURNS: a sprite-shaped hole would be static while the teeth moved through it.
+   A disc is rotation-invariant and is the only safe subtrahend. It costs 1.89%
+   of coverage, all of it inside the mesh lens where a static plate is unwanted.
+   SO THE CUT FIXES EVERYTHING THAT WAS LYING ON BRIDGEWORK and cannot touch
+   what lies on the turning wheel: about two thirds of the problem by area, and
+   a sixth of the wheel still reads as sitting on top of a moving part. That
+   residue is a property of the SEAT, not of the cut, and only a move spends it.
+   VERIFIED BY EYE IN REAL CHROME, since a cut is right or wrong by eye: the
+   wheel reads as running under the bridge, the cut's edge is invisible against
+   it, and the mesh reads as teeth meeting. AND VERIFIED AGAINST THE FAILURE
+   MODE THAT MATTERS -- three frames 1.2s apart, differenced: under the solid
+   body of the cut, ZERO pixels change, while a quarter of the pixels outside it
+   do. The plate does not shimmer and does not drift out of register.
+
+   WHAT WAS UNDERNEATH IT AT THE 59.20 AND 64.50 SEATS, kept because those are
+   the positions the wheel returns to if the constraints are ever reinstated:
+   the bridge and nothing else. 100% of the sprite inside
+   the rig's static-bridges alpha, on a flat bright surface --
+   base luminance mean 179.8 with sd 26.1 across the tip disc, and inside the
+   hub's own r 18.01
+   the darkest pixel reads 67, where a jewel or an engraved stroke reads under
+   40, so NO STONE, NO SCREW, NO GLYPH UNDER THE LOGO. No cut reached those
+   seats either: measured at every 0.25 deg across the free arc, the fraction of
+   the wheel lying OUTSIDE the bridge alpha never rises above 0.00%, so there is
+   no bearing on the free arc that straddles a bridge edge.
+
+   WHAT WAS UNDERNEATH IT AT THE LOBE. Flat plate and nothing else: the bay
+   between the
    recess step's left wall, the capped hole at (426, 343) and the lobe. No
-   jewel, no screw, no engraving under any part of the wheel that is not behind
+   jewel, no screw, no engraving under any part of the wheel that was not behind
    the lobe -- the three blue screws and the ruby of the chaton are all inside
-   the traced edge, so the cut puts them back on top of the teeth, which is what
-   makes the wheel read as running under the arm rather than over its jewels.
-   Nothing .cb-rig emits reaches this bay either; the nearest thing it paints is
-   the centre wheel's teeth, 13.60 px below and to the right, which is why this
-   cut still has to be authored by hand rather than borrowed from
-   static-bridges.webp.
+   the traced edge, so the cut put them back on top of the teeth, which is what
+   made the wheel read as running under the arm rather than over its jewels.
+   Nothing .cb-rig emitted reached that bay either; the nearest thing it painted
+   was the centre wheel's teeth, 13.60 px below and to the right, which is why
+   this cut had to be authored by hand rather than borrowed from
+   static-bridges.webp. The wheel has since travelled the 13.60 px and far more:
+   it is 48.47 from that centre wheel's arbor now, -91.33 tip to tip, with
+   26.32% of itself lying over the part it was once held 13.60 px off. It was
+   146.49 and +6.69 clear at the 64.50 seat; the two moves since have spent all
+   of that, by
+   instruction. The hand-authored cut covers none of the wheel, though their
+   x ranges now overlap by 9.34 px -- it is 17.77 px of y that separates them.
 
    THE COPY IS OVER ITS OWN PIXELS, AND THE FILE WAS RE-CUT RATHER THAN LEFT
-   LYING. The old asset was 42x108 taken at x 336..378, y 544..652, cut for the
+   LYING -- AND THEN THE WHEEL LEFT IT ANYWAY. The old asset was 42x108 taken at
+   x 336..378, y 544..652, cut for the
    recess step; the moment the wheel left that step it would have become an
-   occluder covering nothing, which is the one thing this block already carries
-   an example of and must not carry twice. So static-plate-github.webp is a new
+   occluder covering nothing, which is the one thing this block already carried
+   an example of and said it must not carry twice. It carries it twice as of
+   10 Aug 2026, and by the same mechanism -- the wheel moved and the cut did
+   not. Re-cutting the file was still the right call for the position it was cut
+   for; what the pair of them prove is that this layer has no way to keep a cut
+   attached to a wheel, and that a move of a `.cb-gear` is always two edits even
+   when it looks like one. So static-plate-github.webp is a new
    file: 46x80 lifted straight out of rig/base.webp at x 500..546, y 362..442,
    and everywhere its alpha is above zero its RGB matches what is beneath it
    with a maximum channel difference of 0 -- it paints nothing but its own
@@ -2622,22 +3296,80 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    PROVENANCE, PROVED THE WAY THE OTHER TWO CUTS WERE. A full offline composite
    was built twice -- rig/base.webp, every rig part, every rig cutout, all three
    link wheels and all four link cuts -- once with this file and once without.
-   942 pixels differ. Every one of them belongs to the GitHub sprite: 879 lie
-   inside its tip ellipse and the remaining 63 are its own antialiased tooth
-   tips a fraction outside the mathematical ellipse. NOT ONE lies inside
+   942 pixels differed, with the wheel under the lobe. Every one of them
+   belonged to the GitHub sprite: 879 lay
+   inside its tip ellipse and the remaining 63 were its own antialiased tooth
+   tips a fraction outside the mathematical ellipse. NOT ONE lay inside
    LinkedIn's tip ellipse or Gmail's, so this cut, which is drawn after the
-   LinkedIn wheel, takes nothing off it.
+   LinkedIn wheel, took nothing off it. Built again at (564.2, 522.6) the count
+   was ZERO, at (564.2, 469.8) it was 166, and at both the mesh seat
+   (712.9, 519.2) and the current (633.8, 519.2) it is ZERO again. The file is byte-identical to what is beneath it at every
+   one of those positions; what changed each time is only how much of the wheel
+   was standing under it, which was never a property of the file.
 
-   THE CUT REACHES, AND IT WAS CHECKED RATHER THAN ASSUMED. The lens -- the part
-   of the tip ellipse lying inside the traced edge -- occupies x 507.13..537.76,
-   y 369.93..435.05, inside a box of x 500..546, y 362..442. That leaves 7.13px
+   THE CUT REACHED, AND IT WAS CHECKED RATHER THAN ASSUMED -- AND THEN IT STOPPED
+   REACHING. The lens -- the part
+   of the tip ellipse lying inside the traced edge -- occupied x 507.13..537.76,
+   y 369.93..435.05, inside a box of x 500..546, y 362..442. That left 7.13px
    of cut to its left, 8.24 right, 7.93 above and 6.95 below: the tightest
-   margin is 6.95px, and the box is padded on every side because this wheel has
+   margin was 6.95px, and the box is padded on every side because this wheel had
    been resized four times and the next reader should be able to nudge it
    without recutting the file. Sampled at 1200x1200 across the tip ellipse,
-   every point inside the lens reads alpha 1 except within 1.44px of the traced
-   edge, where the shallowest value is 0.996 -- that is the 0.7px feather spread
-   over one pixel of raster and nothing else. No tooth comes through the plate.
+   every point inside the lens read alpha 1 except within 1.44px of the traced
+   edge, where the shallowest value was 0.996 -- that is the 0.7px feather spread
+   over one pixel of raster and nothing else. No tooth came through the plate.
+   THE PADDING WAS FOR A NUDGE AND NONE OF THESE WERE NUDGES. 7 px of margin
+   against 105.6, then 52.8, 249.8, 79.2, 71.2, 96.6 and 20.7: the wheel is
+   at x 536.7..642.3, y 459.8..567.3 and this
+   box is x 500..546, y 362..442. FOR THE FIRST TIME SINCE THE LOBE THE TWO
+   OVERLAP IN X -- by 9.34 px -- and the only thing keeping the cut off the
+   wheel is 17.77 px of Y. Coverage is still 0.00% and there is no lens to
+   measure, but the margin has stopped being an x margin, which is worth knowing
+   before the next move: another rise of this size would put this cut across a
+   wheel it was not made for.
+   EVERYTHING ABOVE THIS LINE IS THE LOBE CUT, AND THE LOBE CUT IS GONE. It was
+   replaced on 10 Aug 2026 by the bridge cut: 118x123 at x 526..644, y 446..569,
+   the rig's own static-bridges alpha minus a disc on the LinkedIn wheel. The
+   figures above -- the 46x80 box, the 0.00% coverages, the per-degree undercut
+   trace -- are kept only because they are the sole measurement of the ruby
+   lobe's edge and would have to be redone from scratch if the wheel ever went
+   back to that seat. They describe a file that no longer exists. This element
+   is NOT an inert occluder any more; the only one left in the layer is the
+   bridge plate. The live cut is documented where it belongs, beside the markup
+   it occludes, in index.html.
+
+   THE DISC IS 73.500 AND NOT LINKEDIN'S TIP CIRCLE, WHICH IS THE WHOLE OF THE
+   10 AUG FIX. Verbatim: "fix the github gear. The mesh where it meets w the
+   linkedin gear is covered/i cant see it". The hole in this plate has to be a
+   DISC because LinkedIn turns and a sprite-shaped hole would stand still while
+   teeth swept through it; it has to be centred on LinkedIn because this plate
+   is drawn after that wheel. Both were right. The RADIUS was the error: at
+   LinkedIn's tip circle, r 62.700, the hole opens exactly the lens between the
+   two tip circles, 3.30 by 27.30, and the plate resumes at the bottom of
+   GitHub's teeth. Whole teeth stood clear over 8.0 deg of the 360; teeth WITH
+   the rim they sit on, over 0.0. At r 73.500 -- solved so that three GitHub
+   teeth either side of the pitch point clear the rim's inner edge, r 43.20, by
+   1.5 -- it is 58.5 deg and 48.0 deg. Coverage of the wheel falls 41.07% ->
+   33.90%, all of it in the crescent between the two radii; the wheel now leaves
+   and re-enters the bridge a tooth-and-a-rim further out on each approach.
+   That is the trade, and the mesh is the side it was made for. The sums,
+   the before/after crops and the shimmer re-run are in index.html.
+
+   AND THE DISC IS PUNCHED LAST, WHICH IS WHY IT SURVIVED THE NEXT CUT. On
+   11 Aug 2026 -- "fix this messed up region", sent as a magnified crop of the
+   strip above the wheel -- this alpha gained the recess bay's raised RIM, where
+   four detached tooth tips had been standing past the end of static-bridges'
+   own trace and reading as dirt. Filling holes and opening the mesh are
+   opposite operations on one alpha channel, so the order matters and is now
+   fixed: static-bridges' alpha is unioned with everything above the measured
+   rim crest, and ONLY THEN is the r 73.500 disc taken out of the union. The
+   hole is therefore exactly the disc whatever else is added -- lip re-measured
+   over 173 rays at median r 73.540 against 73.550 before, the tooth-plus-rim
+   arc at the pitch point still 48.00 deg and the whole-tooth arc 59.50.
+   Coverage 33.90% -> 34.14%. An earlier note in index.html recorded two of
+   those crumbs as pre-existing and left them; there were four, and being older
+   than the disc change never made them anything but a defect. The measurement,
+   the crest fit and the shimmer re-run are beside the markup, in index.html.
 
    THE OLD JOINT IS GONE, AND SO IS THE QUESTION IT LEFT OPEN. This wheel used
    to press into the curved step that walls the recessed field -- chamfer traced
@@ -2648,9 +3380,15 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    the step's chamfer is 61.04 px against a requirement of rx 54.71 + hub 18.67
    = 73.38. Twelve px short, with no cx that fixed it. That arithmetic is
    retired rather than deleted because it is still the reason the wheel did not
-   go DOWN, and this move went up instead. Both the step and the bridge are now
-   bare plate: nothing authored in .cb-links lies below y 486.2 or left of
-   x 432.2.
+   go DOWN there, and that move went up instead. Both the step and the bridge
+   are still bare plate, and the wheel has since crossed the movement entirely:
+   nothing authored in .cb-links lies below y 567.3 or left of
+   x 536.7, which is the GitHub wheel's own leftmost tooth. The figures were
+   y 486.2 and
+   x 432.2 before 10 Aug 2026, and y 576.3 / y 523.5 with x 511.4 at the two
+   withdrawn positions. The link layer had the whole west half of the plate
+   empty for two revisions; the last two moves have brought GitHub back to
+   x 536.7, which is still 105 px east of the old lobe seat.
 
    ITS OWN DECLARATIONS ON PURPOSE. It does not carry .cb-links-static as well.
    That rule is flagged dead directly above and one of the two honest fixes
@@ -2728,17 +3466,35 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    the loose part THE LINK TRAIN records. The two moves took it to 20.3 px
    clear; growing 10% downward -- 5.7 px of tip radius plus 5.8 px of centre,
    both spent toward that wheel -- has taken it to 10.0 px clear. Still clear,
-   so nothing the rig emits is crossed by a link wheel anywhere on the caseback,
-   but this is now the tightest thing about the wheel and the number that would
+   -- and THIS IS NOW THE ONLY LINK WHEEL OF WHICH THAT IS TRUE. See THE LINK
+   TRAIN above, which states the layer-wide position once and carries the day's
+   history in one list rather than
+   as a chain of annotations here. The GitHub wheel was moved seven times on
+   10 Aug 2026 and ended across this same centre wheel by instruction: 48.47
+   from its arbor, -91.33 tip to tip, 26.32% of it over the part. It is in mesh
+   with this wheel on its authored left. This 10.0 is the
+   LinkedIn wheel's own clearance off that part, now the only positive one
+   against it; it is the
+   tightest thing about the
+   LinkedIn wheel and the number that would
    go negative first: another 10% on the same anchor would put teeth back across
    the movement's own, which is the exact fault the two moves were made to fix.
    Underneath the visible five-sixths: bare pocket plate and its shadow, no
-   jewel, no screw, no engraving. Aperture clearance went from 189.5 to 149.9,
+   jewel, no screw, no engraving. OVER it, since 10 Aug 2026: 0.78% of this
+   wheel's lower-left teeth are covered by the GitHub sprite, which is drawn
+   after it, and THAT IS A MESH LENS -- the same thing Gmail's mesh puts on the
+   other side at 0.65%, and what a pair at the sum of their pitch radii looks
+   like in a composite. It read 6.46% for a few hours that day, when a literal
+   3/4-length step left took the centres to 98.8021 against the 112.20 a mesh
+   needs; that was an overlap, and the meshed maximum-left corrected it.
+   Aperture clearance went from 189.5 to 149.9,
    and the growth barely touched it: 149.8, because the 5.7 px the tip radius
    gained was all but cancelled by the 5.6 px the dropping centre moved TOWARD
    the centre of the clipping disc -- the movement's own, (610.7, 606.8) r 401.9,
    and nowhere near tight. Gmail is the wheel to watch there now, at 106.8;
-   GitHub held that title until it crossed the movement and went to 121.5.
+   GitHub held that title until it crossed the movement and went to 121.5, and
+   the moves of 10 Aug 2026 took it to 252.9, 204.4, 214.4, 258.5 and 224.6 at
+   the meshed seat, further out of contention still.
    The name bridge's sweep below and right is the other wall of the pocket, and
    growing downward did not reach it either: the nearest shadowed step on any ray
    from 20 to 95 degrees is 25.3 px past the tip circle.
@@ -2867,7 +3623,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
                                 the caseback; crossing the movement traded that
                                 for GitHub's 71.9, which was then the number to
                                 watch. GitHub has since left that wall too, for
-                                121.5, so this 106.4 is the tightest of the three
+                                121.5, then 252.9, 204.4, 214.4, 258.5, 224.6, so
+                                this 106.4 is the tightest of the three
                                 again -- and it is four times the 25.5 it was.
    IT ALSO SETTLES AN OLD INCONSISTENCY. Gmail used to lie across the recessed
    field's curved step at x 334..362 with its teeth OVER the step while the
@@ -2919,6 +3676,32 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 }
 .face-back.is-flipped .cb-gear img { animation: linkGear linear infinite; }
 .face-back.is-flipped .cb-gear[data-link='linkedin'] img { animation-duration: 148s; }
+/* Reverse, and since 10 Aug 2026 that is a requirement rather than a flourish:
+   this wheel is IN MESH with LinkedIn -- centres at 51.15 + 61.05 = 112.20,
+   measured 112.2032 -- and meshed wheels counter-rotate. 124s
+   over 62 teeth is 2.000s per tooth, the
+   same as LinkedIn's 148s over 74, so the rates are inverse to the tooth counts
+   exactly as a mesh requires and the relative tooth alignment repeats every
+   2.0s without drifting. NOT ONE CHARACTER OF THIS RULE HAS CHANGED THROUGH
+   SEVEN MOVES OF
+   THE WHEEL: THE RATIOS ARE THE TOOTH COUNTS above wrote in advance that "if the
+   gap ever closed the three would already be in step", and the gap closed. It
+   reopened for a few hours that day, when a literal reading of "move the github
+   gear 3/4 lengths to the left" put the centres 13.40 px inside the meshing
+   distance and these rates briefly described a relationship that was not there;
+   the wheel was seated at the meshed maximum-left, theta 64.50, MIRRORED to
+   115.50, and then taken to 126.06 by a 10% rise and a leftward solve. NEITHER
+   A REFLECTION NOR A CHANGE OF BEARING ALTERS THE
+   RATIO OR THE SENSE -- same tooth counts, same directions, only the line of
+   centres moves -- so the rule is correct at every one of them, untouched.
+   WHAT THOSE MOVES DID COST is the tooth PHASE, which this rule does not carry:
+   the crossing runs 33.39 px^2 at rest against Gmail's worst of 20.8, having
+   been 40.25 at the mirror and 19.14 at the last clean seat. If that
+   is ever to be fixed without moving the wheel, the lever is a rotation offset
+   on this wheel alone -- its own keyframe from rotate(-X) rather than the
+   shared linkGear -- and it has deliberately not been pulled.
+   See THE MESH CIRCLE WAS ONLY HALF SWEPT above for the full sweep and the two
+   seats that clear everything, 59.20 and 64.50. */
 .face-back.is-flipped .cb-gear[data-link='github']   img { animation-duration: 124s;
   animation-direction: reverse; }
 /* Reverse because it is in mesh with LinkedIn and meshed wheels counter-rotate;
@@ -2989,26 +3772,46 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    clearance below is taken off that centre and not off the viewport's.
 
    Closed, the corner is free -- the case reaches no further left than x 328.6
-   at any height and the rail ends at x 163, so every width clears by 100px or
-   more. Open is the whole problem: the posed case is smaller but its centre has
+   at any height and the rail's ink now ends at x 228.4, so the two never meet at
+   any width this layout serves: the tightest word clears the closed case by 150px
+   at 1440x900 and by 44px at 1200x900, the narrowest. (This sentence used to
+   quote x 163 and "every width clears by 100px or more"; the first was an earlier
+   rail's edge and the second was already contradicted by the 1200x900 figure it
+   shares this block with, so both are replaced by what was measured.)
+   Open is the whole problem: the posed case is smaller but its centre has
    moved to x 312, so its upper-left arc sweeps through the corner, crossing
    y 134.4 at the top and x 38.2 at the left.
 
    AND IT DOES NOT CLEAR EVERYWHERE. A real limit, not a rounding error, and it
    got worse rather than better in this pass. Clearance from the nearest PAINTED
    GLYPH to that arc, with a panel open, measured in real Chrome at 20px with all
-   six items and MISCELLANY in place of BOOKS:
+   six items and FIELD NOTES in place of MISCELLANY:
 
-                PROJECTS  RESEARCH  MISCELLANY  CONTACT
-     1920x1080    +87.1     +62.0      +20.3     +22.6   -- all six clear
-     1680x1050    +61.5     +35.1       -5.6      -8.7
-     1440x900     +34.6      +7.6      -32.4     -36.8
-     1366x768     +23.4      -2.7      -43.7     -42.9
-     1280x800     +16.8     -10.6      -50.0     -55.8
-     1200x900     +17.2     -11.6      -48.1     -63.0
+                PROJECTS  RESEARCH  FIELD NOTES  CONTACT
+     1920x1080    +87.1     +62.0      +13.1      +22.6   -- all six clear
+     1680x1050    +61.5     +35.1      -11.5       -8.7
+     1440x900     +34.6      +7.6      -37.6      -36.8
+     1366x768     +23.4      -2.7      -49.6      -42.9
+     1280x800     +16.8     -10.6      -54.3      -55.8
+     1200x900     +17.2     -11.6      -50.5      -63.0
 
    (ABOUT and RESUME clear by 87px or more everywhere and are left out of the
    table; they are never the binding item.)
+
+   ONLY THE FIFTH COLUMN MOVED, and it moved by exactly one character's advance:
+   MISCELLANY became FIELD NOTES, eleven characters where there were ten, so that
+   row's tail sits 14.64px further right and nothing else in the rail changed
+   position at all. The other three columns are the figures they always were --
+   re-measured with the same instrument this pass and reproduced to within .5px,
+   which is the check that the fifth column's new numbers are on the same scale
+   as the three it sits between. The fifth column read +20.3 / -5.6 / -32.4 /
+   -43.7 / -50.0 / -48.1 as MISCELLANY.
+
+   THE BINDING ITEM IS NOW THE LONGEST LABEL AND NOT THE LAST ROW. At four of the
+   six widths above -- 1920, 1680, 1440 and 1366 -- FIELD NOTES is tighter than
+   CONTACT, where MISCELLANY was tighter at none of them. CONTACT still binds at
+   1280 and 1200, where the arc has swung far enough left that the sixth row's
+   extra 30px of descent costs more than the fifth row's extra character.
 
    PAINTED GLYPH and not the font box: every label is uppercase, so the font's
    descender space below the baseline is empty and measuring to it overstates
@@ -3019,8 +3822,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
    TWO ROWS PAID FOR THE SIXTH WORD, AND THEY ARE THE TWO NEW ONES. The binding
    item was BOOKS, five characters at the bottom of a five-row column. It is now
-   CONTACT, a sixth row 30px further down, with MISCELLANY -- ten characters where
-   BOOKS was five -- immediately above it. Both of those came from the content,
+   FIELD NOTES -- eleven characters where BOOKS was five -- with CONTACT, a sixth
+   row 30px further down, beneath it. Both of those came from the content,
    not from the type: at the OLD 18px and the old 6px lead, six rows ending in
    MISCELLANY and CONTACT measure -26.1 and -30.4 at 1440x900. The size increase
    to 20px adds 6.4px to an already-negative number; the sixth row and the longer
@@ -3029,7 +3832,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    SO THE BOUNDARY MOVED, from "all five clear at 1366 and up" to "the first four
    clear at 1440, and the last two clear somewhere between 1680 and 1920". This
    is a real cost and it is the one this pass could not design away: the corner
-   is 168.75 x 180 now and
+   is 183.39 x 180 now -- one character wider than the 168.75 that sentence was
+   written about, and it went out sideways because the label did -- and
    the posed case sweeps through it. Every alternative was measured. 16px with a
    4px lead is the only configuration in which six rows clear 1440 at all (+3.5),
    and it is SMALLER than the rail already was; every step from there to 20px
@@ -3038,21 +3842,24 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    something with a better claim.
 
    WHAT THAT ACTUALLY LOOKS LIKE is what the old note already described one
-   breakpoint lower: the tails of MISCELLANY and CONTACT lie over the dimmed
-   bezel. They stay legible because the rail paints above the overlay and the
+   breakpoint lower: the tails of FIELD NOTES and CONTACT lie over the dimmed
+   bezel, and the fifth row's tail is now 14.64px deeper into it than it was.
+   They stay legible because the rail paints above the overlay and the
    posed case is held at brightness(.62), and the card is doing the same thing at
    the same widths -- measured 93px over the posed case at 1200x900 -- which
    nobody calls a collision. Nothing is clipped and nothing is hidden. And the
    CLOSED pose never meets the rail at any width the column is used at: the case
-   sits centred, and the tightest word clears it by 164px at 1440x900 and by 58px
-   at 1200x900, the narrowest viewport this layout serves. The overlap is a
-   panel-open condition only. It is bounded, measured and written down rather
+   sits centred, and the tightest word clears it by 151px at 1440x900 and by 46px
+   at 1200x900, the narrowest viewport this layout serves -- 12.6 and 12.0 less
+   than MISCELLANY did, and both still the clear space they were. The overlap is
+   a panel-open condition only. It is bounded, measured and written down rather
    than found later.
 
    A BIGGER RAIL COSTS CLEARANCE, AND THIS TIME IT COULD NOT BUY IT BACK. The
    type went 18 -> 20px. Every px of column height costs .77px of clearance at
-   1440 and every px of word width costs .62px, so the height is still the
-   expensive axis -- and the lead went 6 -> 5px with it, which is what keeps the
+   1440 and every px of word width costs .62px on the SIXTH row, so the height is
+   still the expensive axis -- and the lead went 6 -> 5px with it, which is what
+   keeps the
    PITCH at exactly the 30px it already was (5 + 20 + 5, see THE SCALE'S DIVISION
    IS THE ROW). That is the whole trick available: the type grew 11% and the
    column grew only by the one row the sixth word brought, 150 -> 180 rather than
@@ -3060,20 +3867,37 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    clearance for nothing anyone would see. 19px is a 6% change nobody would see
    at all -- the same objection this note made about 17px last time.
 
-   168.75px IS DERIVED, NOT CHOSEN, and it is derived IN THE STYLESHEET rather
+   .62 IS A PER-ROW FIGURE, which the rename is the first thing to make worth
+   saying. A px of word width costs |dx| / distance at the point where the tail
+   meets the arc, and that is .60 on the sixth row and .40 on the fifth; it also
+   flattens as the tail travels in, so the fifth row's 14.64px of new advance cost
+   5.2px at 1440x900 rather than 9.1. Nothing in this block is DERIVED from .62 --
+   it was the yardstick for the type-size decision the sixth word forced -- so it
+   is qualified here rather than replaced.
+
+   183.40px IS DERIVED, NOT CHOSEN, and it is derived IN THE STYLESHEET rather
    than in this paragraph -- see the `width:` calc below. IBM Plex Mono advances
    0.6em, which at 20px is 12.00px, and the letter gap adds 2.64px, so one
-   character advances 14.64px. MISCELLANY is now the longest label at 10
-   characters -- it was PROJECTS and RESEARCH at 8 -- which is 146.40px of
-   advance, and 143.76px of ink once the link reclaims the trailing tracking
-   column. The channel is 25px. 143.76 + 25 = 168.76, and the calc's
-   `10ch + 9 * track` writes the same sum as 120 + 23.76. It measures 168.75 in
+   character advances 14.64px. FIELD NOTES is now the longest label at 11
+   characters -- it was PROJECTS and RESEARCH at 8, then MISCELLANY at 10 -- which
+   is 161.04px of advance, and 158.40px of ink once the link reclaims the trailing
+   tracking column. The channel is 25px. 158.40 + 25 = 183.40, and the calc's
+   `11ch + 10 * track` writes the same sum as 132 + 26.40. It measures 183.39 in
    Chrome, because 1ch is the font's own 11.9985px and not the nominal 12 -- the
-   0.15px is the calc being right where the paragraph rounds, which is the whole
+   0.01px is the calc being right where the paragraph rounds, which is the whole
    argument for putting the sum in the stylesheet.
-   THE 10 AND THE 9 ARE THE LABEL, so they move when it does: ten characters of
-   advance and the nine letter gaps BETWEEN them. Adding CONTACT changed nothing
-   here -- seven characters fit inside ten -- and renaming BOOKS did.
+   THE 11 AND THE 10 ARE THE LABEL, so they move when it does: eleven characters
+   of advance and the ten letter gaps BETWEEN them. Adding CONTACT changed nothing
+   here -- seven characters fit inside ten -- and both renames of the fifth
+   section did: BOOKS -> MISCELLANY took it 8/7 -> 10/9, MISCELLANY -> FIELD NOTES
+   takes it 10/9 -> 11/10.
+   THE ELEVENTH CHARACTER IS A SPACE AND IT IS A CHARACTER LIKE ANY OTHER. This is
+   a monospace: U+0020 measures 12.00px at 20px, the same as M, measured on a
+   canvas in the loaded cut rather than assumed, and letter-spacing lays its
+   2.64px around it exactly as it does around a letter. So FIELD NOTES is 11
+   advances and 10 gaps -- not 10 and 9 plus something thinner -- and word-spacing
+   stays at normal, which adds nothing on top of the glyph. The box grew by one
+   character, 14.64px, and by nothing else.
 
    THE LETTER GAP IS A PIXEL, NOT AN EM. The rail was 11px at .24em and then
    16px at .165em, and both of those are 2.64px between characters: the gap has
@@ -3231,15 +4055,22 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   /* THE CHANNEL: the pointer's own length, which is 1em, plus the lead before
      the ink starts. 20 + 5 = 25. */
   padding-left: calc(1em + var(--rail-lead));
-  /* THE WIDTH, as the sum it is: TEN characters of advance -- MISCELLANY, the
-     longest label -- the nine letter gaps between them, and the channel. 10ch is
-     the monospace advance measured by the font rather than asserted at 0.6em, so
-     a font that failed to load cannot leave the box the wrong size for the type
-     inside it. The 10 and the 9 are the longest label's own character count and
-     must move with it: they were 8 and 7 when PROJECTS and RESEARCH were the
-     longest, and BOOKS becoming MISCELLANY is what changed them.
-     10 * 12 + 9 * 2.64 + 20 + 5 = 168.76. */
-  width: calc(10ch + 9 * var(--rail-track) + 1em + var(--rail-lead));
+  /* THE WIDTH, as the sum it is: ELEVEN characters of advance -- FIELD NOTES,
+     the longest label -- the ten letter gaps between them, and the channel. 11ch
+     is the monospace advance measured by the font rather than asserted at 0.6em,
+     so a font that failed to load cannot leave the box the wrong size for the
+     type inside it. The 11 and the 10 are the longest label's own character
+     count and must move with it: they were 8 and 7 when PROJECTS and RESEARCH
+     were the longest, 10 and 9 while it was MISCELLANY, and MISCELLANY becoming
+     FIELD NOTES is what changed them again.
+     THE SPACE IS A CHARACTER AND IT COSTS A FULL ADVANCE. This is a monospace,
+     so U+0020 measures exactly what a letter measures -- 12.00px at 20px, canvas
+     measureText, same as M -- and letter-spacing lays its 2.64px on both sides of
+     it like any other glyph. FIELD NOTES is 11 advances and 10 gaps, not 10 and 9
+     with a thin word space; word-spacing is untouched at normal, which adds
+     nothing on top.
+     11 * 12 + 10 * 2.64 + 20 + 5 = 183.40. */
+  width: calc(11ch + 10 * var(--rail-track) + 1em + var(--rail-lead));
 
   display: flex;
   flex-direction: column;
@@ -3759,33 +4590,52 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    moved is the block, not the scale inside it.
 
    THE ROW IS ITS OWN DERIVATION, AND IT HAS TWO TIERS NOW. The column fills a
-   168.75px corner; the row has to fit SIX words and five gaps across the width
-   it is given, and one of those words is MISCELLANY. The ink is
-   44 * 0.6 * size + 38 * track, where 44 is the characters in the six labels and
-   38 is the letter gaps INSIDE them (44 - 6). At 13px and the column's own
-   2.64px that is 343.2 + 100.3 = 443.5px, which fits every viewport from 761px
-   up with 48px+ of gap left over -- so from 761 to 1199 the row does not have to
+   183.39px corner; the row has to fit SIX words and five gaps across the width
+   it is given, and one of those words is FIELD NOTES. The ink is
+   45 * 0.6 * size + 39 * track + word-spacing, where 45 is the characters in the
+   six labels -- the space in FIELD NOTES among them, because a monospace gives it
+   a letter's full advance -- 39 is the letter gaps INSIDE them (45 - 6), and the
+   last term is 0 everywhere but the phone tier, where it is -4px. At 13px and the
+   column's own 2.64px that is 351.0 + 103.0 = 454.0px, which fits every viewport
+   from 761px up with 39px of margin still clear on each side at the tightest of
+   them -- so from 761 to 1199 the row does not have to
    give anything back, and it goes UP from the 11px it used to be rather than
    down. On a phone it cannot:
 
      390x844, margins 2 * 5vmin = 39.0, leaving 351px for the ink and five gaps
-       13px, track 2.64   343.2 + 100.3 = 443.5   92px over the viewport
-       11px, track 2.64   290.4 + 100.3 = 390.7   40px over, before any gaps
-       11px, track 1.00   290.4 +  38.0 = 328.4   5 gaps of 4.5px: words touching
-       10px, track 1.00   264.0 +  38.0 = 302.0   5 gaps of 8.6px at 2.2vmin,
-                                                  and 6.1px still to spare
+       13px, track 2.64   351.0 + 103.0 = 454.0   103px over the viewport
+       11px, track 2.64   297.0 + 103.0 = 400.0   49px over, before any gaps
+       11px, track 1.00   297.0 +  39.0 = 336.0   5 gaps of 3.0px: words touching
+       10px, track 1.00   270.0 +  39.0 = 309.0   less 4.0 of word space, and
+                                                  5 gaps of 8.2px at 2.1vmin:
+                                                  5.5px still to spare
 
-   -- measured 345.9px of ink and gaps in the 351px box, so 5.1px in real Chrome
-   against the 6.1 the nominal 0.6em advance predicts. Either way the row fits on
-   one line with no wrap and no horizontal overflow, and it fits by about a
+   -- measured 345.5px of ink and gaps in the 351px box, so 5.5px in real Chrome,
+   which is the figure the nominal 0.6em advance predicts. Either way the row fits
+   on one line with no wrap and no horizontal overflow, and it fits by about a
    character's width, which is not much.
 
    So the phone tier drops to 10px and 1px of tracking, and both are forced by
-   the content rather than chosen: this row carried 32 characters and now carries
-   44. 10px is not an arbitrary floor either -- it is the SAME 10px the
-   legibility block below sets for the caption, which is this site's stated floor
-   for chrome type on a phone. The row has now reached it, which means the next
-   label that grows has to be paid for out of the gaps or out of the label.
+   the content rather than chosen: this row carried 32 characters, then 44, and
+   now carries 45. 10px is not an arbitrary floor either -- it is the SAME 10px
+   the legibility block below sets for the caption, which is this site's stated
+   floor for chrome type on a phone.
+
+   AND THE WORD SPACE HAS NOW PAID FOR ONE. The paragraph above used to end "the
+   row has reached [the floor], which means the next label that grows has to be
+   paid for out of the gaps or out of the label" -- and the next label that grew
+   was MISCELLANY becoming FIELD NOTES, one advance and one letter gap, 7.0px at
+   this tier. Most of it came from a space this row had never had before: FIELD
+   NOTES is the first label with a space INSIDE it, a monospace gives that space a
+   letter's full advance, and at this size a full advance between two words of one
+   label is the same size as the gap between two labels -- so the row read as
+   seven items until word-spacing: -4px sorted the two apart. That returns 4.0px
+   of the 7.0 and the gaps return the other 1.95 (2.2 -> 2.1vmin), so the row
+   spans 345.5px where it spanned 345.9 and keeps 2.75px of the page's own 5vmin
+   margin on each side where it kept 2.55. The ranking that had to survive is now
+   three deep and does: 3.2px between letters, 5.2px between the words of a label,
+   9.3px between labels, all measured ink to ink. The next label that grows has
+   nowhere left to go but the label.
 
    THE TRACKING IS A SECOND VALUE, NOT A SECOND SPELLING, and it is confined to
    the phone. The row used to restate 2.64px as `.24em`, which was one constant
@@ -3800,11 +4650,20 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    the rail's own 1199 -- see NARROW SCREENS. Width alone and not the legibility
    block's `(max-width: 760px), (max-height: 640px)`: this constraint is purely
    horizontal, and a phone in landscape is 844px wide, which is wide enough for
-   the 13px row with 72px of gap.
+   the 13px row: measured 531.4px of ink and gaps in an 805px box at 844x390,
+   136.8px clear on each side.
 
    THE 390px FLOOR IS THE STATED ONE. At 375px (SE, mini) the row overruns by
-   about 5px, exactly as the five-word row already did before this change; the
-   site's measured floor has always been 390x844. */
+   6.4px -- it overran by about 5 before FIELD NOTES, and by about 5 as a
+   five-word row before that; the site's measured floor has always been 390x844,
+   and nothing at 375 is clipped or wrapped, the ink simply reaches 3.2px into the
+   5vmin margin at each end and the page still has no horizontal scroll. */
+/* THE POSE SWITCH, written identically in four places -- here, THE RAIL'S
+   CLEARANCE below, NARROW SCREENS, and NARROW in main.js. The ratio arm is new
+   with 11 Aug 2026; its derivation is in NARROW SCREENS. The rail flips with the
+   pose because the narrow pose reads the rail's clearance out of the overlay's
+   padding: if only one of them moved the band arithmetic would be measuring a
+   rail that is not there. */
 @media (max-width: 1199px) {
   .rail {
     /* The notch, the status bar and the rounded corner. index.html has asked for
@@ -3873,11 +4732,13 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      word when the row re-centres under it.
 
      THE CLAMP IS THE PAGE'S OWN MARGIN. CONTACT is the LAST of six centred
-     words, so at 375px its centre is x 335.5 and a 55px stack centred there
-     would end 12px from the viewport's edge -- inside the 5vmin the rest of the
+     words, so at 375px its centre is x 336.2 -- it was 335.5 before FIELD NOTES
+     widened the row and the word space and the gaps paid it back -- and a 55px
+     stack centred there would end 11.3px from the viewport's edge, inside the 5vmin the
+     rest of the
      page keeps. min() stops it at the last position where the widest of the
      three is still on that margin: the viewport, less the margin, less half the
-     stack. At 375 that binds -- 328.75 rather than 335.5, so the stack ends
+     stack. At 375 that binds -- 328.75 rather than 336.2, so the stack ends
      flush at 356.25 -- and at every wider viewport in this tier it does not, so
      the cluster is centred on the word. The half is half the same
      8ch + 7 * track the shelf's own length is, so one derivation serves both.
@@ -3889,8 +4750,9 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      with the animation instead of losing to it.
 
      THE ROW ITSELF IS UNTOUCHED, which is the whole reason this fits at all. It
-     is at its measured limit -- 345.9px of ink in a 351px box at 375px, "the row
-     has spent its last px" -- so three more words IN it was never available.
+     is at its measured limit -- 345.5px of ink in a 351px box at 390px, and the
+     gaps have since paid for FIELD NOTES' extra character -- so three more words
+     IN it was never available.
      These are out of flow and BELOW it, so they cost the row nothing: it is
      still six words on one line, and the stack is 55px wide under it. */
   .rail-contacts {
@@ -3924,7 +4786,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    A tap on a rail word lights its watch part for 600ms before the panel opens.
    It is the only way a phone visitor can learn that the watch IS this rail:
    there is no hover to teach it, and once a panel is open the watch is behind
-   it. Tap MISCELLANY, watch the moonphase answer, then read.
+   it. Tap FIELD NOTES, watch the moonphase answer, then read.
 
    FIVE OF THE SIX, AND CONTACT IS THE EXCEPTION. There is no rule below for the
    crown, and it is not an omission: the cue buys time for the watch to answer
@@ -3965,7 +4827,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .watch-flip[data-cue='projects'] .date-window .date-frame .sprite-art { filter: brightness(1.16) saturate(1.04); }
   .watch-flip[data-cue='resume']   .reserve-scale                       { filter: brightness(1.16) saturate(1.04); }
   .watch-flip[data-cue='research'] .seconds-dial .dial-art              { filter: brightness(1.16) saturate(1.04); }
-  .watch-flip[data-cue='miscellany'] .moon                              { filter: brightness(1.14) saturate(1.04); }
+  .watch-flip[data-cue='field-notes'] .moon                             { filter: brightness(1.14) saturate(1.04); }
 }
 
 /* ===================== PANELS ===================== */
@@ -4017,6 +4879,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    asks for its own inset. The two are written the same way, `margin + env`,
    rather than one as a max() and the other as a sum: the page's margin is the
    page's margin at both ends, and the inset is what the device adds to it. */
+/* THE POSE SWITCH. Same string as THE RAIL, NARROW SCREENS and main.js. */
 @media (max-width: 1199px) {
   .overlay {
     padding:
@@ -4119,7 +4982,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
 /* ---- THIS PANEL IS WIDER THAN THE OTHER FIVE, AND ONLY THIS PANEL ----
    SCOPED TO THE ID ON PURPOSE. .card's `width: min(600px, 92vw)` and its 52px of
-   side padding are shared by About, Resume, Research, Miscellany and Contact, and
+   side padding are shared by About, Resume, Research, Field Notes and Contact, and
    widening the shared rule to suit the one panel that now carries pictures would
    have widened five panels of prose to suit three screenshots. 600 is still the
    right measure for a panel that is only words -- the comment on .card derives it
@@ -4218,7 +5081,78 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    the phone keeps 19. */
 .feature-name { font-family: var(--font-display); font-size: 21.5px; color: #eef0f5; margin-bottom: 5px; }
 .feature-desc { font-size: 13.5px; line-height: 1.6; color: var(--body); }
-.feature-date { font-family: var(--font-mono); font-size: 11px; color: var(--gold-line); letter-spacing: .15em; }
+/* .feature-build-label SHARES THIS DECLARATION RATHER THAN COPYING IT, and the
+   shared selector is the point. The block below needed a label in the panel's
+   own label register -- gold mono, 11px, .15em -- which is precisely the type
+   this rule already draws for the dateline in the same row. THE COMMENT ON
+   .feature-head SAYS WHY IT IS SHARED AND NOT RE-TYPED: "inventing a second
+   gold mono half a pixel away from it is how a stylesheet ends up with two of
+   everything". So there is one definition, two names on it, and a later pass
+   that retunes the dateline retunes the label with it -- which is correct,
+   because they are the same register saying two kinds of secondary thing. */
+.feature-date,
+.feature-build-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold-line); letter-spacing: .15em; }
+
+/* ---- HOW IT IS BUILT, SET BELOW THE PARAGRAPH RATHER THAN INSIDE IT ----
+   ASKED FOR BY HIM, 10 AUG 2026: "go into more techical depth in the proejcts
+   section about how everything is built". The depth had two possible homes and
+   this is the one that was chosen, deliberately:
+
+   NOT AN EXTENDED .feature-desc. The desc's first sentence is what the project
+   IS, and it is the sentence a reader scanning three rows needs. Appending
+   sixty words of stack to it triples the paragraph and buries that lead in the
+   middle of a block of implementation detail, in a column that already sits
+   beside three screenshots. Two registers were being asked to share one
+   paragraph; they get one block each instead.
+
+   NOT CHIPS, PILLS OR TAG BADGES, which is the obvious wrong turn and the one
+   SITE-DIRECTION 0.4 names by name as this project's standing slop risk -- "a
+   rounded rect with a hairline border". A stack list is the single most common
+   excuse for drawing twenty of them. There is no box here at all: the block is
+   prose, and the only mark on it is a rule.
+
+   THE HAIRLINE IS THE SITE'S OWN AND IS NOT A NEW IDIOM. rgba(217,162,107,.18)
+   is .feature-row's border colour exactly, which is also what .role uses to
+   separate one CV entry from the next and what .misc-field uses to hold its
+   empty state open. Three places now say "a subordinate block starts here" in
+   one line of one colour.
+
+   14px ABOVE AND BELOW IT IS THIS PANEL'S OWN BLOCK INTERVAL. .shot-carousel is
+   `margin: 14px 0` -- the figure that already sets the frames off from the head
+   above and the paragraph below -- so the build block is separated from the desc
+   by exactly the interval the pictures are separated by, and the row does not
+   acquire a second spacing constant. The 10px below is .feature-links' own
+   margin-top, untouched.
+
+   --muted, ONE STEP DOWN FROM --body, AND NO NEW COLOUR. The desc is
+   var(--body) #9aa2b3; this is var(--muted) #8b93a6, the variable that already
+   exists for exactly this relation. No new size either: 13.5/1.6 is
+   .feature-desc's own, so the two blocks sit on one leading and the hairline is
+   the whole of the difference in weight.
+
+   THE LABEL RUNS IN RATHER THAN TAKING A LINE. A line of its own would cost
+   21.6px of card three times over to say one word, and the panel already
+   ranges its other label -- the dateline -- inline with content rather than
+   above it. 11.5px of gap is derived and not picked: IBM Plex Mono advances
+   0.6em, so one space at 11px is 6.6px and two are 13.2, and the label already
+   trails 1.65px of its own .15em tracking after the final letter -- 13.2 - 1.65
+   = 11.55. Two mono spaces net of the tracking that is there, because one reads
+   as a word inside the sentence and two read as a label in front of it.
+
+   ALL THREE ROWS CARRY THIS AND CARRY IT IN THE SAME PLACE, between .feature-desc
+   and .feature-links. A row with a build block and a row without would be a
+   difference a reader would try to read something into -- the same rule the
+   markup applies to the headcount sentences it deleted. If a fourth row is ever
+   written, it gets one too or none of them do. */
+.feature-build {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(217,162,107,.18);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.feature-build-label { margin-right: 11.5px; }
 
 /* ---- THE NAME AND THE EVENT SHARE A LINE ----
    THIS IS .role-head's PATTERN, NOT A SECOND ONE. The Research and Resume
@@ -5179,18 +6113,589 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   padding-top: 22px;
 }
 
-/* The Miscellany panel's cards. Named for entries and not for books, because the
-   section is: `.book-*` was renamed with the label rather than left behind as a
-   prefix nothing in the rail, the address or the markup still says. The rules
-   themselves did not change -- this was a rename, not a restyle -- and .entry-meta
-   is the one that will want a second look when the real entries arrive, since it
-   is styled as a byline and a miscellany's second line may not be one. */
-.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.entry { border: 1px solid rgba(217,162,107,.18); border-radius: 5px; padding: 22px; transition: border-color .25s; }
-.entry:hover { border-color: rgba(217,162,107,.5); }
-.entry-title { font-family: var(--font-display); font-size: 18px; color: #eef0f5; margin-bottom: 4px; }
-.entry-meta { font-size: 12.5px; color: var(--gold-line); margin-bottom: 10px; }
-.entry-desc { font-size: 13px; line-height: 1.6; color: var(--body); }
+/* ===================== FIELD NOTES: THREE TABS OVER AN EMPTY FIELD =========
+   The `misc-` element names below are this component's own vocabulary and not
+   the section key: the section was Miscellany when they were written, it is
+   FIELD NOTES now (#panel-field-notes, #/field-notes), and nothing outside this
+   panel reads them -- see BOOKS BECAME MISCELLANY BECAME FIELD NOTES in
+   index.html.
+
+   `.entry-grid`, `.entry`, `.entry-title`, `.entry-meta` and `.entry-desc` ARE
+   DELETED, ALL FIVE, and this block replaces them. They had exactly one caller
+   -- the four Lorem cards in #panel-field-notes -- and it is gone, so they are
+   deleted rather than left: dead CSS no selector can reach is worse than no CSS,
+   because the next reader has to prove it is dead before moving anything near
+   it. That is the same argument `.feature-foot` was removed under.
+
+   AND THEY WERE THE FILE'S CLEAREST §0.4 VIOLATION on the way out. `.entry` was
+   `border: 1px solid rgba(217,162,107,.18); border-radius: 5px; padding: 22px`
+   with a hover that brightened the border -- a rounded rect with a hairline
+   border, which SITE-DIRECTION 0.4 names as THIS project's own standing slop
+   risk, and which .feature-icon and the enlarged frame both go out of their way
+   not to draw. Nothing below draws one.
+
+   NIKHIL, 10 AUGUST 2026: "for miscelleny to basically make a section for
+   reviews/misc. Where theres a tab for Book reviews, a tab for watch reviews,
+   and a tab for misc stuff. Take inspo for typography, style, format, and
+   functionality from https://www.jibang.me/cv"
+
+   WHAT IS TAKEN FROM jibang.me/cv, AND WHAT IS NOT. Taken: the single column,
+   left-aligned; the generous vertical step; the hairline rule between a section
+   heading and its contents; and its entry shape -- title, subtitle beneath,
+   dates ranged right, a sentence under both. NOT taken: its palette, its link
+   blue, its light theme, or any weight of bold (there is none in this file to
+   borrow and jibang has none either -- see THE CV ENTRY above).
+
+   AND THE ENTRY SHAPE IS NOT WRITTEN AGAIN HERE. It already exists as .role,
+   ported from the same reference for #panel-research, and the reasoning is at
+   THE CV ENTRY roughly 280 lines up. When the real reviews arrive they go in a
+   .role-list of .role articles, unchanged. Two rulesets for one entry shape is
+   exactly what §0.4 is about, and .entry was the second one.
+
+   THE FIELDS ARE EMPTY AND THE PANEL IS FINISHED. There are no real reviews --
+   the search is recorded in full in the markup -- so each panel holds one mono
+   micro-cap line stating that, and nothing else. The measurements below are
+   what make an empty field read as reserved rather than as collapsed. */
+
+/* THE TAB IS A WORD AND A TICK AGAINST A RULE, WHICH IS NOT A NEW CONTROL.
+   §9's second rule for the panels says it in as many words: "No pills, no chips,
+   no bordered tags... Set them as mono micro-caps separated by the ` · ` the
+   site already uses, or as ticks against a rule." A tab row is precisely where
+   the next hand reaches for a pill, so this is the rule that had to be found
+   before anything was drawn.
+
+   THE SELECTED STATE IS BORROWED FROM TWO CONTROLS THAT ALREADY EXIST, not
+   invented for a third:
+     * FROM .rail .rail-link -- the word itself carries the state. Resting at
+       --muted and selected at --gold-line is the rail's own pair, exactly, and
+       --gold-line-hover on hover is its third.
+     * FROM .rail-marker AND .shot-dot -- one 1px hairline of --gold-line marks
+       where you are. .rail-marker is `width: 1em`, "as long as the words are
+       tall", and the tick below takes that derivation verbatim rather than
+       choosing a length. .shot-dot's rule is the other half: ONE MARK IN TWO
+       STATES, not two marks -- so there is nothing under the unselected tabs.
+   Two channels say the same thing (ink and mark), which is what stops the row
+   depending on colour alone.
+
+   THE TICK IS DRAWN ON THE RULE, NOT ABOVE IT. `bottom: -1px` puts it in the
+   same 1px .misc-field's border-top occupies, so the datum brightens for one em
+   under the selected word instead of a second line appearing beside it.
+
+   WHY THE RULE IS .misc-field's border-top AND NOT .misc-tabs' border-bottom:
+   they draw identically, and only one of them survives the row ever wrapping at
+   a width narrower than this file plans for. A bottom border on a wrapped
+   tablist rules the last row only and leaves the first row bare; a top border on
+   the field is one rule under all of it either way. */
+.misc-tabs {
+  --tab-size: 11px;
+  display: flex;
+  gap: 24px;                                            /* .role-head's gap: the same panel's own column step */
+  /* THE 44px TARGET, AND THE PULL THAT UNDOES ITS TOP HALF -- .shot-index's
+     move, for .shot-index's reason. The type is --tab-size * 1.5 and the target
+     is 44, so the padding is half the difference and the ink sits that far below
+     the box's top edge; the same value as a negative margin puts the ink back on
+     .card-title's own 28px step instead of indenting the row by half a target.
+     Stated once, as an expression, so the phone's smaller --tab-size re-derives
+     it rather than restating it: at 11px the padding is 13.75 and at 10px it is
+     14.5, and the box is 44 at both. */
+  margin-top: calc((44px - var(--tab-size) * 1.5) / -2);
+}
+.misc-tab {
+  position: relative;
+  padding: calc((44px - var(--tab-size) * 1.5) / 2) 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--tab-size);
+  line-height: 1.5;
+  /* .rail's tracking at .rail's size. Uppercased here and not in the markup, for
+     the reason .role-meta gives: the HTML keeps sentence case so a screen reader
+     is not handed MISC as an initialism. */
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color .25s;                               /* .shot-dot's transition, same duration */
+}
+.misc-tab:hover { color: var(--gold-line-hover); }
+.misc-tab[aria-selected='true'] { color: var(--gold-line); }
+.misc-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;             /* in the field's border, not above it */
+  left: 50%;
+  width: 1em;               /* .rail-marker's derivation: as long as the words are tall */
+  margin-left: -.5em;
+  height: 1px;
+  background: var(--gold-line);
+}
+
+/* THE FOCUS RING IS A POSITIONED HAIRLINE AND NOT AN `outline`, WHICH IS A
+   DEPARTURE WORTH THE PARAGRAPH. Every other control on this site draws one
+   gold hairline of #f0c9a1 held a few px off the thing it marks, via
+   outline-offset. That cannot work here, because outline-offset is one number on
+   both axes and this box is not symmetric: the tab has ~14px of padding above
+   and below the ink and none beside it, so any inset large enough to bring the
+   ring in off the 44px target also cuts 14px into each end of the word. (MISC is
+   35px wide; -10px would draw the ring inside the letters.)
+   So the ring is a ::before inset independently per axis -- 4px off the ink on
+   all four sides, which is the same relationship every outline-offset on this
+   site expresses, arrived at with the property that can express it. Same 1px,
+   same #f0c9a1. It is not a resting box: opacity 0 until :focus-visible. */
+.misc-tab::before {
+  content: '';
+  position: absolute;
+  inset: calc((44px - var(--tab-size) * 1.5) / 2 - 4px) -4px;
+  border: 1px solid #f0c9a1;
+  opacity: 0;
+  pointer-events: none;
+}
+.misc-tab:focus { outline: none; }
+.misc-tab:focus-visible::before { opacity: 1; }
+
+/* THE FIELD IS ALREADY ONE ENTRY TALL, AND THAT IS THE WHOLE OF THE EMPTY
+   STATE'S DESIGN.
+     * 20 is .role's own padding-top, so the empty line sits exactly where the
+       first written entry's institution line will sit. The line does not move
+       when the content lands; it is replaced where it stands.
+     * 84 is one .role's ink, derived off its own rules rather than measured:
+       .role-org 17 x 1.42 = 24.14, + 3 of .role-title margin, + .role-title
+       13.5 x 1.6 = 21.6, + .role's 14 gap, + .role-desc 13.5 x 1.6 = 21.6.
+       84 AND NOT 104: min-height sizes the CONTENT box, which is the entry
+       alone, and the 20 of padding and 1 of border are added to it. The field
+       measures 105 in the browser at all three widths, which is the number this
+       paragraph means. Setting 104 here would quietly buy 20px of slack the
+       first real entry would then never fill.
+   So an empty field is already the height a written one starts at, and -- the
+   reason this is here and not a nicety -- the empty panels are all the same
+   height as each other, so switching between them does not resize the card under
+   the reader's pointer.
+   THE FIRST ENTRIES HAVE SINCE LANDED AND THE RULE BEHAVED AS PROMISED: Books
+   now holds fifteen, min-height stopped binding the moment it did, and nothing
+   in this block was edited to allow it. The rule now governs Watch reviews and
+   Misc only. It stays for them, and for the next tab that is written into.
+   WHAT IS NO LONGER TRUE, SAID PLAINLY SO THE PARAGRAPH ABOVE IS NOT READ AS A
+   LIVE CLAIM: the three panels are not the same height as each other any more,
+   because one of them has content. That was never the goal -- the goal was that
+   an EMPTY panel not collapse -- and a reader switching from a written tab to an
+   empty one should see the card change size, because it did.
+   [hidden] needs no rule of its own: .misc-field sets no `display`, so the UA's
+   `display: none` for [hidden] is not being outranked the way .rail's and
+   .rail-contacts' are. */
+.misc-field {
+  border-top: 1px solid rgba(217,162,107,.18);   /* .role's hairline, and .feature-row's border colour, exactly */
+  padding-top: 20px;                             /* .role's padding-top */
+  min-height: 84px;
+}
+/* The panel is a tab stop -- APG's rule for a tabpanel containing nothing
+   focusable, and what makes Tab from the selected tab land in what it selected.
+   .card:focus is `outline: none` on the argument that a hairline round 600px of
+   dark plate says nothing useful; that argument does not carry here, because
+   .card is tabindex="-1" and reachable only programmatically while this is a
+   real Tab stop that a keyboard reader has to be able to see themselves arrive
+   at. So it takes the ring, at .card-close's own offset. */
+.misc-field:focus { outline: none; }
+.misc-field:focus-visible { outline: 1px solid #f0c9a1; outline-offset: 5px; }
+
+/* .tl-end's exact type: mono, 10.5px, .25em, and the #5b6172 that §9's ninth
+   rule reserves for chrome at rest. That register is the point. An absence set
+   as body prose reads as copy that failed to arrive; set as an instrument
+   reading, it reads as a field with nothing in it yet -- which is what it is.
+   No period, for the same reason FULLY WOUND has none. */
+.misc-empty {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: #5b6172;
+}
+
+/* ---- THE READING LIST, AND WHY IT IS NOT FIFTEEN .role ARTICLES ----
+   Nikhil, 10 August 2026: "Then add the read section (fill in supporting info
+   like authors and date it came out)". Fifteen books, in three sections, with no
+   descriptions -- he sent titles, not reviews, and the markup comment is where
+   the rule against inventing them is written out.
+
+   .role IS THE RIGHT SHAPE AND THE WRONG SIZE. It was measured for a research
+   role WITH a paragraph under it: 84px of ink plus 20 of clearance, which over
+   fifteen entries is about 1,560px of card carrying fifteen facts. That is not
+   generous spacing, it is a column of air with words in it, and the reference
+   this panel is built from is dense down its own length even where it is airy
+   between sections.
+   SO .book IS .role WITH THE DESCRIPTION REMOVED AND THE TYPE ONE STEP DOWN, and
+   every value below is lifted rather than chosen:
+     * .book-name / .book-meta is .role-head's shape -- a flex row with the text
+       on the left and a meta ranged right against the card edge.
+       WHICH SIDE GIVES WAY IS THE OPPOSITE OF .role-head'S, AND THAT IS THE ONE
+       PLACE THE TWO PART COMPANY. There the meta is `flex: none` and the
+       institution absorbs the shortfall; here the title never shrinks and the
+       meta does. The reason is that .role-meta is two nowrap spans of tracked
+       caps that cannot usefully wrap, while this meta is a name and a year that
+       can -- and a wrapped author reads better than a wrapped book title.
+       Written out with the measurements at THE OVERFLOW RULE below.
+       (An earlier pass had a .book-cite wrapper holding the name and the author
+       together on the left, with the year alone on the right. It is gone: he
+       asked for the author and the year together, so the wrapper moved to the
+       other side of the row and became .book-meta. Nothing in the file still
+       refers to .book-cite.)
+     * .book-name at full contrast against .book-meta at --muted is .role-org
+       against .role-title -- the SAME mechanism, which is the one this file has
+       for saying "heading" without bold type, since there is no bold type in it.
+       Laid across one row here instead of two lines.
+     * .book-by carries ONE declaration and nothing else -- its own ink, which
+       is Nikhil's --gold-line and not this file's preference; see THE AUTHOR'S
+       INK below before touching it. It still inherits .book-meta's type, and
+       its presence is still what makes .book-year a non-first child, which is
+       what draws the separator. Do not "tidy" it away.
+   A FUTURE BOOK THAT DOES CARRY A REVIEW does not need a new rule: it becomes a
+   .role article in a .role-list inside the same .book-set. The two share a left
+   edge, a right-ranged mono meta and a hairline, so the taller entry reads as
+   the same list with more to say rather than as a different list.
+
+   THE SECTION HEADS MUST NOT LOOK LIKE THE TAB ROW, or the panel reads as six
+   tabs, three of which do nothing. So they take the one register the tabs
+   cannot: .role-org's Marcellus at 17px in sentence case, against the tabs'
+   mono micro-caps at 11 with a gold tick. Different face, different case,
+   different size, no mark -- there is no angle from which the two rows look like
+   peers.
+   THE HAIRLINE BETWEEN SECTIONS IS .role's, and it is on the adjacent-sibling
+   selector so the first set does not draw one: .misc-field's own border-top is
+   already the rule directly above it, and two hairlines 20px apart would read as
+   a mistake. 20 of padding above 20 of margin is the 40px step this panel uses
+   between sections -- twice .role's own 20, because these ARE sections and .role
+   was separating peers within one. */
+.book-set + .book-set {
+  border-top: 1px solid rgba(217,162,107,.18);   /* .role's hairline */
+  margin-top: 20px;
+  padding-top: 20px;                             /* .role's padding-top */
+}
+.book-head {
+  font-family: var(--font-display);
+  font-weight: 400;          /* h2's UA default is bold, and nothing on this site is */
+  font-size: 17px;           /* .role-org's size, and for .role-org's reason -- see THE CV ENTRY */
+  line-height: 1.42;
+  margin: 0 0 14px;          /* .role's own gap, between a head and what it heads */
+  color: #eef0f5;
+}
+
+/* THE ROW STEP WAS 7px AND IS NOW 14, AND THE REASON IS THAT A ROW IS NO LONGER
+   ONE LINE. It was .tl-bullets' 7 when all fifteen rows were a single line, over
+   .role-list's 16, on the argument that a reading list is a list of short items
+   rather than a list of entries that each hold a paragraph. Twelve of them now
+   hold a comment, so a row is a PAIR of lines, and 7px of separation between
+   rows against 0 between the two lines of a row is not enough of a difference to
+   group them -- the eye would read thirty loose lines.
+   14 IS THE SMALLEST STEP THAT MAKES THE PAIRING UNAMBIGUOUS, and it is not a
+   new number: it is .role's own gap and .about-copy's paragraph step. Inside a
+   row the two lines get NO gap at all, so the whole of their separation is the
+   13.5/1.6 leading they already carry -- 8.1px against 14 between rows, which
+   is the ratio that says "these two belong together" without a rule, a bullet or
+   an indent. THAT IS ALSO WHY .book ITSELF SETS NO display AND NO gap: an <li>
+   is already a block, its two children are already block-level rows, and a row
+   with no comment simply has one child instead of two. See THE UNREAD ROWS. */
+.book-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+/* ---- THE AUTHOR AND THE YEAR ARE ONE RIGHT-HAND STRING ----
+   NIKHIL, 10 AUGUST 2026: "make the author and the date be on the right together
+   like 'Ryan Holiday · 2016' for the Books Section". (Ryan Holiday is his format
+   example, not a book on the list.) So the row was title / author / year-ranged-
+   right and is now title on the left, `Author · Year` on the right.
+
+   THE SEPARATOR IS THE SITE'S OWN CHARACTER, U+00B7 with a space either side,
+   which is what .feature-date already prints in HACKPRINCETON · APR 2026 and
+   what the caseback engraves. IT IS GENERATED HERE AND AUTHORED THERE, and the
+   divergence is deliberate: .feature-date is three hand-written strings, this is
+   fifteen rows, and ONE OF THEM HAS NO YEAR. Firstborn's date could not be
+   verified -- see the markup -- so its <span class="book-year"> is simply absent,
+   and a dot that lives in the markup would have had to be remembered-not-typed
+   on exactly that row. Generated off the year's own existence, the dangling
+   `Brandon Sanderson ·` cannot be written by accident: no year element, no
+   pseudo-element, no dot. :not(:first-child) covers the mirror case nobody has
+   yet -- a year with no author -- for the same reason.
+   THE DOT TRAVELS WITH THE YEAR AND NOT WITH THE AUTHOR. `white-space: nowrap`
+   on .book-year binds "· 1486" into one unbreakable run, so when a long meta
+   wraps the break lands inside the author's name and never leaves a dot hanging
+   at the end of a line or opening one.
+
+   THE YEAR LEAVES THE MONO FACE, WHICH IT WAS IN UNTIL THIS PASS. It was
+   .role-meta's type -- mono 10.5 at .18em -- because it was then a standalone
+   meta column, which is the thing this file sets in mono. It is now the last two
+   words of a sentence-case string, and 10.5px mono beside 13.5px Archivo reads
+   as two fragments pushed together rather than as the one string he asked for.
+   So the whole meta is .book-by's type and the year keeps only the gold: one
+   face, one size, one baseline, and the difference carried by colour rather
+   than by type -- the same mechanism .book-name and .book-by use across the row.
+   THE COLOUR HALF OF THAT ARGUMENT NO LONGER HOLDS AND THE TYPE HALF STILL
+   DOES. This paragraph used to end "which is why the right edge still reads as
+   a column of years at a glance: the gold is the only hue in the string". It
+   was true of two inks and then of three; as of THE AUTHOR'S INK below the
+   author is --gold-line too, on Nikhil's decision, so the string is gold ·
+   gold with a --muted dot between and the year is no longer the only hue in it.
+   What still makes the column is position: the year is last in every string,
+   all fifteen right edges are flush, and the gold ratings sit directly beneath.
+   If the year is ever asked to carry more than that again, the move is to give
+   the AUTHOR a different ink, not to put the year back into mono -- the mono
+   argument above is about faces in one column and is untouched by any of this.
+
+   ---- THE OVERFLOW RULE: THE TITLE IS NEVER BROKEN, THE META GIVES WAY ----
+   One rule, all fifteen rows, every width. .book-name is `flex: 0 0 auto` so it
+   never shrinks and never wraps; .book-meta is `flex: 0 1 auto` with min-width: 0
+   so it absorbs the whole shortfall, wrapping inside its own right-ranged column.
+   Every line of a wrapped meta is flush right, so ALL FIFTEEN ROWS SHARE ONE
+   RIGHT EDGE AT EVERY WIDTH -- which is most of why the list reads as a list, and
+   is what the alternatives cost.
+   WHY NOT STACK ON A PHONE, which was the obvious other answer. Stacking puts
+   the title on one line and the meta on the next for all fifteen, which is more
+   uniform in SHAPE -- but a right-ranged meta under a left-set title is a zigzag
+   thirty lines long, and left-aligning it instead throws away the shared right
+   edge, which is the thing worth keeping. Rows differing in line COUNT because
+   their strings differ in length is not fifteen rows following different rules;
+   it is one rule meeting fifteen different lengths, the same way a paragraph
+   does.
+   MEASURED, BOTH WIDTHS, TITLE + META + 16 OF GAP AGAINST THE COLUMN:
+     * DESKTOP, 600px of column: every row fits on one line with room to spare.
+       The widest is Malleus Maleficarum at 429.6 (123.6 + 290 + 16); the next is
+       Notes from Underground at 320.4. Nothing wraps and nothing shrinks.
+     * 375px, 292px of column (301 less the 9px classic scrollbar .card's
+       `overflow: auto` shows once a panel passes 86vh): eleven rows fit on one
+       line. FOUR DO NOT. Three take one extra flush-right line and measure 43px
+       against the one-line 22 -- Notes from Underground (321.4 needed), Zero to
+       One (311.4) and The Birth of Tragedy (295.1, over by three pixels).
+       MALLEUS MALEFICARUM TAKES TWO EXTRA AND MEASURES 65, which is the number
+       to know rather than the 43: its title leaves the meta 152px and the string
+       is 293.7, and the words do not break two-to-a-line -- it sets as "Heinrich
+       Kramer;" / "Sprenger's part" / "disputed · 1486". One row in fifteen at
+       three lines on the narrowest screen tested is the actual worst case here,
+       and it is the row whose author field is a scholarly caveat rather than a
+       name. An earlier draft of this paragraph said "a second line" for all four;
+       it was measured wrong, and 65 is what the browser reports.
+   THE ONE THING THAT WOULD BREAK THIS is a TITLE long enough to squeeze the meta
+   below its longest unbreakable run, since the title cannot shrink. The longest
+   title on the list is The Singularity Is Nearer at 149.3px against 292 of
+   column, so there is 142px of headroom at the narrowest width tested. A title
+   past roughly 200px at 375 re-opens this; measure before adding one. */
+/* ---- THE SECOND LINE: HIS COMMENT LEFT, HIS RATING RIGHT ----
+   NIKHIL, 10 AUGUST 2026: "add the following comments (better formatting and
+   puncation, but same tone) and ratings for the books, create a second line like
+   in the attached website, where the comment is below and at the other end of
+   the row is the rating".
+
+   THE REFERENCE IS jibang.me/reading, the reading page of the CV site this panel
+   was already built from. Its entries carry title, `Author · Year`, a comment
+   and a rating in fractional notation ranged right -- "Dubliners James Joyce ·
+   1914 Fantastic read! love joyce :) 5/5". TWO OF ITS FEATURES ARE DELIBERATELY
+   NOT TAKEN. It numbers every entry 01, 02, 03: numbering fifteen books ranks
+   them, which is the objection #panel-research already made to numbering two
+   concurrent labs, and his order is his reading order rather than a chart. And
+   it prints a status label (Read / Reading / To read) on every row: the three
+   .book-head sections say that once each instead of fifteen times.
+
+   ---- THE ROW IS TWO FLEX ROWS, NOT A GRID, AND THAT IS THE LOAD-BEARING CHOICE
+   A 2x2 grid is the obvious build and it is wrong here. `grid-template-columns:
+   minmax(0,1fr) auto` sizes the right column to the WIDER of the meta and the
+   rating -- so Peter Thiel with Blake Masters · 2014 (219px) would set the
+   column for its own row, leaving 52px for the title at 375px and wrapping
+   `Zero to One`. Two independent flex rows let each line solve its own split,
+   and they still share one right edge because both are full-width children of
+   the same <li>: measured 1342 at 1440 and 333.3 at 375, one value for all
+   twenty-seven right-ranged items.
+
+   ONE RULE GOVERNS BOTH LINES: THE ATOMIC ELEMENT HOLDS, THE PROSE GIVES WAY.
+   On .book-line the title is atomic and the meta wraps; on .book-said the rating
+   is atomic and the comment wraps. It reads as an inversion and it is not -- in
+   both rows the short unbreakable thing is `flex: 0 0 auto` and the long
+   wrappable thing takes `min-width: 0` and absorbs the shortfall. A wrapped
+   author beats a wrapped book title, and a rating that slid onto its own line
+   would stop being the thing at the other end of the row he asked for.
+   THE RATING IS PINNED TO THE FIRST LINE OF THE PAIR by `align-items: baseline`
+   on .book-said: the rating aligns to the comment's FIRST baseline, so a comment
+   that runs to four lines still has its rating level with line one.
+
+   ---- THE UNREAD ROWS HAVE NO SECOND LINE, STRUCTURALLY ----
+   Kafka on the Shore, The Birth of Tragedy and Malleus Maleficarum carry no
+   comment and no rating, because he has not read them. Their <li> simply has no
+   .book-said child -- not an empty one, not one hidden by a rule. There is no
+   :empty selector here and there must not be one: .book sets no gap and no
+   display, so a missing second child costs exactly nothing and cannot leave a
+   stray step behind it. Same discipline as the separator below. THE THREE
+   ONE-LINE ROWS AND THE TWELVE TWO-LINE ROWS SIT ON THE SAME 14px STEP, which is
+   what keeps them one list rather than two.
+
+   ---- NO STARS, NO BARS, NO DOTS, NO PILLS. THE NUMBER IS THE RATING. ----
+   §0.4 governs and a five-star row is the same reach as a pill. The rating gets
+   exactly one thing the comment does not: --gold-line, the same ink as the year
+   directly above it. So the right-hand column reads as one gold spine of numbers
+   down the panel -- year, rating, year, rating -- and the weight comes from
+   position and colour rather than from a mark.
+   IT STAYS IN ARCHIVO AT 13.5 rather than taking .role-meta's mono, for the
+   reason the year did: a mono 10.5 rating under a 13.5 Archivo year would put
+   two faces in one right-hand column, and the column only works because it is
+   one. N/A sets in the same slot as 8/10 and needs no rule of its own. */
+.book-line,
+.book-said {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;     /* the right-hand item sits on the left one's FIRST baseline */
+  gap: 16px;                 /* .book-list is tighter than .role-head, so the column gap is too */
+}
+.book-name {
+  flex: 0 0 auto;            /* the title is the row's identity: it never shrinks and never wraps */
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #eef0f5;            /* .role-desc's body size at .role-org's contrast */
+}
+.book-meta {
+  flex: 0 1 auto;
+  min-width: 0;              /* .role-head > div's rule -- without it a flex item refuses to wrap at all */
+  text-align: right;         /* every line of a wrapped meta stays flush to the card edge */
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);       /* .role-title exactly. Both children now override it -- it is the meta's
+                                fallback ink, and what the separator dot inherits before its own rule
+                                restates it. Do not delete it as unused: see THE AUTHOR'S INK below. */
+}
+/* ---- THE AUTHOR'S INK: --gold-line-hover, ON HIS DECISION AND AGAINST THIS
+        FILE'S OWN ARGUMENT. READ THE WHOLE BLOCK BEFORE CHANGING IT BACK. ----
+   SETTLED ON THE THIRD ASKING. He was shown all five values from :root rendered
+   at both widths, one variant at a time on one load, and chose the fifth.
+   NIKHIL, 10 AUGUST 2026, VERBATIM, LAST: "gold line hover". So the rule is
+   --gold-line-hover #efc1a0 at 11.20:1, and everything below about --gold-line
+   #c98662 describes the state it passed through on the way, not the state that
+   ships. The whole run is kept because the cost it records is real and was the
+   reason a fifth value was offered at all.
+   WHAT THE PALE GOLD BUYS, WHICH IS THE POINT OF IT: it is unmistakably gold,
+   which is what he asked for twice, and it is five stops off --gold-line, so
+   the author and the year are no longer one ink. `Albert Camus · 1942` reads
+   as a name and then a number again. THE YEAR'S COLUMN IS THEREFORE NOT THE
+   CASUALTY the --gold-line paragraphs below describe -- the year keeps a hue of
+   its own and the position argument goes back to being a second line of defence
+   rather than the only one. The three-gold-lines-on-a-phone case is likewise
+   off: a wrapped author is pale, the year is not.
+   WHAT IT BORROWS, AND THE ONE REASON TO WATCH IT: --gold-line-hover is this
+   site's INTERACTIVE ink -- rail hover, the email link, .feature-icon:hover.
+   Fifteen static author names now stand in it. Nothing on this row is
+   clickable, so no reader is misled into pressing one, but the value is no
+   longer reserved. If a later pass needs "hover" to mean hover and nothing
+   else, THAT is the argument for moving the author -- not the palette
+   objection below, which he has now overruled twice.
+
+
+   NIKHIL, 10 AUGUST 2026, VERBATIM, FIRST: "give the authors text for note a
+   differnet color". The author was the one thing in the row with no ink of its
+   own -- it inherited .book-meta's --muted and was therefore the same grey as
+   the dot beside it, so `Albert Camus · 1942` read as chrome with a gold number
+   on the end. It went to --body #9aa2b3, one step up, and he was shown that
+   against the old state at 3x.
+   NIKHIL, 10 AUGUST 2026, VERBATIM, ON SEEING IT: "make the author text color
+   like the orange or the white or something else". The orange is --gold-line
+   #c98662, the year's own ink, and it is the first thing he named. It ships.
+
+   THIS FILE ARGUED AGAINST IT AND WAS OVERRULED, NOT SHOWN TO BE WRONG. The
+   argument stays on the record so that a later pass reads it and leaves the
+   rule alone instead of re-deriving it and "fixing" the row back:
+     THE COST, MEASURED. With the author gold and the year gold, `Albert Camus`
+     and `1942` are one ink separated by one --muted dot, so the right-hand
+     string is a continuous gold run rather than a name followed by data. THE
+     YEAR LEAVES THE MONO FACE above rests its whole case on the year being the
+     only hue in the meta -- that is now false, and the sentence there has been
+     corrected rather than left to rot.
+     WHAT SURVIVES IT. The years still land last in the string and still share
+     one right edge on all fifteen rows, and every row still ends in four gold
+     digits at a fixed distance from the card edge, so the column holds by
+     POSITION where it used to hold by colour. It is a weaker column and it is
+     not a dissolved one. On the twelve two-line rows the gold rating sits
+     directly under the gold year and the spine reads if anything stronger.
+     WHERE IT COSTS MOST: a long wrapped author on a phone -- Heinrich Kramer;
+     Sprenger's part disputed · 1486 at 375px -- puts three gold lines in the
+     right column and the year is the least distinct thing in its own string.
+   The title is unaffected and is still the brightest thing on line 1 by a
+   distance: #eef0f5 at 16.11:1 against --gold-line's 6.18:1.
+
+   THE OTHER TWO HE NAMED, measured the same way, on the record because he asked
+   to see them and may yet pick one:
+     --ink #e6e9f0        15.11:1 against the title's 16.11:1. The white. Two
+                          whites one step apart do not read as a hierarchy, so
+                          the title stops being the brightest thing in any way
+                          the eye can use.
+     --ivory #f3eee6      15.90:1, brighter than the title AND warm. The warm
+                          white reads as a dilute gold beside the year.
+     --body #9aa2b3        7.17:1. What shipped an hour ago, kept in the render
+                          as the baseline he is choosing against.
+   A MIXED OR INVENTED VALUE IS STILL OUT. "Something else" has to come from
+   :root or it is a second vocabulary; nothing else in :root is a text ink at
+   this size. If he wants a genuinely new hue it is a palette decision and gets
+   a variable, not a hex buried in this rule.
+
+   MEASURED, real Chrome, off the composited screenshot rather than off the
+   declarations: the card ground under these rows samples rgb(15,20,34) at
+   1440x900 and rgb(14,20,33) at 375x812, so the ratios move by 0.01 and are
+   quoted at the desktop value:
+     title  #eef0f5      16.11:1   the row's identity, brightest by a long way
+     author --gold-line   6.18:1   HIS CHOICE. Was --body at 7.17, was --muted
+                                   at 5.97 before that. Clears AA's 4.5 at
+                                   13.5px, and is 0.21 brighter than the grey it
+                                   originally replaced.
+     year   --gold-line   6.18:1   identical to the author by construction
+     dot    --muted       5.97:1   the joint, still the dimmest thing there
+   Hierarchy, top to bottom: title > author = year > dot.
+
+   THE DOT KEEPS --muted AND NOW EARNS IT TWICE OVER. It was a restatement of
+   the inherited value until the author moved; it is now the ONLY thing dividing
+   two identical inks, and it is the only reason `Albert Camus · 1942` does not
+   set as one word. Raising it to the gold would close the last gap in the run.
+   NOTHING ELSE IS NEEDED TO TELL THE YEAR FROM THE AUTHOR -- no weight, and
+   type, size and alignment were never on the table. The year is a four-digit
+   numeral at the end of a right-ranged string, which is a shape, not a colour,
+   and the ratings underneath it are gold numerals in the same slot. A bolder
+   year would put the only bold weight on the site into a reading list. */
+.book-by { color: var(--gold-line-hover); }
+/* His prose takes --body and not --muted, which is the distinction .role-desc
+   and .role-title already draw: the comment is something he wrote, and it is
+   the only ink in the row that is neither chrome nor gold. It briefly shared
+   --body with .book-by; the author has since gone to --gold-line on his
+   instruction (see THE AUTHOR'S INK above) and this is once again the sole
+   --body in the list. Left as it was through both passes. */
+.book-note {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--body);        /* .role-desc exactly */
+}
+.book-rating {
+  flex: 0 0 auto;            /* four characters that must never wrap or leave line one */
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--gold-line);
+  white-space: nowrap;
+}
+.book-year { color: var(--gold-line); white-space: nowrap; }
+/* THE SEPARATOR GUARD IS NOW DORMANT, NOT DEAD, AND IT MUST NOT BE DELETED.
+   It was written because Firstborn had no verifiable year and would otherwise
+   have rendered `Brandon Sanderson ·` with a dot hanging off the end. Firstborn
+   now has 2010 -- his answer, see the markup -- so every one of the fifteen rows
+   has a year and this selector's `:not()` currently excludes nothing.
+   THAT IS EXACTLY WHY IT STAYS. The next yearless entry is then structurally
+   safe instead of depending on an editor remembering not to type a dot, which is
+   the whole argument for generating the separator rather than authoring it the
+   way .feature-date does. Confirm before removing it as unused: it is guarding a
+   case that is currently empty, not a case that cannot happen.
+   ITS `color` IS NOT A RESTATEMENT ANY MORE, AND IT IS NOW THE MOST LOAD-BEARING
+   DECLARATION IN THE META. It repeated .book-meta's inherited --muted while the
+   author was grey. The author is now --gold-line, the same ink as the year, so
+   this dot is the ONLY thing dividing them -- without it `Albert Camus · 1942`
+   sets as one unbroken gold run. See THE AUTHOR'S INK. */
+.book-year:not(:first-child)::before { content: ' · '; color: var(--muted); }
 
 /* ===================== NARROW SCREENS =====================
    The site's first layout rules. Everything above this line was written for one
@@ -5205,11 +6710,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    Two tiers, and one of them is about the watch rather than about phones:
 
      max-width: 1199px   the panel stops sitting BESIDE the watch and drops to
-                         the bottom of the screen, with the watch above it. This
-                         is a desktop bug as much as a phone one -- at 900px the
-                         side-by-side pose left a ~30px sliver of watch behind
-                         the card, which is not "the watch stays visible" by any
-                         reading.
+                           the bottom of the screen, with the watch above it.
+                           This is a desktop bug as much as a phone one -- at
+                           900px the side-by-side pose left a ~30px sliver of
+                           watch behind the card, which is not "the watch stays
+                           visible" by any reading.
      max-width: 760px    the phone: card padding, one column, tighter type.
 
    1199 IS THE RAIL'S BREAKPOINT, ON PURPOSE. THE RAIL says it is where the
@@ -5281,23 +6786,55 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 /* ---- the phone ---- */
 @media (max-width: 760px) {
   /* The rail's second tier, and the only place in this file where its typography
-     is stated twice. Six words including MISCELLANY are 44 characters, and 44
-     characters at the 13px the row uses above are 443.5px of ink against the
-     351px a 390px phone has between its margins. The two numbers below are the
+     is stated twice. Six words including FIELD NOTES are 45 characters, and 45
+     characters at the 13px the row uses above are 454.0px of ink against the
+     351px a 390px phone has between its margins. The four numbers below are the
      arithmetic that closes that gap and they are derived in full in THE ROW IS
      ITS OWN DERIVATION; 10px is this site's own floor for chrome type on a
-     phone, which the caption rule below sets for the same reason. */
+     phone, which the caption rule below sets for the same reason.
+
+     THE FOURTH NUMBER IS WHERE THE 45th CHARACTER WAS PAID FOR, AND IT IS THE
+     WORD SPACE. The type had already reached the floor, so MISCELLANY becoming
+     FIELD NOTES -- one more advance and one more letter gap, 7.0px at this tier
+     -- had to come out of the spaces. There are two kinds of space in this row
+     now, and that is the whole of this paragraph: the gap BETWEEN two items, and
+     the space INSIDE the one label that has two words. In a monospace they start
+     out the same size, which is the failure this rule exists to prevent -- at
+     gap: 1.9vmin the two measured 7.4px and 7.0px, and the row read as SEVEN
+     items, FIELD and NOTES among them, with the six graduations underneath the
+     only thing saying otherwise. A navigation that needs its own tick marks to
+     say where one word ends is not navigation.
+       word-spacing  -4px, which leaves the word space 3.0px of advance against
+                     the item gap's 8.2px. What the eye actually reads is the ink
+                     gap, side bearings included, and there the three spaces of
+                     this row finally rank: 3.2px between two letters, 5.2px
+                     between the two words of one label, 9.3px between two labels.
+                     1.8:1 at the join that matters. It is confined to this tier
+                     -- the column has one label per line and nothing to confuse
+                     it with, and the 13px row's item gap is 37.4px of ink against
+                     a 14.6px word space, three to one on its own.
+       gap           2.2 -> 2.1vmin, which returns the other 1.95px at 390.
+     4.0 + 1.95 = 5.95 of the 7.0, and the row keeps 2.75px of the page's own
+     margin on each side where it kept 2.55. Measured, not modelled: 345.5px of
+     ink and gaps in the 351px box, against the 345.9 the row spanned before
+     FIELD NOTES. */
   .rail {
     --rail-size: 10px;
     --rail-track: 1px;
-    gap: 2.2vmin;
+    gap: 2.1vmin;
+    /* the space inside FIELD NOTES, tightened so it cannot be read as a gap
+       between two items -- see THE FOURTH NUMBER above */
+    word-spacing: -4px;
   }
 
-  /* 52px of side padding on a card that has been shrunk to 351px leaves a 245px
-     column, and .entry-grid's `minmax(260px, 1fr)` does not fit in 245 -- which is
-     the horizontal overflow the Miscellany panel shows on a 390px phone. 22px gives
-     the column 305px, and the single-column grid below removes the 260px floor
-     as well; both halves of that were needed. */
+  /* THE ORIGINAL REASON FOR THIS LINE NO LONGER EXISTS, AND THE LINE DOES.
+     It read: 52px of side padding on a card shrunk to 351px leaves a 245px
+     column, and .entry-grid's `minmax(260px, 1fr)` does not fit in 245, which is
+     the horizontal overflow the Field Notes panel showed on a 390px phone; 22px
+     gives the column 305. .entry-grid is deleted, so that overflow cannot happen
+     again -- but 22px is now what every other panel is measured against on a
+     phone, including the Field Notes tab row below, so it stays and the paragraph
+     is corrected rather than left to describe a selector that is gone. */
   .card { padding: 26px 22px 24px; }
   .card-title { font-size: 26px; margin-bottom: 20px; }
   .card-eyebrow { font-size: 10px; letter-spacing: .3em; margin-bottom: 12px; }
@@ -5321,7 +6858,32 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .about-grid { gap: 20px; }
   .about-grid > .about-copy { min-width: 0; flex-basis: 100%; }
 
-  .entry-grid { grid-template-columns: 1fr; }
+  /* `.entry-grid { grid-template-columns: 1fr }` was here and went with the
+     grid. What replaces it is one value, because everything the tab row is built
+     from is derived from it -- the 44px target's padding and the tablist's pull
+     both re-solve off --tab-size, and the tick is 1em of whatever the word is.
+     10px is this site's own floor for chrome type on a phone: it is what .rail
+     drops to twelve lines above, for the same arithmetic run on the same
+     question, and what the caption rule below sets.
+     THE ARITHMETIC THAT MAKES 10 THE ANSWER. A 375px viewport gives .card
+     min(600, 92vw) = 345, border-box under 1200, less 22px of padding a side =
+     301px of column. IBM Plex Mono advances .6em, so at 10px with .2em of
+     tracking each character is 8px: BOOK REVIEWS is 12 of them, WATCH REVIEWS 13
+     and MISC 4, which is 232px of ink, and two 24px gaps make 280. At the
+     desktop 11px the same three words are 303.2 against that same 301 and the
+     row overflows by two, which is the whole reason this line exists.
+     THE SPARE IS 11.5px AND NOT 21, and the difference is a scrollbar. Measured
+     at 375x812 in Chrome the row's container is 291.5 rather than 301: .card is
+     `overflow: auto` and a classic scrollbar takes 9px off its column whenever
+     the panel is taller than 86vh, which every panel on a phone is. 280 in 291.5
+     still clears, and the number to check against if a label is ever renamed is
+     291.5, not 301.
+     THE GAP IS NOT REDUCED AS WELL, deliberately: the gap is what keeps three
+     44px-tall targets from tiling into one bar, and 11.5px of spare is a
+     correction away from tuning rather than fixing. A FOURTH TAB DOES NOT FIT --
+     it would have to buy its room from the gap or from the words. */
+  .misc-tabs { --tab-size: 10px; }
+
   /* `.feature-row { gap: 14px }` was deleted here with the numeral it separated.
      The row is a block now; a gap on a block does nothing, and a declaration that
      does nothing at one breakpoint is a trap at the next. */
@@ -5472,8 +7034,9 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    its six labels -- so it is the one piece of chrome type that was legible on a
    phone before this block existed. It is now sitting on exactly the 10px floor
    this block sets for the caption, which is not a coincidence and is stated as a
-   limit in THE ROW IS ITS OWN DERIVATION: the row has spent its last px, and the
-   next label that grows has to be paid for out of the gaps.
+   limit in THE ROW IS ITS OWN DERIVATION: the row had spent its last px, the
+   word space and the gaps have since paid for one more character (MISCELLANY ->
+   FIELD NOTES), and the next label that grows has to come out of the label.
 
    Keyed on max-height as well as max-width, because vmin follows the SHORTER
    axis: a phone turned sideways is 844px wide and would miss a width-only rule
@@ -5551,14 +7114,14 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      now short enough to clear the button unaided -- ink to 292.2, 13.3px of
      daylight -- so at 375 this declaration changes nothing anyone can see. That is
      the point of it: it is here so a longer eyebrow written later WRAPS, which is
-     what the Research, Resume and Miscellany eyebrows already do at this width,
+     what the Research, Resume and Field Notes eyebrows already do at this width,
      instead of tunnelling under the control. Keyed on the pointer rather than on
      the width for the reason this block's own header gives: it answers the button
      above it, and that button is keyed on the pointer.
 
      THE OTHER FOUR PANELS ARE OUT OF SCOPE HERE AND ONE OF THEM SHOULD NOT BE.
      Measured the same way at 375x812: About clears by 13.3, Research by 39.9,
-     Miscellany by 13.3 -- and Resume's first line ends at x 309.9, which is 4.4px
+     Field Notes by 13.3 -- and Resume's first line ends at x 309.9, which is 4.4px
      INSIDE this button. That is a real, smaller instance of the same collision, on
      a panel this rule deliberately does not touch. Whoever owns .card-eyebrow
      should lift this declaration into the shared rule and delete the ID; it is

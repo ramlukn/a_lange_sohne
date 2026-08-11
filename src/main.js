@@ -52,28 +52,37 @@ const CURRENTLY = [
 //   origin  transform-origin for the 'zoom' transition style
 //
 // The order is the rail's order, top to bottom -- About, Resume, Projects,
-// Research, Miscellany, then Contact, which is docs/PLAN.md's own order with
-// Books renamed. It is not DOM order, and it is
+// Research, Field Notes, then Contact, which is docs/PLAN.md's own order with
+// Books renamed twice. It is not DOM order, and it is
 // no longer in any tension with the interaction index's scribe order: the index
 // has no scribe order any more -- all five marks are drawn on one frame -- and
 // neither does the rail. This list orders the words on the page. It does not
 // order anything in time.
 //
-// MISCELLANY WAS BOOKS, AND THE KEY MOVED WITH THE LABEL. The section is
-// deliberately broadening -- books were the first thing in it, not the whole of
-// it -- so the address is `#/miscellany`, the panel is `panel-miscellany` and
-// the pulse mark's data-part is `miscellany`. Renaming the label and leaving the
-// key would have put the drift this list exists to prevent inside the list
-// itself: one word in the rail, another in the URL, a third in the markup.
-// `#/books` is not redirected. It was never published -- every panel on this
-// site is still Lorem -- and a route table carrying an alias for an address
-// nobody has is a maintenance cost paid for nothing.
+// THE KEY MOVES WITH THE LABEL, AND IT HAS NOW MOVED TWICE. Books became
+// Miscellany because the section was broadening -- books were the first thing in
+// it, not the whole of it -- and Miscellany became FIELD NOTES (Nikhil, 10
+// August 2026), which says the same breadth in a word that is a section name
+// rather than an apology for one. Both times the key went with the label: the
+// address is `#/field-notes`, the panel is `panel-field-notes` and the pulse
+// mark's data-part is `field-notes`. Renaming the label and leaving the key
+// would have put the drift this list exists to prevent inside the list itself:
+// one word in the rail, another in the URL, a third in the markup.
+//
+// IT IS THE FIRST KEY OF TWO WORDS, and it cost nothing: the label's space
+// becomes a hyphen, routeKey()'s `[\w-]+` already accepted one, and every other
+// reader of a key -- $(), the data-part and data-hover selectors, CAPTIONS --
+// takes the string as it is given.
+//
+// Neither `#/books` nor `#/miscellany` is redirected. Neither was ever published
+// -- every panel on this site is still Lorem -- and a route table carrying
+// aliases for addresses nobody has is a maintenance cost paid for nothing.
 const SECTIONS = [
   { key: 'about',      label: 'About',      part: 'MAIN DIAL',     hit: 'aboutHit',    panel: 'panel-about',      origin: '31.8% 50%' },
   { key: 'resume',     label: 'Resume',     part: 'POWER RESERVE', hit: 'reserve',     panel: 'panel-resume',     origin: '65.5% 47.5%' },
   { key: 'projects',   label: 'Projects',   part: 'OUTSIZE DATE',  hit: 'dateWindow',  panel: 'panel-projects',   origin: '63.75% 26.05%' },
   { key: 'research',   label: 'Research',   part: 'SMALL SECONDS', hit: 'secondsDial', panel: 'panel-research',   origin: '64.5% 75.115%' },
-  { key: 'miscellany', label: 'Miscellany', part: 'MOONPHASE',     hit: 'moon',        panel: 'panel-miscellany', origin: '64.5% 67.535%' }
+  { key: 'field-notes', label: 'Field Notes', part: 'MOONPHASE',  hit: 'moon',        panel: 'panel-field-notes', origin: '64.5% 67.535%' }
 ];
 const SECTION = new Map(SECTIONS.map((s) => [s.key, s]));
 
@@ -230,10 +239,12 @@ const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 // Below it the watch moves UP instead of sideways and the card drops to the
 // bottom of the screen -- the same two elements, stacked rather than side by
 // side, which is the honest degradation. The number is stated here AND in
-// styles.css (twice: THE RAIL and NARROW SCREENS) because the pose is written by
-// render() as an inline style ten times a second and a stylesheet cannot reach
-// it. Keep the three together.
+// styles.css (three times: THE RAIL, THE RAIL'S CLEARANCE and NARROW SCREENS)
+// because the pose is written by render() as an inline style ten times a second
+// and a stylesheet cannot reach it. Keep the four together.
+//
 const NARROW = matchMedia('(max-width: 1199px)');
+
 // GAP_VH is the air left between the bottom of the watch and the top of the
 // card, at each end of the band. Small, because the band is the scarce thing.
 const GAP_VH = 1.6;
@@ -419,7 +430,7 @@ el.rail.append(...[...SECTIONS, CONTACT].map((s) => {
 //
 // ALWAYS-VISIBLE WAS MEASURED AND IT DOES NOT FIT, in either layout:
 //   the column   the rail's clearance table (THE RAIL in styles.css) already
-//                runs NEGATIVE for MISCELLANY and CONTACT at 1440x900 with a
+//                runs NEGATIVE for FIELD NOTES and CONTACT at 1440x900 with a
 //                panel open -- the posed case is a 278.6px circle about
 //                (316.8, 450) and CONTACT's box is inside it. Three more rows
 //                carry LINKEDIN's corner to 236px from that centre, 42px inside
@@ -427,8 +438,9 @@ el.rail.append(...[...SECTIONS, CONTACT].map((s) => {
 //                accepted. Tied to the flip they are never on screen with a
 //                posed case at all: the caseback has no panel, the watch is
 //                centred at 86vmin, and the nearest corner clears it by ~206px.
-//   the top row  the row is at its measured limit -- 345.9px of ink in a 351px
-//                box at 375px, "the row has spent its last px". Three more words
+//   the top row  the row is at its measured limit -- 345.5px of ink in a 351px
+//                box at 390px, and FIELD NOTES' extra character has already been
+//                paid for out of the word space and the gaps. Three more words
 //                IN it is 130px it does not have. They stay a stack and go BELOW
 //                the marker channel instead, out of flow, so the row is still
 //                six words on one line and pays nothing -- and that stack is
@@ -809,7 +821,7 @@ function render() {
   // The rail, painted from the same two fields the watch is painted from. This
   // is the reciprocal cue's second half: state.hover already lights the part and
   // names it in the caption, so a pointer on the moonphase lighting the word
-  // MISCELLANY costs one more reader of the same value -- there is no second
+  // FIELD NOTES costs one more reader of the same value -- there is no second
   // state, and no way for the two ends to disagree. CONTACT joins on the same
   // terms through hoverKeyOf(): its part is the crown, so a pointer on the crown
   // lights it and a pointer on it lights the crown.
@@ -846,8 +858,8 @@ function render() {
   placeRailMarker();
 
   // This one attribute IS the hover highlight's whole state. The CSS rule that
-  // carries it only matches while data-hover names the part, so '' -> 'miscellany'
-  // starts the arrival and holds the glow, and 'miscellany' -> '' releases it -- the
+  // carries it only matches while data-hover names the part, so '' -> 'field-notes'
+  // starts the arrival and holds the glow, and 'field-notes' -> '' releases it -- the
   // mark is lit if and only if this string names it, which is what makes a
   // stuck highlight impossible to express. render() is also pumped on a 100ms
   // interval, so the value is only written when it actually differs -- an
@@ -1204,7 +1216,7 @@ SECTIONS.forEach(bind);
 // The rail's other end of the same wiring. These handlers write the SAME
 // state.hover the watch's own hit targets write, which is the whole reciprocal
 // cue: the caption, the part's brightness lift and the bloom on its silhouette
-// all arrive from one value, so hovering the word MISCELLANY and hovering the
+// all arrive from one value, so hovering the words FIELD NOTES and hovering the
 // moonphase cannot say different things. Focus is included for the reason bind()
 // includes it -- focus is the keyboard's pointer -- and the guards on leave and
 // blur are the same guards, for the same reason.
@@ -1910,6 +1922,90 @@ function shotsRun(on) {
   if (!on) closeZoom();
 }
 
+// ---- FIELD NOTES: THE THREE TABS ------------------------------------------
+// Nikhil, 10 August 2026: "for miscelleny to basically make a section for
+// reviews/misc. Where theres a tab for Book reviews, a tab for watch reviews,
+// and a tab for misc stuff."
+//
+// THIS IS A TABLIST AND THE ROW ABOVE IT IS NOT, AND THAT IS ONE ARGUMENT'S TWO
+// CONCLUSIONS RATHER THAN AN INCONSISTENCY. EVERY DOT IS ITS OWN TAB STOP, forty
+// lines up, gives the project dots three tab stops and a role="group" on the
+// grounds that "these are not tabs -- there is no panel to move into after
+// choosing -- so a single stop would mean a keyboard reader can only reach
+// frames 2 and 3 after first discovering that the arrow keys do something."
+// Here there IS a panel to move into: the tabs are the only way to reach two
+// thirds of the section's content, and Tab from the selected tab lands in the
+// panel that tab selected. So the premise reverses, and with it the pattern --
+// APG tabs, one roving tabindex, arrows to move. A reader who does not know the
+// arrows do something still reaches every panel by Tab, which is the exact thing
+// the roving stop costs the dots and does not cost these. Do not harmonise them.
+//
+// THE MARKUP IS THE STATE, the same way the carousel above holds it: aria-selected
+// on the tab is what the stylesheet paints and what a screen reader announces,
+// [hidden] on the panel is what removes it from the page and the tab order
+// together, and tabindex is the roving stop. None is mirrored in a variable, so
+// there is no index to fall out of step with the DOM; show() writes all three
+// sets from one argument and is idempotent.
+//
+// NO REDUCED-MOTION BRANCH, AND NOTHING TO PUT IN ONE. Switching panels is
+// [hidden] on and off -- a cut, with no transition to collapse. The only motion
+// in the row is .misc-tab's colour, which the blanket @media at the top of
+// styles.css already takes to .01ms.
+for (const list of document.querySelectorAll('[data-tabs]')) {
+  const tabs = [...list.querySelectorAll('[role="tab"]')];
+  const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')));
+  // The carousel's own guard, for the carousel's own reason: a tablist whose
+  // third tab points at nothing would look fine and be a third of the section
+  // nobody can read. Say so rather than wiring up a control that lies.
+  if (!tabs.length || panels.some((p) => !p)) {
+    console.warn(`misc tabs: ${tabs.length} tabs against ${panels.filter(Boolean).length} panels`);
+    continue;
+  }
+
+  const show = (i) => {
+    tabs.forEach((t, n) => {
+      t.setAttribute('aria-selected', String(n === i));
+      // The roving stop. Exactly one tab is in the tab order, so Tab out of the
+      // row goes to the panel rather than to the next two tabs -- which is the
+      // whole reason the row is a tablist and the dots are not.
+      t.tabIndex = n === i ? 0 : -1;
+    });
+    // [hidden] and not opacity or display in the sheet, the same primitive
+    // .rail-contacts uses: it closes the paint, the tab order and the
+    // accessibility tree in one attribute, so the two panels nobody can see
+    // cannot be tabbed into behind the one they can.
+    panels.forEach((p, n) => { p.hidden = n !== i; });
+  };
+
+  tabs.forEach((t, i) => t.addEventListener('click', () => show(i)));
+
+  // Delegated to the list rather than bound per tab: the handler asks the DOM
+  // where focus is, so it needs no closure over which tab fired it. Same shape
+  // as .shot-index's, including the wrap and the preventDefault -- Home and End
+  // would otherwise scroll the card out from under the row.
+  // FOCUS AND SELECTION MOVE TOGETHER (APG's "automatic activation"), which is
+  // the right choice here for the reason the carousel gives about a focused dot
+  // that is not the frame on screen: two cursors disagreeing. It is also the
+  // cheap choice -- there are three panels, each one line long, so following the
+  // arrows costs nothing to render.
+  list.addEventListener('keydown', (e) => {
+    const at = tabs.indexOf(document.activeElement);
+    if (at < 0) return;
+    const to = { ArrowLeft: at - 1, ArrowRight: at + 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    const next = (to + tabs.length) % tabs.length;
+    show(next);
+    tabs[next].focus();
+  });
+
+  // The markup already ships the first tab selected. Re-asserting it from what
+  // the markup says -- rather than from 0 -- is what guarantees the three
+  // attribute sets agree before anything is pressed, and it is what lets the
+  // panel be edited to open on a different tab without this file being told.
+  show(Math.max(0, tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true')));
+}
+
 // ---- THE ENLARGED FRAME ---------------------------------------------------
 // "Become big when you click on them (fullscreen ish i guess)". A modal
 // <dialog>, and the reasoning for that over the Fullscreen API is written at the
@@ -2004,6 +2100,37 @@ if (zoom) {
   }
   zoom.querySelector('[data-shot-close]').addEventListener('click', () => closeZoom());
   zoom.addEventListener('close', afterZoom);
+
+  // THE SCRIM DISMISSES IT TOO. "make clicking outside of it, bring it back to
+  // normal size" -- 10 Aug 2026. A third way out beside the ✕ and Escape, and
+  // the one a reader reaches for first.
+  // MEASURED AGAINST THE PICTURE'S RECT, NOT `e.target === zoom`. Target equality
+  // is the usual hook for a backdrop click, and it is wrong here: this dialog's
+  // box is a column, so the ✕ and its 10px gap are inside that box and above the
+  // picture. A press in that strip reports the dialog and would close a frame the
+  // reader was aiming at. The image's own rect is the only edge he can see.
+  // BOTH ENDS OUTSIDE, WHICH IS WHY THIS IS NOT ONE click HANDLER. A press that
+  // starts on the picture and releases on the scrim -- a slip, or a drag -- still
+  // dispatches a click, at the dialog, because the dialog is the common ancestor.
+  // A plain click handler would shut the picture the reader was holding, so the
+  // press is recorded on pointerdown and the release has to be outside as well.
+  // Do not simplify this back. Pointer events rather than mouse: a tap outside is
+  // the same gesture and gets the same answer.
+  const outsideShot = (e) => {
+    const r = zoom.querySelector('.shot-zoom-img').getBoundingClientRect();
+    return e.clientX < r.left || e.clientX > r.right ||
+           e.clientY < r.top  || e.clientY > r.bottom;
+  };
+  let pressedOutside = false;
+  zoom.addEventListener('pointerdown', (e) => { pressedOutside = outsideShot(e); });
+  zoom.addEventListener('click', (e) => {
+    const from = pressedOutside;
+    // Cleared unconditionally, so a click arriving without a press of its own --
+    // Enter on the ✕ synthesises one at 0,0, which is outside every rect -- cannot
+    // inherit an earlier press's answer.
+    pressedOutside = false;
+    if (from && outsideShot(e)) closeZoom();
+  });
 
   // ESCAPE CLOSES THE PICTURE FIRST AND THE PANEL ONLY WHEN NONE IS OPEN.
   // The window handler further down turns Escape into leave(), and a modal
