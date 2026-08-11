@@ -659,8 +659,9 @@
                  from above, and GITHUB UNDER THE NAME BRIDGE as of 10 Aug 2026
                  -- "And then create a cutoff region for the plate below it".
                  static-plate-github.webp was re-cut for the seat and covers
-                 34.14% of the wheel -- 33.90% until the rim above the wheel was
-                 taken into the alpha on 11 Aug 2026. It covered 41.15%, which was the whole of
+                 31.70% of the wheel -- it briefly covered 34.14%, from the rim
+                 union of 11 Aug 2026 that was withdrawn the same day, and
+                 33.90% before that. It covered 41.15%, which was the whole of
                  what lay on bridgework, until the mesh with LinkedIn turned out
                  to be underneath it -- see THE HOLE USED TO BE LINKEDIN'S TIP
                  CIRCLE further down this block for the 7.17 points of tuck that
@@ -1001,18 +1002,26 @@
                      - the alpha is bridge-only by construction, so it never
                        covers the turning centre wheel. Verified: 0 px above
                        alpha 127 over the visible centre wheel
-                   WHAT IT COVERS AND WHAT IT CANNOT. 34.14% of the sprite is
-                   covered -- 33.90% of it the bridge and, since 11 Aug 2026, the
-                   0.24% of tooth tip that used to stand past the recess bay's
-                   rim; that portion now runs under both. 17.27%
+                   WHAT IT COVERS AND WHAT IT CANNOT. 31.70% of the sprite is
+                   covered, all of it the name bridge. It read 33.90% until
+                   11 Aug 2026, then 34.14% for the few hours the recess rim was
+                   unioned into the alpha, and 31.70% since that union AND the
+                   bleed under it were taken back out -- see THE RIM WAS NEVER
+                   THE THING IN FRONT below. 17.27%
                    lies on the visibly turning centre wheel and CANNOT be
                    covered by this mechanism at all. 39.69% is on bare plate and
                    is deliberately left showing, because a wheel resting on plate
-                   is what the other two do. The remaining 7.17% IS on bridgework
-                   and IS deliberately not covered: it is the crescent the mesh
-                   needs, and it was covered until 10 Aug 2026. SO THE CUT TAKES
-                   FOUR FIFTHS OF WHAT WAS WRONG -- 33.90 of the 42.26% that lies
-                   on bridgework -- while a sixth of the wheel still reads as
+                   is what the other two do. What is left uncovered and lies
+                   under static-bridges' alpha is 10.56%, and it is deliberate:
+                   7.17 is the crescent the mesh needs, covered until
+                   10 Aug 2026, and 0.49 is the crown de-dilation of
+                   11 Aug 2026. The rest of the gap is that 42.26% was measured
+                   against static-bridges' alpha INCLUDING the rim bleed, which
+                   is not bridge at all -- the bleed is worth 1.70 points on its
+                   own, so real bridgework is nearer 40.6%.
+                   SO THE CUT TAKES THREE QUARTERS OF WHAT WAS WRONG -- 31.70 of
+                   the 42.26% that lies
+                   under that alpha -- while a sixth of the wheel still reads as
                    lying on top of a moving part. That residue is a property of
                    the seat, not of the cut, and only a move can spend it.
                    CHECKED BY EYE IN REAL CHROME, because a cut is right or wrong
@@ -1216,7 +1225,11 @@
                    maximum channel difference of 0. Box is x 526..644,
                    y 446..569 of the render's 1254px
                    space, 118x123; the alpha is the rig's own static-bridges
-                   alpha placed in the same space, minus a disc of radius 73.50
+                   alpha placed in the same space -- with rows y 449..467
+                   reconstructed, because that sprite's own trace bleeds along
+                   the recess rim there and the bleed was severing the wheel's
+                   crown; see THE RIM WAS NEVER THE THING IN FRONT below --
+                   minus a disc of radius 73.50
                    centred on the LinkedIn wheel, feathered so the teeth pass
                    under a soft edge rather than a stair. Taking the alpha from
                    the bridge's own cut rather than re-tracing it is what
@@ -1272,17 +1285,89 @@
                    the approach and dives back under it a tooth-and-a-rim later.
                    Everything else is untouched: the traced bridge edge is the
                    same edge, byte for byte. Outside the disc this alpha IS
-                   rig/static-bridges' own alpha, 11444 pixels equal to the byte,
-                   with no resampling anywhere -- that sprite is pinned at
+                   rig/static-bridges' own alpha, 11444 pixels equal to the byte
+                   -- true of every row but y 449..467, which were reconstructed
+                   on 11 Aug 2026 --
+                   with no resampling anywhere; that sprite is pinned at
                    (519, 245) and this box cut at (526, 446), both in the same
                    1254 space, so the overlap is a straight slice. The RGB is
-                   still base.webp's own: max channel difference 0 over all 7357
-                   pixels with alpha above zero.
+                   still base.webp's own: max channel difference 0 over all 6218
+                   pixels with alpha above zero (7357 before the crown was given
+                   back on 11 Aug 2026).
 
-                   THE CRUMBS ABOVE THE RIM WERE NOT SCENERY THAT PREDATED THIS
-                   CUT, THEY WERE THIS CUT FALLING SHORT, AND THEY ARE CLOSED.
-                   "fix this messed up region" -- 11 Aug 2026, sent as a
-                   magnified crop of exactly this strip. An earlier revision of
+                   THE RIM WAS NEVER THE THING IN FRONT, AND THE UNION THAT
+                   TREATED IT AS IF IT WERE HAS BEEN WITHDRAWN.
+                   "fix this. The gear part should appear over the bg"
+                   -- 11 Aug 2026, sent as a magnified crop of the top of this
+                   wheel, gold against the grey plate with the gold cut off.
+                   He is describing the crown of the GitHub wheel, x 555..600,
+                   y 454..466, which the cut was erasing.
+                   WHAT IS ACTUALLY IN FRONT OF THE WHEEL THERE IS NOTHING. Read
+                   off base.webp rather than off the alpha: the arc across the
+                   top of this box is the raised rim of the recess bay the
+                   movement's centre wheel turns in (rig.json, centre (560, 552),
+                   r_out 87, so the bay's north wall crests at y 459..466), and
+                   NORTH OF THAT CREST THE SURFACE IS BARE MAINPLATE -- flat,
+                   featureless, no bridge, no arm, no jewel, for the whole width
+                   of the box. Scanned across it at y 440..455 the base runs a
+                   single smooth gradient from luminance 103 to 185 with no step
+                   anywhere; the first hard edge in this column range is the name
+                   bridge's bright chamfer at x 600 and y 470, well below and
+                   east of the crown. A wheel above the mainplate and below the
+                   bridges -- which is what the other two wheels are, and what
+                   this one is everywhere else -- shows its teeth there.
+                   SO THE TWO ADDITIONS OF 11 AUG 2026 WERE BOTH OVER-COVER, and
+                   BOTH ARE REVERSED. The first is described below: the alpha was
+                   unioned with everything above the rim crest, 801.7 px^2, to
+                   close four detached tooth tips. The second was older and
+                   bigger: static-bridges' own alpha carries a BLEED along the
+                   rim's highlight -- a tongue x 546..~590, y 456..465, whose
+                   edge dips 30 px west of the traced bridge line and comes back,
+                   ending in flat synthetic edges -- and that tongue, not the
+                   union, is what severed the tips from the wheel in the first
+                   place. The crumbs were the tongue's shadow. Covering more
+                   above them treated the symptom and erased the crown; removing
+                   the tongue removes the cause and the crown comes back whole.
+                   WHAT THE ALPHA IS NOW. static-bridges' alpha as before, with
+                   rows y 449..467 replaced by the bridge edge reconstructed
+                   across the bleed, then the r 73.50 mesh disc punched through.
+                   The edge is measured as (644 - row coverage sum), which is
+                   subpixel and needs no threshold; two quadratics fitted to the
+                   clean runs y 438..454 and y 468..485 reproduce those rows to
+                   0.02 and 0.05 px, and the reconstruction is their max, so the
+                   bridge's corner is where the two branches cross, (570.7, 460.4).
+                   Feathered by a smoothstep over 1.0 px as the rest of it is.
+                   PLUS 7.0 PX OF DE-DILATION AT THE CROWN, AND THAT PART IS A
+                   JUDGEMENT CALL, NOT A MEASUREMENT. Over rows y 449..462 the
+                   reconstructed edge is moved 7.0 px east, tapered to 0 over the
+                   last three rows at each end. Reason: at the very apex the
+                   wheel's rim (r 49.5) does not reach above y 458.7, so up there
+                   the sprite is loose tooth tips with nothing joining them, and
+                   an edge grazing that band detaches one. Measured live in
+                   Chrome, the largest detached island runs 11 device px^2 with
+                   no shift, 9 at 5.0 px and 4..5 at 7.0 -- the same size as the
+                   strays the shipped file already had. THE COST IS REAL: the
+                   trace is dilated into the bridge's cast shadow by about 1.5..2
+                   px measured normal to the edge (horizontally 7.6 at y 466,
+                   5.5 at 470, 2.7 at 482, against the bright chamfer found by
+                   max gradient on base.webp), which at the crown's edge slope
+                   is about 3.5 px horizontally -- so 7.0 spends roughly 3.5 px
+                   more than the dilation it is undoing, and about 0.49% of the
+                   sprite now draws over the bridge's edge chamfer instead of
+                   under it. That is a low-contrast boundary where bridge and
+                   plate are the same brightness; a floating speck is not. IF A
+                   LATER PASS WANTS THE STRICTLY HONEST EDGE, use 3.5 and accept
+                   a 9..11 device px^2 crumb at the apex.
+                   THE CHANGE IS PURELY SUBTRACTIVE, WHICH IS WHY IT CANNOT
+                   FREEZE ANYTHING. The new alpha is clamped to min(new, old) per
+                   pixel: 1028.0 px^2 removed, 0.0 added, so no pixel of a
+                   turning part that was uncovered is now covered. 821.1 px^2 of
+                   the removal was never bridgework at all (the union plus the
+                   bleed) and 206.9 px^2 is the crown de-dilation.
+                   THE RECORD OF THE WITHDRAWN UNION FOLLOWS, because the crest
+                   measurement is the only one of that arc anywhere and would
+                   have to be redone from scratch if it is ever wanted again.
+                   An earlier revision of
                    this block said: "Two crumbs of tooth tip show through a gap
                    in the bridge alpha at about (566, 452); they were there
                    before this change and are not from it." BOTH HALVES OF THAT
@@ -1311,9 +1396,16 @@
                    bridgework -- and it is covered anyway, because a tooth with
                    no wheel attached reads as dirt whatever the reason it is
                    visible.
-                   WHAT WAS ADDED, AND WHERE THE EDGE CAME FROM. The alpha is now
-                   the union of static-bridges' alpha with everything in the box
-                   ABOVE THE RIM CREST, and the mesh disc is punched through that
+                   THAT LAST SENTENCE IS THE MISTAKE. The tongue was correctly
+                   identified as a bleed and then treated as a fixed feature to
+                   cover up to, when it was the only thing separating the tips
+                   from the wheel. Delete the tongue and there are no crumbs and
+                   no crown to erase. This is the second time a pass in this
+                   block has reached for more alpha and been wrong about it.
+                   WHAT WAS ADDED, AND WHERE THE EDGE CAME FROM -- WITHDRAWN THE
+                   SAME DAY, KEPT FOR THE CREST FIGURES ONLY. The alpha was
+                   unioned with everything in the box
+                   ABOVE THE RIM CREST, and the mesh disc punched through that
                    union afterwards. The crest is measured off base.webp, not
                    guessed: per column, the y maximising L(y) - L(y+3) over
                    y 448..506 -- the rim's summit, where the surface drops into
@@ -1341,7 +1433,11 @@
                    from LinkedIn's centre, where teeth legitimately come and go
                    as the wheel turns. Closing it means cutting into the disc,
                    and the disc IS the mesh. LEFT, ON PURPOSE. Coverage of the
-                   sprite 33.90% -> 34.14%.
+                   sprite 33.90% -> 34.14%. ALL OF THAT WAS SUPERSEDED HOURS
+                   LATER: coverage is 31.70% now, the crown shows, and the
+                   remaining stray at the apex is 4..5 device px^2 -- the same
+                   as the shipped file's own, and it comes and goes with tooth
+                   phase, so it is measured per page load and not once.
                    THE MESH SURVIVED AND WAS CHECKED RATHER THAN ASSUMED, because
                    filling holes and opening the mesh are opposite operations on
                    one alpha channel. Punching the disc LAST, through the union,
@@ -1350,11 +1446,22 @@
                    tooth-plus-rim arc through the pitch point reads 48.00 deg
                    against the 48.0 recorded above, and the whole-tooth arc
                    59.50 against 58.5.
+                   RE-CHECKED AFTER THE CROWN WAS GIVEN BACK, 11 Aug 2026, on the
+                   same rays and the same sweep run against the old file and the
+                   new one side by side so the method cannot flatter either: disc
+                   lip median r 73.500 against 73.550, tooth-plus-rim arc 47.25
+                   deg both, whole-tooth arc 59.50 deg both. THE MESH IS
+                   BIT-FOR-BIT THE SAME OPENING; nothing this pass touched is
+                   within 60 px of the pitch point.
                    AND IT DOES NOT SHIMMER. Three live frames 1.2 s apart with
                    the animation running, differenced: under the solid body of
                    the cut, eroded 5 device px so the boundary's own antialiasing
                    is not counted, 0 of 28863 pixels change -- while 91.8% of the
                    pixels in the same box where the cut is absent do.
+                   Re-run on the new alpha over a tighter box: 1 of 10077 px at
+                   one erosion and 0 of 8937 at two, against 49.1% and 47.0% of
+                   the pixels where the cut is absent, so the single pixel is the
+                   boundary's own antialiasing and not the cut moving.
                    THE TRADE WAS THE ONE HE ASKED FOR. Reading as tucked under
                    the bridge and reading as in gear are in direct competition
                    here and the mesh wins, because he has asked for the mesh
@@ -1376,8 +1483,9 @@
                    scratch if the wheel ever went back.
                    It sits here rather than at the end of the block because it
                    only has to be after the wheel it bites, and it reaches that
-                   wheel and no other: it covers 34.14% of the GitHub sprite
-                   (33.90% before the rim went into the alpha on 11 Aug 2026,
+                   wheel and no other: it covers 31.70% of the GitHub sprite
+                   (34.14% for the few hours the rim was in the alpha on
+                   11 Aug 2026, 33.90% before that,
                    41.15% before the hole was widened on 10 Aug 2026),
                    which spans x 530.0..635.6, y 454.5..562.0, while the
                    LinkedIn sprite begins at x 592.8, the

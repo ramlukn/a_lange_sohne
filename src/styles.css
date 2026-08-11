@@ -3355,21 +3355,34 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    That is the trade, and the mesh is the side it was made for. The sums,
    the before/after crops and the shimmer re-run are in index.html.
 
-   AND THE DISC IS PUNCHED LAST, WHICH IS WHY IT SURVIVED THE NEXT CUT. On
+   AND THE DISC IS PUNCHED LAST, WHICH IS WHY IT SURVIVED THE NEXT TWO CUTS. On
    11 Aug 2026 -- "fix this messed up region", sent as a magnified crop of the
    strip above the wheel -- this alpha gained the recess bay's raised RIM, where
    four detached tooth tips had been standing past the end of static-bridges'
    own trace and reading as dirt. Filling holes and opening the mesh are
    opposite operations on one alpha channel, so the order matters and is now
-   fixed: static-bridges' alpha is unioned with everything above the measured
-   rim crest, and ONLY THEN is the r 73.500 disc taken out of the union. The
-   hole is therefore exactly the disc whatever else is added -- lip re-measured
-   over 173 rays at median r 73.540 against 73.550 before, the tooth-plus-rim
-   arc at the pitch point still 48.00 deg and the whole-tooth arc 59.50.
-   Coverage 33.90% -> 34.14%. An earlier note in index.html recorded two of
-   those crumbs as pre-existing and left them; there were four, and being older
-   than the disc change never made them anything but a defect. The measurement,
-   the crest fit and the shimmer re-run are beside the markup, in index.html.
+   fixed: whatever else the alpha is, the r 73.500 disc is taken out of it LAST.
+   The hole is therefore exactly the disc whatever else is added -- lip
+   re-measured over 173 rays at median r 73.540 against 73.550 before, the
+   tooth-plus-rim arc at the pitch point still 48.00 deg and the whole-tooth arc
+   59.50 -- and it survived the reversal below unchanged as well, 73.500 against
+   73.550 with the arcs equal on both files.
+
+   THAT RIM UNION WAS WRONG AND LASTED HOURS. "fix this. The gear part should
+   appear over the bg" -- 11 Aug 2026, the same strip again. North of the bay's
+   rim crest there is nothing but bare mainplate: no bridge, no arm, no step,
+   verified off base.webp, which runs one smooth gradient across that band with
+   no edge in it. So the wheel's crown belongs on top there, and covering it
+   with a patch of plate simply erased the top of the gear. The crumbs the union
+   was chasing were not caused by the crest falling short either -- they were
+   caused by a BLEED in static-bridges' own trace along the rim highlight, a
+   tongue at x 546..590, y 456..465 that dips 30 px west of the bridge line, cuts
+   the tips off the wheel and comes back. Rows y 449..467 are now the bridge edge
+   reconstructed across that bleed, plus 7.0 px of de-dilation at the crown so a
+   tooth tip does not detach at the apex. The change is purely subtractive --
+   1028.0 px^2 removed, 0 added -- so it cannot freeze anything.
+   Coverage 33.90% -> 34.14% -> 31.70%. The measurement, the crest fit, the edge
+   reconstruction and the shimmer re-runs are beside the markup, in index.html.
 
    THE OLD JOINT IS GONE, AND SO IS THE QUESTION IT LEFT OPEN. This wheel used
    to press into the curved step that walls the recessed field -- chamfer traced
