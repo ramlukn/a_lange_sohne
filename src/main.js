@@ -53,7 +53,7 @@ const DEMO = {
 
   reserveSweepDeg: 160,
 
-  reserveMs: 900,
+  reserveMs: 1400,
   reserveCycles: 1,
   reserveHold: 0.85,
   reducedMs: 1200
@@ -1077,6 +1077,7 @@ let pointerAt = null;
 const trackPointer = (e) => { pointerAt = { x: e.clientX, y: e.clientY }; };
 
 function goLive() {
+  try { localStorage.setItem('site-visited', '1'); } catch (e) {}
   removeEventListener('pointermove', trackPointer);
   el.flip.inert = false;
 

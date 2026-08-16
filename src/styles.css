@@ -1754,7 +1754,18 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .meter-track { flex: 1; height: 3px; background: rgba(217,162,107,.15); border-radius: 2px; overflow: hidden; }
 
 .meter-fill { height: 100%; background: linear-gradient(90deg, #83513a, #efc1a0); transition: width .3s; }
-.reserve-hint { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .25em; color: #5b6172; margin-bottom: 18px; }
+.reserve-hint { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .25em; color: #5b6172; margin-bottom: 18px; }
+.resume-download {
+  color: var(--gold-line);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(201,134,98,.28);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  transition: color .25s, text-decoration-color .25s;
+}
+.resume-download:hover,
+.resume-download:focus-visible { color: #efc1a0; text-decoration-color: rgba(239,193,160,.6); }
 .timeline-scroll { overflow: auto; flex: 1; min-height: 0; max-height: 44vh; padding-right: 14px; }
 
 .timeline { display: flex; flex-direction: column; gap: 0; border-left: 1px solid rgba(217,162,107,.25); padding-left: 26px; }

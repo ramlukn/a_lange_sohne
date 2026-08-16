@@ -8,20 +8,46 @@
 <meta name="description" content="Nikhil Ramlukan — an interactive personal portfolio inspired by the precision and asymmetry of the Lange 1.">
 <title>Nikhil Ramlukan — Calibre NR.1</title>
 <link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="canonical" href="https://www.nikhilramlukan.com/">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://www.nikhilramlukan.com/">
 <meta property="og:title" content="Nikhil Ramlukan — Calibre NR.1">
 <meta property="og:description" content="An interactive personal portfolio inspired by the precision and asymmetry of the Lange 1 — Chemical &amp; Biomolecular Engineering and Computer Science at Johns Hopkins.">
-<meta property="og:image" content="https://a-lange-sohne.vercel.app/assets/og.jpg">
+<meta property="og:image" content="https://www.nikhilramlukan.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A gold Lange 1-style watch with a blue dial reading Nikhil Ramlukan, Calibre NR.1, on a dark ground.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nikhil Ramlukan — Calibre NR.1">
 <meta name="twitter:description" content="An interactive personal portfolio inspired by the precision and asymmetry of the Lange 1 — Chemical &amp; Biomolecular Engineering and Computer Science at Johns Hopkins.">
-<meta name="twitter:image" content="https://a-lange-sohne.vercel.app/assets/og.jpg">
+<meta name="twitter:image" content="https://www.nikhilramlukan.com/assets/og.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Nikhil Ramlukan",
+  "url": "https://www.nikhilramlukan.com/",
+  "jobTitle": "Undergraduate researcher",
+  "email": "mailto:nikhilr.ramlukan@gmail.com",
+  "alumniOf": {
+    "@type": "CollegeOrUniversity",
+    "name": "Johns Hopkins University"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/in/nikhil-ramlukan-2a4a41277",
+    "https://github.com/ramlukn"
+  ]
+}
+</script>
 
 <script>
-  if (/^#\/.+/.test(location.hash)) document.documentElement.dataset.direct = '';
+  try {
+    if (/^#\/.+/.test(location.hash) || localStorage.getItem('site-visited'))
+      document.documentElement.dataset.direct = '';
+  } catch (e) {
+    if (/^#\/.+/.test(location.hash)) document.documentElement.dataset.direct = '';
+  }
 </script>
 
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Spectral-400-latin.woff2">
@@ -615,7 +641,7 @@
           </div>
           <div class="feature-desc">Ranks real manufacturers on emissions, transport CO₂, grid carbon, and climate risk. An agent swarm finds the candidates, XGBoost models score them, a Three.js globe draws them. It won three tracks and was a grand-prize finalist.</div>
 
-          <div class="feature-build"><span class="feature-build-label">BUILT</span>A FastAPI service under uvicorn. One Dedalus runner call per search hands Claude Sonnet five tools — Brave search, a page fetcher and three scorers — over at most fourteen steps; three XGBoost quantile regressors then rank what comes back, q10/q50/q90 across 55 features, at a Spearman of 0.843 on 3,977 held-out rows. Transport is GLEC factors per tonne-km against port distances, and the composite weights five dimensions, manufacturing heaviest at 0.40. Next.js 16 and React 19 in front.</div>
+          <div class="feature-build"><span class="feature-build-label">BUILT</span>The entire backend was mine &mdash; the models, the agents, the API. A FastAPI service under uvicorn. One Dedalus runner call per search hands Claude Sonnet five tools — Brave search, a page fetcher and three scorers — over at most fourteen steps; three XGBoost quantile regressors then rank what comes back, q10/q50/q90 across 55 features, at a Spearman of 0.843 on 3,977 held-out rows. Transport is GLEC factors per tonne-km against port distances, and the composite weights five dimensions, manufacturing heaviest at 0.40. Next.js 16 and React 19 in front.</div>
           <div class="feature-links">
             <a class="feature-icon" href="https://github.com/thejustjim/hackprinceton2026" target="_blank" rel="noopener"
                data-host="github.com/thejustjim/hackprinceton2026"
@@ -668,7 +694,7 @@
           </div>
           <div class="feature-desc">Simulates public-health interventions across US counties on a D3 choropleth, over County Health Rankings data. A second view projects one person's risk ten years out.</div>
 
-          <div class="feature-build"><span class="feature-build-label">BUILT</span>An Express API in TypeScript, deployed as Vercel functions, over 3,159 county records. Each of the twenty interventions carries per-indicator effect sizes, put through a saturation curve on spend per head, a targeting multiplier and a square-root time scale, then priced in QALYs with a ±13% band. Peer counties come from a weighted Euclidean distance over six demographic axes, and the individual view walks five risk scores forward a year at a time. React 19, Vite and zustand in front.</div>
+          <div class="feature-build"><span class="feature-build-label">BUILT</span>The data, the ML, and the statistics were mine. An Express API in TypeScript, deployed as Vercel functions, over 3,159 county records. Each of the twenty interventions carries per-indicator effect sizes, put through a saturation curve on spend per head, a targeting multiplier and a square-root time scale, then priced in QALYs with a ±13% band. Peer counties come from a weighted Euclidean distance over six demographic axes, and the individual view walks five risk scores forward a year at a time. React 19, Vite and zustand in front.</div>
           <div class="feature-links">
             <a class="feature-icon" href="https://github.com/sophia-mai/yhack2026" target="_blank" rel="noopener"
                data-host="github.com/sophia-mai/yhack2026"
@@ -715,7 +741,7 @@
 
           <div class="feature-desc">A demo site for a stroke self-check on a phone: the camera runs the face-exam prompts, the mic drives a live waveform, a trends view plots each reading against a baseline. A proof of concept with no scoring behind it yet, presented to the health ministries of Indonesia and South Sudan for potential collaboration.</div>
 
-          <div class="feature-build"><span class="feature-build-label">BUILT</span>React with no server behind it, and a hand-rolled History API router. The face step drives getUserMedia through eight timed prompts; the voice step reads the live MediaStream into a Web Audio analyser. The analysing globe is react-three-fiber over world-atlas topology, code-split and fetched the moment a check begins, with bloom only where WebGL2 exists.</div>
+          <div class="feature-build"><span class="feature-build-label">BUILT</span>I designed it and co-built it. React with no server behind it, and a hand-rolled History API router. The face step drives getUserMedia through eight timed prompts; the voice step reads the live MediaStream into a Web Audio analyser. The analysing globe is react-three-fiber over world-atlas topology, code-split and fetched the moment a check begins, with bloom only where WebGL2 exists.</div>
           <div class="feature-links">
             <a class="feature-icon" href="https://github.com/ramlukn/brainsentry_mvp" target="_blank" rel="noopener"
                data-host="github.com/ramlukn/brainsentry_mvp"
@@ -793,7 +819,7 @@
         <div class="meter-track"><div class="meter-fill" id="reserveBar"></div></div>
         <span class="meter-label meter-label-on">AUF</span>
       </div>
-      <div class="reserve-hint">SCROLL TO WIND THE MOVEMENT</div>
+      <div class="reserve-hint">SCROLL TO WIND THE MOVEMENT<a class="resume-download" href="/assets/Nikhil-Ramlukan-Resume.pdf" download="Nikhil-Ramlukan-Resume.pdf" aria-label="Download the resume as a PDF">RESUME &middot; PDF</a></div>
 
       <div class="timeline-scroll" id="resumeScroll">
         <div class="timeline">
@@ -826,6 +852,7 @@
               <ul class="tl-bullets">
                 <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Built the automated QA pipeline that replaced manual review before deployment.</p></li>
                 <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>It formats SRS and end-to-end tests, moves them into GitHub and on to the QA platform, and carries the results of each automated run with them.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Reduced a 25-hour manual KPI reporting process to near-instant through automation, improving turnaround and freeing engineering time for higher-value work.</p></li>
               </ul>
             </article>
 
