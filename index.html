@@ -36,9 +36,27 @@
   if (/^#\/.+/.test(location.hash)) document.documentElement.dataset.direct = '';
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- THE FONTS ARE OURS NOW. Three lines used to stand here: two preconnects and
+     a render-blocking <link rel="stylesheet"> to fonts.googleapis.com. That link
+     was the worst failure on the site -- a STALLED font origin, which is what bad
+     wifi produces, measured as fcp: null, a loader that never left and 0 of 6
+     panels reachable, on an otherwise fast connection. The faces are self-hosted
+     woff2 under /assets/fonts now and declared with local @font-face at the top
+     of styles.css, which is where the licences and the argument for each face
+     are written down. The preconnects went because nothing points at those
+     origins any more; a preconnect to a host you never call is a DNS lookup and
+     a TLS handshake spent on nothing.
+
+     THESE TWO PRELOADS ARE THE TWO FILES THE LOADER ITSELF DRAWS, and no others:
+     .loader-name is the display face and .loader-sub is the mono, both at 400,
+     both latin. The 500 cut and the three latin-ext subsets are fetched on
+     demand -- putting them in front of the first paint would be four more
+     competing requests to serve type that is not on screen for another two
+     seconds. crossorigin is required even same-origin: a preload without it
+     fetches in a different mode from the @font-face that follows, and the file
+     is downloaded twice. -->
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Spectral-400-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/SplineSansMono-400-latin.woff2">
 <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body>
@@ -196,7 +214,15 @@
           <div class="edge-seg" style="--a:352.5deg;filter:brightness(0.854)"></div>
         </div>
 
-        <!-- crown + pusher (visible both sides) -->
+        <!-- crown + pusher. Both sit outside the two faces, on the case band, so
+             both are built the same way -- but only the crown is still shown from
+             both sides. The pusher is hidden while the caseback is toward you
+             ("remove the 10 o lcok pusher form the caseback." -- Nikhil, 11 Aug
+             2026); it keeps its markup, both planes included, because it is still
+             a live control on the FRONT -- hover cue, caption, and the
+             demonstration sweep it runs when pressed. See THE PUSHER IS A
+             FRONT-OF-THE-WATCH PART NOW in styles.css before deleting anything
+             here. -->
         <!-- The crown is rendered art (tools/build-dial-art.py); the div is only
              the hit target and the sprite inside it is inert. The corrector is
              drawn inline, so its cap is the element. -->
@@ -540,47 +566,279 @@
 
           <!-- the sapphire display window: calibre NR.1 -->
           <div class="cb-aperture">
+            <!-- ===================== THE CASEBACK YIELDS TO THE DIAL =====================
+                 Nikhil, 11 Aug 2026: "improve the loading of everything in the
+                 webiste. Poor wifi shouldnt affect the webiste. it should just
+                 take longer to load".
+
+                 fetchpriority="low" on every image in this aperture, and on the
+                 twenty-four rig sprites below. THE NUMBERS ARE THE ARGUMENT:
+                 what is on screen at the first frame is the dial, 508KB across
+                 twelve files. What is behind the flip is this aperture, 4.0MB
+                 across twenty-five -- the lossless floor and the rig's base are
+                 1.4MB EACH. Eight times the weight of the thing the visitor is
+                 actually looking at, requested in the same breath, at the same
+                 priority, and Chrome interleaves them: measured on a 400kbps
+                 link the dial's own sprites were still in flight after 25s
+                 because they were queued behind a movement nobody had asked to
+                 see. Most readers never turn the watch over at all.
+
+                 LOW, NOT loading="lazy". The backface is laid out at the same
+                 place as the front and is inside the viewport by every test the
+                 lazy heuristic applies -- backface-visibility and a rotateY are
+                 paint, not layout -- so `lazy` here does not reliably defer
+                 anything, and where it did defer it would risk an aperture that
+                 is still blank when the flip lands. fetchpriority is the honest
+                 lever: nothing is skipped, nothing is conditional, the same
+                 bytes are still fetched on the same load. They simply queue
+                 behind the dial instead of in front of it, so a slow connection
+                 costs the caseback its head start rather than costing the watch
+                 its face. Slower, never absent -- which is the instruction.
+
+                 AND THE APERTURE IS NEVER BLANK WHILE IT WAITS. .cb-rig is held
+                 at opacity 0 until main.js adds .rig-ready (THE RIG APPEARS EVEN
+                 IF ITS PARTS DO NOT), and underneath it .cb-movement-image is
+                 the same render the sprites were cut from. Whatever has not
+                 arrived shows the floor's own pixels. -->
             <div class="cb-movement" aria-hidden="false">
-            <img class="cb-movement-image" src="/assets/caseback/l9511-simplified-lossless.webp"
+            <img class="cb-movement-image" fetchpriority="low" src="/assets/caseback/l9511-simplified-lossless.webp"
                  alt="Calibre NR.1 &#8212; hand-finished movement" decoding="async">
             <!-- living rig: generated by `node tools/generate-rig-markup.mjs` — never hand-edit -->
             <div class="cb-rig" aria-hidden="true">
-              <img class="cb-rig-base" src="/assets/caseback/rig/base.webp" alt="" decoding="async">
+              <img class="cb-rig-base" fetchpriority="low" src="/assets/caseback/rig/base.webp" alt="" decoding="async">
               <div class="cb-rig-partwrap" style="left:37.640%;top:37.002%;width:14.035%;height:14.035%">
-                <img class="cb-rig-part" data-part="centerwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:120,&quot;direction&quot;:&quot;cw&quot;}" src="/assets/caseback/rig/part-centerwheel.webp" alt="" decoding="async">
+                <img class="cb-rig-part" fetchpriority="low" data-part="centerwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:120,&quot;direction&quot;:&quot;cw&quot;}" src="/assets/caseback/rig/part-centerwheel.webp" alt="" decoding="async">
               </div>
               <div class="cb-rig-partwrap" style="left:60.048%;top:42.663%;width:12.919%;height:12.919%">
-                <img class="cb-rig-part" data-part="thirdwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:90,&quot;direction&quot;:&quot;ccw&quot;}" src="/assets/caseback/rig/part-thirdwheel.webp" alt="" decoding="async">
+                <img class="cb-rig-part" fetchpriority="low" data-part="thirdwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:90,&quot;direction&quot;:&quot;ccw&quot;}" src="/assets/caseback/rig/part-thirdwheel.webp" alt="" decoding="async">
               </div>
               <div class="cb-rig-partwrap" style="left:44.498%;top:45.136%;width:11.643%;height:11.643%">
-                <img class="cb-rig-part" data-part="fourthwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:45,&quot;direction&quot;:&quot;ccw&quot;}" src="/assets/caseback/rig/part-fourthwheel.webp" alt="" decoding="async">
+                <img class="cb-rig-part" fetchpriority="low" data-part="fourthwheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:45,&quot;direction&quot;:&quot;ccw&quot;}" src="/assets/caseback/rig/part-fourthwheel.webp" alt="" decoding="async">
               </div>
               <div class="cb-rig-partwrap" style="left:30.542%;top:42.743%;width:14.035%;height:14.035%">
-                <img class="cb-rig-part" data-part="secondswheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:60,&quot;direction&quot;:&quot;ccw&quot;,&quot;steps&quot;:300}" src="/assets/caseback/rig/part-secondswheel.webp" alt="" decoding="async">
+                <img class="cb-rig-part" fetchpriority="low" data-part="secondswheel" data-anim="{&quot;type&quot;:&quot;spin&quot;,&quot;period_s&quot;:60,&quot;direction&quot;:&quot;ccw&quot;,&quot;steps&quot;:300}" src="/assets/caseback/rig/part-secondswheel.webp" alt="" decoding="async">
               </div>
               <div class="cb-rig-partwrap cb-rig-partwrap--low" style="left:44.426%;top:58.317%;width:18.660%;height:18.660%">
-                <img class="cb-rig-part" data-part="balance" data-anim="{&quot;type&quot;:&quot;oscillate&quot;,&quot;amplitude_deg&quot;:135,&quot;period_s&quot;:2.6}" src="/assets/caseback/rig/part-balance.webp" alt="" decoding="async">
+                <img class="cb-rig-part" fetchpriority="low" data-part="balance" data-anim="{&quot;type&quot;:&quot;oscillate&quot;,&quot;amplitude_deg&quot;:135,&quot;period_s&quot;:2.6}" src="/assets/caseback/rig/part-balance.webp" alt="" decoding="async">
               </div>
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-bridges.webp" style="left:41.388%;top:19.537%;width:36.204%;height:39.155%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-cock.webp" style="left:58.214%;top:54.625%;width:22.727%;height:24.322%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-steelarm.webp" style="left:50.957%;top:34.211%;width:7.576%;height:10.447%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-topslot.webp" style="left:57.496%;top:35.486%;width:14.514%;height:19.378%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-balance-arc-cover.webp" style="left:56.938%;top:60.686%;width:8.612%;height:10.925%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-top.webp" style="left:55.104%;top:55.502%;width:4.545%;height:5.821%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-toptab.webp" style="left:54.545%;top:58.852%;width:1.675%;height:2.073%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-sec-eleven.webp" style="left:45.933%;top:57.337%;width:5.502%;height:6.220%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-sec-nine.webp" style="left:42.105%;top:66.348%;width:6.220%;height:4.226%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-bottom.webp" style="left:55.263%;top:72.727%;width:2.871%;height:5.423%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-bl-pad.webp" style="left:47.767%;top:72.488%;width:5.343%;height:6.380%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-bl-arm.webp" style="left:50.239%;top:71.531%;width:3.190%;height:3.429%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-left-arm.webp" style="left:45.215%;top:65.311%;width:3.748%;height:2.711%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-support-left-pad.webp" style="left:43.939%;top:65.869%;width:3.509%;height:3.509%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-corr-one.webp" style="left:54.226%;top:59.888%;width:1.994%;height:2.313%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-corr-eleven.webp" style="left:48.963%;top:61.483%;width:2.472%;height:2.073%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-corr-five.webp" style="left:54.944%;top:72.568%;width:2.472%;height:1.914%" alt="" decoding="async">
-              <img class="cb-rig-static" src="/assets/caseback/rig/static-gem-seconds.webp" style="left:36.762%;top:48.724%;width:2.073%;height:2.073%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-bridges.webp" style="left:41.388%;top:19.537%;width:36.204%;height:39.155%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-cock.webp" style="left:58.214%;top:54.625%;width:22.727%;height:24.322%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-steelarm.webp" style="left:50.957%;top:34.211%;width:7.576%;height:10.447%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-topslot.webp" style="left:57.496%;top:35.486%;width:14.514%;height:19.378%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-balance-arc-cover.webp" style="left:56.938%;top:60.686%;width:8.612%;height:10.925%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-top.webp" style="left:55.104%;top:55.502%;width:4.545%;height:5.821%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-toptab.webp" style="left:54.545%;top:58.852%;width:1.675%;height:2.073%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-sec-eleven.webp" style="left:45.933%;top:57.337%;width:5.502%;height:6.220%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-sec-nine.webp" style="left:42.105%;top:66.348%;width:6.220%;height:4.226%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-bottom.webp" style="left:55.263%;top:72.727%;width:2.871%;height:5.423%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-bl-pad.webp" style="left:47.767%;top:72.488%;width:5.343%;height:6.380%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-bl-arm.webp" style="left:50.239%;top:71.531%;width:3.190%;height:3.429%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-left-arm.webp" style="left:45.215%;top:65.311%;width:3.748%;height:2.711%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-support-left-pad.webp" style="left:43.939%;top:65.869%;width:3.509%;height:3.509%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-corr-one.webp" style="left:54.226%;top:59.888%;width:1.994%;height:2.313%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-corr-eleven.webp" style="left:48.963%;top:61.483%;width:2.472%;height:2.073%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-corr-five.webp" style="left:54.944%;top:72.568%;width:2.472%;height:1.914%" alt="" decoding="async">
+              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/static-gem-seconds.webp" style="left:36.762%;top:48.724%;width:2.073%;height:2.073%" alt="" decoding="async">
               <div class="cb-rig-sheen"></div>
             </div>
+            <!-- THE FINISHING. Everything above this line is the movement as it was
+                 rendered; everything in this layer is what a finisher does to it
+                 afterwards, and it is drawn as geometry rather than baked into the
+                 art because the art is generated and this is not.
+                 IT SITS BETWEEN THE RIG AND THE LINK TRAIN ON PURPOSE. The three
+                 link wheels are the LAST thing painted in the aperture and this
+                 layer is the second-last, so no finish can ever land on a turning
+                 link wheel: a static texture over a moving part is a shower door,
+                 and one frame of that would undo the whole illusion. It is above
+                 the rig's own statics rather than under them because a bridge is
+                 drawn twice on this caseback -- once in base.webp and again in the
+                 static cutouts over the wheels -- and a texture between the two
+                 passes would break along every cutout edge.
+                 THE REGIONS ARE MEASURED, NOT DRAWN. Every path here was traced
+                 off rig/base.webp itself in that file's own 1254px space (the
+                 viewBox is that space divided by 12.54), by flood-filling the
+                 gradient ridges that separate one part from the next, then
+                 subtracting the discs the five rig parts sweep, the alpha of all
+                 sixteen .cb-rig-static cutouts and the alpha of the four link
+                 plates. That subtraction is why the perlage stops where it does:
+                 it stops at the edge of something, never at a line someone chose.
+                 WHAT EACH LAYER IMITATES:
+                   perlage (Perlschliff) -- overlapping circular brush marks in
+                     offset rows, on the mainplate only. Each mark is a shallow
+                     dish, lit up-left and shaded down-right, which is the whole
+                     of why a perlaged plate shimmers as the light moves.
+                   Glashuette ribbing (Streifenschliff) -- broad parallel bands at
+                     ONE angle, -28deg, across every bridge. The single angle is
+                     the point: it is what makes four separately-made parts read
+                     as one movement.
+                   anglage -- the polished chamfer along each bridge edge, drawn
+                     as a pair of strokes just inside the true outline and masked
+                     by opposed diagonal ramps, so an edge facing the key light is
+                     bright and the same bridge's far edge is dark.
+                   the graver -- see cbGraver below.
+                 The whole SVG blends in `overlay`, so it modulates the metal that
+                 is already there instead of painting over it; on the near-black
+                 cavity outside the plate it has almost no effect at all, which is
+                 the physical answer as well as the cheap one.
+                 THE ENGRAVING IS CUT WITH THE ART'S OWN PIXELS. cbGraver takes
+                 base.webp -- the same file, already decoded, no second request --
+                 runs a zero-sum 3x3 convolution over it lit from the up-left, and
+                 splits the signed result into a white lip and a dark core. It is
+                 clipped to the engraved panels alone. Registration is exact by
+                 construction: the relief is computed FROM the glyphs, so it
+                 cannot drift off them the way a re-typeset overlay would, and it
+                 needs no font -- which matters while the typefaces are being
+                 replaced elsewhere in this file.
+                 NOTHING HERE ANIMATES. Texture is a state. -->
+              <svg class="cb-finish" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="cbBeadG" x1=".10" y1="0" x2=".90" y2="1">
+                    <stop offset="0" stop-color="#fff" stop-opacity=".19"/>
+                    <stop offset=".44" stop-color="#fff" stop-opacity=".03"/>
+                    <stop offset=".58" stop-color="#000" stop-opacity=".03"/>
+                    <stop offset="1" stop-color="#000" stop-opacity=".18"/>
+                  </linearGradient>
+                  <radialGradient id="cbBeadR" cx=".5" cy=".5" r=".5">
+                    <stop offset=".80" stop-color="#fff" stop-opacity="0"/>
+                    <stop offset=".93" stop-color="#000" stop-opacity=".10"/>
+                    <stop offset=".985" stop-color="#fff" stop-opacity=".15"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                  </radialGradient>
+                  <pattern id="cbPerlage" width="1.34" height="2.12" patternUnits="userSpaceOnUse">
+                    <g>
+                      <circle cx="-2.680" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-1.340" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.000" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="1.340" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.680" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.020" cy="-2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-2.010" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-0.670" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.670" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.010" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="3.350" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.690" cy="-1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-2.680" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-1.340" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.000" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="1.340" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.680" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.020" cy="0.000" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-2.010" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-0.670" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.670" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.010" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="3.350" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.690" cy="1.060" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-2.680" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-1.340" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.000" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="1.340" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.680" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.020" cy="2.120" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-2.010" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="-0.670" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="0.670" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="2.010" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="3.350" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                      <circle cx="4.690" cy="3.180" r="0.83" fill="url(#cbBeadG)"/>
+                    </g>
+                    <g>
+                      <circle cx="-2.680" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-1.340" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.000" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="1.340" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.680" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.020" cy="-2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-2.010" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-0.670" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.670" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.010" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="3.350" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.690" cy="-1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-2.680" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-1.340" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.000" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="1.340" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.680" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.020" cy="0.000" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-2.010" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-0.670" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.670" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.010" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="3.350" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.690" cy="1.060" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-2.680" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-1.340" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.000" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="1.340" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.680" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.020" cy="2.120" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-2.010" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="-0.670" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="0.670" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="2.010" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="3.350" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                      <circle cx="4.690" cy="3.180" r="0.83" fill="url(#cbBeadR)"/>
+                    </g>
+                  </pattern>
+                  <linearGradient id="cbRibG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#fff" stop-opacity=".15"/>
+                    <stop offset=".22" stop-color="#fff" stop-opacity=".02"/>
+                    <stop offset=".58" stop-color="#000" stop-opacity=".02"/>
+                    <stop offset=".90" stop-color="#000" stop-opacity=".14"/>
+                    <stop offset=".955" stop-color="#fff" stop-opacity=".12"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                  </linearGradient>
+                  <pattern id="cbRibs" width="4" height="0.92" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
+                    <rect width="4" height="0.92" fill="url(#cbRibG)"/>
+                  </pattern>
+                  <linearGradient id="cbAngL" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#6b6b6b"/><stop offset="1" stop-color="#000"/>
+                  </linearGradient>
+                  <linearGradient id="cbAngD" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#000"/><stop offset=".5" stop-color="#6b6b6b"/><stop offset="1" stop-color="#fff"/>
+                  </linearGradient>
+                  <mask id="cbAngLm"><rect width="100" height="100" fill="url(#cbAngL)"/></mask>
+                  <mask id="cbAngDm"><rect width="100" height="100" fill="url(#cbAngD)"/></mask>
+                  <clipPath id="cbEngClip">
+                    <rect x="-13.83" y="-4.25" width="27.66" height="8.51" rx="0.6" transform="translate(57.49,42.57) rotate(-34.54)"/>
+                    <rect x="-5.70" y="-2.34" width="11.41" height="4.69" rx="0.6" transform="translate(50.00,25.44) rotate(-0.00)"/>
+                  </clipPath>
+                  <filter id="cbGraver" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+                    <feConvolveMatrix order="3" divisor="1" bias="0.5" preserveAlpha="true"
+                                     kernelMatrix="1 1 0  1 0 -1  0 -1 -1"/>
+                    <feColorMatrix type="saturate" values="0" result="cbG"/>
+                    <feColorMatrix in="cbG" result="cbHi"
+                                   values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  3.4 0 0 0 -1.7"/>
+                    <feColorMatrix in="cbG" result="cbLo"
+                                   values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -3.4 0 0 0 1.7"/>
+                    <feMerge result="cbSum"><feMergeNode in="cbLo"/><feMergeNode in="cbHi"/></feMerge>
+                    <feComponentTransfer><feFuncA type="gamma" amplitude="1" exponent="2.4" offset="0"/></feComponentTransfer>
+                  </filter>
+                </defs>
+                <g class="cb-finish-perlage">
+                  <path d="M30.86,74.32 30.94,74.64 32.62,75.84 36.92,78.07 37.56,77.75 38.44,77.75 39.00,78.87 42.03,79.74 46.97,80.46 53.03,80.14 56.70,79.35 60.45,77.99 64.27,75.84 62.68,74.32 62.36,74.32 60.61,76.16 58.61,77.35 58.13,78.47 51.52,78.31 51.20,79.19 50.40,79.19 49.52,78.07 47.61,77.99 47.37,77.75 47.37,76.48 44.82,73.92 43.38,70.97 42.11,70.89 41.87,70.65 41.71,66.11 43.06,65.71 43.78,63.24 45.37,60.69 43.38,59.33 42.03,57.18 39.47,58.21 40.03,59.41 39.79,63.40 37.64,66.75 36.84,69.46 36.12,70.89 35.41,71.21 34.69,72.33 36.12,72.49 37.08,73.21 37.32,73.76 37.08,75.76 36.04,76.56 34.29,76.40 33.33,75.20 33.49,73.44zM41.47,76.08 41.87,75.68 42.74,75.68 43.14,76.48 45.06,76.79 45.30,77.03 45.22,78.15 44.10,78.39 43.70,77.83 41.63,77.91 41.39,77.67zM77.59,40.35 76.16,44.26 74.24,46.73 74.40,50.48 73.92,52.23 72.81,54.39 78.63,54.78 79.19,51.52 79.19,46.25 78.71,43.30zM75.68,45.93 77.43,45.77 78.39,46.41 78.63,48.33 78.31,49.28 77.43,49.60 76.00,49.60 75.04,48.80 74.88,46.89zM41.87,19.78 40.11,20.10 35.49,22.01 31.98,24.24 28.63,26.87 28.07,27.51 29.03,27.91 29.59,28.55 29.67,30.14 29.43,30.78 28.63,31.50 27.11,31.58 26.24,31.02 25.76,30.06 25.20,30.54 21.85,35.65 19.70,40.59 18.90,44.18 18.58,48.25 18.26,49.04 18.74,55.18 19.78,59.17 20.97,62.28 23.13,66.27 25.92,69.94 26.16,69.94 26.16,68.34 25.68,66.27 23.52,63.16 22.97,61.88 22.73,60.37 22.01,59.97 22.09,58.13 23.05,57.89 23.84,57.10 24.72,56.70 26.95,56.70 28.47,57.81 29.98,58.37 30.06,57.58 29.19,56.46 29.11,55.82 28.63,55.42 28.63,54.63 28.87,54.39 29.67,54.39 31.34,56.14 31.74,56.94 31.74,58.37 34.45,57.89 32.06,56.38 30.06,53.99 29.11,51.12 29.19,47.93 30.06,45.53 32.06,43.14 33.97,41.95 36.44,41.31 37.72,38.92 39.15,37.40 41.95,35.89 40.43,33.81 40.43,32.70 40.03,31.58 40.27,29.35 42.26,25.92 41.39,22.73 41.39,21.53zM26.48,33.81 27.43,34.53 27.75,35.17 27.83,36.84 27.59,37.08 26.63,37.08 25.60,36.52 24.72,37.32 24.48,38.76 23.52,40.99 23.21,45.37 22.97,45.61 22.17,45.61 21.77,44.10 21.77,40.99 22.09,38.36 22.73,35.96 23.29,34.77 24.08,34.05 24.88,33.73z" fill="url(#cbPerlage)"/>
+                </g>
+                <g class="cb-finish-ribs" fill="url(#cbRibs)">
+                  <path d="M69.30,32.85 66.91,32.78 66.51,32.38 66.51,31.10 66.03,31.10 65.87,37.40 65.63,37.64 61.00,37.64 56.62,40.75 54.55,41.87 51.67,42.74 51.52,45.30 51.28,45.53 46.89,45.53 46.17,46.17 43.94,46.17 44.34,47.45 44.34,51.75 44.02,53.75 46.73,53.83 47.29,54.70 49.68,51.44 53.51,48.56 57.42,46.73 60.53,46.17 62.04,45.45 63.56,43.78 65.63,38.28 68.18,35.01z"/>
+                  <path d="M42.82,21.93 42.90,22.73 43.70,23.92 43.70,26.95 45.61,27.11 46.25,28.07 46.57,27.19 55.10,27.19 55.26,25.28 56.22,24.00 56.06,23.29 51.91,23.37 50.56,22.97 48.96,22.09 47.13,20.10 46.97,22.09 46.49,22.81 43.78,22.81z"/>
+                  <path d="M65.87,47.77 62.84,50.48 60.21,52.39 58.77,54.31 61.80,54.39 64.11,54.86 66.75,51.12 67.38,50.72 65.95,50.40zM66.59,46.81 69.14,46.89 69.70,47.29 72.57,44.18 69.06,44.26 68.66,44.02z"/>
+                </g>
+                <g class="cb-finish-anglage" fill="none" stroke="#fff6e8" stroke-width=".34" stroke-opacity=".52" mask="url(#cbAngLm)">
+                  <path d="M69.86,32.46 67.22,32.46 66.83,32.06 66.83,29.67 66.59,29.67 63.88,33.57 60.45,37.56 57.26,39.87 54.23,41.55 50.16,42.74 46.57,42.66 46.57,45.06 46.01,45.77 43.14,45.77 44.02,47.77 44.02,51.44 43.30,54.63 43.70,54.70 44.26,54.15 46.41,54.15 46.89,54.63 47.05,56.38 47.93,54.47 49.60,52.15 53.11,49.36 57.74,47.05 60.85,46.49 62.36,45.77 63.88,44.10 65.95,38.60 69.14,34.37z"/>
+                  <path d="M56.78,22.73 55.10,23.05 52.23,23.05 51.28,22.81 49.28,21.77 47.61,19.86 46.41,19.30 46.65,19.70 46.65,21.77 46.17,22.49 44.10,22.49 42.98,20.97 42.50,21.53 42.50,22.57 43.38,24.24 43.38,26.63 41.55,29.35 41.15,30.30 41.23,31.34 42.19,28.71 42.90,28.55 43.30,27.43 45.30,27.43 47.21,31.42 49.12,29.98 50.80,29.27 54.47,29.11 54.94,27.99 55.58,27.51 55.58,25.60 56.54,24.32z"/>
+                  <path d="M74.48,42.50 74.00,43.14 73.05,43.70 71.45,43.94 69.38,43.94 68.66,43.06 68.18,44.02 64.99,47.85 59.17,52.79 58.45,53.75 58.21,54.63 61.48,54.70 63.72,55.34 64.43,55.18 67.07,51.44 68.50,50.40 66.27,50.08 66.27,47.45 66.67,47.21 68.82,47.21 69.22,47.53 69.30,48.80 69.54,48.88 70.33,47.05 73.92,43.62z"/>
+                </g>
+                <g class="cb-finish-anglage" fill="none" stroke="#241608" stroke-width=".28" stroke-opacity=".34" mask="url(#cbAngDm)">
+                  <path d="M69.86,32.46 67.22,32.46 66.83,32.06 66.83,29.67 66.59,29.67 63.88,33.57 60.45,37.56 57.26,39.87 54.23,41.55 50.16,42.74 46.57,42.66 46.57,45.06 46.01,45.77 43.14,45.77 44.02,47.77 44.02,51.44 43.30,54.63 43.70,54.70 44.26,54.15 46.41,54.15 46.89,54.63 47.05,56.38 47.93,54.47 49.60,52.15 53.11,49.36 57.74,47.05 60.85,46.49 62.36,45.77 63.88,44.10 65.95,38.60 69.14,34.37z"/>
+                  <path d="M56.78,22.73 55.10,23.05 52.23,23.05 51.28,22.81 49.28,21.77 47.61,19.86 46.41,19.30 46.65,19.70 46.65,21.77 46.17,22.49 44.10,22.49 42.98,20.97 42.50,21.53 42.50,22.57 43.38,24.24 43.38,26.63 41.55,29.35 41.15,30.30 41.23,31.34 42.19,28.71 42.90,28.55 43.30,27.43 45.30,27.43 47.21,31.42 49.12,29.98 50.80,29.27 54.47,29.11 54.94,27.99 55.58,27.51 55.58,25.60 56.54,24.32z"/>
+                  <path d="M74.48,42.50 74.00,43.14 73.05,43.70 71.45,43.94 69.38,43.94 68.66,43.06 68.18,44.02 64.99,47.85 59.17,52.79 58.45,53.75 58.21,54.63 61.48,54.70 63.72,55.34 64.43,55.18 67.07,51.44 68.50,50.40 66.27,50.08 66.27,47.45 66.67,47.21 68.82,47.21 69.22,47.53 69.30,48.80 69.54,48.88 70.33,47.05 73.92,43.62z"/>
+                </g>
+                <g class="cb-finish-graver" clip-path="url(#cbEngClip)" filter="url(#cbGraver)">
+                  <image href="/assets/caseback/rig/base.webp" x="0" y="0" width="100" height="100" preserveAspectRatio="none"/>
+                </g>
+              </svg>
             <!-- THE LINK TRAIN. Three wheels, each one a way to reach him. None
                  of them lies in the empty plate on the left any more; all three
                  have been moved by hand onto the movement.
@@ -680,8 +938,16 @@
               <a class="cb-gear" data-link="linkedin"
                  style="left:47.273%;top:28.654%;width:10.000%"
                  href="https://www.linkedin.com/in/nikhil-ramlukan-2a4a41277"
-                 target="_blank" rel="noopener">
-                <img src="/assets/caseback/links/gear-linkedin.webp" alt="LinkedIn" decoding="async">
+                 target="_blank" rel="noopener" draggable="false">
+                <!-- draggable="false" on BOTH the <a> and its <img>, in both places,
+                     is the Firefox half of the no-drag pair; the other half is
+                     -webkit-user-drag in styles.css (beside .dial-art / .sprite-art),
+                     which Gecko does not implement. The anchor needs it as much as the
+                     image: an href drags on its own, carrying the URL and painting the
+                     wheel as the ghost, so covering only the <img> stops nothing
+                     visible. See the comment in styles.css for Nikhil's instruction,
+                     11 Aug 2026, and the Chrome measurement behind the pair. -->
+                <img src="/assets/caseback/links/gear-linkedin.webp" alt="LinkedIn" decoding="async" draggable="false">
               </a>
               <!-- THE LINKEDIN WHEEL GOES UNDER THE JEWEL BRIDGE. The wheel
                    above has been moved in two steps and then grown by a third,
@@ -754,8 +1020,10 @@
               <a class="cb-gear" data-link="github"
                  style="left:42.262%;top:36.243%;width:8.421%"
                  href="https://github.com/ramlukn"
-                 target="_blank" rel="noopener">
-                <img src="/assets/caseback/links/gear-github.webp" alt="GitHub" decoding="async">
+                 target="_blank" rel="noopener" draggable="false">
+                <!-- draggable="false" on anchor and image both: Firefox half of the
+                     no-drag pair, see the LinkedIn gear. -->
+                <img src="/assets/caseback/links/gear-github.webp" alt="GitHub" decoding="async" draggable="false">
               </a>
               <!-- THE GITHUB WHEEL MESHES WITH THE LINKEDIN WHEEL, RUNS UNDER
                    THE NAME BRIDGE, AND STILL SITS ON THE MOVEMENT'S OWN CENTRE
@@ -1505,8 +1773,10 @@
                    alt="" aria-hidden="true" decoding="async">
               <a class="cb-gear" data-link="email"
                  style="left:56.975%;top:29.031%;width:7.763%"
-                 href="mailto:nikhilr.ramlukan@gmail.com">
-                <img src="/assets/caseback/links/gear-gmail.webp" alt="Email" decoding="async">
+                 href="mailto:nikhilr.ramlukan@gmail.com" draggable="false">
+                <!-- draggable="false" on anchor and image both: Firefox half of the
+                     no-drag pair, see the LinkedIn gear. -->
+                <img src="/assets/caseback/links/gear-gmail.webp" alt="Email" decoding="async" draggable="false">
               </a>
               <!-- THE GMAIL WHEEL MESHES WITH THE LINKEDIN WHEEL, AND GOES UNDER
                    THE NAME BRIDGE BELOW IT. The wheel above has crossed the
@@ -1611,6 +1881,35 @@
                    style="left:23.046%;top:57.097%;width:16.746%;height:14.833%"
                    alt="" aria-hidden="true" decoding="async">
             </div>
+            <!-- THE No 58669 BRIDGE IS FINISHED LAST, AND HAS TO BE. It lies
+                 wholly under static-plate-bridge.webp, the occluder at the end of
+                 .cb-links, so anything the layer above draws on that bridge is
+                 painted over a moment later. This second sheet carries that one
+                 bridge's ribbing, its anglage and its serial engraving, and it is
+                 safe out here for the reason the other sheet is safe inside: no
+                 link wheel comes within twenty units of this bridge, so being
+                 last in the aperture costs nothing. It re-uses the first sheet's
+                 pattern, masks and filter by id -- same document, one definition
+                 each -- and defines only its own clip. -->
+              <svg class="cb-finish cb-finish--over" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <defs>
+                  <clipPath id="cbEngClipO">
+                    <rect x="-4.11" y="-2.90" width="8.22" height="5.80" rx="0.6" transform="translate(32.30,62.36) rotate(0.00)"/>
+                  </clipPath>
+                </defs>
+                <g class="cb-finish-ribs" fill="url(#cbRibs)">
+                  <path d="M35.73,59.33 32.70,59.89 27.99,59.65 27.99,63.96 27.19,64.27 27.59,67.78 27.91,65.87 28.39,65.15 29.43,64.67 32.22,64.67 32.93,65.15 33.89,66.83 34.93,66.75 35.57,64.99 36.84,62.76 36.76,62.44 35.81,61.80z"/>
+                </g>
+                <g class="cb-finish-anglage" fill="none" stroke="#fff6e8" stroke-width=".34" stroke-opacity=".52" mask="url(#cbAngLm)">
+                  <path d="M37.48,58.69 36.36,58.61 32.38,59.57 29.90,59.57 27.83,58.93 27.51,60.61 27.11,61.32 27.67,61.72 27.67,63.64 26.56,63.96 27.19,66.19 27.19,68.02 27.51,68.50 28.07,68.34 28.07,66.67 28.63,65.55 29.74,64.99 31.90,64.99 32.62,65.47 33.57,67.15 34.29,67.15 35.09,67.54 35.96,65.15 37.56,62.68 37.32,62.20 36.12,61.48 36.12,59.33 36.60,58.85z"/>
+                </g>
+                <g class="cb-finish-anglage" fill="none" stroke="#241608" stroke-width=".28" stroke-opacity=".34" mask="url(#cbAngDm)">
+                  <path d="M37.48,58.69 36.36,58.61 32.38,59.57 29.90,59.57 27.83,58.93 27.51,60.61 27.11,61.32 27.67,61.72 27.67,63.64 26.56,63.96 27.19,66.19 27.19,68.02 27.51,68.50 28.07,68.34 28.07,66.67 28.63,65.55 29.74,64.99 31.90,64.99 32.62,65.47 33.57,67.15 34.29,67.15 35.09,67.54 35.96,65.15 37.56,62.68 37.32,62.20 36.12,61.48 36.12,59.33 36.60,58.85z"/>
+                </g>
+                <g class="cb-finish-graver" clip-path="url(#cbEngClipO)" filter="url(#cbGraver)">
+                  <image href="/assets/caseback/rig/base.webp" x="0" y="0" width="100" height="100" preserveAspectRatio="none"/>
+                </g>
+              </svg>
             </div>
             <div class="cb-case-shadow" aria-hidden="true"></div>
             <div class="cb-sapphire" aria-hidden="true"></div>
@@ -1638,7 +1937,7 @@
 
     <section class="card" id="panel-about" tabindex="-1" aria-labelledby="title-about" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">HOURS &amp; MINUTES — THE CENTER</div>
+      <div class="card-eyebrow">HOURS &amp; MINUTES</div>
       <h1 class="card-title" id="title-about">About Me</h1>
       <!-- DO NOT REWRITE THIS TO A PLAIN-LANGUAGE STANDARD. It has been tried
            and rejected once. The previous pass cut 224 words to 135 using NASA's
@@ -2111,6 +2410,15 @@
     <section class="card" id="panel-projects" tabindex="-1" aria-labelledby="title-projects" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <!-- ******** THE EYEBROW MOVED. THE ORDER DID NOT. ********
+           SUPERSEDED IN PART ON 11 AUG 2026 — THE TAGLINE IS GONE FROM ALL FIVE
+           EYEBROWS. Everything below about `BIGGEST FIRST` — why those two words,
+           what the other four said, and what the shortened string measured — is
+           kept as the argument that was made and is no longer the copy that ships.
+           The instruction, verbatim: "In each popup display window, there are
+           these - xyz texts after the gold text saying what the component is.
+           Remove those" — he called them AI artifacts. Read THE TAGLINES ARE GONE
+           at the foot of this block before treating any sentence here as current.
+
            ANSWERED BY HIM ON 9 AUG 2026 — "fix the eyebrows". It read
            `THE OUTSIZE DATE — WHAT'S NEWEST` over rows ordered strongest-first, so
            the panel pointed at row three while ranking row one, and a reader was
@@ -2134,12 +2442,19 @@
            panel is bound to a complication, and the binding is real: main.js's
            SECTIONS row for this panel carries `part: 'OUTSIZE DATE'`, which the rail
            and the caption read — and the eyebrow now spells the part exactly as that
-           row does. The other four are THE CENTER, NEVER FINISHED, WOUND OVER TIME and
-           REFLECTIVE &amp; TIMELESS — complication, em dash, one phrase true of the
-           complication and of the section together. A phrase true of only one of the
-           two does not belong here.
+           row does. THAT HALF IS STILL TRUE AND IS NOW THE WHOLE LINE. The rest of
+           the shape this paragraph described — complication, em dash, one phrase true
+           of the complication and of the section together, with the other four
+           carrying THE CENTER, NEVER FINISHED, WOUND OVER TIME and REFLECTIVE &amp;
+           TIMELESS — was removed on 11 Aug 2026; see the foot of this block. The test
+           it set (a phrase true of only one of the two does not belong here) has no
+           phrase left to judge.
 
-           THE LEADING "THE" WENT, AND IT PAID FOR ITSELF TWICE. Three of the other
+           THE LEADING "THE" WENT, AND IT PAID FOR ITSELF TWICE. SUPERSEDED 11 AUG
+           2026 — every measurement in this paragraph is of `OUTSIZE DATE — BIGGEST
+           FIRST`, a string that no longer exists; the eyebrow is `OUTSIZE DATE` and
+           the leading THE is still off it. Kept for the method, not the numbers.
+           Three of the other
            four eyebrows open with THE and About's does not, so this is inside the
            family rather than a new shape; what it buys is four characters, and four
            characters are what this line had to find. MEASURED AT 375x812 WITH THE
@@ -2153,8 +2468,44 @@
            later would walk straight back under the ✕. See THE EYEBROW'S GUTTER in
            styles.css: it reserves the corner so a longer line wraps instead. Both,
            deliberately — the reserve is the rule, the short line is what makes the
-           rule cost nothing here. -->
-      <div class="card-eyebrow">OUTSIZE DATE — BIGGEST FIRST</div>
+           rule cost nothing here.
+
+           ******** THE TAGLINES ARE GONE. 11 AUG 2026 ********
+           HIS INSTRUCTION, VERBATIM, UNDER THE HEADING "Remove the ai artifacts":
+           "In each popup display window, there are these - xyz texts after the gold
+           text saying what the component is. Remove those". The gold text is
+           .card-eyebrow; the xyz text is the em dash and the phrase after it. Five
+           panels, five strings, and this comment is now the only copy of them:
+
+             HOURS &amp; MINUTES — THE CENTER            ->  HOURS &amp; MINUTES
+             OUTSIZE DATE — BIGGEST FIRST            ->  OUTSIZE DATE
+             THE SMALL SECONDS — NEVER FINISHED      ->  THE SMALL SECONDS
+             THE POWER RESERVE — WOUND OVER TIME     ->  THE POWER RESERVE
+             THE MOONPHASE — REFLECTIVE &amp; TIMELESS   ->  THE MOONPHASE
+
+           The em dash went with the phrase. THE EYEBROW NOW CARRIES THE
+           COMPLICATION'S NAME AND NOTHING ELSE, which is the half of it that was
+           load-bearing: it is still the binding between a panel and a part, still
+           spelled exactly as main.js's SECTIONS `part` for that panel, and the rail
+           and the caption still read that field rather than this line. What is gone
+           is the second clause — the phrase that had to be true of the complication
+           and of the section at once. Everything above this rule argues for that
+           clause and is kept for the argument, not as a description of the copy.
+
+           WHY IT IS NOT ARGUED WITH. He called them AI artifacts, and read as a set
+           they are: five parallel two-beat lines, each pairing a mechanism with a
+           mood. Any one of them defends itself; the fifth is what gives the pattern
+           away. Nothing that shipped depended on them.
+
+           MEASURED AFTER, REAL CHROME AGAINST THE DEV SERVER, PANEL OPEN, FINE
+           POINTER: all five are one line at every width from 1280 down to 320, and
+           the longest is now 17 characters (THE SMALL SECONDS / THE POWER RESERVE)
+           against the old 37. Worst clearance from the end of the ink to
+           .card-close's left edge: 395.0px at 1280, 90.5px at 375, 41.0px at 320.
+           THE 474.5px EYEBROW COLLISION IS CLOSED BY THIS — see WHAT 500 WAS in
+           styles.css, where it is recorded and re-measured. -->
+
+      <div class="card-eyebrow">OUTSIZE DATE</div>
       <h1 class="card-title" id="title-projects">Projects</h1>
       <div class="feature-list">
         <!-- Ordered strongest-first, not newest-first, and the eyebrow above now says
@@ -3287,7 +3638,7 @@
          reads continuously. The CURRENTLY array stays and still feeds it. -->
     <section class="card" id="panel-research" tabindex="-1" aria-labelledby="title-research" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">THE SMALL SECONDS — NEVER FINISHED</div>
+      <div class="card-eyebrow">THE SMALL SECONDS</div>
       <h1 class="card-title" id="title-research">Research</h1>
       <!-- NO FRAMING LINE. The .about-copy paragraph that used to sit here
            ("Two labs, one question -- ...") was the only sentence on the panel
@@ -3338,11 +3689,13 @@
                meta-column arithmetic in styles.css. BALTIMORE, MD - ON-SITE is
                23 characters, exactly the count NOVEMBER 2025 - PRESENT already
                reserved the column for, so the column does not grow and the
-               282px band keeps its 22px of spare.
+               282px band keeps its spare -- 20.9px since the display face
+               became Spectral on 11 Aug 2026, 22px before it.
              * THE ORG LINE STAYS SHORT ON PURPOSE. He writes "The Johns Hopkins
                University School of Medicine"; the panel keeps "Johns Hopkins
-               School of Medicine". The long form is about 385px of 17px
-               Marcellus against the 282px the 760-1199 band allows, so it wraps
+               School of Medicine". The long form is 377px of 17px
+               Spectral -- 373px when it was Marcellus -- against the 282px the
+               760-1199 band allows, so it wraps
                and the head shape breaks. A typographic decision, not a
                disagreement with him.
 
@@ -5738,8 +6091,32 @@
 
     <section class="card card-column" id="panel-resume" tabindex="-1" aria-labelledby="title-resume" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">THE POWER RESERVE — WOUND OVER TIME</div>
+      <div class="card-eyebrow">THE POWER RESERVE</div>
       <h1 class="card-title card-title-tight" id="title-resume">Resume</h1>
+      <!-- THE RESERVE WINDS UP. AB on the left, AUF on the right, the bar empty
+           at the top of the timeline and growing rightward as the reader
+           scrolls down. The dial hand does the same gesture on the same
+           state.reserve -- the ramp is in main.js -- so the two readouts cannot
+           disagree, and the caption below says what the gesture is.
+
+           An inversion was tried on 11 Aug 2026 and withdrawn the same day.
+           Nikhil: "revert these changes to the power display. Have it point at
+           AB originally and the resume bar be empty with ab on the left and auf
+           on the right and scrolling down mamkes its grow". Nothing of it
+           survives here or in main.js; it is on the record only so it is not
+           re-proposed, and the label order that moved twice inside it went
+           back with everything else.
+
+           ONE FINDING FROM IT IS WORTH KEEPING, and it is why .meter-fill's
+           gradient runs 90deg: this bar is a level being filled, not a stock
+           being spent, so its right edge is the pointer and the gradient's
+           light end belongs on it. The two are not the same picture and the
+           angle does not follow the labels -- see the note in styles.css.
+
+           FULLY WOUND IS STILL GONE. The line that used to close the timeline
+           was removed under a separate instruction, as an AI artefact, and it
+           stays removed even though the direction that made it coherent is
+           back. It is not a terminator this list needs. -->
       <div class="reserve-meter">
         <span class="meter-label">AB</span>
         <div class="meter-track"><div class="meter-fill" id="reserveBar"></div></div>
@@ -5755,8 +6132,9 @@
            8.5rem label column. The entry block is still jibang.me/cv's --
            organisation, role beneath it, dates ranged right, one or two tight
            bullets. Hierarchy is size and contrast only; the weight reset on
-           .tl-org in styles.css is load-bearing, because Marcellus ships one
-           weight and an unreset heading would be a synthetic bold.
+           .tl-org in styles.css is load-bearing, because the site self-hosts
+           exactly one cut of the display face and an unreset heading would be a
+           synthetic bold.
 
            HEADING LEVELS MOVED WITH THE SECTIONS. .tl-section is the <h2> now
            and .tl-org dropped to <h3>, so the outline a screen reader reads is
@@ -6077,14 +6455,22 @@
             </article>
           </section>
 
-          <div class="tl-end">FULLY WOUND</div>
+          <!-- Nikhil, 11 Aug 2026, under "Remove the ai artifacts": "remove the
+               fully wound text at the bottom of the resume section". The
+               <div class="tl-end">FULLY WOUND</div> that closed the timeline is
+               gone, and .tl-end went with it in styles.css -- it had no other
+               instance and nothing measures against it. It went as an AI
+               artefact on his call, NOT because the list needs a terminator; do
+               not reinstate it as one. The reserve does wind up to AUF at the
+               bottom of this scroll, so the line was TRUE -- it went for being
+               slop, not for being wrong, and it stays gone on that ground. -->
         </div>
       </div>
     </section>
 
     <section class="card" id="panel-field-notes" tabindex="-1" aria-labelledby="title-field-notes" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
-      <div class="card-eyebrow">THE MOONPHASE — REFLECTIVE &amp; TIMELESS</div>
+      <div class="card-eyebrow">THE MOONPHASE</div>
       <h1 class="card-title" id="title-field-notes">Field Notes</h1>
       <!-- BOOKS BECAME MISCELLANY BECAME FIELD NOTES, AND ONLY THE NAMES MOVED.
            The section is broadening deliberately -- books were the first thing in
@@ -6170,7 +6556,7 @@
            *** WHAT NIKHIL HAS TO SUPPLY, AND THE SHAPE TO PUT IT IN ***
            Per tab, per entry, four fields and no more:
              1. TITLE      -- the book, the watch, or the thing. Sets in
-                              Marcellus at 17px as .role-org.
+                              Spectral at 17px as .role-org.
              2. SUBTITLE   -- author / maker+reference / whatever the thing's
                               second line is. .role-title, muted, 13.5px.
                               OPTIONAL: drop the <p> and the head still works.

@@ -25,8 +25,10 @@ const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
 // THE NICKNAME TAKES TYPOGRAPHIC QUOTES, not the straight pair it was written
 // with. The caption is the one line on this site set in tracked uppercase mono,
 // and a straight " is a vertical tick that reads as code beside the em dash the
-// same line already prints; “ ” are a matched pair that read as a name. IBM Plex
-// Mono cuts both. The words are the visitor's own and are not touched.
+// same line already prints; “ ” are a matched pair that read as a name. Spline
+// Sans Mono cuts both, at the face's own 0.6em advance -- checked on canvas in
+// the loaded cut, not assumed, since a missing glyph here would fall back to a
+// proportional face mid-word. The words are the visitor's own and are not touched.
 const CURRENTLY = [
   { label: 'RESEARCHING', value: 'Passive Detection' },
   { label: 'READING', value: 'Haruki Murakami' },
@@ -216,11 +218,126 @@ const DEMO = {
   // drives as an ANGLE rather than as a value: see render(), where the sweep is
   // deliberately wider than the printed scale.
   reserveSweepDeg: 160, // total travel, vs the printed scale's 98.2deg
-  reserveCycles: 3,    // whole end-to-end round trips, ~0.67s per traverse
-  reserveHold: 0.85,   // fraction of the demo held at full end-to-end travel
+  // THE RESERVE HAND KEEPS ITS OWN CLOCK, AND IT IS SHORT.
+  // Nikhil, 11 August 2026: "shorten the power display hand animation when
+  // opening the reusme section. The pusher animation sohuld be the same."
+  //
+  // It was 4000ms and three round trips -- the whole demonstration's length,
+  // 0.67s a traverse. That is a sweep, and a sweep is what a needle does when it
+  // is being tested; the hand is answering a click here, and a click wants a
+  // flick. 900ms and ONE round trip: out to one extreme, back through the
+  // reading, out to the other, home. 0.45s a traverse, so it is faster on the
+  // dial than the old one was and still reads as one gesture rather than as an
+  // oscillation you have to wait out. One cycle keeps the whole-cycles invariant
+  // that lands the hand home with zero velocity.
+  //
+  // The pusher takes exactly this, which is what "should be the same" asks for:
+  // there is one reserve motion with one duration, and the demonstration simply
+  // finishes this hand early and lets it sit true while the rest of the dial
+  // runs out its four seconds. See render(), where both read reserveMs.
+  reserveMs: 900,      // the reserve's own duration, in BOTH the demo and a salute
+  reserveCycles: 1,    // whole end-to-end round trips, ~0.45s per traverse
+  reserveHold: 0.85,   // fraction of that 900ms held at full end-to-end travel
   reducedMs: 1200      // reduced motion: no movement, just an acknowledgement
 };
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
+
+// ---- THE SECTION'S SALUTE --------------------------------------------------
+// Nikhil, 11 August 2026: "for when you open on the sections on the front, make
+// the compontent do the same animation that the 10 o clock pusher does. For ex.
+// if i click the date dispay, itll spin and only it. same wth other components"
+//
+// And, the same day: "make the same animation that happens on clicking a front
+// face compontent happen when you exit".
+//
+// So: opening a section turns the ONE part that section hangs off, closing it
+// turns the same one again, and nothing else on the dial moves out of its own
+// time. Two doors, one call each -- showSection() and hideSection().
+//
+// WHAT IS REUSED AND WHAT IS ONLY IMITATED. The pusher's demonstration is not
+// called here, and it could not be: it is deliberately the whole watch at once
+// ("RUN THE WATCH THROUGH ITS PACES"), which is the opposite of what was asked
+// for. What is reused is not the feel but the actual arithmetic -- DEMO.ms and
+// DEMO.reserveMs, DEMO.turns, DEMO.dateTurns, the reserve's sweep constants,
+// and the easing
+// spin(t) = 1 - (1 - t)^2 -- applied through the same lens, one part at a time.
+// Nothing is copied into a second set of numbers, so calming a hand down in
+// DEMO calms it in both places and the two motions cannot drift apart. The
+// demonstration itself is untouched.
+//
+// A LENS, NOT A SECOND WRITER, for the reason written out above DEMO: render()
+// rewrites every one of these transforms unconditionally, ten times a second,
+// so anything set from a timer or a CSS keyframe would be gone by the next
+// tick. This is why there is no stylesheet rule for any of it. Every entry is
+// an offset FROM the true reading that returns to nothing, and every total is a
+// whole number of turns, so the part eases home onto its live position with
+// zero velocity rather than parking anywhere.
+//
+// WHICH PART EACH SECTION TURNS -- the SECTIONS row's `part` column, in the
+// vocabulary render() writes in. MAIN DIAL is its two hands, because that is
+// what the main dial's own motion is.
+const SALUTE_PART = {
+  about: 'mainDial',
+  resume: 'reserve',
+  projects: 'date',
+  research: 'sec',
+  'field-notes': 'moon'
+};
+
+// part -> { t0, base }. A map rather than one field because two sections opened in quick
+// succession name two different parts, and those are independent offsets: the
+// one you have just left can coast home on its own easing while the one you
+// have just opened starts. Re-asking for a part that is still turning is
+// IGNORED, which is the pusher's own re-entrancy rule and the same argument --
+// restarting would rewind that part's offset to zero mid-flight and snap it
+// backwards. Closing and re-opening a section inside its own duration -- four
+// seconds, or the reserve's 900ms -- therefore carries on turning rather than
+// stuttering. That guard is what makes the exit flick safe to add: closing a
+// panel a beat after opening it, or hammering a rail word, cannot stack two
+// runs on one part, because the second one is dropped rather than queued.
+//
+// SWITCHING SECTIONS FLICKS THE ONE YOU ARE GOING TO, NOT THE ONE YOU LEFT.
+// Click Projects while Research is open and the date flicks; the small seconds
+// does not. Both readings were defensible and this is the one the site already
+// believed: applyRoute() does not close on its way between two sections -- it
+// calls showSection() again, and showSection() overwrites -- so there is no exit
+// to acknowledge, only a move. The other reading would have meant TWO
+// complications answering ONE click, which is the dial talking over itself, and
+// on a fast walk down the rail it would have left a trail of parts still
+// spinning behind the reader. One gesture in, one gesture out, and a switch is
+// one gesture. Nothing enforces this; it is what falls out of the doors, and the
+// note is here so a later reader knows it was chosen and not missed.
+const SALUTE = new Map();
+
+// False for exactly one call: the applyRoute() at the foot of this file, which
+// applies the address the page was loaded on. See showSection().
+let arrived = false;
+
+// True on the frames the reserve hand is being driven by an animation, so the
+// frame AFTER the last of them can still suppress the hand's .6s transition and
+// let the snap be a snap. See render().
+let reserveSnapping = false;
+
+// REDUCED MOTION GETS NOTHING, not a shortened version. The house rule is that a
+// motion someone has asked not to see becomes a state rather than a fast event,
+// and here the state already exists and is already legible without this: the
+// panel is open, the rail word is lit, the part is the one named in the caption.
+// The demonstration keeps a 1200ms reduced branch only because a press with no
+// answer at all reads as a dead control; opening a section is never in that
+// position, so there is nothing left to acknowledge. The guard is in script
+// rather than in the stylesheet's blanket rule for the same reason the
+// demonstration's is: this motion is written as inline transforms by render(),
+// and no CSS rule is in a position to switch it off.
+function startSalute(key) {
+  if (REDUCED_MOTION.matches) return;
+  const part = SALUTE_PART[key];
+  if (!part || SALUTE.has(part)) return;
+  // `base` is the reserve's frozen starting reading -- see THE HAND LET GO OF
+  // THE SCROLL in render(). Read once, here, and never again: it is the whole
+  // point that the sweep stops asking. Harmless and unused for the other four.
+  SALUTE.set(part, { t0: Date.now(), base: state.reserve });
+  if (!demoPumping) { demoPumping = true; requestAnimationFrame(demoPump); }
+}
 
 // THE WIDTH AT WHICH THE WATCH STOPS FITTING BESIDE THE PANEL.
 // The 'panel' pose slides the watch left by 28vw and the card is hard against
@@ -602,6 +719,12 @@ new ResizeObserver(() => placeRailMarker(true)).observe(el.rail);
 // segment is drawn as a dark low-power zone running from that tick down to the
 // stop. So the first notch above AB is unambiguously the 127.84deg tick, and
 // inverting the pointer mapping below gives (138.9 - 127.843) / 98.2.
+//
+// An inversion was tried on 11 Aug 2026 -- rest at AUF, scrolling running the
+// reserve down -- and withdrawn the same day on Nikhil's "revert these changes
+// to the power display. Have it point at AB originally and the resume bar be
+// empty with ab on the left and auf on the right and scrolling down mamkes its
+// grow". Nothing of it survives; the record is here so it is not tried twice.
 const RESERVE_REST = 0.1126;
 
 // The printed scale, unchanged. 0deg points at 12 for every hand; the scale
@@ -706,6 +829,36 @@ function render() {
   }
   const demoing = demoT >= 0;
 
+  // The section's salute, the same two numbers per part -- see THE SECTION'S
+  // SALUTE. Entries expire here for the reason state.demo does: the frame that
+  // clears one is the frame that draws the true reading, so there is no tick
+  // where a part is home but still being offset.
+  // The reserve is the one part with a duration of its own -- 900ms, not the
+  // demonstration's four seconds. THE RELEASE LIVES HERE AND NOWHERE ELSE: an
+  // entry is dropped by this loop reading the clock, so nothing has to fire, no
+  // completion event has to arrive, and every way the animation can be
+  // interrupted -- the panel closed, the watch flipped, the section reopened,
+  // the reduced-motion setting flipped mid-flight -- still ends with the entry
+  // gone and the part back on its live reading. A hand left detached from its
+  // scroll would be a worse bug than the one this fixes, so the release is not
+  // allowed to depend on anything but time.
+  const lifeOf = (part) => (part === 'reserve' ? DEMO.reserveMs : DEMO.ms);
+  for (const [part, s] of SALUTE) if (now - s.t0 >= lifeOf(part)) SALUTE.delete(part);
+  // The demonstration outranks it. The demo is already turning every part,
+  // including this one, and letting both write would add two offsets to one hand
+  // and land it a fraction of a turn from home. Suspended rather than cancelled:
+  // the entry keeps expiring on its own clock underneath.
+  const saluteT = (part) => {
+    if (demoing) return -1;
+    const s = SALUTE.get(part);
+    return s === undefined ? -1 : (now - s.t0) / lifeOf(part);
+  };
+  // The demonstration's own easing, so the two motions are the same gesture.
+  const saluteSpin = (part) => {
+    const t = saluteT(part);
+    return t < 0 ? 0 : 1 - (1 - t) * (1 - t);
+  };
+
   let sec = d.getSeconds() + d.getMilliseconds() / 1000;
   if (CONFIG.secondsMotion === 'mechanical') sec = Math.floor(sec * 6) / 6;
   else if (CONFIG.secondsMotion === 'quartz') sec = Math.floor(sec);
@@ -718,10 +871,13 @@ function render() {
   // tick. The heights themselves stay in CSS -- see THE DEPTH BUDGET in
   // src/styles.css -- so this is the only place that knows there IS a height,
   // not what it is.
-  const wind = (turns) => turns * 360 * spin;   // 0 turns of offset when idle
-  const angHour = hr * 30 + wind(DEMO.turns.hour);
-  const angMin = min * 6 + wind(DEMO.turns.min);
-  const angSec = sec * 6 + wind(DEMO.turns.sec);
+  // 0 turns of offset when idle, from either author. `part` is the salute's
+  // name for this element; the demo's `spin` is unconditional because the demo
+  // is every part at once, and the two are never non-zero together.
+  const wind = (turns, part) => turns * 360 * (spin + saluteSpin(part));
+  const angHour = hr * 30 + wind(DEMO.turns.hour, 'mainDial');
+  const angMin = min * 6 + wind(DEMO.turns.min, 'mainDial');
+  const angSec = sec * 6 + wind(DEMO.turns.sec, 'sec');
   el.hour.style.transform = `rotate(${angHour.toFixed(2)}deg) translateZ(var(--z-hand-hour))`;
   el.min.style.transform = `rotate(${angMin.toFixed(2)}deg) translateZ(var(--z-hand-min))`;
   el.sec.style.transform = `rotate(${angSec.toFixed(2)}deg) translateZ(var(--z-hand-sec))`;
@@ -729,14 +885,19 @@ function render() {
   // The date runs whole months forward, so the wrap lands on today again. The
   // eased rate is already under one day per second past t~0.9, so the true date
   // is showing well before the demo clears -- no jump on the last frame.
+  //
+  // THE ONE NIKHIL NAMED. "if i click the date dispay, itll spin" -- the outsize
+  // date is Projects, and this is the same whole trip through 01..31 the pusher
+  // runs, driven by whichever of the two is going.
   let date = d.getDate();
-  if (demoing) date = ((date - 1 + Math.round(spin * DEMO.dateTurns * 31)) % 31) + 1;
+  const dateSpin = spin + saluteSpin('date');
+  if (dateSpin > 0) date = ((date - 1 + Math.round(dateSpin * DEMO.dateTurns * 31)) % 31) + 1;
   el.dateTens.textContent = Math.floor(date / 10);
   el.dateOnes.textContent = date % 10;
 
   // The starfield is engraved on the lunar wheel itself, so sky and moon share one rotation.
   const age = moonAge(now);
-  const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90 + wind(DEMO.turns.moon)).toFixed(2);
+  const moonDeg = ((age / SYNODIC_DAYS) * 180 - 90 + wind(DEMO.turns.moon, 'moon')).toFixed(2);
   el.moonOrbit.setAttribute('transform', `rotate(${moonDeg} 50 50)`);
 
   // The reserve sweeps instead of spinning, and it now sweeps WIDER than the
@@ -764,32 +925,79 @@ function render() {
   // released only over the last 15% on a smoothstep, whose slope is zero at
   // both ends -- no kink where the release begins, and zero value AND zero
   // slope at t = 1. Both halves of the settle survive the move into angle
-  // space: at reach = 0 the expression collapses to v0 exactly, which converts
-  // back to reserveDeg(state.reserve) exactly, and the smoothstep's zero slope
-  // still lands it there with zero velocity. The hand coasts home rather than
-  // snapping, onto the same notch it left.
+  // space: at reach = 0 the expression collapses to v0 exactly, and the
+  // smoothstep's zero slope still lands it there with zero velocity, so the
+  // hand coasts rather than stops dead. What it coasts onto is the FROZEN
+  // reading and not necessarily the live one -- see THE HAND LET GO OF THE
+  // SCROLL below, which is where the difference between the two is settled.
   const reserveTrue = Math.min(1, Math.max(0, state.reserve));
   let reserveAngle = reserveDeg(reserveTrue);
-  if (demoing) {
-    const u = Math.min(1, Math.max(0, (demoT - DEMO.reserveHold) / (1 - DEMO.reserveHold)));
+  // ---- THE HAND LET GO OF THE SCROLL ---------------------------------------
+  // Nikhil, 11 August 2026: "So delink the hand position to the resume wind top
+  // bar until the animation is done, then have it snap to where the hand is".
+  //
+  // The reserve is the one part whose truth a reader can MOVE while the
+  // animation is running: state.reserve is written by the Resume panel's scroll
+  // handler, and this sweep used to be phased off it every frame. Scrolling
+  // during the animation therefore re-derived `phase` under the cosine, which is
+  // not a hand being wound -- it is two authors arguing at 60fps.
+  //
+  // So the sweep runs against `base`, the reading frozen when the animation
+  // started, and stops asking after that. Nothing suspends the scroll handler
+  // itself: it keeps writing state.reserve, the panel's own readout keeps
+  // following the reader honestly (see the bar below), and it is only THIS HAND
+  // that is deaf for 900ms.
+  //
+  // AND THEN IT SNAPS, in the strict sense. The landing is no longer a coast
+  // onto `base`: the frame after the entry expires draws reserveDeg(live) with
+  // no offset at all, so the hand arrives at whatever the mapping says AT THAT
+  // MOMENT rather than at the reading it left. If the reader has scrolled, that
+  // is a jump, and it is the jump that was asked for -- which is why the
+  // transition stays suppressed for one frame longer than the animation (below).
+  //
+  // THE MAPPING IS NOT REIMPLEMENTED OR CACHED HERE. This reads state.reserve,
+  // which is the mapping's one output, and it reads it fresh. The scroll
+  // handler is free to invert its ramp, change its anchor or change direction
+  // without this block knowing -- which it is doing, concurrently.
+  //
+  // Everything else the demo drives keeps its own time: the seconds hand, the
+  // guilloche and the moon are not touched by any of this.
+  const resRun = demoing
+    ? { t: demoT * DEMO.ms / DEMO.reserveMs, base: state.demo.reserveFrom }
+    : (() => { const s = SALUTE.get('reserve'); const t = saluteT('reserve'); return t < 0 ? null : { t, base: s.base }; })();
+  // The demonstration's reserve is finished long before the rest of the dial is
+  // -- 900ms of a four-second press -- and after that the hand sits true while
+  // the hands run on. One motion, one duration, two callers.
+  const resAnim = resRun && resRun.t <= 1 ? resRun : null;
+  if (resAnim) {
+    const u = Math.min(1, Math.max(0, (resAnim.t - DEMO.reserveHold) / (1 - DEMO.reserveHold)));
     const reach = 1 - u * u * (3 - 2 * u);
     const span = RESERVE_DEG_HI - RESERVE_DEG_LO;          // the 160deg travel
-    const v0 = (RESERVE_DEG_HI - reserveAngle) / span;      // truth, in demo units
+    const base = Math.min(1, Math.max(0, resAnim.base));
+    const v0 = (RESERVE_DEG_HI - reserveDeg(base)) / span;  // the frozen reading, in demo units
     const phase = Math.acos(1 - 2 * v0);
-    const sweep = 0.5 - 0.5 * Math.cos(2 * Math.PI * DEMO.reserveCycles * demoT + phase);
+    const sweep = 0.5 - 0.5 * Math.cos(2 * Math.PI * DEMO.reserveCycles * resAnim.t + phase);
     reserveAngle = RESERVE_DEG_HI - (v0 + reach * (sweep - v0)) * span;
   }
   // .reserve-hand carries a .6s transition for the scroll-driven wind, which
-  // would smear a per-frame sweep into a lagging blur. Suppressed for the demo
-  // and restored on the settling frame, where the value is already true.
-  el.reserveHand.style.transition = demoing ? 'none' : '';
+  // would smear a per-frame sweep into a lagging blur. Suppressed while the
+  // animation runs, and FOR ONE FRAME AFTER IT: that trailing frame is the snap
+  // onto the live reading, and a snap through a .6s ease is not a snap -- it is
+  // the same fight moved into the compositor. reserveSnapping carries the fact
+  // across exactly one frame and no more, so the reader's next scroll gets its
+  // eased hand back.
+  el.reserveHand.style.transition = (resAnim || reserveSnapping) ? 'none' : '';
+  reserveSnapping = !!resAnim;
   el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg) translateZ(var(--z-hand-res))`;
-  // The bar reads the printed scale, not the hand's travel, so it stays an
-  // honest percentage while the hand is off the end of the dial: past AUF it
-  // reads 100 and past AB it reads 0, rather than going over or under. Off the
-  // demo this is the identity -- reserveDeg() inverted is state.reserve.
-  const reservePct = (RESERVE_AB - reserveAngle) / RESERVE_SCALE;
-  el.reserveBar.style.width = `${Math.round(Math.min(1, Math.max(0, reservePct)) * 100)}%`;
+  // THE BAR IS THE READER'S, NOT THE HAND'S. It used to be derived from the
+  // hand's angle, which meant a press or an opening whipped the panel's readout
+  // through 160deg of travel the reader had not asked for -- the delink Nikhil
+  // asked for is exactly this line. It reads state.reserve, so during the
+  // animation it goes on saying where the reader has scrolled to, and when the
+  // hand lands the two agree again because they are then the same number.
+  // Off the animation this is what it always was: reserveDeg() inverted is
+  // state.reserve, so nothing changes for the scroll it was written for.
+  el.reserveBar.style.width = `${Math.round(reserveTrue * 100)}%`;
 
   // The status line, on its own four-second clock. The caption below is its only
   // reader now that the panel it also fed has gone.
@@ -989,6 +1197,17 @@ function showSection(key, from) {
   // part that owns the section is the honest answer, and it is the same place a
   // click would have come from.
   state.returnTo = from || $(SECTION.get(key).hit);
+  // THE SALUTE, from the one place every route into a section passes through --
+  // the dial part, the rail word, an edited hash, Back and Forward. Putting it
+  // here rather than in the click handlers is what makes "the same animation"
+  // true of all of them instead of of the two that were easiest to reach.
+  //
+  // EXCEPT A COLD ARRIVAL. `arrived` is false only for the applyRoute() at the
+  // foot of this file, which is the address the visitor loaded on. Someone
+  // opening a shared #/projects link has not clicked the date; the watch would
+  // be performing at a page it has not been asked anything by, over the top of
+  // the intro assembly. The salute answers an action, so it waits for one.
+  if (arrived) startSalute(key);
   render();
   const panel = panels.get(key);
   // After render(), because the panel is [hidden] until then and a hidden
@@ -1002,6 +1221,20 @@ function showSection(key, from) {
 // leaving it alone.
 function hideSection(keepFocus) {
   if (!state.active) return;
+  // THE SAME FLICK ON THE WAY OUT. Nikhil, 11 August 2026: "make the same
+  // animation that happens on clicking a front face compontent happen when you
+  // exit". Here rather than in any of the five controls that close, for the
+  // reason showSection() carries the opening one: this is the door they all go
+  // through -- the card's close control, Escape, a re-clicked rail word, the
+  // crown, an edited hash, Back and Forward all reach it via leave() or
+  // applyRoute(), and none of them can close a panel without it.
+  //
+  // Read before state.active is cleared, which is the whole reason this line is
+  // the first one in the function.
+  //
+  // NO `arrived` GUARD, and none is needed: there is no such thing as a cold
+  // exit. Nothing is closed before something was opened.
+  startSalute(state.active);
   state.active = null;
   const back = state.returnTo;
   state.returnTo = null;
@@ -1029,6 +1262,16 @@ function showContact() {
   // to zero, which the next frame draws as the true reading -- and the face it
   // happens on is the one you cannot see.
   state.demo = null;
+  // And any salute still turning, for the same reason and with the same result:
+  // dropping the offset leaves the true reading, drawn on the face now pointing
+  // away from you.
+  //
+  // INCLUDING THE EXIT FLICK the hideSection() above has just started, and that
+  // is deliberate rather than an accident of ordering. The crown is the one exit
+  // that takes the dial away with it: a part performing at the back of the case
+  // is a part performing at nobody, and it would still be mid-flight when the
+  // flip finished. The flip IS the acknowledgement in that direction.
+  SALUTE.clear();
   render();
   el.crown.focus({ preventScroll: true });
 }
@@ -1415,7 +1658,10 @@ el.crown.addEventListener('blur', () => {
 // the interval keeps running underneath either way.
 let demoPumping = false;
 function demoPump() {
-  if (!state.demo) { demoPumping = false; render(); return; }
+  // Either author holds the pump: the demonstration, or any section salute still
+  // turning. One pump between them, so a press during a salute does not start a
+  // second rAF loop drawing the same frames twice.
+  if (!state.demo && !SALUTE.size) { demoPumping = false; render(); return; }
   render();
   requestAnimationFrame(demoPump);
 }
@@ -1427,7 +1673,11 @@ $('corrector').addEventListener('click', () => {
   // the one option with no discontinuity, and it cannot stack.
   if (state.demo) return;
   const reduced = REDUCED_MOTION.matches;
-  state.demo = { t0: Date.now(), reduced };
+  // reserveFrom is the reserve hand's frozen starting reading, taken here for
+  // the same reason a salute takes it -- see THE HAND LET GO OF THE SCROLL in
+  // render(). The press and the opening are one motion on this hand, so they
+  // start it the same way.
+  state.demo = { t0: Date.now(), reduced, reserveFrom: state.reserve };
   // Reduced motion gets no spin at all -- four seconds of whirling hands is
   // precisely the thing the setting asks us not to do. The demo state still
   // exists, purely so the caption can acknowledge the press, and the 100ms
@@ -2221,7 +2471,11 @@ $('resumeScroll').addEventListener('scroll', (e) => {
     // timeline is the resting state, so the bottom of this ramp has to be the
     // same notch the hand starts on, or the first scroll event would jump the
     // hand off it and scrolling back to the top would never return it. The top
-    // of the ramp stays AUF, which is what the last entry ("Fully wound.") says.
+    // of the ramp is AUF: reading to the end of the run winds the movement
+    // fully. (It used to be the FULLY WOUND line under the last entry that said
+    // so. That line is gone -- removed on its own instruction as an AI artefact
+    // -- and it does not come back with this direction.) One state.reserve
+    // feeds both the dial hand and the panel meter, so they cannot disagree.
     state.reserve = Math.min(1, RESERVE_REST + (1 - RESERVE_REST) * (node.scrollTop / max));
     render();
   }
@@ -2286,11 +2540,63 @@ function rigNudgePaint() {
   setTimeout(fire, 4500);
 }
 
-Promise.all([...document.querySelectorAll('.cb-rig img')].map((i) =>
-  i.complete && i.naturalWidth ? Promise.resolve()
-    : new Promise((res, rej) => { i.addEventListener('load', res); i.addEventListener('error', rej); })
-)).then(() => el.back.classList.add('rig-ready'))
-  .catch(() => {});
+// ---- THE RIG APPEARS EVEN IF ITS PARTS DO NOT ------------------------------
+// Nikhil, 11 Aug 2026: "improve the loading of everything in the webiste. Poor
+// wifi shouldnt affect the webiste. it should just take longer to load".
+//
+// .cb-rig is opacity 0 until .rig-ready (see the @supports block in styles.css),
+// and this is the only thing that ever adds it. So this line decides whether the
+// living movement is ever seen, and it used to decide it ALL OR NOTHING across
+// twenty-five sprites: Promise.all with a REJECT on `error`, caught and dropped.
+// Two ways that lost the movement for good, both measured, both silent:
+//
+//   ONE SPRITE 404s -> reject -> .catch(() => {}) -> .rig-ready never added.
+//   Measured: 404 on rig/base.webp, .rig-ready never arrived; the aperture kept
+//   the static lossless floor for ever. A 1KB corrector plate failing to fetch
+//   cost the whole movement, which is the wrong exchange rate by three orders of
+//   magnitude -- a sprite that never comes should leave a GAP, not a dead rig.
+//
+//   ONE SPRITE STALLS -> neither `load` nor `error` ever fires -> the promise
+//   never settles -> .rig-ready never added, no error, nothing in the console.
+//   This is the poor-wifi case exactly: not a failure, just a request the
+//   network has not finished, and the movement was gone permanently because of
+//   it. Measured: stalling part-balance.webp alone did it.
+//
+// So: allSettled, not all -- an errored sprite is a settled sprite and must not
+// veto the other twenty-four. And a deadline, because allSettled still waits for
+// ever on a request that never answers, and a promise that never settles is the
+// same dead page as a rejected one. Whichever comes first wins; both are
+// idempotent, classList.add being a set operation.
+//
+// THE DEADLINE IS 4s AND IT IS A BACKSTOP, NOT A SCHEDULE. On any connection
+// that answers, allSettled wins the race and the behaviour is byte-identical to
+// before -- fast loads were measured at ~1.4s, well inside it. It only fires
+// when the network has genuinely stopped answering, and what it buys is the rig
+// revealed with holes in it rather than not revealed. Holes are cheap here: the
+// sprites are layered OVER .cb-movement-image, the same render they were cut
+// from, so a part that has not arrived shows the lossless floor's own pixels in
+// its place and the aperture is never blank. Late arrivals paint themselves in
+// as they land -- an <img> that decodes inside a visible parent needs nothing
+// from this file. That is what makes it progressive rather than all-or-nothing.
+//
+// `i.complete` alone, where it used to be `i.complete && i.naturalWidth`. The
+// second term was a third way to hang: an image that had ALREADY failed before
+// this line ran is complete with naturalWidth 0, so it took the else branch and
+// waited on a `load`/`error` that had both already been dispatched and would
+// never come again. Complete is complete, however it ended.
+const rigSettled = Promise.allSettled(
+  [...document.querySelectorAll('.cb-rig img')].map((i) =>
+    i.complete ? Promise.resolve()
+      : new Promise((res) => {
+          // resolve on BOTH: `error` means this sprite is a gap, which is a
+          // decided outcome, and the other sprites are not waiting on a verdict
+          i.addEventListener('load', res, { once: true });
+          i.addEventListener('error', res, { once: true });
+        })
+  ));
+const rigDeadline = new Promise((res) => setTimeout(res, 4000));
+Promise.race([rigSettled, rigDeadline])
+  .then(() => el.back.classList.add('rig-ready'));
 
 function rigPlay() {
   if (rig.reduced.matches || rig.anims.length) return;
@@ -2419,6 +2725,9 @@ else {
 // it is six lines of inline script in <head> and three CSS rules; see ARRIVING
 // MID-SITE in src/styles.css.
 applyRoute();
+// Everything after this line is a visitor doing something, so a section opened
+// from here on turns its part. See THE SECTION'S SALUTE.
+arrived = true;
 
 // ---- THE GUILLOCHE'S PHASE ------------------------------------------------
 // The engine-turned field on the stage runs at one degree per second, so its

@@ -1,3 +1,143 @@
+/* ================= THE FACES, AND WHY THEY ARE ON THIS SERVER =================
+   ASKED FOR BY HIM, 11 AUG 2026: "make the fonts less ai. They should still be
+   clean and look good. Just less comon ai fonts". The three that were here --
+   Marcellus, Archivo, IBM Plex Mono -- were not bad faces. They were the faces
+   a generated site reaches for, which is a different objection and the one he
+   made. What replaced them, and the argument for each:
+
+     SPECTRAL, display.   Production Type, SIL OFL 1.1. A transitional serif cut
+                          FOR THE SCREEN rather than adapted to it: low stroke
+                          modulation, sharp wedge serifs, no hairline anywhere
+                          thin enough to smear when light type is laid on a dark
+                          ground -- which is this site's only ground. It is the
+                          precise register rather than the antiquarian one, and
+                          that is deliberate: this watch is an instrument, not a
+                          Renaissance book, so a Garamond revival would have been
+                          the wrong kind of classical. Tested against EB Garamond
+                          (too thin at 17px on #0b101c), Cardo and Newsreader.
+     SOURCE SANS 3, UI.   Adobe, SIL OFL 1.1. A real text sans with a small-size
+                          cut and proper hinting, which is what 13.5px paragraphs
+                          of research copy on a dark panel actually need. It sets
+                          the same paragraph in fewer lines than Archivo, Public
+                          Sans or Instrument Sans at the same size and measure,
+                          without crowding. Humanist rather than grotesque, so it
+                          sits under a serif instead of arguing with it.
+     SPLINE SANS MONO,    Sorkin Type / Mirko Velimirovic, SIL OFL 1.1. A
+     mono.                neo-grotesque monospace: even, unfussy caps with none
+                          of Plex Mono's humanist flare, which matters because
+                          every use of this face on the site is letter-spaced
+                          caps -- the rail, the eyebrows, the captions, the year
+                          column. AND IT ADVANCES 0.60em, EXACTLY AS PLEX MONO
+                          DOES: measured on a canvas in the loaded cut, 11.9998px
+                          at 20px against Plex's 12.0000, and FIELD NOTES sets
+                          131.998px against 132.000. That is the reason a mono
+                          swap was affordable at all -- see THE WIDTH on .rail --
+                          and it was a selection criterion, not luck. Sometype
+                          Mono (0.58em) and Fragment Mono (0.618em) were the two
+                          it beat, and both would have moved the rail.
+
+   ALL THREE ARE SIL OFL 1.1, WHICH IS WHY THEY CAN SIT IN THIS REPOSITORY.
+   Self-hosting is not a licence a font grants by being free to link.
+
+   FOUR CUTS, NOT NINE. index.html used to ask Google for Archivo at 400, 500 and
+   600; grep says exactly one declaration in this file sets a weight other than
+   400, and it is .rail's mono 500. Every heading sets font-weight: 400 by hand
+   and there is no <strong>, <b> or <em> in index.html. So two of the nine cuts
+   the site downloaded were never drawn by anything, and they are gone.
+
+   ---- WHY THEY ARE LOCAL FILES AND NOT A GOOGLE FONTS <link> ----
+   THIS IS THE FIX FOR THE WORST FAILURE ON THE SITE, and it is not cosmetic.
+   The old markup was a third-party render-blocking <link rel="stylesheet"> to
+   fonts.googleapis.com. Measured under CDP throttling against a production
+   build: a STALLED font origin -- not a failed one, a stalled one, which is what
+   bad wifi produces -- gave fcp: null, a loader that never left, and 0 of 6
+   panels reachable. A permanently blank page on a fast connection. `display=swap`
+   does not cover this: it governs the font FILE, not the stylesheet that
+   declares it, and the stylesheet is what blocks the render.
+   A 404 on the same origin recovered cleanly (FCP 132ms, all six panels), which
+   is what identified the stall specifically as the killer.
+   Same-origin @font-face has no such failure mode: the declarations are inside
+   the stylesheet the page already blocks on, and the woff2 files are governed by
+   font-display: swap, so a stalled FILE costs a flash of fallback and nothing
+   else. The two preconnects to those origins went with the <link>.
+
+   PUBLIC/, NOT AN IMPORT. Vite copies public/ verbatim, so /assets/fonts/*.woff2
+   is the URL in dev and in the build with no plugin and no hashing step.
+
+   PRELOADED: TWO FILES, NOT EIGHT. index.html preloads Spectral 400 latin and
+   Spline Sans Mono 400 latin, which are exactly the two the loader draws --
+   .loader-name is display, .loader-sub is mono, both at 400. Preloading the
+   500 or the latin-ext subsets would put four more competing fetches in front of
+   the first paint to serve type nobody sees for another two seconds.
+
+   THE SUBSETS ARE GOOGLE'S OWN RANGES, unedited. latin-ext is here because the
+   copy carries names, not because anything visible needs it -- it is a second
+   file the browser fetches only if a codepoint in that range is actually set. */
+@font-face {
+  font-family: 'Spectral';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/Spectral-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Spectral';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/Spectral-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/SourceSans3-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/SourceSans3-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Spline Sans Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/SplineSansMono-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Spline Sans Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/SplineSansMono-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Spline Sans Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/assets/fonts/SplineSansMono-500-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Spline Sans Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/assets/fonts/SplineSansMono-500-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   --moon-day: #159bd0;
   --moon-mid: #075b95;
@@ -14,9 +154,11 @@
   --ink: #e6e9f0;
   --muted: #8b93a6;
   --body: #9aa2b3;
-  --font-display: Marcellus, serif;
-  --font-ui: Archivo, sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+  /* The three faces are declared at the top of this file, with the argument for
+     each and their licences. The fallbacks are what draws during the swap. */
+  --font-display: Spectral, Georgia, serif;
+  --font-ui: 'Source Sans 3', system-ui, sans-serif;
+  --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
 
   /* THE INTRO'S LAST BEAT. These used to live on .hint-index, which owned them
      alone; the rail now starts on the same clock, and a custom property is only
@@ -480,7 +622,26 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.3,.8,.25,1), filter 1s ease;
+  /* THE POSE NO LONGER POPS. Nikhil, 11 August 2026: "fix the watch itself,
+     when i click in and out of a compontent the watch does like this little pop
+     and grow".
+     Measured before touching (real Chrome, computed transform per rAF frame,
+     both directions, 1400px and 1100px): the move was already continuous,
+     monotonic, and started from the correct resting value -- no transition
+     racing an inline write, no origin change, no interference from the part
+     flick. What he was seeing was the old curve itself:
+     cubic-bezier(.3,.8,.25,1) leaves the origin at .8/.3 = 2.67x the average
+     velocity, so a standstill watch covered ~25% of its whole travel in the
+     first tenth of a second and then crept through the rest. A launch that hard
+     from zero IS a pop, in both directions, with no discontinuity anywhere.
+     So the curve starts at zero velocity now: .45,0 holds the launch back,
+     .2,1 keeps the settle it always had, the peak lands mid-flight at ~1.9x
+     average instead of at the first frame, and the duration is unchanged.
+     The filter rides the same curve rather than `ease` so the dimming and the
+     move are one gesture, not two on different clocks. Reduced motion is
+     untouched: the blanket rule collapses transition-duration, and a cut
+     through this curve is the same cut it was through the old one. */
+  transition: transform 1s cubic-bezier(.45, 0, .2, 1), filter 1s cubic-bezier(.45, 0, .2, 1);
 }
 .watch-flip {
   position: absolute;
@@ -639,6 +800,43 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .corrector-plane { position: absolute; inset: 0; }
 .corrector-plane-front { transform: translateZ(calc(var(--case-depth) / 2 + .05vmin)); }
 .corrector-plane-back  { transform: translateZ(calc(var(--case-depth) / -2 - .05vmin)); }
+
+/* THE PUSHER IS A FRONT-OF-THE-WATCH PART NOW.
+   "remove the 10 o lcok pusher form the caseback." -- Nikhil, 11 Aug 2026.
+   The caseback is the contact face; a date corrector reading over the movement
+   was the one fitting on that side that did nothing. So the whole #corrector is
+   taken out of sight while the back is showing.
+
+   WHY THE PUSHER STILL EXISTS AT ALL, and why this is a visibility rule rather
+   than a delete: it is the FRONT's pusher that was asked about, only its
+   caseback showing. On the front it is still a live control -- it lights under
+   hover, carries its own caption, and pressing it runs the demonstration sweep.
+   Deleting #corrector, or its -back plane, would take all of that with it.
+
+   WHY BOTH PLANES STAY. The far copy is not spare: the mark is drawn on each
+   plane and the two compound through the transparent face, which is what --pk
+   .25 was measured against (39.6 peak per pixel with both, 30.6 with the far
+   one hidden -- see THE 2.6x IS NOT A MISTAKE). Drop the back plane and the
+   front's own hover cue dims by a quarter. Hide the parent instead and the
+   front side is untouched, to the pixel.
+
+   THE DELAY IS THE FLIP. visibility flips instantly on the way out, so the cap
+   is gone before the case has turned a degree and cannot show through
+   mid-rotation, where the two faces cross-fade and either can be seen. On the
+   way back it waits out the full 1.15s of .watch-flip's transform transition,
+   so it reappears with the dial already square to the camera and never rides
+   the turn. visibility and not display: display: none would restart
+   correctorSeat, whose 2.72s delay fills backwards, and the cap would sit
+   unseated for most of three seconds each time the watch came back over.
+   Hidden also closes the pointer and the tab stop, which is the point -- the
+   button is a sibling of the faces, so el.front.inert never covered it and a
+   caseback click could reach an invisible pusher. */
+.corrector { visibility: visible; transition: visibility 0s linear 1.15s; }
+.watch-flip:has(.face-back.is-flipped) .corrector {
+  visibility: hidden;
+  transition-delay: 0s;
+}
+
 /* flush bowed corrector cap: seated into the case with no visible stand-off */
 .corrector-cap {
   position: absolute;
@@ -682,6 +880,33 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   pointer-events: none;
   -webkit-user-drag: none;
   user-select: none;
+}
+/* The caseback link wheels want the SAME no-drag hygiene, and nothing else in
+   the two rules above. Nikhil, 11 Aug 2026: "Prevent the gear icons from being
+   'dragged' liek the asset doing the copy paste drag thing." Press-and-hold on
+   an <img> makes the browser lift a ghost of it to drop elsewhere, which reads
+   as a picture of a wheel rather than a wheel.
+   Only the drag property is borrowed, deliberately:
+     - NOT pointer-events: none -- each gear is an <a> to LinkedIn / GitHub /
+       Email, and killing pointer events would kill the link.
+     - NOT user-select: none -- selection and image drag are different
+       behaviours, and LETTERING IS NOT COPY (immediately below) owns the
+       select policy on this page.
+   The declarations here and the draggable="false" attributes in index.html are
+   BOTH required and neither is redundant: -webkit-user-drag is Chromium/WebKit
+   only -- Firefox has never implemented it -- so the attribute is the half that
+   covers Gecko. Delete either and the ghost comes back in one engine.
+   THE ANCHOR IS THE SECOND DRAG SOURCE, and it is not optional. Measured in
+   Chrome 11 Aug 2026: with the wheels covered but the <a> left alone, a press
+   and drag on each of the three still fired dragstart, target <a class=cb-gear>
+   -- an href is draggable by default in its own right (the payload is the URL,
+   and the browser paints the wheel underneath as the ghost), so suppressing
+   only the <img> stops nothing a user can see. Both selectors, both attributes.
+   Nothing here touches .cb-gear's position/left/top/width, which THE LINK TRAIN
+   far below owns alone. */
+.cb-gear,
+.cb-gear img {
+  -webkit-user-drag: none;
 }
 
 /* ===================== LETTERING IS NOT COPY =====================
@@ -878,7 +1103,10 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    5.65vmin put a 23.17px figure body in a 75.88px pane -- 30.5% of the pane
    height. The sprite's cream pane is 69.65px at the same viewport, so the same
    30.5% wants 5.65 x (69.65 / 75.88) = 5.19vmin. (Marcellus's 7.4vmin is not
-   transferable: its lining figures stand at 57% of the pane.) Both panes shrank
+   transferable: its lining figures stand at 57% of the pane. Marcellus was the
+   display face until 11 Aug 2026 and is no longer loaded at all -- this and the
+   `Marcellus cut` below are history, and neither is a claim about type the site
+   still sets. The numerals have been Georgia since long before that change.) Both panes shrank
    by the same ~0.918 in width and height, so the flex centring and the
    line-height:1 baseline land at the same fractions of the pane as before --
    baseline at 69.7% down, which is what let the descending figures hang.
@@ -2193,6 +2421,48 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   display: block;
 }
 
+/* THE FINISHING SHEETS. Two inline SVGs inside .cb-movement -- one between the
+   rig and the link train, one after it for the single bridge the link train
+   paints over. Both are inset:0 of .cb-movement, so their 0..100 viewBox IS
+   rig/base.webp's own 1254px space divided by 12.54 and every path traced off
+   that file lands on the part it was traced from at any viewport. The markup
+   block above .cb-links in index.html carries the reasoning; what belongs here
+   is only how they composite.
+   `overlay` AND NOTHING ELSE. These sheets carry no colour of their own: they
+   are white and black at low alpha, and overlay makes that a multiplication of
+   the metal already underneath rather than a coat of paint on top. Two things
+   follow that are worth having. The near-black cavity outside the plate is left
+   alone -- overlay on 0.04 luminance moves almost nothing -- so the texture
+   confines itself to the metal without a single extra mask. And the finish
+   tracks the render's own lighting: where the plate is already in the case
+   wall's shadow, the perlage in it is dim, which is what a plate does.
+   NO FILTER, NO BLUR, NO BACKDROP-FILTER, AND NO ANIMATION. The three link
+   wheels turn continuously over this and the page repaints about ten times a
+   second; every rule here is static, so both sheets rasterise once and are
+   composited from cache thereafter. The one filter in the SVG (cbGraver) runs
+   over two small clipped panels and is likewise static.
+   MEASURED, vsync off, Chrome, 1600x1000 at dpr 2, the caseback open and all
+   three wheels turning. Main-thread frame time with this layer switched off:
+   mean 0.68-0.76ms, p95 0.9-1.0ms. With it on: mean 0.71-0.75ms, p95 1.0ms --
+   inside the run-to-run spread either way. The whole cost is a single 6.5-7.0ms
+   raster on the first frame the layer paints, and switching cbGraver off drops
+   that to 1.2ms, so the filter IS that first frame and nothing after it. If a
+   later change makes any of this per-frame -- a blur, a filter that moves, a
+   transition -- those numbers stop holding and the layer stops being free.
+   NOT A LAYER PROMOTION. Deliberately no will-change here: promoting a blended
+   element forces the whole aperture -- floor, rig, wheels -- into one composited
+   group on every frame, which is exactly the cost this layer is trying not to
+   have. It is cheap because it is boring. */
+.cb-finish {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
 /* one pass of light as the caseback lands in the 315-degree key light */
 .cb-rig-sheen {
   position: absolute;
@@ -3384,6 +3654,56 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    Coverage 33.90% -> 34.14% -> 31.70%. The measurement, the crest fit, the edge
    reconstruction and the shimmer re-runs are beside the markup, in index.html.
 
+   THE SMUDGE WAS THE APEX OF THAT RECONSTRUCTION, AND IT IS CUT OFF. "Fix the
+   gihub gear smudge" -- 11 Aug 2026, a magnified crop of the same strip for the
+   third time. The pass above reconstructed the bridge edge across the bleed and
+   deliberately left the trace ~3.5 px INSIDE the chamfer's cast shadow to keep a
+   tooth tip from detaching; the trace it actually produced overshot the rim crest
+   by far more than that, and the overshoot is what he was looking at. Measured
+   column by column against the crest of the rim highlight in base.webp -- the
+   subpixel argmax of luminance over y 450..500, which the rim being a circle arc
+   fits to a parabola, y = 6.71805e-3 x^2 - 7.56939 x + 2591.656, max residual
+   0.32 px and rms 0.16 over x 555..614 -- the plate's top edge sat ABOVE that
+   crest by 1 px at x 578, 4 at 582, 7 at 586, TEN at 588, and back to 1 by 595.
+   That is a wedge of mainplate, roughly 20 x 14, lying across the tooth crowns
+   where nothing whatever stands in front of them, feathered at its edge and
+   therefore soft: dirt on the crystal rather than an occluder. Above it, wholly
+   detached, sat a 3 px speck at x 584..586, y 448 -- the crumb the last pass
+   traded 3.5 px of dilation to shrink, still floating.
+   THE FIX IS THE CREST ITSELF AND NOTHING ELSE. alpha := min(alpha, smoothstep
+   over 1.0 px centred on the fitted crest), applied over x 555..614 and a no-op
+   everywhere the plate was already below the line. PURELY SUBTRACTIVE -- 119
+   pixels lost alpha, ZERO gained -- which is again what makes "the mesh cannot
+   have closed" and "no turning part is newly covered" true by construction. The
+   speck goes with it, because it was above the crest too. RGB is untouched and
+   still byte-identical to base.webp over every pixel with alpha above zero, max
+   channel difference 0 across all 6108 of them.
+   WHAT IT COST AND WHAT IT BOUGHT, measured on an offline composite at 4x:
+   coverage 31.78% -> 29.89%; the crown band x 555..600, y 454..466 falls from
+   119 solidly-covered px to 33 and from mean alpha 82.0 to 22.7, and the 33 that
+   remain are all below the crest, where the chamfer genuinely is; the r 73.500
+   mesh hole loses 206 -> 162 px of resampling lip, all of it between r 69.9 and
+   r 73.5, so the disc opens rather than closes. Mesh arc at the contact bearing
+   130.41 deg: 17.39 deg of the r 73.5 ring free of this plate, unchanged in kind
+   and larger in fact. Coverage split now 42.20% on the name bridge, 22.92% on
+   the rig's own turning centre wheel -- STILL UNCOVERABLE AND STILL HIS, see
+   above -- and 42.05% bare plate.
+   VERIFIED BY LOOKING, IN REAL CHROME. The in-app pane is document.hidden and
+   gives stale composites; this was Playwright-driven Chromium at 1600x1100 dsf 2,
+   flipped by clicking the CONTACT rail, frozen with CDP Animation.setPlaybackRate
+   0 -- animation-play-state does NOT stop this page -- and the freeze proved
+   before measuring: three full-page frames 1.2 s apart differing by 0 px, max
+   channel delta 0. Nothing shimmers under the solid body of the cut. In the
+   before crop the tooth crown is torn in two by a grey blur with a speck above
+   it; in the after crop the row of teeth runs unbroken across the top of the
+   wheel and the cut meets the rim as a line.
+   THIS ENTRY IS HERE AND NOT IN index.html ON PURPOSE. Two other hands were in
+   that file at the time -- drag-prevention on the three .cb-gear <img> tags and
+   the removal of the case pusher -- so it was left alone. The consequence is
+   that the caseback comment beside the markup still says the cut covers 31.70%
+   of the wheel; it covers 29.89%, and the next hand in index.html should carry
+   that number and this paragraph across.
+
    THE OLD JOINT IS GONE, AND SO IS THE QUESTION IT LEFT OPEN. This wheel used
    to press into the curved step that walls the recessed field -- chamfer traced
    at x 334 (y 520), 343 (y 560), 357 (y 590), 350 (y 630) -- with 15.0% of it
@@ -3811,6 +4131,21 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    (ABOUT and RESUME clear by 87px or more everywhere and are left out of the
    table; they are never the binding item.)
 
+   THE TABLE SURVIVED THE 11 AUG FACE CHANGE UNCHANGED, and this is checked
+   rather than assumed. The mono went IBM Plex Mono -> Spline Sans Mono at the
+   same 0.6em advance, so the rail's box is the same 183.39 it was and no row
+   moved. What could still have moved these numbers is INK, since the clearance
+   is taken from the nearest PAINTED GLYPH: the painted right edge shifts by at
+   most 0.50px between the two faces (FIELD NOTES +0.16, CONTACT -0.50 -- the two
+   binding columns), which is inside the +/-.5px reproducibility the paragraph
+   below already claims for this instrument. The tightest cell in the table,
+   FIELD NOTES at +13.1 at 1920, becomes about +12.9, so "all six clear" still
+   holds at 1920 and the boundary in SO THE BOUNDARY MOVED does not move again.
+   Also re-run at all six widths against the dev server: the rail's box measures
+   183.39 at every one and no width overflows the document.
+   A mono whose advance was not 0.6em would have invalidated this entire table,
+   which is why it was not chosen. See THE FACES at the top of this file.
+
    ONLY THE FIFTH COLUMN MOVED, and it moved by exactly one character's advance:
    MISCELLANY became FIELD NOTES, eleven characters where there were ten, so that
    row's tail sits 14.64px further right and nothing else in the rail changed
@@ -3889,7 +4224,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    is qualified here rather than replaced.
 
    183.40px IS DERIVED, NOT CHOSEN, and it is derived IN THE STYLESHEET rather
-   than in this paragraph -- see the `width:` calc below. IBM Plex Mono advances
+   than in this paragraph -- see the `width:` calc below. Spline Sans Mono advances
    0.6em, which at 20px is 12.00px, and the letter gap adds 2.64px, so one
    character advances 14.64px. FIELD NOTES is now the longest label at 11
    characters -- it was PROJECTS and RESEARCH at 8, then MISCELLANY at 10 -- which
@@ -3899,6 +4234,36 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    Chrome, because 1ch is the font's own 11.9985px and not the nominal 12 -- the
    0.01px is the calc being right where the paragraph rounds, which is the whole
    argument for putting the sum in the stylesheet.
+
+   EVERY NUMBER IN THIS PARAGRAPH SURVIVED THE FACE CHANGE, WHICH IS WHY THE FACE
+   COULD CHANGE. The mono went IBM Plex Mono -> Spline Sans Mono on 11 Aug 2026
+   (see THE FACES at the top of this file). A monospace swap normally invalidates
+   every figure here, so metric identity was a SELECTION CRITERION rather than a
+   discovery: Spline Sans Mono advances 0.6em exactly as Plex Mono does. Measured
+   in real Chrome against the running server, both faces loaded, not read off a
+   spec sheet:
+
+     canvas measureText, 500 20px      Plex Mono    Spline Sans Mono
+       M / space / 0 (one advance)       12.0000        11.9998
+       FIELD NOTES (11 advances)        132.000        131.998
+     CSS 1ch on .rail (11ch / 11)       11.9985        11.9985
+     .rail's rendered box width         183.39         183.390625
+
+   So 12.00, 14.64, 161.04, 158.40, 183.40 and the 11.9985 above are the same
+   numbers they were, and the rail's box did not move by a pixel the compositor
+   could show. Sometype Mono (0.58em) and Fragment Mono (0.618em) were the two
+   candidates rejected FOR this, not on looks -- either would have resized the
+   box and every clearance figure below it.
+   WHAT DID MOVE IS INK, AND ONLY INK. Sidebearings are not advances: at 20px the
+   painted right edge of a label shifts by at most 0.50px between the two faces
+   (FIELD NOTES +0.16, RESEARCH +0.14, PROJECTS +0.16, RESUME +0.01, ABOUT -0.50,
+   CONTACT -0.50). That is inside the +/-.5px this file's own clearance table
+   quotes as its reproducibility, which is why the table below is unchanged.
+   Caps also draw taller -- Spline Sans Mono's cap is .727 of the em against Plex
+   Mono's .698, so 14.83px against 14.20px here. Nothing in the rail is set from
+   cap height; the one place on the site that is set from it is .tl-section, and
+   it is re-derived there.
+
    THE 11 AND THE 10 ARE THE LABEL, so they move when it does: eleven characters
    of advance and the ten letter gaps BETWEEN them. Adding CONTACT changed nothing
    here -- seven characters fit inside ten -- and both renames of the fifth
@@ -3977,10 +4342,13 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    on a dark screen. No fill, no border, no plate and no blur was added to buy
    any of this; see the closing paragraph of this block.
 
-   THE WORDS CARRY MORE WEIGHT. 400 -> 500. index.html already loads IBM Plex
-   Mono at wght@400;500, so this is a real cut and not a synthesised smear, and
-   500 in Plex Mono is a medium that firms the stems without touching the
-   advance -- the width derivation above is unaffected, which is why weight was
+   THE WORDS CARRY MORE WEIGHT. 400 -> 500. The 500 cut of Spline Sans Mono is
+   one of the four woff2 files this site self-hosts, so this is a real cut and
+   not a synthesised smear, and 500 in Spline Sans Mono is a medium that firms
+   the stems without touching the advance -- it advances the same 0.6em the 400
+   does, which is what makes it free here.
+   (It was IBM Plex Mono's 500 until 11 Aug 2026, on the same argument.)
+   The width derivation above is unaffected, which is why weight was
    the first place "more defined" was spent. The weight does NOT change with
    state: light is this site's only vocabulary for "this one" (see THE TOUCH CUE)
    and a second channel saying the same thing would be a second vocabulary.
@@ -4060,7 +4428,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   font-family: var(--font-mono);
   font-size: var(--rail-size);
   /* 500, and the 500 that is actually loaded -- index.html asks Google Fonts
-     for IBM Plex Mono at wght@400;500, so this is a cut and not a synthesised
+     the 500 cut of Spline Sans Mono, so this is a cut and not a synthesised
      smear. See THE WORDS CARRY MORE WEIGHT above. */
   font-weight: 500;
   letter-spacing: var(--rail-track);
@@ -4422,7 +4790,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    soft fill -- .card and .tag, quoted there with their 6px and 3px radii. There
    is no radius here on either variant, and there is no shadow, no gradient and no
    blur. The border is one CSS pixel of --gold-line, which is the hairline 9.6
-   itself prescribes for chrome, closed into a rectangle; the type is IBM Plex
+   itself prescribes for chrome, closed into a rectangle; the type is Spline Sans
    Mono micro-caps at the rail's own tracking. Every material is already the
    site's. Only the topology is new.
 
@@ -4649,6 +5017,30 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    three deep and does: 3.2px between letters, 5.2px between the words of a label,
    9.3px between labels, all measured ink to ink. The next label that grows has
    nowhere left to go but the label.
+
+   THE FACE CHANGED UNDER THIS PARAGRAPH ON 11 AUG 2026 AND THE GEOMETRY DID NOT.
+   IBM Plex Mono -> Spline Sans Mono, same 0.6em advance (see THE WIDTH on
+   .rail), so every ADVANCE figure above -- the 45 characters, the 39 gaps, the
+   270.0 + 39.0, the whole 10px/1px derivation -- is untouched. Re-measured live
+   at a 390px viewport with a fine pointer, both faces forced in turn: the row
+   spans 346.94px box to box and the five inter-label gaps are 7.19px, IDENTICAL
+   to 0.01px in the two faces.
+   THE INK RANKING IS THE ONE THING THAT SHIFTED, because sidebearings are not
+   advances. Measured off actual pixels this time -- the row drawn to a canvas at
+   20x and scanned column by column for ink, which is the only instrument that
+   answers this honestly -- the letter gaps run 1.5-2.5px in Spline Sans Mono
+   against 1.55-2.8px in Plex Mono, and the word gap inside a label 4.9-5.2px
+   against 5.0-5.3px. So the gaps narrowed by about a tenth of a pixel and the
+   THREE-DEEP ORDERING THIS PARAGRAPH EXISTS TO PROTECT survives intact: letters
+   tighter than the words of a label, tighter than the gap between labels. The
+   3.2 / 5.2 / 9.3 above were taken with a different instrument and are left as
+   the record of that pass rather than restated from mine, because two numbers
+   measured two ways in one paragraph is worse than one number with its method
+   written next to it.
+   NOTE THIS WHOLE TIER IS NOW BEHIND THE DEVICE GATE. `(pointer: coarse) and
+   (hover: none)` takes .stage out with display:none, so a real phone never
+   reaches this row; it is reachable only in a narrow desktop window, which is
+   where it was re-measured.
 
    THE TRACKING IS A SECOND VALUE, NOT A SECOND SPELLING, and it is confined to
    the phone. The row used to restate 2.64px as `.24em`, which was one constant
@@ -4909,7 +5301,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   position: relative;
   /* 600, not 720. It was set here to pay the right-hand rail's rent, and that
      rail has moved to the corner and stopped charging -- but the number stays,
-     because 720px of Archivo body text is a long measure and 600 is a
+     because 720px of Source Sans 3 body text is a long measure and 600 is a
      comfortable one. It was the right width for a reason that outlived the one
      it was billed to. */
   width: min(600px, 92vw);
@@ -5069,27 +5461,47 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    .feature-desc's 13.5 below, and sqrt(34 * 13.5) = 21.42, which lands on 21.5
    on the half-pixel grid .feature-desc's own 13.5 already sits on.
 
-   WHAT 19 ACTUALLY WAS, which is the argument for moving it at all: 19 * .7002
-   (Marcellus's measured cap ratio) = 13.30px of cap -- to the second decimal the
-   cap height of .role-org, the ORGANISATION line of a CV entry. The name of a
-   project was set one tier below the panel's own primary rows, at the size of a
-   supporting line in a different panel. 21.5 gives 15.05, against 23.81 for
-   .card-title and 9.26 for .feature-desc (Archivo, .686). The mean survives the
-   translation into cap height -- sqrt(23.81 * 9.26) = 14.85, within .2px of the
-   15.05 the size actually draws -- because the two faces' cap ratios are close.
+   WHAT 19 ACTUALLY WAS, which is the argument for moving it at all: 19 * .6600
+   (Spectral's measured cap ratio) = 12.54px of cap -- the cap height of .tl-org,
+   the 19px ORGANISATION line of a timeline entry. The name of a project was set
+   one tier below the panel's own primary rows, at the size of a supporting line
+   in a different panel. 21.5 gives 14.19, against 22.44 for .card-title and 8.86
+   for .feature-desc (Source Sans 3, .6563). The mean survives the translation
+   into cap height -- sqrt(22.44 * 8.86) = 14.10, within .09px of the 14.19 the
+   size actually draws -- because the two faces' cap ratios are close.
+
+   RE-DERIVED 11 AUG 2026 WHEN THE FACES CHANGED, and every figure in the
+   paragraph above moved because all three ratios did: display .7002 -> .6600
+   (Marcellus -> Spectral), UI .686 -> .6563 (Archivo -> Source Sans 3). It read
+   13.30 / 15.05 / 23.81 / 9.26 / 14.85 and "within .2px". Measured with the same
+   instrument as before -- canvas actualBoundingBoxAscent of H at 100px, real
+   Chrome, loaded cuts. NOTE THAT THE ARGUMENT GOT STRONGER RATHER THAN WEAKER:
+   the two cap ratios are closer now (.660 vs .656, against .700 vs .686), so the
+   geometric mean survives the translation into cap height to .09px where it used
+   to survive to .2px. NOTHING WAS RESIZED TO ACHIEVE THAT. 21.5 is still
+   sqrt(34 * 13.5), which is a size derivation and does not know what face it is
+   set in; the cap-height check is a check, and it still passes.
+   THE PARAGRAPH ALSO USED TO NAME .role-org, WHICH IS 17px AND NEVER HAD A 13.30
+   CAP. The selector that is 19px, and the one the arithmetic actually points at,
+   is .tl-org. Corrected here rather than carried.
 
    NO TRACKING, AND THAT IS ALSO DERIVED. .tl-section had to move its
    letter-spacing to hold its letter gap because both its neighbours are tracked
    spaced caps. This ladder's neighbours are not: .card-title at 34 and this rule
    at 19 both carried letter-spacing: normal, so interpolating between them gives
-   normal, and Marcellus's own sidebearings keep doing the work. Nothing here is
-   weight -- there is no bold type anywhere on this site, and Marcellus ships one
-   weight, so any bold would be a synthetic one the browser drew itself.
+   normal, and Spectral's own sidebearings keep doing the work. Nothing here is
+   weight -- there is no bold type anywhere on this site, and THE SITE SHIPS ONE
+   CUT OF THE DISPLAY FACE, so any bold would be a synthetic one the browser drew
+   itself. (This used to read "Marcellus ships one weight". Spectral ships nine;
+   the guarantee is now ours rather than the foundry's, and it is enforced by the
+   @font-face block at the top of this file declaring exactly one of them.)
 
    THE ROW GOT 4px TALLER AND NOTHING MOVED SIDEWAYS. .feature-head is a baseline
    flex, so the 11px mono date stays on the name's baseline as it grows; the name
-   column has min-width: 0 and the longest name (BrainSentry) measures 116px at
-   21.5 against a 588px column at 1440x900, so there was never a wrap to buy. The
+   column has min-width: 0 and the longest name (BrainSentry) measures 114.1px at
+   21.5 -- it was 109.9 in Marcellus, and the 116 this line used to quote was off
+   a different instrument -- against a 588px column at 1440x900, so there was
+   never a wrap to buy, and 4.2px of face change does not create one. The
    card scrolls and absorbed the three rows' 12px. See the narrow tier for why
    the phone keeps 19. */
 .feature-name { font-family: var(--font-display); font-size: 21.5px; color: #eef0f5; margin-bottom: 5px; }
@@ -5146,7 +5558,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    THE LABEL RUNS IN RATHER THAN TAKING A LINE. A line of its own would cost
    21.6px of card three times over to say one word, and the panel already
    ranges its other label -- the dateline -- inline with content rather than
-   above it. 11.5px of gap is derived and not picked: IBM Plex Mono advances
+   above it. 11.5px of gap is derived and not picked: Spline Sans Mono advances
    0.6em, so one space at 11px is 6.6px and two are 13.2, and the label already
    trails 1.65px of its own .15em tracking after the final letter -- 13.2 - 1.65
    = 11.55. Two mono spaces net of the tracking that is there, because one reads
@@ -5892,18 +6304,30 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    in the browser rather than read off the shorthand.
 
    The meta column takes what it needs and no more: NOVEMBER 2025 - PRESENT is
-   23 characters at 10.5px IBM Plex Mono, and 0.6em of advance plus .18em of
+   23 characters at 10.5px Spline Sans Mono, and 0.6em of advance plus .18em of
    tracking is 8.19px each, so 188px. With this 24px gap that leaves 388px for
    the institution at desktop and 282px in the 760-1199 band.
 
-   Johns Hopkins School of Medicine sets 259.3px of 17px Marcellus -- measured
+   Johns Hopkins School of Medicine sets 260.7px of 17px Spectral -- measured
    off a Range around the rendered text, not off a character-advance ratio,
    which underestimates it by 6px. It clears the 388 easily and the 282 with
-   22px spare. 19px, the obvious alternative and what .feature-name was set at
-   when this was measured -- it is 21.5 now, which only widens the gap -- is 290px:
+   20.9px spare. 19px, the obvious alternative and what .feature-name was set at
+   when this was measured -- it is 21.5 now, which only widens the gap -- is 291px:
    it fits the 388 and misses the 282, and it does wrap to two lines there when
    you try it. So the size is settled by the band this rule is not written for,
-   which is the whole reason it is written down here. */
+   which is the whole reason it is written down here.
+
+   THIS IS THE TIGHTEST THING THE DISPLAY FACE HAD TO CLEAR, and it is why the
+   face was chosen against this string rather than against a specimen. Marcellus
+   -> Spectral on 11 Aug 2026 cost 1.4px here: 259.3 -> 260.7 at 17px, 289.8 ->
+   291.3 at 19px. Re-measured live at 1440, 1199, 900 and 761 with the Research
+   panel open, real Chrome against the dev server: the institution's ink is
+   260.69px inside the 281.63px the 760-1199 band gives it, .role-org holds ONE
+   line at every one of those widths, and the spare went 22px -> 20.9px. The 19px
+   alternative still misses, by more than it did. A face that had eaten the whole
+   20.9 would have been rejected here -- the rule this block states is that the
+   band nobody designs for settles the size, and a font is not allowed to
+   re-open it. */
 .role-head {
   display: flex;
   justify-content: space-between;
@@ -5942,8 +6366,16 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    177.5px, wider than JULY 2024 - PRESENT's 153.3, so the Harvard column does
    grow -- to 8px LESS than the Hopkins one, and both are ranged right against
    the same card edge, so nothing visibly moves. Measured at 761, 900 and 1440:
-   .role-org holds one line in every case, 255.4px of institution inside the
-   277.4px the 760-1199 band gives it, 22px of spare intact.
+   .role-org holds one line in every case, 260.7px of institution inside the
+   281.6px the 760-1199 band gives it, 20.9px of spare intact.
+
+   THE MONO HALF OF THIS BLOCK IS UNTOUCHED BY THE 11 AUG FACE CHANGE and the
+   display half was re-measured. Every figure above that comes off the meta
+   column -- 188, 185.5, 177.5, 153.3, the 23-character count and the 8.19px per
+   character -- is a 0.6em advance, and Spline Sans Mono advances the same 0.6em
+   IBM Plex Mono did (proved to four decimals at THE WIDTH on .rail). The
+   institution's own width is the display face and did move: 255.4 -> 260.7,
+   spare 22 -> 20.9, both re-measured live at all three widths above.
 
    ANY LATER EDIT THAT LENGTHENS A LOCATION LINE PAST 23 CHARACTERS RE-OPENS
    THAT ARITHMETIC and takes the spare with it -- it is the .role-org line that
@@ -5999,14 +6431,28 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .meter-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; color: var(--muted); }
 .meter-label-on { color: var(--gold-line); }
 .meter-track { flex: 1; height: 3px; background: rgba(217,162,107,.15); border-radius: 2px; overflow: hidden; }
+/* 90deg -- LIGHT END LEADING. The gradient paints over the FILL's own box, not
+   the track's, so its light end is the fill's right edge: the edge that moves.
+   That is the right place for it here because this bar FILLS. It starts empty
+   at AB, grows rightward toward AUF as the reader scrolls, and its right edge
+   is a level being driven up a scale -- so the bright end is the reading, and
+   the dark tail is the ground it has already covered.
+
+   THE ANGLE DOES NOT SIMPLY FOLLOW THE LABELS, which is the one thing worth
+   keeping from the inversion that was tried and withdrawn on 11 Aug 2026 (see
+   the note on .reserve-meter in index.html). Had the bar been the other kind --
+   a stock of power anchored at the wound end and SPENT, its moving edge a
+   depletion front rather than a pointer -- then 90deg would have painted the
+   emptying end as the vivid one, and the angle would have had to flip. Which
+   picture it is decides the angle. It is a filling one. */
 .meter-fill { height: 100%; background: linear-gradient(90deg, #83513a, #efc1a0); transition: width .3s; }
 .reserve-hint { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .25em; color: #5b6172; margin-bottom: 18px; }
 .timeline-scroll { overflow: auto; flex: 1; min-height: 0; max-height: 44vh; padding-right: 14px; }
 /* THE ENTRY IS A BLOCK NOW, NOT THREE STACKED LINES. Organisation, role beneath
    it, location and dates ranged right, then one or two bullets. The hierarchy is
    carried by size and colour and never by weight -- there is no bold type
-   anywhere on this site, and Marcellus ships one weight, so any bold here would
-   be a synthetic one the browser drew itself.
+   anywhere on this site, and the site self-hosts exactly one cut of the display
+   face, so any bold here would be a synthetic one the browser drew itself.
 
    The spine stays. It is the vertical of the reserve the horizontal meter above
    already draws, and with no section-label column competing for the left edge it
@@ -6031,30 +6477,49 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    against 37.6 and 22.1 before the label grew. */
 .tl-part + .tl-part { margin-top: 29px; }
 
-/* THE LABEL IS A HEADING NOW AND NOT FURNITURE. It took .tl-end's type exactly
-   -- mono, 10.5px, .25em, #5b6172 -- on the reasoning that a section label is
+/* THE LABEL IS A HEADING NOW AND NOT FURNITURE. It was set as furniture -- mono,
+   10.5px, .25em, #5b6172 -- on the reasoning that a section label is
    subordinate to the entries beneath it. At that size it did not read as
-   subordinate so much as absent: 7.33px of cap height against the 9.26px
-   Archivo draws at 13.5px, so the label measured SMALLER than the sentences it
-   introduced. (Cap ratios measured off the loaded faces: Marcellus .7002,
-   Archivo .686, IBM Plex Mono .698 of the em.)
+   subordinate so much as absent: 7.63px of cap height against the 8.86px the UI
+   face draws at 13.5px, so the label measured SMALLER than the sentences it
+   introduced. (Cap ratios measured off the loaded faces, canvas
+   actualBoundingBoxAscent of H at 100px in real Chrome: Spectral .6600,
+   Source Sans 3 .6563, Spline Sans Mono .727 of the em. They were Marcellus
+   .7002, Archivo .686 and IBM Plex Mono .698 until 11 Aug 2026 -- see THE FACES
+   at the top of this file. THIS IS THE ONE BLOCK ON THE SITE THAT IS SET FROM
+   CAP HEIGHT RATHER THAN FROM SIZE, so it is the one block a face change can
+   actually break, and it is re-derived in full below rather than renamed.)
 
    16px IS THE GEOMETRIC MEAN OF THE TWO SIZES IT STANDS BETWEEN -- sqrt(19 *
    13.5) = 16.02, .tl-org above it and .tl-role / .tl-bullets below. In cap
-   height that is 11.17px, between the entry's 9.26 and the org line's 13.30,
-   and it is a third of the way up to .card-title's 23.81. Measuring under the
+   height that is 11.63px, between the entry's 8.86 and the org line's 12.54,
+   and a fifth of the way up to .card-title's 22.44. Measuring under the
    org line is deliberate and is the ceiling, not a compromise: uppercase at
    .16em is 96px of solid caps against a title-case line that shows one, so the
-   label already reads level with the name it introduces. Tried at 19px, where
-   its cap height equals .tl-org's exactly, and it out-shouted the entry.
+   label already reads level with the name it introduces.
+
+   THE CEILING CAME DOWN AND 16 IS STILL UNDER IT, WHICH IS THE ONLY REASON THIS
+   SIZE SURVIVED THE FACE CHANGE. The two ratios moved in opposite directions:
+   the mono's cap went UP (.698 -> .727) and the display's went DOWN (.7002 ->
+   .6600), so the label gained cap while the line it must stay under lost it. The
+   headroom this paragraph protects went from 2.13px of cap (11.17 under 13.30)
+   to 0.91px (11.63 under 12.54). It is still headroom and the ordering the block
+   exists to hold is intact -- entry 8.86 < label 11.63 < org 12.54 -- but the
+   margin is now thin enough to be worth stating. "Tried at 19px, where its cap
+   height equals .tl-org's exactly" no longer describes 19px: the mono now
+   matches .tl-org's 12.54 cap at 17.25px, so THAT is where the label would draw
+   level with the name it introduces, and 16 sits 1.25px of size below it rather
+   than 3px. Any later edit that raises this size, or that lowers .tl-org's 19,
+   spends that 1.25 -- and it is the ordering above, not the number 16, that is
+   the thing being protected.
 
    .16em, NOT .25em. Tracking is a number of pixels to the eye rather than a
    ratio, and 16 * .16 = 2.56px is the 10.5 * .25 = 2.63px the label already
    had. The letters grew; the spacing between them did not, so the line keeps
    the density of every other spaced-caps run on the site.
 
-   var(--muted), NOT #5b6172. That ink is the furniture tier .tl-end and
-   .reserve-hint share, and it measures 2.89:1 against the card gradient's
+   var(--muted), NOT #5b6172. That ink is the furniture tier .reserve-hint
+   uses, and it measures 2.89:1 against the card gradient's
    lightest corner (#111726) -- under the 3:1 floor at any size, and it was
    only ever survivable because the label was small enough not to be read.
    --muted is 5.81:1 there and clears AA's 4.5:1, which 16px still owes since
@@ -6062,8 +6527,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    than a new hex, and it is still four steps under .tl-org's #eef0f5.
 
    Still weight 400. It is an <h2> and .tl-org below it an <h3>; the explicit
-   weight is here for the same reason it is on .tl-org, since Marcellus is not
-   in play but the browser's own <h2> bolding still is, and there is no bold
+   weight is here for the same reason it is on .tl-org, since a second cut of the
+   display face is not in play but the browser's own <h2> bolding still is, and there is no bold
    type anywhere on this site. */
 .tl-section {
   font-family: var(--font-mono);
@@ -6116,15 +6581,9 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .tl-mark { color: var(--gold-line); font-size: 13.5px; line-height: 1.65; }
 .tl-bullets p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--body); }
 
-.tl-end {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: .25em;
-  color: #5b6172;
-  border-top: 1px solid rgba(217,162,107,.14);
-  margin-top: 22px;
-  padding-top: 22px;
-}
+/* .tl-end's rules are gone with its one element -- the FULLY WOUND terminator
+   Nikhil asked removed on 11 Aug 2026, see the note where it stood in
+   index.html. Nothing else ever matched the selector. */
 
 /* ===================== FIELD NOTES: THREE TABS OVER AN EMPTY FIELD =========
    The `misc-` element names below are this component's own vocabulary and not
@@ -6312,11 +6771,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .misc-field:focus { outline: none; }
 .misc-field:focus-visible { outline: 1px solid #f0c9a1; outline-offset: 5px; }
 
-/* .tl-end's exact type: mono, 10.5px, .25em, and the #5b6172 that §9's ninth
+/* The furniture type: mono, 10.5px, .25em, and the #5b6172 that §9's ninth
    rule reserves for chrome at rest. That register is the point. An absence set
    as body prose reads as copy that failed to arrive; set as an instrument
    reading, it reads as a field with nothing in it yet -- which is what it is.
-   No period, for the same reason FULLY WOUND has none. */
+   No period: it is a reading, not a sentence. */
 .misc-empty {
   margin: 0;
   font-family: var(--font-mono);
@@ -6370,7 +6829,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
    THE SECTION HEADS MUST NOT LOOK LIKE THE TAB ROW, or the panel reads as six
    tabs, three of which do nothing. So they take the one register the tabs
-   cannot: .role-org's Marcellus at 17px in sentence case, against the tabs'
+   cannot: .role-org's Spectral at 17px in sentence case, against the tabs'
    mono micro-caps at 11 with a gold tick. Different face, different case,
    different size, no mark -- there is no angle from which the two rows look like
    peers.
@@ -6442,7 +6901,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    THE YEAR LEAVES THE MONO FACE, WHICH IT WAS IN UNTIL THIS PASS. It was
    .role-meta's type -- mono 10.5 at .18em -- because it was then a standalone
    meta column, which is the thing this file sets in mono. It is now the last two
-   words of a sentence-case string, and 10.5px mono beside 13.5px Archivo reads
+   words of a sentence-case string, and 10.5px mono beside 13.5px Source Sans 3 reads
    as two fragments pushed together rather than as the one string he asked for.
    So the whole meta is .book-by's type and the year keeps only the gold: one
    face, one size, one baseline, and the difference carried by colour rather
@@ -6549,8 +7008,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    directly above it. So the right-hand column reads as one gold spine of numbers
    down the panel -- year, rating, year, rating -- and the weight comes from
    position and colour rather than from a mark.
-   IT STAYS IN ARCHIVO AT 13.5 rather than taking .role-meta's mono, for the
-   reason the year did: a mono 10.5 rating under a 13.5 Archivo year would put
+   IT STAYS IN SOURCE SANS 3 AT 13.5 rather than taking .role-meta's mono, for the
+   reason the year did: a mono 10.5 rating under a 13.5 Source Sans 3 year would put
    two faces in one right-hand column, and the column only works because it is
    one. N/A sets in the same slot as 8/10 and needs no rule of its own. */
 .book-line,
@@ -6880,7 +7339,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      question, and what the caption rule below sets.
      THE ARITHMETIC THAT MAKES 10 THE ANSWER. A 375px viewport gives .card
      min(600, 92vw) = 345, border-box under 1200, less 22px of padding a side =
-     301px of column. IBM Plex Mono advances .6em, so at 10px with .2em of
+     301px of column. Spline Sans Mono advances .6em, so at 10px with .2em of
      tracking each character is 8px: BOOK REVIEWS is 12 of them, WATCH REVIEWS 13
      and MISC 4, which is 232px of ink, and two 24px gaps make 280. At the
      desktop 11px the same three words are 303.2 against that same 301 and the
@@ -6993,9 +7452,10 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   /* The CV head stacks for the same reason the timeline's does below. 22px of
      side padding on a border-box card of 92vw leaves 291.5px on a 375px phone,
      measured. The meta column still wants its 188px of nowrap mono, which with
-     the 24px gap leaves 79px for the institution. At the 8.37px per character
-     that 17px Marcellus actually measures, that is nine characters -- "Johns
-     Hop" and nothing after it, against the 259px the name wants. So the
+     the 24px gap leaves 79px for the institution. At the 8.41px per character
+     that 17px Spectral actually measures -- it was 8.37 in Marcellus, re-measured
+     11 Aug 2026 -- that is nine characters, "Johns
+     Hop" and nothing after it, against the 261px the name wants. So the
      two-column head cannot survive here, and jibang collapses his own at 860px
      on the same arithmetic. */
   .role-head { flex-direction: column; gap: 6px; }
@@ -7017,13 +7477,29 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      The label runs the same derivation on the sizes this breakpoint actually
      has. .tl-org drops to 17px below and .tl-role does not move, so the mean
      the label sits on moves with it: sqrt(17 * 13.5) = 15.15 -> 15px, which is
-     11.22px of cap between the entry's 9.26 and the org line's 12.41. The two
+     10.91px of cap between the entry's 8.86 and the org line's 11.22. The two
      margins hand back the 5px the line box gained exactly as they do at
      desktop -- measured at 375x812, 19.6px of ink from the label's baseline to
-     the cap top below it, the same 19.6px it had at 10.5px. */
+     the cap top below it, the same 19.6px it had at 10.5px.
+
+     RE-DERIVED 11 AUG 2026 WITH THE FACES, and this is the SECOND of the two
+     cap-height derivations on the site -- the desktop one is on .tl-section
+     itself. It read 11.22 / 9.26 / 12.41. The size derivation did not move
+     (sqrt(17 * 13.5) does not know what face it is set in); the three cap
+     heights did, off the ratios measured in real Chrome on the loaded cuts:
+     mono .727, UI .6563, display .6600. 15 * .727 = 10.91, 13.5 * .6563 = 8.86,
+     17 * .6600 = 11.22.
+     THE ORDERING HOLDS AND IT IS THE TIGHTEST PLACE ON THE SITE THAT IT DOES:
+     entry 8.86 < label 10.91 < org 11.22, with 0.31px of cap between the label
+     and the line it must stay under, against 0.91px at the desktop tier. It is
+     under, so the rule stands and nothing was resized to make it stand -- but
+     this is the first thing that breaks if .tl-org's 17 drops or this 15 rises,
+     and it will break here before it breaks at desktop.
+     (The old figures were internally inconsistent: 11.22 implies a .748 cap
+     ratio and 12.41 a .730, and neither is a ratio any face in this file has
+     ever had. They are replaced rather than converted.) */
   .tl-part + .tl-part { margin-top: 23px; }
   .tl-section { font-size: 15px; margin-bottom: 11px; }
-  .tl-end { margin-top: 18px; padding-top: 18px; }
   .tl-head { flex-direction: column; align-items: flex-start; gap: 7px; }
   .tl-when { align-items: flex-start; text-align: left; gap: 3px; }
   .tl-org { font-size: 17px; }
@@ -7123,23 +7599,36 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
      exactly in contact. 34 leaves 8.4px between them, because text touching a hit
      target reads as text under it.
 
-     IT RESERVES THE CORNER RATHER THAN TRUSTING THE COPY. The shipped eyebrow is
-     now short enough to clear the button unaided -- ink to 292.2, 13.3px of
-     daylight -- so at 375 this declaration changes nothing anyone can see. That is
-     the point of it: it is here so a longer eyebrow written later WRAPS, which is
-     what the Research, Resume and Field Notes eyebrows already do at this width,
+     IT RESERVES THE CORNER RATHER THAN TRUSTING THE COPY, AND THAT IS THE ONLY
+     REASON IT IS STILL HERE. It is here so a longer eyebrow written later WRAPS
      instead of tunnelling under the control. Keyed on the pointer rather than on
      the width for the reason this block's own header gives: it answers the button
      above it, and that button is keyed on the pointer.
 
-     THE OTHER FOUR PANELS ARE OUT OF SCOPE HERE AND ONE OF THEM SHOULD NOT BE.
-     Measured the same way at 375x812: About clears by 13.3, Research by 39.9,
-     Field Notes by 13.3 -- and Resume's first line ends at x 309.9, which is 4.4px
-     INSIDE this button. That is a real, smaller instance of the same collision, on
-     a panel this rule deliberately does not touch. Whoever owns .card-eyebrow
-     should lift this declaration into the shared rule and delete the ID; it is
-     scoped this narrowly only because #panel-projects was the panel being worked
-     on when it was found. */
+     THE COPY IT WAS MEASURED AGAINST IS GONE, 11 AUG 2026. Every eyebrow lost its
+     tagline on his instruction -- "Remove those", he called them AI artifacts; the
+     five old strings are recorded in full at THE TAGLINES ARE GONE in index.html,
+     over #panel-projects. The eyebrow is the complication's name alone now, 17
+     characters at the longest against the old 37, so the numbers this block used to
+     quote (ink to 292.2, 13.3px of daylight at 375, About 13.3, Research 39.9,
+     Field Notes 13.3, and Resume's first line 4.4px INSIDE the button) are all of
+     strings that no longer exist. RE-MEASURED, real Chrome against the dev server,
+     panel open: all five are one line at every width from 1280 to 320, and the
+     worst clearance from the end of the ink to this button is 90.5px at 375 and
+     41.0px at 320 -- fine pointer, which is the worse case here since the coarse
+     tier moves the button right.
+     RE-CHECKED AFTER THE 11 AUG FACE CHANGE AND THE FIGURES REPRODUCED EXACTLY:
+     90.47px at 375 and 40.97px at 320, all five eyebrows still one line at 1280,
+     560, 500, 375 and 320. They had to: the eyebrow is mono, and Spline Sans Mono
+     advances the same 0.6em IBM Plex Mono did. The 8.4px gutter this block
+     derives is an advance figure and is therefore untouched -- 34 - 26 is
+     arithmetic on the button's box, not on the type. The Resume collision this block flagged as a real
+     fault it did not cover is therefore closed, by copy rather than by CSS, and
+     THIS DECLARATION NOW CHANGES NOTHING ANYONE CAN SEE ON ANY PANEL. Do not read
+     that as dead code: it is the rule, and the short lines are what make the rule
+     cost nothing. Whoever owns .card-eyebrow should still lift it into the shared
+     rule and delete the ID; it is scoped this narrowly only because
+     #panel-projects was the panel being worked on when it was found. */
   #panel-projects .card-eyebrow { padding-right: 34px; }
 }
 
@@ -7300,9 +7789,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
    2. SMALL BUT WIDE GOT THROUGH even then. 500x220 is ratio 2.27, passed, and
       measures 33.0px of eyebrow-to-close clearance with no horizontal scroll --
-      tight but intact. It fails below 474.5px of width at ANY ratio. That hole
-      was narrow under the aspect gate; with no size gate at all it is simply the
-      whole of the sub-475px range. See THE 474.5px EYEBROW COLLISION below.
+      tight but intact. It failed below 474.5px of width at ANY ratio. That hole
+      was narrow under the aspect gate; with no size gate at all it was simply the
+      whole of the sub-475px range. IT IS CLOSED SINCE 11 AUG 2026 -- the eyebrows
+      lost their taglines and the line no longer reaches the button at any width
+      down to 320. See THE 474.5px EYEBROW COLLISION below, which now records how.
 
    ---- WHAT 500 WAS, AND WHY IT IS THE OPEN DEFECT NOW ----
    Swept 1199 -> 320px in real Chrome against this dev server, 812px tall, every
@@ -7313,6 +7804,13 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    child.left) over every visible element in the open card: 0.0px throughout);
    the watch never ends up behind the card; the Field Notes tab row stays on one
    row and never overflows.
+
+   ONE THING FAILED, AND IT IS FIXED NOW -- READ THE 474.5px EYEBROW COLLISION
+   BELOW FIRST. The sweep and every number in the next two paragraphs were taken
+   against eyebrows that carried a tagline; those strings were removed on 11 Aug
+   2026 and the collision went with them. Kept because it is how the 8.4px gutter
+   and the 474.5px figure were derived, and because the geometry returns the
+   moment an eyebrow gets long again.
 
    ONE THING FAILS, AND IT FAILS FIRST BY 130px: .card-eyebrow reaching the
    .card-close control. The eyebrow is a full-width line sitting on the same row
@@ -7341,23 +7839,38 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
    That put the gate at 500 for one day, one round step above the site's own
    last good width, leaving 22.9px of measured clearance.
 
-   THE 474.5px EYEBROW COLLISION IS A KNOWN OPEN DEFECT, 11 Aug 2026, AND A
-   DEVICE GATE DOES NOT COVER IT. It was closed by the px gate, half-open under
-   the aspect gate, and is now fully open: NOTHING gates a desktop window by
-   size, so a reader who drags one below about 475px wide sees the Field Notes
-   eyebrow run under the .card-close control -- zero clearance at 474.5px against
-   this file's own stated 8.4px gutter, and at 460px the line is 13.0px beneath
-   the button. It is a real fault, it is reachable from a real desktop browser,
-   and it is deliberately NOT fixed here: A WIDTH FLOOR IS NOT THE FIX, because
-   he rejected size-based gating outright. Two fixes exist and neither has been
-   taken because neither was asked for: shorten the eyebrow copy so the longest
-   line (37 characters) clears the button at 375px, or reserve the corner --
-   give .card-eyebrow a right padding equal to the control's width plus the
-   8.4px gutter, so the line wraps or truncates instead of walking into it. The
-   second is the general fix and survives new eyebrows; the first is cheaper and
-   has to be re-measured every time a panel is retitled. If the eyebrows are ever
-   shortened or the exit moves, the 474.5 is re-measured from the Field Notes
-   eyebrow.
+   THE 474.5px EYEBROW COLLISION WAS A KNOWN OPEN DEFECT ON 11 Aug 2026, AND IT
+   IS CLOSED THE SAME DAY -- BY THE COPY, WHICH IS THE CHEAPER OF THE TWO FIXES
+   THIS PARAGRAPH LISTED AND WAS NOT TAKEN FOR THE COLLISION'S SAKE AT ALL. What
+   it was: nothing gates a desktop window by size, so a reader who dragged one
+   below about 475px wide saw the Field Notes eyebrow run under the .card-close
+   control -- zero clearance at 474.5px against this file's own stated 8.4px
+   gutter, 13.0px beneath the button at 460px. A WIDTH FLOOR WAS NEVER THE FIX,
+   because he rejected size-based gating outright. The two fixes named here were
+   shorten the copy, or reserve the corner with a right padding equal to the
+   control's width plus the gutter.
+
+   BOTH ARE NOW IN PLACE, ONE OF THEM BY ACCIDENT. He asked on 11 Aug 2026 for
+   the taglines off all five eyebrows -- "Remove those", he called them AI
+   artifacts, and the five old strings are recorded in full at THE TAGLINES ARE
+   GONE in index.html. The longest eyebrow on the site is no longer Field Notes'
+   37 characters but THE SMALL SECONDS / THE POWER RESERVE at 17. RE-MEASURED as
+   this block requires, real Chrome against this dev server, 812px tall, every
+   panel opened in turn, fine pointer:
+
+     1280px  395.0px clear   (worst of the five)
+      475px  180.5px clear   <- was 0.0
+      375px   90.5px clear
+      320px   41.0px clear   <- bottom of the swept range
+
+   About 0.90px of clearance per px of viewport, unchanged, so the line that used
+   to reach the button at 474.5px would now reach it near 275px -- below anything
+   this sweep covers and below any shipping viewport. All five eyebrows are a
+   single line at every width from 1280 to 320. THE RESERVE IS STILL THE RULE:
+   THE EYEBROW'S GUTTER above holds the corner on the coarse-pointer tier, so a
+   longer eyebrow written later wraps rather than reopening this. If the eyebrows
+   grow again or the exit moves, re-measure from whichever eyebrow is longest --
+   that is what this table is for.
 
    ---- THE 1199px AND 760px TIERS ARE LIVE CODE. THIS RECORD WAS INVERTED ----
    Until 11 Aug 2026 this block said those tiers were unreachable below the gate
