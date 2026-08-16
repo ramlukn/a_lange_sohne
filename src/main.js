@@ -231,6 +231,34 @@ const state = {
 
 const placeNow = () => (state.flipped ? CONTACT.key : state.active);
 
+const HACK_MS = 450;
+const hack = { on: false, timer: 0, sec: 0, swallow: false };
+
+function beatSec(d) {
+  let s = d.getSeconds() + d.getMilliseconds() / 1000;
+  if (CONFIG.secondsMotion === 'mechanical') s = Math.floor(s * 6) / 6;
+  else if (CONFIG.secondsMotion === 'quartz') s = Math.floor(s);
+  return s;
+}
+
+function hackStart() {
+  hack.timer = 0;
+  hack.on = true;
+  hack.sec = beatSec(new Date());
+  for (const a of rig.anims) a.pause();
+  render();
+}
+
+function hackEnd(swallow) {
+  clearTimeout(hack.timer);
+  hack.timer = 0;
+  if (!hack.on) return;
+  hack.on = false;
+  hack.swallow = swallow;
+  for (const a of rig.anims) a.play();
+  render();
+}
+
 function moonAge(now) {
   let age = ((now - KNOWN_NEW_MOON) / 86400000) % SYNODIC_DAYS;
   if (age < 0) age += SYNODIC_DAYS;
@@ -280,10 +308,8 @@ function render() {
     return t < 0 ? 0 : 1 - (1 - t) * (1 - t);
   };
 
-  let sec = d.getSeconds() + d.getMilliseconds() / 1000;
-  if (CONFIG.secondsMotion === 'mechanical') sec = Math.floor(sec * 6) / 6;
-  else if (CONFIG.secondsMotion === 'quartz') sec = Math.floor(sec);
-  const min = d.getMinutes() + sec / 60;
+  const sec = hack.on ? hack.sec : beatSec(d);
+  const min = d.getMinutes() + beatSec(d) / 60;
   const hr = (d.getHours() % 12) + min / 60;
 
   const wind = (turns, part) => turns * 360 * (spin + saluteSpin(part));
@@ -564,7 +590,27 @@ window.addEventListener('blur', () => {
   if (state.hover) { state.hover = null; render(); }
 });
 
-el.crown.addEventListener('click', () => { if (state.flipped) leave(); else goTo(CONTACT.key, el.crown); });
+el.crown.addEventListener('pointerdown', (e) => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  el.crown.setPointerCapture(e.pointerId);
+  clearTimeout(hack.timer);
+  hack.timer = setTimeout(hackStart, HACK_MS);
+});
+el.crown.addEventListener('pointerup', () => {
+  clearTimeout(hack.timer);
+  hack.timer = 0;
+  hackEnd(true);
+});
+el.crown.addEventListener('pointercancel', () => {
+  clearTimeout(hack.timer);
+  hack.timer = 0;
+  hackEnd(false);
+});
+el.crown.addEventListener('contextmenu', (e) => e.preventDefault());
+el.crown.addEventListener('click', () => {
+  if (hack.swallow) { hack.swallow = false; return; }
+  if (state.flipped) leave(); else goTo(CONTACT.key, el.crown);
+});
 el.crown.addEventListener('mouseenter', () => { state.hover = 'crown'; render(); });
 el.crown.addEventListener('focus', () => { state.hover = 'crown'; render(); });
 
@@ -1017,6 +1063,7 @@ function rigPlay() {
           direction: 'alternate', easing: 'ease-in-out', iterationStart: 0.5 });
     }
     a.startTime = t0;
+    if (hack.on) a.pause();
     rig.anims.push(a);
   }
 }
@@ -1064,6 +1111,20 @@ arrived = true;
 
   node.style.setProperty('--guilloche-at', `${into.toFixed(1)}deg`);
 }
+
+function setTimeOfDayLight(hour) {
+  const d = new Date();
+  const h = hour ?? d.getHours() + d.getMinutes() / 60;
+  const day = (Math.cos((h - 13) * Math.PI / 12) + 1) / 2;
+  const warmth = 1 - day;
+  const dim = warmth * warmth;
+  const root = document.documentElement.style;
+  root.setProperty('--tod-warmth', warmth.toFixed(3));
+  root.setProperty('--tod-dim', dim.toFixed(3));
+}
+setTimeOfDayLight();
+setInterval(() => setTimeOfDayLight(), 3600000);
+window.setTimeOfDayLight = setTimeOfDayLight;
 
 const BEAT = { mechanical: 1000 / 6, quartz: 1000 }[CONFIG.secondsMotion] || 0;
 (function pump() {

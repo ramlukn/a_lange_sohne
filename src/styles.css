@@ -85,6 +85,9 @@
   --font-ui: 'Source Sans 3', system-ui, sans-serif;
   --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
 
+  --tod-warmth: 0;
+  --tod-dim: 0;
+
   --hint-at: 3.45s;
   --hint-draw: .46s;
   --rail-at: var(--hint-at);
@@ -291,6 +294,26 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   transform-style: preserve-3d;
 }
 
+.face-front::after,
+.face-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background:
+    linear-gradient(rgb(255 158 64 / calc(var(--tod-warmth) * 7.5%)),
+                    rgb(255 158 64 / calc(var(--tod-warmth) * 7.5%))),
+    linear-gradient(rgb(6 5 12 / calc(var(--tod-dim) * 11%)),
+                    rgb(6 5 12 / calc(var(--tod-dim) * 11%)));
+}
+.face-front::after {
+  transform: translateZ(calc(var(--z-glass) + .06vmin));
+}
+.face-back::after { z-index: 40; }
+
 .face-front > *,
 .hands > *,
 .reserve > *,
@@ -383,7 +406,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 }
 
 .loader-name, .loader-sub,
-.maker-name, .maker-calibre,
+.maker-name, .maker-calibre, .maker-line, .secret-signature,
 .date-digit,
 .cb-engraved {
   -webkit-user-select: none;
@@ -407,7 +430,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .maker-calibre {
   position: absolute;
   left: 28%;
-  top: 16.2%;
+  top: 15.7%;
   width: 44%;
   text-align: center;
   font-family: var(--font-mono);
@@ -417,6 +440,52 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   color: #c7d0dc;
   animation: partIn .62s ease 2.42s both;
   --fy: -10px;
+}
+.maker-line {
+  position: absolute;
+  left: 28%;
+  top: 17.85%;
+  width: 44%;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: .74vmin;
+  letter-spacing: .3em;
+  color: #c7d0dc;
+  animation: partIn .62s ease 2.5s both;
+  --fy: -8px;
+}
+
+.secret-signature {
+  position: absolute;
+  left: 32%;
+  top: 82.9%;
+  width: 16%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.55vmin;
+  letter-spacing: .3em;
+  text-indent: .3em;
+  transform: rotate(-6deg);
+  pointer-events: none;
+  color: transparent;
+  background: linear-gradient(115deg,
+    rgba(214,232,255,.02) 0 38%,
+    rgba(255,252,246,.18) 50%,
+    rgba(214,232,255,.02) 62% 100%);
+  background-size: 340% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: secretGlint 17s linear 6s infinite;
+}
+@keyframes secretGlint {
+  0%   { background-position: 100% 0; }
+  11%  { background-position: 0% 0; }
+  100% { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .secret-signature { animation: none; }
 }
 
 .hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s backwards; pointer-events: none; transform-style: preserve-3d; }
