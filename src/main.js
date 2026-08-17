@@ -142,6 +142,21 @@ const el = {
 
 const panels = new Map(SECTIONS.map((s) => [s.key, $(s.panel)]));
 
+let leavingPanel = null;
+let leavingTimer = 0;
+
+function startPanelLeave(key) {
+  leavingPanel = key;
+  clearTimeout(leavingTimer);
+  leavingTimer = setTimeout(() => { leavingPanel = null; render(); }, 420);
+}
+
+function cancelPanelLeave() {
+  if (!leavingPanel) return;
+  leavingPanel = null;
+  clearTimeout(leavingTimer);
+}
+
 const railLinks = new Map();
 
 const hoverKeyOf = (key) => (key === CONTACT.key ? CONTACT.hover : key);
@@ -388,11 +403,15 @@ function render() {
   el.front.inert = state.flipped;
   if (state.flipped) rigPlay(); else rigStop();
 
-  el.overlay.hidden = !state.active;
+  el.overlay.hidden = !state.active && !leavingPanel;
   el.overlay.dataset.justify = CONFIG.transitionStyle === 'panel' ? 'flex-end' : 'center';
 
   shotsRun(state.active === 'projects');
-  for (const [key, node] of panels) node.hidden = state.active !== key;
+  for (const [key, node] of panels) {
+    const going = leavingPanel === key && state.active !== key;
+    node.hidden = state.active !== key && !going;
+    node.classList.toggle('is-leaving', going);
+  }
 
   el.hintIndex.hidden = !(CONFIG.showHints && !state.touched && !state.active && !state.flipped);
 
@@ -422,6 +441,7 @@ function render() {
 }
 
 function showSection(key, from) {
+  cancelPanelLeave();
   state.active = key;
   state.hover = null;
 
@@ -440,6 +460,7 @@ function hideSection(keepFocus) {
   if (!state.active) return;
 
   startSalute(state.active);
+  startPanelLeave(state.active);
   state.active = null;
   const back = state.returnTo;
   state.returnTo = null;

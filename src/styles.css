@@ -138,6 +138,7 @@ a:hover { color: var(--gold-line-hover); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes cardDown { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(28px) scale(.985); } }
 
 @keyframes hintScribe {
   from { stroke-dashoffset: 100; }
@@ -1377,6 +1378,10 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   animation: cardUp .65s cubic-bezier(.22,1,.36,1) .12s both;
 }
 .card[hidden] { display: none; }
+.card.is-leaving {
+  animation: cardDown .4s cubic-bezier(.45, 0, .2, 1) both;
+  pointer-events: none;
+}
 
 .card:focus { outline: none; }
 .card-column { display: flex; flex-direction: column; padding: 48px 52px 32px; overflow: hidden; }
