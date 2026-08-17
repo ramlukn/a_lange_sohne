@@ -2051,3 +2051,136 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
   .rail .rail-link::before { bottom: -1px; }
 }
+
+.print-hero,
+.print-contact { display: none; }
+
+@media (pointer: coarse) and (hover: none) {
+  html, body { overflow-x: hidden; }
+
+  .stage { display: block; min-height: 0; overflow: visible; background: none; }
+  .stage > :not(.overlay) { display: none; }
+
+  .print-hero {
+    display: block;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 16px 4px;
+    text-align: center;
+    font-family: var(--font-ui);
+    color: var(--ink);
+  }
+  .print-hero-art { width: min(100%, 460px); height: auto; border-radius: 6px; }
+  .print-hero-name {
+    margin: 24px 0 0;
+    font-family: var(--font-display);
+    font-size: 23px;
+    letter-spacing: .3em;
+    text-indent: .3em;
+    color: #e8e2d6;
+  }
+  .print-hero-calibre {
+    margin: 12px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .4em;
+    text-indent: .4em;
+    color: var(--gold-line);
+  }
+  .print-hero-line {
+    margin: 9px 0 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .25em;
+    text-indent: .25em;
+    color: var(--muted);
+  }
+
+  .overlay,
+  .overlay[hidden] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 28px;
+    position: static;
+    z-index: auto;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px 16px;
+  }
+  .overlay[data-justify='flex-end'] { justify-content: flex-start; }
+  .overlay-scrim { display: none; }
+
+  #panel-about { order: 1; }
+  #panel-resume { order: 2; }
+  #panel-projects { order: 3; }
+  #panel-research { order: 4; }
+  #panel-field-notes { order: 5; }
+
+  .card,
+  .card[hidden] {
+    display: block;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    box-shadow: 0 18px 44px rgba(0,0,0,.45);
+    animation: none;
+  }
+  .card.is-leaving { animation: none; pointer-events: auto; }
+  .card-close { display: none; }
+  .card-column { display: block; }
+  #panel-projects { width: auto; }
+
+  .reserve-meter { display: none; }
+  .reserve-hint { justify-content: flex-start; gap: 0; margin-bottom: 10px; font-size: 0; letter-spacing: 0; }
+  .resume-download { font-size: 10.5px; letter-spacing: .25em; }
+  .timeline-scroll { flex: none; overflow: visible; max-height: none; padding-right: 0; }
+
+  .feature-shot { max-height: none; filter: none; }
+  .shot-frames { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .shot-frames .feature-shot { opacity: 1; }
+  .shot-trio .feature-shot { width: 100%; }
+  .shot-open { pointer-events: none; cursor: default; }
+  .shot-index { display: none; }
+  .shot-zoom,
+  .shot-zoom[open] { display: none; }
+
+  .misc-tabs { display: none; }
+  .misc-field,
+  .misc-field[hidden] { display: block; }
+  .misc-field + .misc-field { margin-top: 24px; }
+  .misc-field::before {
+    display: block;
+    margin-bottom: 14px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.42;
+    color: #eef0f5;
+  }
+  #misc-panel-books::before { content: 'Books'; }
+  #misc-panel-watches::before { content: 'Watch reviews'; }
+  #misc-panel-other::before { content: 'Misc'; }
+  .book-line,
+  .book-said { flex-wrap: wrap; }
+
+  .print-contact {
+    display: block;
+    box-sizing: border-box;
+    width: calc(100% - 32px);
+    max-width: 648px;
+    margin: 0 auto;
+    padding: 26px 22px 24px;
+    background: linear-gradient(165deg, #111726, #0b101c);
+    border: 1px solid rgba(217,162,107,.3);
+    border-radius: 6px;
+    box-shadow: 0 18px 44px rgba(0,0,0,.45);
+    font-family: var(--font-ui);
+    color: var(--ink);
+  }
+  .print-contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .print-contact-list a { display: inline-block; padding: 9px 0; font-size: 15px; }
+
+  body { padding-bottom: calc(44px + env(safe-area-inset-bottom, 0px)); }
+}

@@ -57,20 +57,29 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/Spectral-400-latin.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/SplineSansMono-400-latin.woff2">
 <link rel="stylesheet" href="/src/styles.css">
-<script type="module" src="/src/main.js"></script>
-<link rel="preload" as="image" fetchpriority="high" href="/assets/dial/main-dial.webp">
-<link rel="preload" as="image" fetchpriority="high" href="/assets/dial/hours-minutes-dial.webp">
-<link rel="preload" as="image" href="/assets/dial/seconds-dial.webp">
-<link rel="preload" as="image" href="/assets/dial/moonphase-wheel.webp">
-<link rel="preload" as="image" href="/assets/dial/reserve-scale.webp">
-<link rel="preload" as="image" href="/assets/dial/date-window.webp">
-<link rel="preload" as="image" href="/assets/dial/hand-hour.webp">
-<link rel="preload" as="image" href="/assets/dial/hand-minute.webp">
-<link rel="preload" as="image" href="/assets/dial/hand-seconds.webp">
-<link rel="preload" as="image" href="/assets/dial/reserve-hand.webp">
-<link rel="preload" as="image" href="/assets/dial/crown.webp">
+<script type="module" src="/src/boot.js"></script>
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" fetchpriority="high" href="/assets/dial/main-dial.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" fetchpriority="high" href="/assets/dial/hours-minutes-dial.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/seconds-dial.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/moonphase-wheel.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/reserve-scale.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/date-window.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/hand-hour.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/hand-minute.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/hand-seconds.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/reserve-hand.webp">
+<link rel="preload" as="image" media="not ((pointer: coarse) and (hover: none))" href="/assets/dial/crown.webp">
 </head>
 <body>
+
+<header class="print-hero">
+  <img class="print-hero-art" src="/assets/og.jpg" width="1200" height="630"
+       alt="A gold Lange 1-style watch with a blue dial reading Nikhil Ramlukan, Calibre NR.1, on a dark ground."
+       decoding="async" fetchpriority="high">
+  <p class="print-hero-name">NIKHIL RAMLUKAN</p>
+  <p class="print-hero-calibre">CALIBRE NR.1</p>
+  <p class="print-hero-line">SOFTWARE &amp; RESEARCH &#183; BALTIMORE MD</p>
+</header>
 
 <div class="stage">
 
@@ -1045,6 +1054,16 @@
     </section>
   </div>
 </div>
+
+<footer class="print-contact">
+  <div class="card-eyebrow">THE MOVEMENT</div>
+  <h1 class="card-title">Contact</h1>
+  <ul class="print-contact-list">
+    <li><a href="mailto:nikhilr.ramlukan@gmail.com">Email</a></li>
+    <li><a href="https://github.com/ramlukn" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/nikhil-ramlukan-2a4a41277" target="_blank" rel="noopener">LinkedIn</a></li>
+  </ul>
+</footer>
 
 </body>
 </html>
