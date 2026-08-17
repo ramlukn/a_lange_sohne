@@ -2052,8 +2052,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .rail .rail-link::before { bottom: -1px; }
 }
 
-.print-hero,
-.print-contact { display: none; }
+.print-hero { display: none; }
 
 @media (pointer: coarse) and (hover: none) {
   html, body { overflow-x: hidden; }
@@ -2063,27 +2062,18 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 
   .print-hero {
     display: block;
-    padding: calc(24px + env(safe-area-inset-top, 0px)) 16px 4px;
+    padding: calc(52px + env(safe-area-inset-top, 0px)) 16px 4px;
     text-align: center;
     font-family: var(--font-ui);
     color: var(--ink);
   }
-  .print-hero-art { width: min(100%, 460px); height: auto; border-radius: 6px; }
   .print-hero-name {
-    margin: 24px 0 0;
+    margin: 0;
     font-family: var(--font-display);
     font-size: 23px;
     letter-spacing: .3em;
     text-indent: .3em;
     color: #e8e2d6;
-  }
-  .print-hero-calibre {
-    margin: 12px 0 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: .4em;
-    text-indent: .4em;
-    color: var(--gold-line);
   }
   .print-hero-line {
     margin: 9px 0 0;
@@ -2093,6 +2083,25 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     text-indent: .25em;
     color: var(--muted);
   }
+  .print-hero-links {
+    list-style: none;
+    margin: 22px 0 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+  .print-hero-links a {
+    display: inline-block;
+    padding: 8px 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  .print-omit { display: none; }
+  .card-eyebrow { display: none; }
 
   .overlay,
   .overlay[hidden] {
@@ -2134,8 +2143,8 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   #panel-projects { width: auto; }
 
   .reserve-meter { display: none; }
-  .reserve-hint { justify-content: flex-start; gap: 0; margin-bottom: 10px; font-size: 0; letter-spacing: 0; }
-  .resume-download { font-size: 10.5px; letter-spacing: .25em; }
+  .reserve-hint { visibility: hidden; justify-content: flex-start; gap: 0; margin-bottom: 10px; font-size: 0; letter-spacing: 0; }
+  .resume-download { visibility: visible; font-size: 10.5px; letter-spacing: .25em; }
   .timeline-scroll { flex: none; overflow: visible; max-height: none; padding-right: 0; }
 
   .feature-shot { max-height: none; filter: none; }
@@ -2160,27 +2169,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
     color: #eef0f5;
   }
   #misc-panel-books::before { content: 'Books'; }
-  #misc-panel-watches::before { content: 'Watch reviews'; }
-  #misc-panel-other::before { content: 'Misc'; }
+  #misc-panel-watches,
+  #misc-panel-other { display: none; }
+  .misc-field { border-top: 0; padding-top: 0; min-height: 0; }
   .book-line,
   .book-said { flex-wrap: wrap; }
-
-  .print-contact {
-    display: block;
-    box-sizing: border-box;
-    width: calc(100% - 32px);
-    max-width: 648px;
-    margin: 0 auto;
-    padding: 26px 22px 24px;
-    background: linear-gradient(165deg, #111726, #0b101c);
-    border: 1px solid rgba(217,162,107,.3);
-    border-radius: 6px;
-    box-shadow: 0 18px 44px rgba(0,0,0,.45);
-    font-family: var(--font-ui);
-    color: var(--ink);
-  }
-  .print-contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-  .print-contact-list a { display: inline-block; padding: 9px 0; font-size: 15px; }
 
   body { padding-bottom: calc(44px + env(safe-area-inset-bottom, 0px)); }
 }
