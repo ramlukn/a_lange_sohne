@@ -85,14 +85,6 @@ function startSalute(key) {
 
 const NARROW = matchMedia('(max-width: 1199px)');
 
-const GATED = matchMedia('(pointer: coarse) and (hover: none)');
-const applyGate = () => { document.querySelector('.stage').inert = GATED.matches; };
-GATED.addEventListener('change', applyGate);
-applyGate();
-if (navigator.userAgentData?.mobile === true && !GATED.matches) {
-  console.warn('gate: userAgentData.mobile is true but (pointer: coarse) and (hover: none) does not match; CSS decides, the gate is down');
-}
-
 const GAP_VH = 1.6;
 
 let narrowPose = null;
@@ -121,6 +113,7 @@ addEventListener('resize', () => { measureNarrowPose(); render(); });
 const $ = (id) => document.getElementById(id);
 
 const el = {
+  stage: document.querySelector('.watch-stage'),
   pose: $('watchPose'),
   flip: $('watchFlip'),
   front: $('faceFront'),
@@ -391,7 +384,7 @@ function render() {
 
   const pose = watchPose();
   el.pose.style.transform = pose.transform;
-  el.pose.style.filter = pose.filter;
+  el.stage.style.filter = pose.filter;
   el.pose.style.transformOrigin = pose.origin;
 
   el.flip.style.transform = `rotateY(${state.flipped ? 180 : 0}deg)`;
