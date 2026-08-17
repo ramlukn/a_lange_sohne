@@ -611,7 +611,8 @@
     <section class="card" id="panel-about" tabindex="-1" aria-labelledby="title-about" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">HOURS &amp; MINUTES</div>
-      <h1 class="card-title" id="title-about">About Me</h1>
+      <details class="m-sec" open>
+      <summary class="m-head"><h1 class="card-title" id="title-about">About Me</h1></summary>
 
       <div class="about-grid">
         <img class="portrait" src="/assets/dial/portrait.webp" width="150" height="150"
@@ -626,13 +627,15 @@
       <div class="tag-row">
         <div class="tag">ENGINEERING</div><div class="tag">LIFE SCIENCE</div><div class="tag">RESEARCH</div><div class="tag">HOROLOGY</div>
       </div>
+      </details>
     </section>
 
     <section class="card" id="panel-projects" tabindex="-1" aria-labelledby="title-projects" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
 
       <div class="card-eyebrow">OUTSIZE DATE</div>
-      <h1 class="card-title" id="title-projects">Projects</h1>
+      <details class="m-sec" open>
+      <summary class="m-head"><h1 class="card-title" id="title-projects">Projects</h1></summary>
       <div class="feature-list">
 
         <div class="feature-row">
@@ -787,12 +790,14 @@
         <button type="button" class="card-close shot-zoom-close" data-shot-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
         <img class="shot-zoom-img" alt="">
       </dialog>
+      </details>
     </section>
 
     <section class="card" id="panel-research" tabindex="-1" aria-labelledby="title-research" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE SMALL SECONDS</div>
-      <h1 class="card-title" id="title-research">Research</h1>
+      <details class="m-sec" open>
+      <summary class="m-head"><h1 class="card-title" id="title-research">Research</h1></summary>
 
       <div class="role-list">
 
@@ -833,12 +838,14 @@
         </article>
       </div>
 
+      </details>
     </section>
 
     <section class="card card-column" id="panel-resume" tabindex="-1" aria-labelledby="title-resume" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE POWER RESERVE</div>
-      <h1 class="card-title card-title-tight" id="title-resume">Resume</h1>
+      <details class="m-sec" open>
+      <summary class="m-head"><h1 class="card-title card-title-tight" id="title-resume">Resume</h1></summary>
 
       <div class="reserve-meter">
         <span class="meter-label">AB</span>
@@ -956,12 +963,14 @@
 
         </div>
       </div>
+      </details>
     </section>
 
     <section class="card" id="panel-field-notes" tabindex="-1" aria-labelledby="title-field-notes" hidden>
       <button type="button" class="card-close" data-close aria-label="Close (Esc)"><span class="card-close-key">ESC </span>✕</button>
       <div class="card-eyebrow">THE MOONPHASE</div>
-      <h1 class="card-title" id="title-field-notes">Field Notes</h1>
+      <details class="m-sec" open>
+      <summary class="m-head"><h1 class="card-title" id="title-field-notes">Field Notes</h1></summary>
 
       <div class="misc-tabs" role="tablist" data-tabs aria-label="Field Notes sections">
         <button type="button" class="misc-tab" id="misc-tab-books" role="tab"
@@ -1052,9 +1061,23 @@
       <div class="misc-field" id="misc-panel-other" role="tabpanel" tabindex="0" aria-labelledby="misc-tab-other" hidden>
         <p class="misc-empty">Nothing filed here yet</p>
       </div>
+      </details>
     </section>
   </div>
 </div>
+
+<script>
+  if (matchMedia('(pointer: coarse) and (hover: none)').matches) {
+    document.querySelectorAll('.m-sec').forEach(function (d) {
+      if (!d.closest('#panel-about')) d.removeAttribute('open');
+    });
+  } else {
+    document.querySelectorAll('.m-head').forEach(function (s) {
+      s.tabIndex = -1;
+      s.addEventListener('click', function (e) { e.preventDefault(); });
+    });
+  }
+</script>
 
 </body>
 </html>
