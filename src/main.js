@@ -463,6 +463,7 @@ function hideSection(keepFocus) {
 
 function showContact() {
 
+  rigArm();
   hideSection(true);
   state.hover = null;
   state.flipped = true;
@@ -1041,18 +1042,30 @@ function rigNudgePaint() {
   setTimeout(fire, 4500);
 }
 
-const rigSettled = Promise.allSettled(
-  [...document.querySelectorAll('.cb-rig img')].map((i) =>
-    i.complete ? Promise.resolve()
-      : new Promise((res) => {
+let rigArmed = false;
+function rigArm() {
+  if (rigArmed) return;
+  rigArmed = true;
+  for (const node of document.querySelectorAll('image[data-href]')) {
+    node.setAttribute('href', node.dataset.href);
+    node.removeAttribute('data-href');
+  }
+  const imgs = [...document.querySelectorAll('img[data-src]')];
+  const jobs = imgs.map((img) => new Promise((res) => {
+    const done = () => { img.classList.add('is-loaded'); res(); };
+    img.addEventListener('load', done, { once: true });
+    img.addEventListener('error', res, { once: true });
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+    if (img.complete && img.naturalWidth) done();
+  }));
+  const rigDeadline = new Promise((res) => setTimeout(res, 4000));
+  Promise.race([Promise.allSettled(jobs), rigDeadline])
+    .then(() => el.back.classList.add('rig-ready'));
+}
 
-          i.addEventListener('load', res, { once: true });
-          i.addEventListener('error', res, { once: true });
-        })
-  ));
-const rigDeadline = new Promise((res) => setTimeout(res, 4000));
-Promise.race([rigSettled, rigDeadline])
-  .then(() => el.back.classList.add('rig-ready'));
+if (document.readyState === 'complete') rigArm();
+else addEventListener('load', rigArm, { once: true });
 
 function rigPlay() {
   if (rig.reduced.matches || rig.anims.length) return;
@@ -1116,6 +1129,20 @@ else {
 applyRoute();
 
 arrived = true;
+
+const frontSettled = Promise.allSettled(
+  [...document.querySelectorAll('.face-front img[src]')].map((img) =>
+    img.complete ? Promise.resolve()
+      : new Promise((res) => {
+          img.addEventListener('load', res, { once: true });
+          img.addEventListener('error', res, { once: true });
+        })
+  ));
+Promise.race([frontSettled,
+  new Promise((res) => setTimeout(res, Math.max(500, 3500 - performance.now())))])
+  .then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.documentElement.dataset.live = '';
+  })));
 
 {
   const d = new Date();

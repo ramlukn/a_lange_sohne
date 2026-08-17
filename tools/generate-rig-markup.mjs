@@ -10,23 +10,24 @@ if (rig.version !== 4) throw new Error(`expected rig.json v4, got v${rig.version
 const F = rig.image.w;
 const pct = v => (v / F * 100).toFixed(3);
 
-// fetchpriority="low" on every sprite, and it is emitted HERE rather than added
+// fetchpriority="low" and data-src (armed by rigArm in main.js after the front
+// settles) on every sprite, and both are emitted HERE rather than added
 // to the pasted block, or the next regeneration silently undoes it. See THE
 // CASEBACK YIELDS TO THE DIAL in index.html for the measurement: 4.0MB behind a
 // flip, at the same priority as the 508KB dial that is actually on screen.
 let out = '            <div class="cb-rig" aria-hidden="true">\n';
-out += '              <img class="cb-rig-base" fetchpriority="low" src="/assets/caseback/rig/base.webp" alt="" decoding="async">\n';
+out += '              <img class="cb-rig-base" fetchpriority="low" data-src="/assets/caseback/rig/base.webp" alt="" decoding="async">\n';
 for (const p of rig.parts) {
   const [x, y, w, h] = p.box_px;
   const anim = JSON.stringify(p.anim).replace(/"/g, '&quot;');
   const wrapCls = p.shadow ? `cb-rig-partwrap cb-rig-partwrap--${p.shadow}` : 'cb-rig-partwrap';
   out += `              <div class="${wrapCls}" style="left:${pct(x)}%;top:${pct(y)}%;width:${pct(w)}%;height:${pct(h)}%">\n`;
-  out += `                <img class="cb-rig-part" fetchpriority="low" data-part="${p.name}" data-anim="${anim}" src="/assets/caseback/rig/${p.file}" alt="" decoding="async">\n`;
+  out += `                <img class="cb-rig-part" fetchpriority="low" data-part="${p.name}" data-anim="${anim}" data-src="/assets/caseback/rig/${p.file}" alt="" decoding="async">\n`;
   out += `              </div>\n`;
 }
 for (const b of rig.statics) {
   const [x, y, w, h] = b.box_px;
-  out += `              <img class="cb-rig-static" fetchpriority="low" src="/assets/caseback/rig/${b.file}" style="left:${pct(x)}%;top:${pct(y)}%;width:${pct(w)}%;height:${pct(h)}%" alt="" decoding="async">\n`;
+  out += `              <img class="cb-rig-static" fetchpriority="low" data-src="/assets/caseback/rig/${b.file}" style="left:${pct(x)}%;top:${pct(y)}%;width:${pct(w)}%;height:${pct(h)}%" alt="" decoding="async">\n`;
 }
 out += '              <div class="cb-rig-sheen"></div>\n';
 out += '            </div>';

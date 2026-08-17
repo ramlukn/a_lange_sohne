@@ -157,7 +157,10 @@ a:hover { color: var(--gold-line-hover); }
   .cb-rig { display: none !important; }
 }
 
-html[data-direct] .loader { display: none !important; }
+html:not([data-live]) .stage *:not(.cb-rig-sheen) { animation-play-state: paused !important; }
+html[data-direct]:not([data-live]) .loader,
+html[data-direct]:not([data-live]) .loader > * { animation: none !important; }
+html[data-direct][data-live] .loader { display: none !important; }
 html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; }
 
 .stage {
@@ -891,6 +894,12 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 @supports ((mask-image: url("")) or (-webkit-mask-image: url(""))) {
   .rig-ready .cb-rig { opacity: 1; transition: opacity .2s linear; }
 }
+.cb-movement-image,
+.cb-links img,
+.cb-rig img { opacity: 0; transition: opacity .28s linear; }
+.cb-movement-image.is-loaded,
+.cb-links img.is-loaded,
+.cb-rig img.is-loaded { opacity: 1; }
 .cb-rig-base {
   position: absolute;
   inset: 0;
