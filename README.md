@@ -14,7 +14,7 @@ Hold the crown and the seconds hand stops, the way a real calibre hacks. The lig
 
 ## How it's made
 
-Vanilla HTML, CSS, and JavaScript on a Vite build. No framework, no analytics, no third-party requests at runtime — the fonts (Spectral, Source Sans 3, Spline Sans Mono, all SIL OFL) are self-hosted. The watch is rendered art: the movement is assembled from individually cut part sprites over a wheel-less base, occluded by hand-cut plates so wheels run under bridges. Positions on the caseback are measured, not placed — the git log carries the arithmetic.
+Vanilla HTML, CSS, and JavaScript on a Vite build. No framework; the only third-party code is Vercel's own analytics, served from this domain — the fonts (Spectral, Source Sans 3, Spline Sans Mono, all SIL OFL) are self-hosted. The watch is rendered art: the movement is assembled from individually cut part sprites over a wheel-less base, occluded by hand-cut plates so wheels run under bridges. Positions on the caseback are measured, not placed — the git log carries the arithmetic.
 
 The mobile edition is the same DOM restyled: no duplicated copy, readable with JavaScript disabled, ~370KB against the desktop's full weight.
 
