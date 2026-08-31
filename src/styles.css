@@ -115,9 +115,9 @@ a:hover { color: var(--gold-line-hover); }
 }
 
 @keyframes partIn {
-  0%   { opacity: 0; transform: translate(var(--fx, 0px), var(--fy, 0px)) translateZ(var(--seatz, 0px)) scale(var(--fs, 1)); filter: blur(1.2px); }
-  76%  { opacity: 1; transform: translate(0, 0) translateZ(var(--seatz, 0px)) scale(1.006); filter: blur(0); }
-  100% { opacity: 1; transform: translate(0, 0) translateZ(var(--seatz, 0px)) scale(1); filter: blur(0); }
+  0%   { opacity: 0; transform: translate(var(--fx, 0px), var(--fy, 0px)) scale(var(--fs, 1)); filter: blur(1.2px); }
+  76%  { opacity: 1; transform: translate(0, 0) scale(1.006); filter: blur(0); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1); filter: blur(0); }
 }
 @keyframes componentSeat {
   0%   { opacity: 0; transform: translate(var(--fx, 0px), var(--fy, 0px)) scale(.9); }
@@ -132,9 +132,9 @@ a:hover { color: var(--gold-line-hover); }
 }
 
 @keyframes glassSeat {
-  0%   { opacity: 0; transform: translateZ(var(--z-glass)) scale(1.065); filter: blur(1px); }
-  68%  { opacity: .76; transform: translateZ(var(--z-glass)) scale(1.008); filter: blur(0); }
-  100% { opacity: 1; transform: translateZ(var(--z-glass)) scale(1); filter: blur(0); }
+  0%   { opacity: 0; transform: scale(1.065); filter: blur(1px); }
+  68%  { opacity: .76; transform: scale(1.008); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 @keyframes windUp { from { transform: rotate(-160deg); } to { transform: rotate(0deg); } }
 @keyframes cardUp { from { opacity: 0; transform: translateY(28px) scale(.985); } to { opacity: 1; transform: none; } }
@@ -236,67 +236,32 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   position: relative;
   width: 86vmin;
   height: 86vmin;
-  perspective: 2400px;
   transition: filter 1s cubic-bezier(.45, 0, .2, 1);
-  --case-depth: 6vmin;
-
-  --z-applied:      .22vmin;
-  --z-index-mark:   .40vmin;
-  --z-pulse:        .44vmin;
-  --z-hand-hour:    .78vmin;
-  --z-hand-min:    1.66vmin;
-  --z-wash:        1.80vmin;
-  --z-glass:       2.00vmin;
-
-  --z-ink:          .04vmin;
-  --z-well:        1.22vmin;
-  --z-hand-res:     .56vmin;
-  --z-hand-sec:     .89vmin;
 }
 .watch-pose {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
 
   transition: transform 1s cubic-bezier(.45, 0, .2, 1);
 }
 .watch-flip {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateY(0deg);
+  transform: perspective(2400px) rotateY(0deg);
   transition: transform 1.15s cubic-bezier(.6,.05,.25,1);
 
   animation: partsLive 0s linear var(--hint-at) forwards;
 }
 
-.case-edge { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
-.edge-seg {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--case-depth);
-  height: 5.95vmin;
-  margin: -2.975vmin 0 0 calc(var(--case-depth) / -2);
-  transform: rotateZ(var(--a)) translateX(42.7vmin) rotateY(90deg);
-  background:
-    linear-gradient(90deg, rgba(255,238,205,.38) 0%, rgba(255,238,205,.06) 22%, rgba(0,0,0,0) 40% 60%, rgba(55,28,8,.18) 80%, rgba(55,28,8,.42) 100%),
-    #b8813f;
-}
-
 .face {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   transition: opacity .3s linear .45s;
 }
-.face-back { transform: rotateY(180deg) translateZ(calc(var(--case-depth) / 2)); opacity: 0; }
+.face-back { transform: rotateY(180deg); opacity: 0; }
 
 .face-front {
-  transform: translateZ(calc(var(--case-depth) / 2));
   opacity: 1;
-  transform-style: preserve-3d;
 }
 
 .face-front::after,
@@ -306,26 +271,14 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   inset: 0;
   border-radius: 50%;
   pointer-events: none;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   background:
     linear-gradient(rgb(255 158 64 / calc(var(--tod-warmth) * 7.5%)),
                     rgb(255 158 64 / calc(var(--tod-warmth) * 7.5%))),
     linear-gradient(rgb(6 5 12 / calc(var(--tod-dim) * 11%)),
                     rgb(6 5 12 / calc(var(--tod-dim) * 11%)));
 }
-.face-front::after {
-  transform: translateZ(calc(var(--z-glass) + .06vmin));
-}
+.face-front::after { z-index: 40; }
 .face-back::after { z-index: 40; }
-
-.face-front > *,
-.hands > *,
-.reserve > *,
-.date-window > * {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
 
 .crown {
   position: absolute;
@@ -352,14 +305,11 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   width: 9%;
   height: 18%;
   cursor: pointer;
-  transform-style: preserve-3d;
   --fx: -2vmin;
   z-index: 3;
 }
 
 .corrector-plane { position: absolute; inset: 0; }
-.corrector-plane-front { transform: translateZ(calc(var(--case-depth) / 2 + .05vmin)); }
-.corrector-plane-back  { transform: translateZ(calc(var(--case-depth) / -2 - .05vmin)); }
 
 .corrector { visibility: visible; transition: visibility 0s linear 1.15s; }
 .watch-flip:has(.face-back.is-flipped) .corrector {
@@ -493,7 +443,7 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   .secret-signature { animation: none; }
 }
 
-.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s backwards; pointer-events: none; transform-style: preserve-3d; }
+.hands { position: absolute; inset: 0; animation: fadeIn .45s ease 2.42s backwards; pointer-events: none; }
 .hand-pivot { position: absolute; transform-origin: 50% 50%; }
 
 .hand-pivot .sprite-art {
@@ -516,9 +466,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.04s backwards;
   --fy: -38px;
   --fs: .96;
-  transform-style: preserve-3d;
-  transform: translateZ(var(--z-applied));
-  --seatz: var(--z-applied);
 }
 
 .date-frame { position: absolute; inset: 0; filter: drop-shadow(0 .3vmin .85vmin rgba(0,0,0,.62)); }
@@ -530,7 +477,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   height: 85.35%;
   border-radius: .25vmin;
   pointer-events: none;
-  transform: translateZ(var(--z-well));
   box-shadow:
     inset .5vmin .5vmin .42vmin rgba(52,40,26,.32),
     inset .14vmin .14vmin .08vmin rgba(38,28,16,.32),
@@ -565,8 +511,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
 .date-tens { left: 4.13%; }
 .date-ones { left: 51.39%; }
 
-.date-digit { transform: translateZ(var(--z-ink)); }
-
 .reserve {
   position: absolute;
   left: 62%;
@@ -577,10 +521,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.27s backwards;
   --fx: 38px;
   --fs: .96;
-  transform-style: preserve-3d;
-
-  transform: translateZ(var(--z-applied));
-  --seatz: var(--z-applied);
 }
 .reserve-scale { position: absolute; left: 57%; top: 6.435%; width: 24.104%; height: 89.715%; }
 .reserve-hand {
@@ -641,8 +581,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   inset: 0;
   pointer-events: none;
   animation: partIn .72s cubic-bezier(.22,1,.36,1) 2.16s backwards;
-  transform: translateZ(var(--z-applied));
-  --seatz: var(--z-applied);
   --fy: 38px;
   --fs: .96;
 }
@@ -657,7 +595,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   height: 50.6%;
   border-radius: 50%;
   cursor: pointer;
-  transform: translateZ(var(--z-wash));
 }
 
 .part-hit {
@@ -723,7 +660,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   border-radius: 50%;
   pointer-events: none;
   overflow: hidden;
-  transform: translateZ(var(--z-glass));
   animation: glassSeat .9s cubic-bezier(.22,1,.36,1) 2.78s backwards;
 }
 
@@ -744,8 +680,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   overflow: visible;
 
   --hint-hair: .153;
-
-  transform: translateZ(var(--z-index-mark));
 }
 .hint-index[hidden] { display: none; }
 .hint-index svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -769,8 +703,6 @@ html[data-direct] .stage *:not(.cb-rig-sheen) { animation-delay: 0s !important; 
   inset: 0;
   pointer-events: none;
   overflow: visible;
-
-  transform: translateZ(var(--z-pulse));
 }
 .hover-pulse svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .pulse-mark {

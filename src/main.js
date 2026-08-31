@@ -324,9 +324,9 @@ function render() {
   const angHour = hr * 30 + wind(DEMO.turns.hour, 'mainDial');
   const angMin = min * 6 + wind(DEMO.turns.min, 'mainDial');
   const angSec = sec * 6 + wind(DEMO.turns.sec, 'sec');
-  el.hour.style.transform = `rotate(${angHour.toFixed(2)}deg) translateZ(var(--z-hand-hour))`;
-  el.min.style.transform = `rotate(${angMin.toFixed(2)}deg) translateZ(var(--z-hand-min))`;
-  el.sec.style.transform = `rotate(${angSec.toFixed(2)}deg) translateZ(var(--z-hand-sec))`;
+  el.hour.style.transform = `rotate(${angHour.toFixed(2)}deg)`;
+  el.min.style.transform = `rotate(${angMin.toFixed(2)}deg)`;
+  el.sec.style.transform = `rotate(${angSec.toFixed(2)}deg)`;
 
   let date = d.getDate();
   const dateSpin = spin + saluteSpin('date');
@@ -359,7 +359,7 @@ function render() {
 
   el.reserveHand.style.transition = (resAnim || reserveSnapping) ? 'none' : '';
   reserveSnapping = !!resAnim;
-  el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg) translateZ(var(--z-hand-res))`;
+  el.reserveHand.style.transform = `rotate(${reserveAngle.toFixed(1)}deg)`;
 
   el.reserveBar.style.width = `${Math.round(reserveTrue * 100)}%`;
 
@@ -387,7 +387,7 @@ function render() {
   el.stage.style.filter = pose.filter;
   el.pose.style.transformOrigin = pose.origin;
 
-  el.flip.style.transform = `rotateY(${state.flipped ? 180 : 0}deg)`;
+  el.flip.style.transform = `perspective(2400px) rotateY(${state.flipped ? 180 : 0}deg)`;
   el.front.style.opacity = state.flipped ? 0 : 1;
   el.back.style.opacity = state.flipped ? 1 : 0;
   el.back.classList.toggle('is-flipped', state.flipped);
