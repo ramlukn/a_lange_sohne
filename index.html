@@ -770,11 +770,12 @@
               <span>Baltimore, MD · On-site</span><span>November 2025 — Present</span>
             </p>
           </div>
-          <p class="role-desc">Under Dr. Robert David Stevens, I work on machine-learning models that stratify the risk of complications after an elective craniotomy. I develop them on MIMIC-IV and evaluate them on a Johns Hopkins PMAP cohort.</p>
+          <p class="role-desc">Under Dr. Robert David Stevens, I build a preoperative triage model that predicts which elective craniotomy patients will need ICU-level care. It is developed and validated on two cohorts &mdash; Johns Hopkins PMAP (n=310) and MIMIC-IV (n=367) &mdash; and the external validation runs both ways: train on one, test on the other.</p>
           <ul class="role-notes">
-            <li>The models put patients in order of risk, and that's all they do. They don't diagnose anyone, and the ranking says nothing about which complication or when.</li>
-            <li>Somebody has to decide how closely a patient is watched once they leave the operating room, and that's the one decision the ranking is for.</li>
-            <li>Each model refits its own feature selection inside every training fold &mdash; a penalised logistic regression, XGBoost, CatBoost, and a stack of the three under a ridge meta-learner. The second cohort is for testing the models, never for training them. Nobody knows yet whether the ranking still means anything when the patients, the surgeons, and the recording habits change.</li>
+            <li>The rebuilt pipeline is repeated 10-fold nested cross-validation over four arms &mdash; a penalised logistic regression, XGBoost, CatBoost, and a stack of the three under a ridge meta-learner. Everything that could peek &mdash; imputation, scaling, correlation filtering, feature selection, tuning, calibration &mdash; fits inside the training folds, cross-cohort feature selection never sees a label, and the confidence intervals are bootstrapped at the patient level.</li>
+            <li>The rebuild caught what the originally published analysis missed: seventeen ICU-stay variables had leaked into the MIMIC feature set, carrying roughly 70% of that model's SHAP importance. Removing them costs XGBoost 0.146 AUROC. MIMIC's published advantage was measurement timing, not a richer feature space.</li>
+            <li>On clean features the two cohorts perform comparably, PMAP improved under the corrected pipeline (CatBoost, 0.729 to 0.774), and going fully preoperative costs nothing measurable. Every arm now beats admitting everyone to the ICU, in both transfer directions.</li>
+            <li>One caveat, on the outcome itself: the composite leans on its softest component. Depressed consciousness is the sole trigger in 41% of events; among them are only four reoperations and one ICP crisis.</li>
           </ul>
         </article>
       </div>
@@ -838,7 +839,7 @@
                 <div class="tl-when"><span>Baltimore, MD</span><span>2025 &mdash; Present</span></div>
               </div>
               <ul class="tl-bullets">
-                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Machine-learning risk stratification of postoperative complications after elective craniotomy.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>A preoperative triage model predicting ICU-level care need after elective craniotomy, validated across Johns Hopkins and MIMIC-IV cohorts.</p></li>
                 <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>In the Laboratory of Computational Intensive Care Medicine, under Dr. Robert David Stevens.</p></li>
               </ul>
             </article>
