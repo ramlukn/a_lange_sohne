@@ -9,7 +9,7 @@ const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
 
 const CURRENTLY = [
   { label: 'RESEARCHING', value: 'Passive Detection' },
-  { label: 'READING', value: 'Haruki Murakami' },
+  { label: 'READING', value: 'Friedrich Nietzsche' },
   { label: 'WEARING', value: 'Tudor Black Bay 58 “Navy Blue”' }
 ];
 
