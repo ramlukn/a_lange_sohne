@@ -752,10 +752,12 @@
               <span>Cambridge, MA · Hybrid</span><span>July 2024 — Present</span>
             </p>
           </div>
-          <p class="role-desc">I work with Dr. Kee B. Park on passive, phone-based detection of early neurological impairment, and in practice that's training multimodal deep-learning classifiers on audio and image samples to pick up neuromotor and speech biomarkers.</p>
+          <p class="role-desc">I work with Dr. Kee B. Park on passive, phone-based detection of early neurological impairment. The current MVP is a pair of screening models for stroke signs &mdash; dysarthria heard in speech, facial palsy read from images &mdash; trained on locally held and newly gathered public data.</p>
           <ul class="role-notes">
-            <li>Movement and speech start to go before anyone gets a diagnosis: tremor, bradykinesia, and postural instability on the motor side, dysarthria and falling verbal fluency in speech. Facial palsy shows up in the image. The conditions are Alzheimer's, Parkinson's, and ischemic stroke.</li>
-            <li>A model that only works on the population it was trained on is not the point. The models have to hold up across countries and health systems, and in the long run they need to work as well in a low-resource setting as in a high one.</li>
+            <li>The speech model trains on the TORGO corpus (17,592 clips from all 15 speakers) and the Italian EasyCall corpus (21,142 clips, 31 dysarthric and 24 control speakers with neurologist-assigned severity). Each clip becomes a 240-dimensional vector &mdash; 40 MFCCs with delta and delta-delta coefficients, mean- and std-pooled &mdash; classified by a small multilayer perceptron. Every split is made at the speaker level: an earlier notebook split by clip, and its 99% accuracy was the model recognising voices, not dysarthria.</li>
+            <li>On held-out TORGO speakers it reaches 82% clip accuracy (AUC 0.88), all four called correctly by per-speaker vote. Zero-shot to EasyCall sits at chance (AUC 0.52) &mdash; the language and the recording channel move, and the model doesn't follow. The deployable artifact is a combined-corpus model quantized to a 110 KB TFLite file, at AUC 0.78 with 15 of 18 held-out speakers correct.</li>
+            <li>The face model trains on roughly 2,300 palsy and 2,500 control images from Kaggle stroke-face sets, plus 577 face crops from the CC-BY PalsyNet videos &mdash; 49 identities the training never sees. A MobileNetV2 CNN scored AUC 0.96 internally and 0.55 on those unseen faces: raw pixels learn dataset fingerprints, not clinical signs. So the shipped model measures 40 geometric asymmetries from FaceMesh landmarks &mdash; mouth-corner droop, eye-aperture and brow-height differences, mirror pairs after roll and scale normalisation &mdash; under gradient boosting, and holds: 81% accuracy (AUC 0.93) on curated tests, AUC 0.71 across corpora with per-video voting.</li>
+            <li>One caveat, on the data itself: the corpora are off-etiology &mdash; cerebral palsy and ALS speech, Bell's-type palsy rather than stroke &mdash; and identity diversity is thin, around 39 dysarthric speakers and a few dozen palsy identities. The numbers are engineering benchmarks, not clinical claims.</li>
             <li>The argument for the approach, co-authored with Park: <a href="https://aansneurosurgeon.org/multimodal-sensors-on-mobile-phones-and-potential-for-early-diagnosis-of-neurological-conditions/" target="_blank" rel="noopener">AANS Neurosurgeon</a>, November 2024.</li>
           </ul>
         </article>
@@ -853,7 +855,7 @@
                 <div class="tl-when"><span>Cambridge, MA</span><span>2024 &mdash; Present</span></div>
               </div>
               <ul class="tl-bullets">
-                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Early detection of stroke and Parkinson's from multimodal deep-learning models.</p></li>
+                <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>Stroke-sign screening models &mdash; dysarthria from speech, facial palsy from images &mdash; built to generalise across corpora.</p></li>
                 <li><span class="tl-mark" aria-hidden="true">&middot;</span><p>At the Blavatnik Institute, under Dr. Kee B. Park.</p></li>
               </ul>
             </article>
