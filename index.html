@@ -581,6 +581,63 @@
 
         <div class="feature-row">
           <div class="feature-head">
+            <div class="feature-name">Peel</div>
+            <p class="feature-meta"><span class="feature-date">HACKMIT · SEP 2026</span></p>
+          </div>
+
+          <div class="shot-carousel">
+            <div class="shot-frames">
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/peel-1.webp" data-current
+                     width="1200" height="675" loading="lazy" decoding="async"
+                     alt="Peel's title card: the instrument, an orange-painted sphere with a green stopper and a small screen set into its side showing the mascot over the word “Working…”, on a white counter beside a bottle of tablets and a dish of pills, under the line “The tiny lab technician”.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/peel-2.webp" aria-hidden="true"
+                     width="1200" height="675" loading="lazy" decoding="async"
+                     alt="A frame from the demo video: the instrument on a kitchen counter with its screen lit, a USB-C cable running down to a phone whose screen reads “Checking pill” above a drawing of the vial.">
+              </button>
+              <button type="button" class="shot-open">
+                <img class="feature-shot" src="/assets/projects/peel-3.webp" aria-hidden="true"
+                     width="1200" height="675" loading="lazy" decoding="async"
+                     alt="Peel Atlas, the 3D knowledge graph: coloured spheres joined by white struts against black, a recalled levothyroxine lot ringed in red at the centre, a list of scans needing attention down the left, and the recall findings for that lot in a panel on the right.">
+              </button>
+            </div>
+            <div class="shot-index" role="group" aria-label="Peel frames">
+              <button type="button" class="shot-dot" aria-current="true" aria-label="Frame 1 of 3, the title card"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 2 of 3, the instrument mid-run"></button>
+              <button type="button" class="shot-dot" aria-label="Frame 3 of 3, Peel Atlas"></button>
+            </div>
+          </div>
+          <div class="feature-desc">A hundred-dollar optical dissolution tester that plugs into a phone, paired with an evidence engine that checks the pill against 22,000 recall records. Six LEDs shine through a vial as the tablet dissolves, two sensors read transmission and scatter, and the curve becomes one of three observations behind a cited report. It won the grand prize among 1,100 hackers, and Elastic's first place.</div>
+
+          <div class="feature-build"><span class="feature-build-label">BUILT</span>The idea, the chemistry, and the classification layer were mine &mdash; everything between the raw light readings and a verdict. A dependency-free Python package parses the board's one JSON line a second, tracks a run from the moment the tablet goes in, and reads absorbance as log10 of blank over now on the LED the active absorbs. Concentration comes from a calibration line fitted on standards read on the same rig, stored with its R² and a detection limit at 3.3 sigma of the blank noise; the plateau is called when a sixty-second window flattens below 0.0005 AU/s, and percent released and t80 come off the curve. Gates for cloudiness on the scatter channel, absorbance past 1.0 AU, colour where the active absorbs none, and runs under five seconds route each read to one of three verdicts: passed the screen at 90 to 110% of label, refer to lab, or cannot verify. Riboflavin on the blue LED is the calibrated reference.</div>
+          <div class="feature-links">
+            <a class="feature-icon" href="https://github.com/viktorinkov/HackMIT-2026" target="_blank" rel="noopener"
+               data-host="github.com/viktorinkov/HackMIT-2026"
+               aria-label="Peel source code on GitHub, at github.com/viktorinkov/HackMIT-2026">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 21.4V18.4C15.2 17.5 14.9 16.8 14.4 16.2C17.5 15.9 20.6 14.8 20.6 9.7C20.6 8.3 20.1 7.1 19.3 6.2C19.7 5.2 19.6 4 19.2 3C19.2 3 18.1 2.7 15.6 4.4C13.3 3.8 10.7 3.8 8.4 4.4C5.9 2.7 4.8 3 4.8 3C4.4 4 4.3 5.2 4.7 6.2C3.9 7.1 3.4 8.3 3.4 9.7C3.4 14.8 6.5 15.9 9.6 16.2C9.1 16.8 8.8 17.5 8.8 18.4V21.4"/><path d="M8.8 18.9C4.4 20.2 4.4 16.7 2.6 16.3"/></svg>
+            </a>
+            <a class="feature-icon" href="https://plume.hackmit.org/project/qxodw-wgjqk-lidau-dxrpe" target="_blank" rel="noopener"
+               data-host="plume.hackmit.org"
+               aria-label="Peel hackathon submission on Plume, at plume.hackmit.org">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.6 20.4 7.3v9.4L12 21.4 3.6 16.7V7.3z"/><path d="M9.7 16V8.4h2.6a2.4 2.4 0 0 1 0 4.8H9.7"/></svg>
+            </a>
+            <a class="feature-icon" href="https://youtu.be/Yiu2wGKJ6AM" target="_blank" rel="noopener"
+               data-host="youtu.be/Yiu2wGKJ6AM"
+               aria-label="Peel demo video on YouTube, at youtu.be/Yiu2wGKJ6AM">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.6" y="5" width="18.8" height="14" rx="4"/><path d="M10 9.2v5.6l4.6-2.8z"/></svg>
+            </a>
+            <a class="feature-icon" href="https://www.linkedin.com/posts/nikhil-ramlukan_hackmit-jhuchembe-ai-ugcPost-7507888469394784257-sQM4/" target="_blank" rel="noopener"
+               data-host="linkedin.com/posts/nikhil-ramlukan"
+               aria-label="The grand-prize announcement on LinkedIn, at linkedin.com/posts/nikhil-ramlukan">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><path d="M2 9h4v12H2z"/><path d="M4 2a2 2 0 1 1 0 4 2 2 0 1 1 0-4"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <div class="feature-head">
             <div class="feature-name">GreenChain</div>
             <p class="feature-meta"><span class="feature-date">HACKPRINCETON · APR 2026</span></p>
           </div>
